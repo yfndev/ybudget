@@ -1,23 +1,19 @@
-"use client"
+"use client";
 
-import * as React from "react"
 import {
   BookOpen,
   Bot,
   Command,
-  Frame,
-  LifeBuoy,
-  Map,
-  PieChart,
-  Send,
+  LayoutDashboard,
+  Settings,
   Settings2,
+  SquareCheckBig,
   SquareTerminal,
-} from "lucide-react"
+  Users,
+} from "lucide-react";
+import * as React from "react";
 
-import { NavMain } from "@/components/nav-main"
-import { NavProjects } from "@/components/nav-projects"
-import { NavSecondary } from "@/components/nav-secondary"
-import { NavUser } from "@/components/nav-user"
+import { NavUser } from "@/components/Sidebar/UserNav";
 import {
   Sidebar,
   SidebarContent,
@@ -26,7 +22,9 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
+import { MainNav } from "./MainSidebar";
+import { ProjectNav } from "./ProjectNav";
 
 const data = {
   user: {
@@ -34,7 +32,7 @@ const data = {
     email: "m@example.com",
     avatar: "/avatars/shadcn.jpg",
   },
-  navMain: [
+  projects: [
     {
       title: "Playground",
       url: "#",
@@ -121,36 +119,30 @@ const data = {
       ],
     },
   ],
-  navSecondary: [
+
+  mainNav: [
     {
-      title: "Support",
-      url: "#",
-      icon: LifeBuoy,
+      name: "Dashboard",
+      url: "",
+      icon: LayoutDashboard,
     },
     {
-      title: "Feedback",
-      url: "#",
-      icon: Send,
-    },
-  ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
+      name: "Transaktionen",
+      url: "/transactions",
+      icon: SquareCheckBig,
     },
     {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
+      name: "Förderer",
+      url: "/donors",
+      icon: Users,
     },
     {
-      name: "Travel",
-      url: "#",
-      icon: Map,
+      name: "Einstellungen",
+      url: "/settings",
+      icon: Settings,
     },
   ],
-}
+};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -173,13 +165,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        <MainNav mainNav={data.mainNav} />
+        <ProjectNav items={data.projects} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />
       </SidebarFooter>
     </Sidebar>
-  )
+  );
 }

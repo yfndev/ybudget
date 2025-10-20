@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 
-import { AppSidebar } from "./components/app-sidebar";
+import { AppSidebar } from "./components/Sidebar/AppSidebar";
 import { SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
 import "./globals.css";
 import { ConvexClientProvider } from "./provider/ConvexClientProvider";
