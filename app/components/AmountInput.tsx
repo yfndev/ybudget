@@ -20,24 +20,25 @@ export function AmountInput({
   autoFocus?: boolean;
   id?: string;
 }) {
+  const valueColor = value ? "text-foreground" : "text-muted-foreground";
+
   return (
     <InputGroup>
       <InputGroupAddon>
-        <InputGroupText className="text-muted-foreground">€</InputGroupText>
+        <InputGroupText className={valueColor}>€</InputGroupText>
       </InputGroupAddon>
       <InputGroupInput
         id={id}
-        className="font-medium  placeholder:text-muted-foreground"
+        className={valueColor}
         type="text"
         inputMode="decimal"
         placeholder="0,00"
         value={value}
         onChange={(e) => onChange(sanitizeAmount(e.target.value))}
         autoFocus={autoFocus}
-        data-has-value={value ? "true" : undefined}
       />
       <InputGroupAddon align="inline-end">
-        <InputGroupText className="">EUR</InputGroupText>
+        <InputGroupText className={valueColor}>EUR</InputGroupText>
       </InputGroupAddon>
     </InputGroup>
   );

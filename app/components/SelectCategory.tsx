@@ -68,6 +68,7 @@ export function SelectCategory({
 
   const inputRef = React.useRef<HTMLInputElement>(null);
   const triggerRef = React.useRef<HTMLDivElement>(null);
+  const valueColor = value ? "text-foreground" : "text-muted-foreground";
 
   React.useEffect(() => {
     if (open && inputRef.current) {
@@ -92,11 +93,11 @@ export function SelectCategory({
                 className="w-full justify-between"
               >
                 <span className="flex flex-col items-start">
-                  <span className="font-medium text-muted-foreground">
+                  <span className={cn("font-medium", valueColor)}>
                     {value ? selectedItem?.label : "Kategorie wählen..."}
                   </span>
                   {selectedItem?.description && (
-                    <span className="text-xs text-muted line-clamp-1">
+                    <span className="text-xs text-muted-foreground line-clamp-1">
                       {selectedItem.description}
                     </span>
                   )}
@@ -156,7 +157,7 @@ export function SelectCategory({
                       key={item.value}
                       className={cn(
                         "w-full text-left px-3 py-2 rounded-md hover:bg-accent transition-colors",
-                        value === item.value && "bg-gray-100"
+                        value === item.value && "bg-accent"
                       )}
                       onClick={() => {
                         onValueChange(item.value);

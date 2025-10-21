@@ -28,6 +28,7 @@ export function SelectProject({
 }) {
   const [open, setOpen] = React.useState(false);
   const projects: { value: string; label: string }[] = []; // implement convex query
+  const valueColor = value ? "text-foreground" : "text-muted-foreground";
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -38,11 +39,11 @@ export function SelectProject({
           aria-expanded={open}
           className="w-full justify-between"
         >
-          {value ? (
-            projects.find((project) => project.value === value)?.label
-          ) : (
-            <p className="text-muted-foreground">Projekt suchen...</p>
-          )}
+          <span className={cn("font-medium", valueColor)}>
+            {value
+              ? projects.find((project) => project.value === value)?.label
+              : "Projekt suchen..."}
+          </span>
           <ChevronsUpDown className="opacity-50" />
         </Button>
       </PopoverTrigger>

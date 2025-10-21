@@ -41,6 +41,8 @@ export function ExpenseInputSheet({
   const [description, setDescription] = useState("");
   const [project, setProject] = useState("");
 
+  const dateColor = date ? "text-foreground" : "text-muted-foreground";
+
   const resetForm = () => {
     setStep(1);
     setAmount("");
@@ -83,18 +85,11 @@ export function ExpenseInputSheet({
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
-                className={cn(
-                  "w-full justify-start text-left font-normal",
-                  !date && "text-muted-foreground"
-                )}
+                className="w-full justify-start text-left font-normal"
               >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                <span className=" font-medium ">
-                  {date ? (
-                    format(date, "dd.MM.yyyy")
-                  ) : (
-                    <div className="text-muted-foreground"> Datum wählen </div>
-                  )}
+                <CalendarIcon className={(cn("mr-2 h-4 w-4"), dateColor)} />
+                <span className={cn("font-medium", dateColor)}>
+                  {date ? format(date, "dd.MM.yyyy") : "Datum wählen"}
                 </span>
               </Button>
             </PopoverTrigger>
@@ -144,7 +139,7 @@ export function ExpenseInputSheet({
       </div>
 
       <div className="flex flex-col gap-2">
-        <Label htmlFor="description">Notiz (optional)</Label>
+        <Label htmlFor="description">Beschreibung</Label>
         <Textarea
           id="description"
           placeholder="Details zur Ausgabe..."
