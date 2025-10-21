@@ -16,7 +16,7 @@ export default function Dashboard() {
 
   return (
     <SidebarInset>
-      <div className="px-6">
+      <div className="px-4 lg:px-6 pb-6">
         <header className="flex w-full h-16 items-center overflow-visible">
           <div className="flex w-full items-center gap-2">
             <SidebarTrigger className="-ml-1" />
@@ -45,7 +45,7 @@ export default function Dashboard() {
           open={isIncomeOpen}
           onOpenChange={setIsIncomeOpen}
         />
-        <div className="flex flex-row gap-6  justify-between">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
           <BudgetCard
             title={"Offenes Budget"}
             amount={4019}
@@ -59,11 +59,11 @@ export default function Dashboard() {
             changePercent={-15.2}
           />
         </div>
-        <div className="flex h-2/5 flex-row w-full gap-6 mt-6">
+        <div className="flex flex-col lg:flex-row h-auto lg:h-[400px] w-full gap-4 lg:gap-6 mt-4 lg:mt-6">
           <BudgetChart />
           <CategoryChart />
         </div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 w-full gap-6 mt-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 w-full gap-4 lg:gap-6 mt-4 lg:mt-6">
           <ProjectCard
             title={"YFN 9.0"}
             description={
