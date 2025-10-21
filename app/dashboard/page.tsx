@@ -1,13 +1,14 @@
 "use client";
 import { DashboardDropdown } from "@/components/DashboardDropdown";
 import { RangeCalendarToggle } from "@/components/RangeCalendarToggle";
-import { ExpenseInputSheet } from "@/components/sheets/ExpenseInputSheet";
+import { TransactionSheet } from "@/components/sheets/TransactionSheet";
 import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { useState } from "react";
 
 export default function Dashboard() {
   const [isExpenseOpen, setIsExpenseOpen] = useState(false);
+  const [isIncomeOpen, setIsIncomeOpen] = useState(false);
 
   return (
     <SidebarInset>
@@ -22,8 +23,8 @@ export default function Dashboard() {
             <RangeCalendarToggle />
             <DashboardDropdown
               onOpenExpense={() => setIsExpenseOpen(true)}
+              onOpenIncome={() => setIsIncomeOpen(true)}
               onOpenImport={() => {}}
-              onOpenIncome={() => {}}
             />
           </div>
         </div>
@@ -37,7 +38,16 @@ export default function Dashboard() {
         <div className="bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min" />
       </div>
 
-      <ExpenseInputSheet open={isExpenseOpen} onOpenChange={setIsExpenseOpen} />
+      <TransactionSheet
+        type="expense"
+        open={isExpenseOpen}
+        onOpenChange={setIsExpenseOpen}
+      />
+      <TransactionSheet
+        type="income"
+        open={isIncomeOpen}
+        onOpenChange={setIsIncomeOpen}
+      />
     </SidebarInset>
   );
 }

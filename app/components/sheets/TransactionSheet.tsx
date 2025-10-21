@@ -26,10 +26,14 @@ import { SelectProject } from "../SelectProject";
 
 const formatAmount = (amount: string) => (amount ? `${amount} €` : "");
 
-export function ExpenseInputSheet({
+type TransactionType = "income" | "expense";
+
+export function TransactionSheet({
+  type,
   open,
   onOpenChange,
 }: {
+  type: TransactionType;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
@@ -37,7 +41,7 @@ export function ExpenseInputSheet({
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("");
   const [date, setDate] = useState<Date | undefined>(undefined);
-  const [recipient, setRecipient] = useState("");
+  const [counterparty, setCounterparty] = useState("");
   const [description, setDescription] = useState("");
   const [project, setProject] = useState("");
 
@@ -48,7 +52,7 @@ export function ExpenseInputSheet({
     setAmount("");
     setCategory("");
     setDate(undefined);
-    setRecipient("");
+    setCounterparty("");
     setDescription("");
     setProject("");
   };
@@ -58,17 +62,31 @@ export function ExpenseInputSheet({
   }, [open]);
 
   const handleSubmit = () => {
-    console.log({ amount, category, date, recipient, description, project });
+    console.log({
+      type,
+      amount,
+      category,
+      date,
+      counterparty,
+      description,
+      project,
+    });
     onOpenChange(false);
   };
 
-  const canContinue = amount && category;
+  const canContinue = amount;
+
+  const isIncome = type === "income";
+  const title = isIncome ? "Einnahme erfassen" : "Ausgabe planen";
+  const counterpartyLabel = isIncome ? "Von" : "Empfänger";
+  const submitButtonText = isIncome ? "Einnahme erfassen" : "Ausgabe planen";
 
   const renderStepOne = () => (
     <div className="flex-1 flex flex-col gap-8 px-6 py-4">
       <p className="text-sm text-muted-foreground">
-        Du möchtest eine Ausgabe planen? Dann gib bitte alle nötigen Infos ein,
-        um das Budget bestmöglich zu planen :)
+        {isIncome
+          ? "Du möchtest eine Einnahme erfassen? Dann gib bitte alle nötigen Infos ein, um das Budget bestmöglich zu planen :)"
+          : "Du möchtest eine Ausgabe planen? Dann gib bitte alle nötigen Infos ein, um das Budget bestmöglich zu planen :)"}
       </p>
 
       <div className="grid gap-6 sm:grid-cols-2">
@@ -87,7 +105,7 @@ export function ExpenseInputSheet({
                 variant="outline"
                 className="w-full justify-start text-left font-normal"
               >
-                <CalendarIcon className={(cn("mr-2 h-4 w-4"), dateColor)} />
+                <CalendarIcon className={cn("mr-2 h-4 w-4", dateColor)} />
                 <span className={cn("font-medium", dateColor)}>
                   {date ? format(date, "dd.MM.yyyy") : "Datum wählen"}
                 </span>
@@ -103,11 +121,6 @@ export function ExpenseInputSheet({
             </PopoverContent>
           </Popover>
         </div>
-      </div>
-
-      <div className="flex flex-col gap-3">
-        <Label className="text-base">Kategorie</Label>
-        <SelectCategory value={category} onValueChange={setCategory} />
       </div>
 
       <div className="flex flex-col gap-3">
@@ -128,12 +141,14 @@ export function ExpenseInputSheet({
       </div>
 
       <div className="flex flex-col gap-2">
-        <Label htmlFor="recipient">Empfänger</Label>
+        <Label htmlFor="counterparty">{counterpartyLabel}</Label>
         <Input
-          id="recipient"
-          placeholder="z.B. Lieferant, Firma..."
-          value={recipient}
-          onChange={(e) => setRecipient(e.target.value)}
+          id="counterparty"
+          placeholder={
+            isIncome ? "z.B. Kunde, Firma..." : "z.B. Lieferant, Firma..."
+          }
+          value={counterparty}
+          onChange={(e) => setCounterparty(e.target.value)}
           autoFocus
         />
       </div>
@@ -142,7 +157,9 @@ export function ExpenseInputSheet({
         <Label htmlFor="description">Beschreibung</Label>
         <Textarea
           id="description"
-          placeholder="Details zur Ausgabe..."
+          placeholder={
+            isIncome ? "Details zur Einnahme..." : "Details zur Ausgabe..."
+          }
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           className="min-h-[80px] resize-none"
@@ -150,8 +167,8 @@ export function ExpenseInputSheet({
       </div>
 
       <div className="flex flex-col gap-2">
-        <Label>Projekt</Label>
-        <SelectProject value={project} onValueChange={setProject} />
+        <Label>Kategorie</Label>
+        <SelectCategory value={category} onValueChange={setCategory} />
       </div>
     </div>
   );
@@ -172,7 +189,7 @@ export function ExpenseInputSheet({
               </Button>
             )}
             <div>
-              <SheetTitle className="text-2xl">Ausgabe planen</SheetTitle>
+              <SheetTitle className="text-2xl">{title}</SheetTitle>
               <SheetDescription className="text-xs mt-0.5">
                 Schritt {step} von 2
               </SheetDescription>
@@ -188,7 +205,7 @@ export function ExpenseInputSheet({
             disabled={step === 1 && !canContinue}
             className="w-full h-12 text-base"
           >
-            {step === 1 ? "Weiter" : "Ausgabe planen"}
+            {step === 1 ? "Weiter" : submitButtonText}
           </Button>
         </SheetFooter>
       </SheetContent>
