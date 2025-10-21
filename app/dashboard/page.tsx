@@ -1,5 +1,8 @@
 "use client";
 import BudgetCard from "@/components/Dashboard/BudgetCard";
+import { BudgetChart } from "@/components/Dashboard/BudgetChart";
+import { CategoryChart } from "@/components/Dashboard/CategoryChart";
+import ProjectCard from "@/components/Dashboard/ProjectCard";
 import { DashboardDropdown } from "@/components/DashboardDropdown";
 import { RangeCalendarToggle } from "@/components/RangeCalendarToggle";
 import { TransactionSheet } from "@/components/sheets/TransactionSheet";
@@ -54,6 +57,47 @@ export default function Dashboard() {
             title={"Eingenommen"}
             amount={250}
             changePercent={-15.2}
+          />
+        </div>
+        <div className="flex h-2/5 flex-row w-full gap-6 mt-6">
+          <BudgetChart />
+          <CategoryChart />
+        </div>
+        <div className="grid grid-cols-2 lg:grid-cols-4 w-full gap-6 mt-6">
+          <ProjectCard
+            title={"YFN 9.0"}
+            description={
+              "Unser 9. Event, welches im Anschluss an die YFC stattfindet. Es wird finanziert aus dem Bertelsmann Geld, 100 Teilnehmende."
+            }
+            progress={30}
+          />
+          <ProjectCard
+            title={"YFN 9.0"}
+            description={
+              "Unser 9. Event, welches im Anschluss an die YFC stattfindet. Es wird finanziert aus dem Bertelsmann Geld, 100 Teilnehmende."
+            }
+            progress={30}
+          />
+          <ProjectCard
+            title={"YFN 9.0"}
+            description={
+              "Unser 9. Event, welches im Anschluss an die YFC stattfindet. Es wird finanziert aus dem Bertelsmann Geld, 100 Teilnehmende."
+            }
+            progress={30}
+          />
+          <ProjectCard
+            title={"YFN 9.0"}
+            description={
+              "Unser 9. Event, welches im Anschluss an die YFC stattfindet. Es wird finanziert aus dem Bertelsmann Geld, 100 Teilnehmende."
+            }
+            progress={30}
+          />
+          <ProjectCard
+            title={"YFN 9.0"}
+            description={
+              "Unser 9. Event, welches im Anschluss an die YFC stattfindet. Es wird finanziert aus dem Bertelsmann Geld, 100 Teilnehmende."
+            }
+            progress={30}
           />
         </div>
       </div>
