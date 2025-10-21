@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 
 import { AppSidebar } from "./components/Sidebar/AppSidebar";
 import { SidebarProvider } from "./components/ui/sidebar";
+import { DateRangeProvider } from "./contexts/DateRangeContext";
 import "./globals.css";
 import { ConvexClientProvider } from "./provider/ConvexClientProvider";
 
@@ -33,10 +34,12 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <ConvexClientProvider>
-          <SidebarProvider>
-            <AppSidebar />
-            {children}
-          </SidebarProvider>
+          <DateRangeProvider>
+            <SidebarProvider>
+              <AppSidebar />
+              {children}
+            </SidebarProvider>
+          </DateRangeProvider>
         </ConvexClientProvider>
       </body>
     </html>
