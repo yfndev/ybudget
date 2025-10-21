@@ -1,4 +1,5 @@
 "use client";
+import BudgetCard from "@/components/Dashboard/BudgetCard";
 import { DashboardDropdown } from "@/components/DashboardDropdown";
 import { RangeCalendarToggle } from "@/components/RangeCalendarToggle";
 import { TransactionSheet } from "@/components/sheets/TransactionSheet";
@@ -12,42 +13,50 @@ export default function Dashboard() {
 
   return (
     <SidebarInset>
-      <header className="flex w-full h-16 items-center overflow-visible">
-        <div className="flex w-full items-center gap-2 px-4">
-          <SidebarTrigger className="-ml-1" />
-          <Separator
-            orientation="vertical"
-            className="mr-2 data-[orientation=vertical]:h-4"
-          />
-          <div className="flex w-full items-center justify-between">
-            <RangeCalendarToggle />
-            <DashboardDropdown
-              onOpenExpense={() => setIsExpenseOpen(true)}
-              onOpenIncome={() => setIsIncomeOpen(true)}
-              onOpenImport={() => {}}
+      <div className="px-6">
+        <header className="flex w-full h-16 items-center overflow-visible">
+          <div className="flex w-full items-center gap-2">
+            <SidebarTrigger className="-ml-1" />
+            <Separator
+              orientation="vertical"
+              className="mr-2 data-[orientation=vertical]:h-4"
             />
+            <div className="flex w-full items-center justify-between">
+              <RangeCalendarToggle />
+              <DashboardDropdown
+                onOpenExpense={() => setIsExpenseOpen(true)}
+                onOpenIncome={() => setIsIncomeOpen(true)}
+                onOpenImport={() => {}}
+              />
+            </div>
           </div>
-        </div>
-      </header>
-      <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-        <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-          <div className="bg-muted/50 aspect-video rounded-xl" />
-          <div className="bg-muted/50 aspect-video rounded-xl" />
-          <div className="bg-muted/50 aspect-video rounded-xl" />
-        </div>
-        <div className="bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min" />
-      </div>
+        </header>
 
-      <TransactionSheet
-        type="expense"
-        open={isExpenseOpen}
-        onOpenChange={setIsExpenseOpen}
-      />
-      <TransactionSheet
-        type="income"
-        open={isIncomeOpen}
-        onOpenChange={setIsIncomeOpen}
-      />
+        <TransactionSheet
+          type="expense"
+          open={isExpenseOpen}
+          onOpenChange={setIsExpenseOpen}
+        />
+        <TransactionSheet
+          type="income"
+          open={isIncomeOpen}
+          onOpenChange={setIsIncomeOpen}
+        />
+        <div className="flex flex-row gap-6  justify-between">
+          <BudgetCard
+            title={"Offenes Budget"}
+            amount={4019}
+            changePercent={2.4}
+          />
+          <BudgetCard title={"Verplant"} amount={14920} changePercent={9.2} />
+          <BudgetCard title={"Ausgegeben"} amount={3900} changePercent={-8.9} />
+          <BudgetCard
+            title={"Eingenommen"}
+            amount={250}
+            changePercent={-15.2}
+          />
+        </div>
+      </div>
     </SidebarInset>
   );
 }

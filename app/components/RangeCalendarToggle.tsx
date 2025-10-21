@@ -24,7 +24,7 @@ export function RangeCalendarToggle() {
   return (
     <div ref={containerRef} className="relative z-10">
       <Button variant="outline" onClick={() => setOpen(!open)}>
-        Pick date range
+        Datumsbereich wählen
       </Button>
       {open && (
         <div className="absolute left-0 mt-2 z-10">
