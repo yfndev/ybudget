@@ -1,9 +1,14 @@
+"use client";
 import { DashboardDropdown } from "@/components/DashboardDropdown";
 import { RangeCalendarToggle } from "@/components/RangeCalendarToggle";
+import { ExpenseInputSheet } from "@/components/sheets/ExpenseInputSheet";
 import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
+import { useState } from "react";
 
-export default function Page() {
+export default function Dashboard() {
+  const [isExpenseOpen, setIsExpenseOpen] = useState(false);
+
   return (
     <SidebarInset>
       <header className="flex w-full h-16 items-center overflow-visible">
@@ -15,7 +20,11 @@ export default function Page() {
           />
           <div className="flex w-full items-center justify-between">
             <RangeCalendarToggle />
-            <DashboardDropdown />
+            <DashboardDropdown
+              onOpenExpense={() => setIsExpenseOpen(true)}
+              onOpenImport={() => {}}
+              onOpenIncome={() => {}}
+            />
           </div>
         </div>
       </header>
@@ -27,6 +36,8 @@ export default function Page() {
         </div>
         <div className="bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min" />
       </div>
+
+      <ExpenseInputSheet open={isExpenseOpen} onOpenChange={setIsExpenseOpen} />
     </SidebarInset>
   );
 }

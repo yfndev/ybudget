@@ -8,8 +8,15 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-export function DashboardDropdown() {
+export function DashboardDropdown({
+  onOpenExpense,
+  onOpenIncome,
+  onOpenImport,
+}: {
+  onOpenExpense: () => void;
+  onOpenIncome: () => void;
+  onOpenImport: () => void;
+}) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -17,15 +24,15 @@ export function DashboardDropdown() {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56 mr-6" align="start">
         <DropdownMenuGroup>
-          <DropdownMenuItem>
+          <DropdownMenuItem onSelect={onOpenExpense}>
             Ausgabe planen
             <DropdownMenuShortcut>⇧⌘A</DropdownMenuShortcut>
           </DropdownMenuItem>
-          <DropdownMenuItem>
+          <DropdownMenuItem onSelect={onOpenIncome}>
             Einnahme planen
             <DropdownMenuShortcut>⇧⌘E</DropdownMenuShortcut>
           </DropdownMenuItem>
-          <DropdownMenuItem>
+          <DropdownMenuItem onSelect={onOpenImport}>
             Banking CSV imporieren
             <DropdownMenuShortcut>⇧⌘B</DropdownMenuShortcut>
           </DropdownMenuItem>
