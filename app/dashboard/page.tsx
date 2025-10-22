@@ -2,53 +2,16 @@
 import BudgetCard from "@/components/Dashboard/BudgetCard";
 import { BudgetChart } from "@/components/Dashboard/BudgetChart";
 import { CategoryChart } from "@/components/Dashboard/CategoryChart";
-import { DashboardDropdown } from "@/components/Dashboard/DashboardDropdown";
 import ProjectCard from "@/components/Dashboard/ProjectCard";
-import { RangeCalendarToggle } from "@/components/RangeCalendar/RangeCalendarToggle";
-import { ImportCSVSheet } from "@/components/Sheets/ImportCSVSheet";
-import { TransactionSheet } from "@/components/Sheets/TransactionSheet";
+import { PageHeader } from "@/components/Layout/PageHeader";
 import { mockProjects } from "@/components/data/mockProjects";
-import { Separator } from "@/components/ui/separator";
-import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
-import { useState } from "react";
+import { SidebarInset } from "@/components/ui/sidebar";
 
 export default function Dashboard() {
-  const [isExpenseOpen, setIsExpenseOpen] = useState(false);
-  const [isIncomeOpen, setIsIncomeOpen] = useState(false);
-  const [isImportOpen, setIsImportOpen] = useState(false);
-
   return (
     <SidebarInset>
       <div className="px-4 lg:px-6 pb-6">
-        <header className="flex w-full h-16 items-center overflow-visible">
-          <div className="flex w-full items-center gap-2">
-            <SidebarTrigger className="-ml-1" />
-            <Separator
-              orientation="vertical"
-              className="mr-2 data-[orientation=vertical]:h-4"
-            />
-            <div className="flex w-full items-center justify-between">
-              <RangeCalendarToggle />
-              <DashboardDropdown
-                onOpenExpense={() => setIsExpenseOpen(true)}
-                onOpenIncome={() => setIsIncomeOpen(true)}
-                onOpenImport={() => setIsImportOpen(true)}
-              />
-            </div>
-          </div>
-        </header>
-
-        <TransactionSheet
-          type="expense"
-          open={isExpenseOpen}
-          onOpenChange={setIsExpenseOpen}
-        />
-        <TransactionSheet
-          type="income"
-          open={isIncomeOpen}
-          onOpenChange={setIsIncomeOpen}
-        />
-        <ImportCSVSheet open={isImportOpen} onOpenChange={setIsImportOpen} />
+        <PageHeader />
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
           <BudgetCard
             title={"Offenes Budget"}
