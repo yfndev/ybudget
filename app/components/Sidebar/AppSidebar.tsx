@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Command,
-  LayoutDashboard,
-  Settings,
-  SquareCheckBig,
-  Users,
-} from "lucide-react";
+import { Command, LayoutDashboard, SquareCheckBig, Users } from "lucide-react";
 import * as React from "react";
 
 import { NavUser } from "@/components/Sidebar/UserNav";
@@ -45,11 +39,6 @@ const data = {
       name: "Förderer",
       url: "/donors",
       icon: Users,
-    },
-    {
-      name: "Einstellungen",
-      url: "/settings",
-      icon: Settings,
     },
   ],
 };
