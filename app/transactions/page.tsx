@@ -26,8 +26,7 @@ export default function Transactions() {
 
   return (
     <SidebarInset>
-      <div className="flex flex-1 flex-col gap-4 p-3 sm:p-4 md:p-5 pt-0">
-        
+      <div className="flex flex-1 flex-col gap-4 p-3 sm:p-4 md:p-5 pt-0 overflow-x-hidden w-full">
         <PageHeader title="Transaktionen" />
         <DataTable columns={columns} data={filteredTransactions} />
       </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { Pie, PieChart } from "recharts";
+import { Cell, Pie, PieChart } from "recharts";
 
 import {
   Card,
@@ -16,39 +16,63 @@ import {
   ChartLegendContent,
 } from "@/components/ui/chart";
 
-export const description = "A pie chart with a legend";
-
 const chartData = [
-  { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
-  { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
-  { browser: "firefox", visitors: 187, fill: "var(--color-firefox)" },
-  { browser: "edge", visitors: 173, fill: "var(--color-edge)" },
-  { browser: "other", visitors: 90, fill: "var(--color-other)" },
+  { category: "verpflegung", amount: 450 },
+  { category: "location-and-infrastruktur", amount: 320 },
+  { category: "honorare-and-personal", amount: 280 },
+  { category: "reisekosten", amount: 190 },
+  { category: "marketing-and-werbung", amount: 410 },
+  { category: "verwaltung", amount: 150 },
+  { category: "it-and-digitale-tools", amount: 220 },
+  { category: "sonstiges", amount: 180 },
+];
+
+const COLORS = [
+  "oklch(0.9158 0.0381 242.1292)",
+  "oklch(0.865 0.0708 246.1054)",
+  "oklch(0.8012 0.1051 248.4529)",
+  "oklch(0.7371 0.1412 250.0443)",
+  "oklch(0.6403 0.1313 244.6954)",
+  "oklch(0.9158 0.0381 242.1292)",
+  "oklch(0.865 0.0708 246.1054)",
+  "oklch(0.8012 0.1051 248.4529)",
 ];
 
 const chartConfig = {
-  visitors: {
-    label: "Visitors",
+  amount: {
+    label: "Betrag",
   },
-  chrome: {
-    label: "Chrome",
-    color: "var(--chart-1)",
+  verpflegung: {
+    label: "Verpflegung",
+    color: "oklch(0.9158 0.0381 242.1292)",
   },
-  safari: {
-    label: "Safari",
-    color: "var(--chart-2)",
+  "location-and-infrastruktur": {
+    label: "Location",
+    color: "oklch(0.865 0.0708 246.1054)",
   },
-  firefox: {
-    label: "Firefox",
-    color: "var(--chart-3)",
+  "honorare-and-personal": {
+    label: "Personal",
+    color: "oklch(0.8012 0.1051 248.4529)",
   },
-  edge: {
-    label: "Edge",
-    color: "var(--chart-4)",
+  reisekosten: {
+    label: "Reisekosten",
+    color: "oklch(0.7371 0.1412 250.0443)",
   },
-  other: {
-    label: "Other",
-    color: "var(--chart-5)",
+  "marketing-and-werbung": {
+    label: "Marketing",
+    color: "oklch(0.6403 0.1313 244.6954)",
+  },
+  verwaltung: {
+    label: "Verwaltung",
+    color: "oklch(0.9158 0.0381 242.1292)",
+  },
+  "it-and-digitale-tools": {
+    label: "IT & Tools",
+    color: "oklch(0.865 0.0708 246.1054)",
+  },
+  sonstiges: {
+    label: "Sonstiges",
+    color: "oklch(0.8012 0.1051 248.4529)",
   },
 } satisfies ChartConfig;
 
@@ -56,8 +80,8 @@ export function CategoryChart() {
   return (
     <Card className="flex flex-col flex-1 h-full">
       <CardHeader className="items-center pb-0">
-        <CardTitle>Pie Chart - Legend</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardTitle>Ausgaben nach Kategorie</CardTitle>
+        <CardDescription>Verteilung der Budgets</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0 flex items-center justify-center">
         <ChartContainer
@@ -65,9 +89,20 @@ export function CategoryChart() {
           className="mx-auto aspect-square h-full max-h-[300px]"
         >
           <PieChart>
-            <Pie data={chartData} dataKey="visitors" />
+            <Pie
+              data={chartData}
+              dataKey="amount"
+              nameKey="category"
+              cx="50%"
+              cy="50%"
+              outerRadius={80}
+            >
+              {chartData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={COLORS[index]} />
+              ))}
+            </Pie>
             <ChartLegend
-              content={<ChartLegendContent nameKey="browser" />}
+              content={<ChartLegendContent nameKey="category" />}
               className="-translate-y-2 flex-wrap gap-2 *:basis-1/4 *:justify-center"
             />
           </PieChart>
