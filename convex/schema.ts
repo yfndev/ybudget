@@ -3,17 +3,31 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export default defineSchema({
-    ...authTables,
     organizations: defineTable({
         id: v.string(),
         name: v.string(),
     }),
     users: defineTable({
-        userId: v.id("users"),
-        firstName: v.string(),
-        lastName: v.string(),
-        organizationId: v.string(),
-    }).index("by_user", ["userId"]),
+        name: v.optional(v.string()),
+        image: v.optional(v.string()),
+        email: v.optional(v.string()),
+        emailVerificationTime: v.optional(v.number()),
+        phone: v.optional(v.string()),
+        phoneVerificationTime: v.optional(v.number()),
+        isAnonymous: v.optional(v.boolean()),
+        firstName: v.optional(v.string()),
+        lastName: v.optional(v.string()),
+        organizationId: v.optional(v.string()),
+    })
+        .index("email", ["email"])
+        .index("phone", ["phone"])
+        .index("by_organization", ["organizationId"]),
+    authSessions: authTables.authSessions,
+    authAccounts: authTables.authAccounts,
+    authRefreshTokens: authTables.authRefreshTokens,
+    authVerificationCodes: authTables.authVerificationCodes,
+    authVerifiers: authTables.authVerifiers,
+    authRateLimits: authTables.authRateLimits,
     projects: defineTable({
         id: v.string(),
         name: v.string(),
