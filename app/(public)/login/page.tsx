@@ -2,7 +2,8 @@
 
 import { LoginForm } from "@/components/Auth/LoginForm";
 import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function LoginPage() {
   return (
@@ -34,6 +35,11 @@ export default function LoginPage() {
 }
 
 function AuthenticatedRedirect() {
-  redirect("/dashboard");
+  const router = useRouter();
+
+  useEffect(() => {
+    router.push("/dashboard");
+  }, [router]);
+
   return null;
 }

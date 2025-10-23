@@ -1,6 +1,6 @@
 "use client";
 
-import { useConvexAuth } from "convex/react";
+import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { AppSidebar } from "../components/Sidebar/AppSidebar";
@@ -12,28 +12,34 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { isAuthenticated, isLoading } = useConvexAuth();
+  return (
+    <>
+      <AuthLoading>
+        <ProtectedContent>{children}</ProtectedContent>
+      </AuthLoading>
+
+      <Unauthenticated>
+        <UnauthenticatedRedirect />
+      </Unauthenticated>
+
+      <Authenticated>
+        <ProtectedContent>{children}</ProtectedContent>
+      </Authenticated>
+    </>
+  );
+}
+
+function UnauthenticatedRedirect() {
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) router.replace("/login");
-  }, [isLoading, isAuthenticated, router]);
+    router.push("/login");
+  }, [router]);
 
-  if (isLoading) {
-    return (
-      <div className="bg-muted/30 flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
-        <div className="w-full max-w-md">
-          <div className="flex flex-col items-center gap-4">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-            <p className="text-muted-foreground">Loading...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  return null;
+}
 
-  if (!isAuthenticated) return null;
-
+function ProtectedContent({ children }: { children: React.ReactNode }) {
   return (
     <DateRangeProvider>
       <SidebarProvider>
