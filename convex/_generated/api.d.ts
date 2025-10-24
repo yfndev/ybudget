@@ -9,7 +9,9 @@
  */
 
 import type * as auth from "../auth.js";
-import type * as functions_sheetMutations from "../functions/sheetMutations.js";
+import type * as functions_organizationMutations from "../functions/organizationMutations.js";
+import type * as functions_projectMutations from "../functions/projectMutations.js";
+import type * as functions_transactionMutations from "../functions/transactionMutations.js";
 import type * as http from "../http.js";
 
 import type {
@@ -28,7 +30,9 @@ import type {
  */
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
-  "functions/sheetMutations": typeof functions_sheetMutations;
+  "functions/organizationMutations": typeof functions_organizationMutations;
+  "functions/projectMutations": typeof functions_projectMutations;
+  "functions/transactionMutations": typeof functions_transactionMutations;
   http: typeof http;
 }>;
 declare const fullApiWithMounts: typeof fullApi;

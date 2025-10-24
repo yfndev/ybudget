@@ -7,7 +7,8 @@ export default defineSchema({
     organizations: defineTable({
         id: v.string(),
         name: v.string(),
-    }),
+        createdBy: v.string(),
+    }).index("by_name", ["name"]),
     users: defineTable({
         name: v.optional(v.string()),
         image: v.optional(v.string()),

@@ -51,7 +51,7 @@ export function TransactionSheet({
   const isExpense = type === "expense";
 
   const addTransaction = useMutation(
-    api.functions.sheetMutations.addExpectedTransaction
+    api.functions.transactionMutations.addExpectedTransaction
   );
 
   const dateColor = date ? "text-foreground" : "text-muted-foreground";

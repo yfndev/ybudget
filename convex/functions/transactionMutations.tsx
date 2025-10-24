@@ -30,3 +30,21 @@ export const addExpectedTransaction = mutation({
     });
   },
 });
+
+export const addProject = mutation({
+  args: {
+    id: v.string(),
+    name: v.string(),
+    description: v.string(),
+    parentId: v.string(),
+    organizationId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Unauthenticated");
+    }
+
+  
+  },
+});
