@@ -9,6 +9,7 @@
  */
 
 import type * as auth from "../auth.js";
+import type * as functions_sheetMutations_addExpectedTransaction from "../functions/sheetMutations/addExpectedTransaction.js";
 import type * as http from "../http.js";
 
 import type {
@@ -27,6 +28,7 @@ import type {
  */
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
+  "functions/sheetMutations/addExpectedTransaction": typeof functions_sheetMutations_addExpectedTransaction;
   http: typeof http;
 }>;
 declare const fullApiWithMounts: typeof fullApi;

@@ -57,7 +57,7 @@ export default defineSchema({
         donorId: v.string(),
         isExpense: v.boolean(),
         createdBy: v.string(),
-        matchedTransactionId: v.string(),
+        matchedTransactionId: v.optional(v.string()),
         // -> could just take it if there is a matchedTransaction
         // status: v.union( 
         //     v.literal("open"),
