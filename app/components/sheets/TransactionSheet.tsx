@@ -76,17 +76,17 @@ export function TransactionSheet({
 
   const canContinue = amount;
 
-  const isIncome = type === "income";
-  const title = isIncome ? "Einnahme erfassen" : "Ausgabe planen";
-  const counterpartyLabel = isIncome ? "Von" : "Empfänger";
-  const submitButtonText = isIncome ? "Einnahme erfassen" : "Ausgabe planen";
+  const isExpense = type === "expense";
+  const title = isExpense ? "Ausgabe planen" : "Einnahme erfassen";
+  const counterpartyLabel = isExpense ? "Empfänger" : "Von";
+  const submitButtonText = isExpense ? "Ausgabe planen" : "Einnahme erfassen";
 
   const renderStepOne = () => (
     <div className="flex-1 flex flex-col gap-8 px-6 py-4">
       <p className="text-sm text-muted-foreground">
-        {isIncome
-          ? "Du möchtest eine Einnahme erfassen? Dann gib bitte alle nötigen Infos ein, um das Budget bestmöglich zu planen :)"
-          : "Du möchtest eine Ausgabe planen? Dann gib bitte alle nötigen Infos ein, um das Budget bestmöglich zu planen :)"}
+        {isExpense
+          ? "Du möchtest eine Ausgabe planen? Dann gib bitte alle nötigen Infos ein, um das Budget bestmöglich zu planen :)"
+          : "Du möchtest eine Einnahme erfassen? Dann gib bitte alle nötigen Infos ein, um das Budget bestmöglich zu planen :)"}
       </p>
 
       <div className="grid gap-6 sm:grid-cols-2">
@@ -145,7 +145,7 @@ export function TransactionSheet({
         <Input
           id="counterparty"
           placeholder={
-            isIncome ? "z.B. Kunde, Firma..." : "z.B. Lieferant, Firma..."
+            isExpense ? "z.B. Lieferant, Firma..." : "z.B. Kunde, Firma..."
           }
           value={counterparty}
           onChange={(e) => setCounterparty(e.target.value)}
@@ -158,7 +158,7 @@ export function TransactionSheet({
         <Textarea
           id="description"
           placeholder={
-            isIncome ? "Details zur Einnahme..." : "Details zur Ausgabe..."
+            isExpense ? "Details zur Ausgabe..." : "Details zur Einnahme..."
           }
           value={description}
           onChange={(e) => setDescription(e.target.value)}
