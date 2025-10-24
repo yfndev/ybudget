@@ -3,7 +3,6 @@ import { mutation } from "../_generated/server";
 
 export const addExpectedTransaction = mutation({
   args: {
-    id: v.string(), // generated on client
     projectId: v.string(),
     expectedDate: v.number(),
     amount: v.number(),
@@ -19,7 +18,6 @@ export const addExpectedTransaction = mutation({
     }
 
     await ctx.db.insert("expectedTransactions", {
-      id: args.id,
       projectId: args.projectId,
       expectedDate: args.expectedDate,
       amount: args.amount,
@@ -33,7 +31,6 @@ export const addExpectedTransaction = mutation({
 
 export const addProject = mutation({
   args: {
-    id: v.string(),
     name: v.string(),
     description: v.string(),
     parentId: v.string(),
@@ -44,7 +41,5 @@ export const addProject = mutation({
     if (!identity) {
       throw new Error("Unauthenticated");
     }
-
-  
   },
 });

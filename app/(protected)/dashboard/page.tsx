@@ -4,13 +4,25 @@ import { BudgetChart } from "@/components/Dashboard/BudgetChart";
 import { CategoryChart } from "@/components/Dashboard/CategoryChart";
 import ProjectCard from "@/components/Dashboard/ProjectCard";
 import { PageHeader } from "@/components/Layout/PageHeader";
+import { OnboardingDialog } from "@/components/Onboarding/OnboardingDialog";
 import { mockProjects } from "@/components/data/mockProjects";
+import { Button } from "@/components/ui/button";
 import { SidebarInset } from "@/components/ui/sidebar";
+import { useState } from "react";
 
 export default function Dashboard() {
+  const [open, setOpen] = useState(true);
+
   return (
     <SidebarInset>
       <div className="px-4 lg:px-6 pb-6 overflow-x-hidden w-full">
+        <Button
+          onClick={() => setOpen(true)}
+          className="absolute bottom-4 right-4"
+        >
+          Dialog
+        </Button>
+        <OnboardingDialog open={open} onOpenChange={setOpen} />
         <PageHeader title="Dashboard" />
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
           <BudgetCard

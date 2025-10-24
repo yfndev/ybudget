@@ -22,7 +22,6 @@ import { format } from "date-fns";
 import { ArrowLeft, CalendarIcon, CheckCircle2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { v4 } from "uuid";
 import { api } from "../../../convex/_generated/api";
 import { AmountInput } from "./AmountInput";
 import { SelectCategory } from "./SelectCategory";
@@ -73,7 +72,6 @@ export function TransactionSheet({
   const handleSubmit = async () => {
     try {
       await addTransaction({
-        id: v4(),
         projectId: project,
         expectedDate: date?.getTime() ?? Date.now(),
         amount: parseFloat(amount),

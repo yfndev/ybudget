@@ -3,11 +3,11 @@ import { mutation } from "../_generated/server";
 
 export const addProject = mutation({
   args: {
-    id: v.string(),
     name: v.string(),
     description: v.string(),
-    parentId: v.string(),
-    organizationId: v.string(),
+
+    parentId: v.optional(v.id("projects")),
+    organizationId: v.id("organizations"),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -16,11 +16,10 @@ export const addProject = mutation({
     }
 
     await ctx.db.insert("projects", {
-      id: args.id,
       name: args.name,
       description: args.description,
       organizationId: args.organizationId,
-      parentId: "",
+      parentId: args.parentId,
       isActive: true,
     });
   },

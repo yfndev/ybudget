@@ -5,10 +5,13 @@ import { v } from "convex/values";
 export default defineSchema({
     ...authTables,
     organizations: defineTable({
-        id: v.string(),
+
         name: v.string(),
+        domain: v.string(),
         createdBy: v.string(),
-    }).index("by_name", ["name"]),
+    })
+        .index("by_name", ["name"])
+        .index("by_domain", ["domain"]),
     users: defineTable({
         name: v.optional(v.string()),
         image: v.optional(v.string()),
@@ -19,21 +22,19 @@ export default defineSchema({
         isAnonymous: v.optional(v.boolean()),
         firstName: v.optional(v.string()),
         lastName: v.optional(v.string()),
-        organizationId: v.optional(v.string()),
+        organizationId: v.optional(v.id("organizations")),
     })
         .index("email", ["email"])
         .index("phone", ["phone"])
         .index("by_organization", ["organizationId"]),
     projects: defineTable({
-        id: v.string(),
         name: v.string(),
-        parentId: v.string(),
-        organizationId: v.string(),
+        parentId: v.optional(v.id("projects")),
+        organizationId: v.id("organizations"),
         description: v.string(),
         isActive: v.boolean()
     }),
     transactions: defineTable({
-        id: v.string(),
         projectId: v.string(),
         date: v.number(), //epoch timestamp
         amount: v.number(),
@@ -49,7 +50,7 @@ export default defineSchema({
         )
     }),
     expectedTransactions: defineTable({
-        id: v.string(),
+
         projectId: v.string(),
         expectedDate: v.number(), //epoch timestamp
         amount: v.number(),
@@ -67,13 +68,11 @@ export default defineSchema({
     }),
 
     categories: defineTable({
-       id: v.string(),
        name: v.string(),
        description: v.string(),
        taxCostposition: v.number() // Kostenstelle 
     }),
     donors: defineTable({
-        id: v.string(),
         name: v.string(),
         type: v.union(
             v.literal("donation"),
