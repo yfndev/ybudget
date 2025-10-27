@@ -45,29 +45,23 @@ export default defineSchema({
         donorId: v.string(),
         isExpense: v.boolean(),
         importedBy: v.string(),
-        importSource: v.union(
+        importSource: v.optional(v.union(
             v.literal("sparkasse"),
             v.literal("volksbank"),
             v.literal("moss"),
-        )
-    }),
-    expectedTransactions: defineTable({
-
-        projectId: v.string(),
-        expectedDate: v.number(), //epoch timestamp
-        amount: v.number(),
-        reference: v.string(),
-        categoryId: v.string(),
-        donorId: v.optional(v.string()),
-        isExpense: v.boolean(),
-        createdBy: v.string(),
+        )),
+        status: v.union(
+            v.literal("expected"),
+            v.literal("actual")
+        ),
         matchedTransactionId: v.optional(v.string()),
-        // -> could just take it if there is a matchedTransaction
-        // status: v.union( 
-        //     v.literal("open"),
-        //     v.literal("matched"),
-        // )
-    }),
+        organizationId: v.id("organizations"),
+    })
+        .index("by_project_date", ["projectId", "date"])
+        .index("by_organization_date", ["organizationId", "date"])
+        .index("by_date", ["date"])
+        .index("by_organization", ["organizationId"]),
+  
 
     categories: defineTable({
        name: v.string(),
