@@ -18,7 +18,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { mockProjects } from "../data/mockProjects";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 
 export function SelectProject({
   value,
@@ -28,10 +29,8 @@ export function SelectProject({
   onValueChange: (value: string) => void;
 }) {
   const [open, setOpen] = React.useState(false);
-  const projects = mockProjects.map((project) => ({
-    value: project.id,
-    label: project.name,
-  }));
+  const projects = useQuery(api.queries.projectQueries.getProjects);
+
   const valueColor = value ? "text-foreground" : "text-muted-foreground";
 
   return (
@@ -45,7 +44,7 @@ export function SelectProject({
         >
           <span className={cn("font-medium", valueColor)}>
             {value
-              ? projects.find((project) => project.value === value)?.label
+              ? projects?.find((project) => project._id === value)?.name
               : "Projekt suchen..."}
           </span>
           <ChevronsUpDown className="opacity-50" />
@@ -60,20 +59,20 @@ export function SelectProject({
           <CommandList>
             <CommandEmpty>Keine Projekte :(</CommandEmpty>
             <CommandGroup>
-              {projects.map((project) => (
+              {projects?.map((project) => (
                 <CommandItem
-                  key={project.value}
-                  value={project.value}
+                  key={project._id}
+                  value={project._id}
                   onSelect={(currentValue) => {
                     onValueChange(currentValue === value ? "" : currentValue);
                     setOpen(false);
                   }}
                 >
-                  {project.label}
+                  {project.name}
                   <Check
                     className={cn(
                       "ml-auto",
-                      value === project.value ? "opacity-100" : "opacity-0"
+                      value === project._id ? "opacity-100" : "opacity-0"
                     )}
                   />
                 </CommandItem>

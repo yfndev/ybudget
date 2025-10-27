@@ -41,7 +41,8 @@ export const columns = [
     },
     cell: ({ row }: any) => {
       const date = row.getValue("date");
-      return <div className="pl-2">{format(date, "dd.MM.yyyy")}</div>;
+      const dateValue = typeof date === 'number' ? new Date(date) : date;
+      return <div className="pl-2">{format(dateValue, "dd.MM.yyyy")}</div>;
     },
   },
   {
@@ -96,11 +97,25 @@ export const columns = [
     header: "Status",
     cell: ({ row }: any) => {
       const status = row.getValue("status");
-      const isPaid = status === "bezahlt";
+      const transactionType = row.original.type || row.original.transactionType;
+      
+      let variant: "default" | "secondary" | "destructive" | "outline" = "secondary";
+      let displayText = "Geplant";
+      
+      if (status === "bezahlt") {
+        variant = "default";
+        displayText = "Bezahlt";
+      } else if (status === "matched") {
+        variant = "outline";
+        displayText = "Zugeordnet";
+      } else if (status === "geplant") {
+        variant = "secondary";
+        displayText = "Geplant";
+      }
 
       return (
-        <Badge variant={isPaid ? "default" : "secondary"}>
-          {isPaid ? "Bezahlt" : "Geplant"}
+        <Badge variant={variant}>
+          {displayText}
         </Badge>
       );
     },

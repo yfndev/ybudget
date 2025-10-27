@@ -1,20 +1,21 @@
 export type Transaction = {
   id: string;
-  date: Date;
+  date: number; // epoch timestamp
   name: string;
   description: string;
   project: string;
   category: string;
   amount: number;
   type: "expense" | "income";
-  status: "geplant" | "bezahlt";
+  status: "geplant" | "bezahlt" | "matched";
   donor?: string;
+  transactionType?: "transaction" | "expected";
 };
 
 export const mockTransactions: Transaction[] = [
   {
     id: "1",
-    date: new Date(2025, 9, 13),
+    date: new Date(2025, 9, 13).getTime(),
     name: "Amazon",
     description: "Sony Alpha VI, 18-150mm",
     project: "Crashkurs Steuern",
@@ -25,7 +26,7 @@ export const mockTransactions: Transaction[] = [
   },
   {
     id: "2",
-    date: new Date(2025, 9, 13),
+    date: new Date(2025, 9, 13).getTime(),
     name: "Bertelsmann Stiftung",
     description: "Zuwendung für das Jahr 2025",
     project: "YFN 8.0, YFN 9.0",
@@ -37,7 +38,7 @@ export const mockTransactions: Transaction[] = [
   },
   {
     id: "3",
-    date: new Date(2025, 9, 12),
+    date: new Date(2025, 9, 12).getTime(),
     name: "QiTech GmbH",
     description: "RE0514",
     project: "Crashkurs Steuern",
@@ -48,7 +49,7 @@ export const mockTransactions: Transaction[] = [
   },
   {
     id: "4",
-    date: new Date(2025, 9, 10),
+    date: new Date(2025, 9, 10).getTime(),
     name: "DrinkForFood",
     description: "RF11",
     project: "YFN Schools",
@@ -59,7 +60,7 @@ export const mockTransactions: Transaction[] = [
   },
   {
     id: "5",
-    date: new Date(2025, 9, 3),
+    date: new Date(2025, 9, 3).getTime(),
     name: "META",
     description: "Ads",
     project: "YFC",
@@ -70,7 +71,7 @@ export const mockTransactions: Transaction[] = [
   },
   {
     id: "6",
-    date: new Date(2025, 9, 15),
+    date: new Date(2025, 9, 15).getTime(),
     name: "Google Ads",
     description: "Marketing Campaign Q1",
     project: "YFN 9.0",
@@ -81,7 +82,7 @@ export const mockTransactions: Transaction[] = [
   },
   {
     id: "7",
-    date: new Date(2025, 9, 8),
+    date: new Date(2025, 9, 8).getTime(),
     name: "Telekom",
     description: "Internet & Phone",
     project: "YFC",
@@ -92,7 +93,7 @@ export const mockTransactions: Transaction[] = [
   },
   {
     id: "8",
-    date: new Date(2025, 9, 20),
+    date: new Date(2025, 9, 20).getTime(),
     name: "Freelancer Max",
     description: "Website Development",
     project: "YFN Schools",
@@ -103,7 +104,7 @@ export const mockTransactions: Transaction[] = [
   },
   {
     id: "9",
-    date: new Date(2025, 9, 5),
+    date: new Date(2025, 9, 5).getTime(),
     name: "Stadt München",
     description: "Förderung Bildungsprojekt",
     project: "YFN 8.0",
@@ -115,7 +116,7 @@ export const mockTransactions: Transaction[] = [
   },
   {
     id: "10",
-    date: new Date(2025, 9, 18),
+    date: new Date(2025, 9, 18).getTime(),
     name: "Office Supplies GmbH",
     description: "Büromaterial Q1",
     project: "YFC",
@@ -126,7 +127,7 @@ export const mockTransactions: Transaction[] = [
   },
   {
     id: "11",
-    date: new Date(2025, 8, 15),
+    date: new Date(2025, 8, 15).getTime(),
     name: "Privatspende Schmidt",
     description: "Spende für Jugendarbeit",
     project: "YFN 9.0",
@@ -138,7 +139,7 @@ export const mockTransactions: Transaction[] = [
   },
   {
     id: "12",
-    date: new Date(2025, 9, 22),
+    date: new Date(2025, 9, 22).getTime(),
     name: "CVJM Bayern",
     description: "Förderung Q3",
     project: "YFN Schools",
@@ -150,7 +151,7 @@ export const mockTransactions: Transaction[] = [
   },
   {
     id: "13",
-    date: new Date(2025, 10, 1),
+    date: new Date(2025, 10, 1).getTime(),
     name: "Aktion Mensch",
     description: "Projektförderung Teil 1",
     project: "YFN 9.0",
@@ -162,7 +163,7 @@ export const mockTransactions: Transaction[] = [
   },
   {
     id: "14",
-    date: new Date(2025, 10, 15),
+    date: new Date(2025, 10, 15).getTime(),
     name: "Google.org",
     description: "Tech for Good Grant",
     project: "YFN 8.0",

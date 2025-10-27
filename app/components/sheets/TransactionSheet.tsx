@@ -50,7 +50,7 @@ export function TransactionSheet({
   const isExpense = type === "expense";
 
   const addTransaction = useMutation(
-    api.functions.transactionMutations.addExpectedTransaction
+    api.functions.transactionMutations.addTransaction
   );
 
   const dateColor = date ? "text-foreground" : "text-muted-foreground";
@@ -73,11 +73,12 @@ export function TransactionSheet({
     try {
       await addTransaction({
         projectId: project,
-        expectedDate: date?.getTime() ?? Date.now(),
+        date: date?.getTime() ?? Date.now(),
         amount: parseFloat(amount),
         reference: counterparty,
         categoryId: category,
         isExpense: isExpense,
+        status: "expected",
       });
       toast.success(
         isExpense ? "Ausgabe gespeichert!" : "Einnahme gespeichert!"
