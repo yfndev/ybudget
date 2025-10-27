@@ -9,13 +9,18 @@ import { columns } from "@/components/Tables/columns";
 import { mockProjects } from "@/components/data/mockProjects";
 import { mockTransactions } from "@/components/data/mockTransactions";
 import { SidebarInset } from "@/components/ui/sidebar";
+import { useQuery } from "convex/react";
 import { useParams } from "next/navigation";
+import { api } from "../../../../convex/_generated/api";
 
 export default function ProjectDetail() {
   const params = useParams();
   const projectId = params.projectId as string;
 
-  const project = mockProjects.find((p) => p.id === projectId);
+  const project = useQuery(api.queries.projectQueries.getProjectById, {
+    projectId,
+  });
+  // const project = mockProjects.find((p) => p.id === projectId);
 
   if (!project) {
     return (

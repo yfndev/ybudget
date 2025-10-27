@@ -4,14 +4,15 @@ import { BudgetChart } from "@/components/Dashboard/BudgetChart";
 import { CategoryChart } from "@/components/Dashboard/CategoryChart";
 import ProjectCard from "@/components/Dashboard/ProjectCard";
 import { PageHeader } from "@/components/Layout/PageHeader";
-import { OnboardingDialog } from "@/components/Onboarding/OnboardingDialog";
-import { mockProjects } from "@/components/data/mockProjects";
-import { Button } from "@/components/ui/button";
 import { SidebarInset } from "@/components/ui/sidebar";
+import { useQuery } from "convex/react";
 import { useState } from "react";
+import { api } from "../../../convex/_generated/api";
 
 export default function Dashboard() {
   const [open, setOpen] = useState(false);
+
+  const projects = useQuery(api.queries.projectQueries.getProjects);
 
   return (
     <SidebarInset>
@@ -36,13 +37,14 @@ export default function Dashboard() {
           <CategoryChart />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 w-full gap-4 lg:gap-6 mt-4 lg:mt-6">
-          {mockProjects.map((project) => (
+          {projects?.map((project) => (
             <ProjectCard
-              key={project.id}
+              key={project._id}
               title={project.name}
               description={project.description}
-              progress={project.progress}
-              projectId={project.id}
+              // progress={project.progress}
+              progress={20}
+              projectId={project._id}
             />
           ))}
         </div>
