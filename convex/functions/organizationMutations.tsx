@@ -1,3 +1,4 @@
+import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { mutation } from "../_generated/server";
 
@@ -7,27 +8,39 @@ export const addOrganization = mutation({
     domain: v.string(),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Unauthenticated");
-    }
-    
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return;
+    const user = await ctx.db.get(userId);
+    if (!user) return;
+
     const organizationId = await ctx.db.insert("organizations", {
       name: args.name,
       domain: args.domain,
-      createdBy: identity.subject,
+      createdBy: userId,
     });
 
-    // Update user with organizationId
-    const user = await ctx.db
-      .query("users")
-      .filter((q) => q.eq(q.field("email"), identity.email))
-      .first();
-    
-    if (user) {
-      await ctx.db.patch(user._id, { organizationId });
-    }
+    await ctx.db.patch(user._id, { organizationId });
+    return organizationId;
   },
 });
 
-// TODO: add organizationid to user when oragnization gets created, also when another user logs in it needs to show that person is part of org
+export const joinExistingOrganization = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return;
+
+    const user = await ctx.db.get(userId);
+
+    if (!user?.email) return;
+    const domain = user.email.split("@")[1];
+    const org = await ctx.db
+      .query("organizations")
+      .withIndex("by_domain", (q) => q.eq("domain", domain))
+      .first();
+
+    await ctx.db.patch(user._id, { organizationId: org?._id });
+    return org?._id;
+  },
+});
+

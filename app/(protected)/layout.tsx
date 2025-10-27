@@ -43,23 +43,20 @@ function UnauthenticatedRedirect() {
 
 function ProtectedContent({ children }: { children: React.ReactNode }) {
   const needsOnboarding = useQuery(api.queries.userQueries.needsOnboarding);
-  const [showOnboarding, setShowOnboarding] = useState(false);
+  const user = useQuery(api.queries.userQueries.getCurrentUser);
 
-  useEffect(() => {
-    if (needsOnboarding) {
-      setShowOnboarding(true);
-    }
-  }, [needsOnboarding]);
 
   return (
     <DateRangeProvider>
       <SidebarProvider>
         <AppSidebar />
         {children}
-        <OnboardingDialog 
-          open={showOnboarding} 
-          onOpenChange={setShowOnboarding}
-        />
+        {user && needsOnboarding === true && (
+          <OnboardingDialog 
+            open={true} 
+            onOpenChange={() => {}}
+          />
+        )}
       </SidebarProvider>
     </DateRangeProvider>
   );
