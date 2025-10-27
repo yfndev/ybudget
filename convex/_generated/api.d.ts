@@ -14,7 +14,9 @@ import type * as functions_projectMutations from "../functions/projectMutations.
 import type * as functions_transactionMutations from "../functions/transactionMutations.js";
 import type * as http from "../http.js";
 import type * as queries_organizationQueries from "../queries/organizationQueries.js";
+import type * as queries_projectQueries from "../queries/projectQueries.js";
 import type * as queries_userQueries from "../queries/userQueries.js";
+import type * as utils_auth from "../utils/auth.js";
 
 import type {
   ApiFromModules,
@@ -37,7 +39,9 @@ declare const fullApi: ApiFromModules<{
   "functions/transactionMutations": typeof functions_transactionMutations;
   http: typeof http;
   "queries/organizationQueries": typeof queries_organizationQueries;
+  "queries/projectQueries": typeof queries_projectQueries;
   "queries/userQueries": typeof queries_userQueries;
+  "utils/auth": typeof utils_auth;
 }>;
 declare const fullApiWithMounts: typeof fullApi;
 

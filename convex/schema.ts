@@ -34,7 +34,8 @@ export default defineSchema({
         description: v.string(),
         isActive: v.boolean(),
         createdBy: v.string(),
-    }),
+    })
+        .index("by_organization", ["organizationId"]),
     transactions: defineTable({
         projectId: v.string(),
         date: v.number(), //epoch timestamp
