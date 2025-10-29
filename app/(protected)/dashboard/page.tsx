@@ -43,7 +43,7 @@ export default function Dashboard() {
           <BudgetCard
             title={"Offenes Budget"}
             amount={availableBudget ?? 0}
-            description="Geplante Einnahmen + erhaltene Einnahmen - ausgegebene Beträge"
+            description="Geplante Einnahmen + erhaltene Einnahmen - Ausgaben"
           />
           <BudgetCard
             title={"Verplant"}

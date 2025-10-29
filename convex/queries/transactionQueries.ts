@@ -8,22 +8,29 @@ export const getTransactions = query({
     startDate: v.number(),
     endDate: v.number(),
     projectId: v.optional(v.string()),
+    status: v.optional(v.union(v.literal("processed"), v.literal("expected"))),
   },
   handler: async (ctx, args) => {
     const user = await getAuthenticatedUser(ctx);
     if (!user) return [];
 
-    const transactions = await ctx.db
+    let query = ctx.db
       .query("transactions")
-      .withIndex("by_organization", (q) => q.eq("organizationId", user.organizationId))
-      .filter(q => q.and(
-        q.gte(q.field("date"), args.startDate),
-        q.lte(q.field("date"), args.endDate)
-      ))
-      .collect();
+      .withIndex("by_organization_date", (q) =>
+        q
+          .eq("organizationId", user.organizationId)
+          .gte("date", args.startDate)
+          .lte("date", args.endDate)
+      )
+      .filter((q) => q.neq(q.field("projectId"), ""));
+
+    if (args.status) {
+      query = query.filter((q) => q.eq(q.field("status"), args.status));
+    }
+
+    const transactions = await query.collect();
 
     const projects = await ctx.db.query("projects").collect();
-    
     const projectMap = new Map(projects.map(p => [p._id.toString(), p.name]));
     const categoryMap = createCategoryMap();
 
