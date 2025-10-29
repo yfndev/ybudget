@@ -20,7 +20,13 @@ export const getReceivedBudget = query({
           .gte("date", args.startDate)
           .lte("date", args.endDate)
       )
-      .filter((q) => q.eq(q.field("status"), "processed"))
+      .filter((q) =>
+        q.and(
+          q.eq(q.field("status"), "processed"),
+          q.neq(q.field("projectId"), ""),
+          q.gt(q.field("amount"), 0)
+        )
+      )
       .collect();
 
     const total = transactions.reduce(

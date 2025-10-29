@@ -20,7 +20,12 @@ export const getAllocatedBudget = query({
           .gte("date", args.startDate)
           .lte("date", args.endDate)
       )
-      .filter((q) => q.eq(q.field("status"), "expected"))
+      .filter((q) =>
+        q.and(
+          q.eq(q.field("status"), "expected"),
+          q.neq(q.field("projectId"), "")
+        )
+      )
       .collect();
 
     const total = transactions.reduce((sum, t) => sum + t.amount, 0);

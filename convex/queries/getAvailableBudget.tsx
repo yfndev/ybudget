@@ -20,6 +20,7 @@ export const getAvailableBudget = query({
           .gte("date", args.startDate)
           .lte("date", args.endDate)
       )
+      .filter((q) => q.neq(q.field("projectId"), ""))
       .collect();
 
     let plannedIncomeAmount = 0;
