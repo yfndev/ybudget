@@ -1,0 +1,82 @@
+import { useEffect, useRef, useState } from "react";
+
+interface ExpectedTransaction {
+  _id: string;
+  description: string;
+  amount: number;
+  date: number;
+  projectName: string;
+  counterparty: string;
+}
+
+interface ExpectedTransactionMatchesProps {
+  expectedTransactions: ExpectedTransaction[];
+  onSelect?: (transactionId: string) => void;
+}
+
+export const ExpectedTransactionMatches = ({
+  expectedTransactions,
+  onSelect,
+}: ExpectedTransactionMatchesProps) => {
+  const [selectedMatch, setSelectedMatch] = useState<string | null>(null);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setSelectedMatch(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  return (
+    <div ref={ref} className="w-1/4 flex flex-col h-full flex-shrink-0">
+      <div className="mb-4">
+        <h3 className="text-lg font-medium">Mögliche Matches</h3>
+        <p className="text-sm text-muted-foreground">
+          (anhand geplanter Ausgaben)
+        </p>
+      </div>
+
+      <div className="space-y-3">
+        {expectedTransactions.map((match) => (
+          <div
+            key={match._id}
+            className={`p-3 border rounded-lg cursor-pointer transition-colors ${
+              selectedMatch === match._id
+                ? "border-primary bg-primary/5"
+                : "border-border hover:border-primary/50"
+            }`}
+            onClick={() => {
+              setSelectedMatch(match._id);
+              onSelect?.(match._id);
+            }}
+          >
+            <div className="flex justify-between gap-5 items-center text-xs">
+              <div className="mb-2">
+                <p className=" font-semibold text-sm">{match.counterparty}</p>
+                <p className=" text-sm">{match.description}</p>
+              </div>
+              <div className="flex flex-col items-end">
+                <span className="text-muted-foreground">
+                  {new Date(match.date).toLocaleDateString("de-DE")}
+                </span>
+                <p className="text-xs text-muted-foreground">
+                  {match.projectName}
+                </p>
+                <span className="font-medium pt-4">
+                  {new Intl.NumberFormat("de-DE", {
+                    style: "currency",
+                    currency: "EUR",
+                  }).format(Math.abs(match.amount))}
+                </span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};

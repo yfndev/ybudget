@@ -113,5 +113,17 @@ export const updateProcessedTransaction = mutation({
       updateData.matchedTransactionId = args.matchedTransactionId;
 
     await ctx.db.patch(args.transactionId as Id<"transactions">, updateData);
+
+
+    if (args.matchedTransactionId) {
+      const expectedTransaction = await ctx.db.get(
+        args.matchedTransactionId as Id<"transactions">
+      );
+      if (expectedTransaction) {
+        await ctx.db.patch(args.matchedTransactionId as Id<"transactions">, {
+          matchedTransactionId: args.transactionId,
+        });
+      }
+    }
   },
 });

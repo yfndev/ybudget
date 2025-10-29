@@ -73,9 +73,14 @@ export const getUnassignedProcessedTransactions = query({
       ))
       .collect();
 
+
+    const unassignedTransactions = transactions.filter(
+      (t) => !t.matchedTransactionId || t.matchedTransactionId === ""
+    );
+
     const categoryMap = createCategoryMap();
 
-    return transactions.map(t => ({
+    return unassignedTransactions.map(t => ({
       ...t,
       categoryName: categoryMap.get(t.categoryId) || t.categoryId,
     }));
@@ -83,7 +88,7 @@ export const getUnassignedProcessedTransactions = query({
 });
 
 export const getImportedTransactionIds = query({
-  
+  returns: v.array(v.string()),
   handler: async (ctx) => {
     const user = await getAuthenticatedUser(ctx);
     if (!user) return [];
@@ -91,32 +96,48 @@ export const getImportedTransactionIds = query({
     const transactions = await ctx.db
       .query("transactions")
       .withIndex("by_organization", (q) => q.eq("organizationId", user.organizationId))
-      .filter(q => q.neq(q.field("importedTransactionId"), ""))
       .collect();
 
-    return transactions.map(t => t.importedTransactionId);
+    return transactions
+      .map((t) => t.importedTransactionId)
+      .filter((id): id is string => id !== undefined && id !== "");
   },
 });
 
-export const getExpectedTransactions = query({
-  handler: async (ctx) => {
+
+
+export const getTransactionRecommendations = query({
+  args: {
+    amount: v.number(),
+    projectId: v.optional(v.string()),
+  },
+  returns: v.array(v.any()),
+  handler: async (ctx, args) => {
     const user = await getAuthenticatedUser(ctx);
     if (!user) return [];
 
-    const transactions = await ctx.db
+    let query = ctx.db
       .query("transactions")
       .withIndex("by_organization", (q) => q.eq("organizationId", user.organizationId))
-      .filter(q => q.eq(q.field("status"), "expected"))
-      .collect();
+      .filter((q) =>
+        q.and(
+          q.eq(q.field("status"), "expected"),
+          q.neq(q.field("projectId"), "")
+        )
+      );
+
+    const transactions = await query.collect();
+
+    const unmatched = transactions.filter(
+      (t) => !t.matchedTransactionId || t.matchedTransactionId === ""
+    );
 
     const projects = await ctx.db.query("projects").collect();
-    const categoryMap = createCategoryMap();
-    const projectMap = new Map(projects.map(p => [p._id.toString(), p.name]));
+    const projectMap = new Map(projects.map((p) => [p._id.toString(), p.name]));
 
-    return transactions.map(t => ({
-      ...t,
-      projectName: projectMap.get(t.projectId) || t.projectId,
-      categoryName: categoryMap.get(t.categoryId) || t.categoryId,
+    return unmatched.map((transaction) => ({
+      ...transaction,
+      projectName: projectMap.get(transaction.projectId) || transaction.projectId,
     }));
   },
 });

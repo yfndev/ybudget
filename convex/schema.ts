@@ -62,7 +62,11 @@ export default defineSchema({
         .index("by_project_date", ["projectId", "date"])
         .index("by_organization_date", ["organizationId", "date"])
         .index("by_date", ["date"])
-        .index("by_organization", ["organizationId"]),
+        .index("by_organization", ["organizationId"])
+        .searchIndex("search_counterparty_and_description", {
+            searchField: "counterparty",
+            filterFields: ["organizationId", "status"],
+        }),
   
 
     categories: defineTable({
