@@ -4,6 +4,7 @@ import {
   LayoutDashboard,
   PiggyBank,
   SquareCheckBig,
+  Upload,
   Users,
 } from "lucide-react";
 import * as React from "react";
@@ -42,6 +43,11 @@ const data = {
       name: "Transaktionen",
       url: "/transactions",
       icon: SquareCheckBig,
+    },
+    {
+      name: "Import",
+      url: "/import",
+      icon: Upload,
     },
     {
       name: "Förderer",
