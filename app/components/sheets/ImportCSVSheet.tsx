@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/sheet";
 import { Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Papa from "papaparse";
 import { useState } from "react";
 
 export function ImportCSVSheet({
@@ -20,25 +21,23 @@ export function ImportCSVSheet({
   onOpenChange: (open: boolean) => void;
 }) {
   const [isDragging, setIsDragging] = useState(false);
+  const [csvData, setCsvData] = useState<Record<string, string>[]>([]);
   const router = useRouter();
+
+  const processFile = (file: File) => {
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: (results: Papa.ParseResult<Record<string, string>>) =>
+        setCsvData(results.data),
+    });
+  };
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-
-    const file = e.dataTransfer.files[0];
-    if (file && file.name.endsWith(".csv")) {
-      onOpenChange(false);
-      router.push("/import");
-    }
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      onOpenChange(false);
-      router.push("/import");
-    }
+    const file = e.dataTransfer.files?.[0];
+    if (file) processFile(file);
   };
 
   return (
@@ -80,16 +79,24 @@ export function ImportCSVSheet({
             <Button asChild variant="outline">
               <label className="cursor-pointer">
                 Datei auswählen
-                <input
-                  type="file"
-                  accept=".csv"
-                  onChange={handleFileChange}
-                  className="hidden"
-                />
+                <input type="file" accept=".csv" className="hidden" />
               </label>
             </Button>
           </div>
         </div>
+        {csvData.length > 0 && (
+          <div className="mt-6">
+            <h3 className="text-lg font-medium mb-4">CSV Preview</h3>
+            <div className="max-h-64 overflow-auto border rounded-md">
+              <pre className="p-4 text-xs">
+                {JSON.stringify(csvData.slice(0, 5), null, 2)}
+              </pre>
+            </div>
+            <p className="text-sm text-muted-foreground mt-2">
+              Showing first 5 rows of {csvData.length} total rows
+            </p>
+          </div>
+        )}
       </SheetContent>
     </Sheet>
   );
