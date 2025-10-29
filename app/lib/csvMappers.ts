@@ -1,3 +1,5 @@
+import { mapVolksbankCSV } from "./volksbankMapper";
+
 export interface TransactionData {
   date: number;
   amount: number;
@@ -22,6 +24,10 @@ function parseDate(dateString: string): number {
     if (!isNaN(parsed.getTime())) {
       return parsed.getTime();
     }
+    const usParsed = new Date(parseInt(parts[2]), parseInt(parts[0]) - 1, parseInt(parts[1]));
+    if (!isNaN(usParsed.getTime())) {
+      return usParsed.getTime();
+    }
   }
 
   return Date.now();
@@ -44,6 +50,9 @@ export function mapMossCSV(row: Record<string, string>): TransactionData {
 export function mapCSVRow(row: Record<string, string>, source: "moss" | "sparkasse" | "volksbank"): TransactionData {
   if (source === "moss") {
     return mapMossCSV(row);
+  }
+  if (source === "volksbank") {
+    return mapVolksbankCSV(row);
   }
   throw new Error(`Unbekannte Datenquelle: ${source}`);
 }
