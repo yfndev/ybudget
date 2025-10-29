@@ -47,10 +47,9 @@ export function TransactionSheet({
   const [counterparty, setCounterparty] = useState("");
   const [description, setDescription] = useState("");
   const [project, setProject] = useState("");
-  const isExpense = type === "expense";
 
   const addTransaction = useMutation(
-    api.functions.transactionMutations.addTransaction
+    api.functions.transactionMutations.addExpectedTransaction
   );
 
   const dateColor = date ? "text-foreground" : "text-muted-foreground";
@@ -71,17 +70,18 @@ export function TransactionSheet({
 
   const handleSubmit = async () => {
     try {
+      const numAmount = parseFloat(amount);
       await addTransaction({
         projectId: project,
         date: date?.getTime() ?? Date.now(),
-        amount: parseFloat(amount),
-        reference: counterparty,
+        amount: type === "expense" ? -numAmount : numAmount,
+        description: description,
+        counterparty: counterparty,
         categoryId: category,
-        isExpense: isExpense,
         status: "expected",
       });
       toast.success(
-        isExpense ? "Ausgabe gespeichert!" : "Einnahme gespeichert!"
+        type === "expense" ? "Ausgabe gespeichert!" : "Einnahme gespeichert!"
       );
       onOpenChange(false);
     } catch (error) {
@@ -91,14 +91,14 @@ export function TransactionSheet({
 
   const canContinue = amount;
 
-  const title = isExpense ? "Ausgabe planen" : "Einnahme erfassen";
-  const counterpartyLabel = isExpense ? "Empfänger" : "Von";
-  const submitButtonText = isExpense ? "Ausgabe planen" : "Einnahme erfassen";
+  const title = type === "expense" ? "Ausgabe planen" : "Einnahme erfassen";
+  const counterpartyLabel = type === "expense" ? "Empfänger" : "Von";
+  const submitButtonText = type === "expense" ? "Ausgabe planen" : "Einnahme erfassen";
 
   const renderStepOne = () => (
     <div className="flex-1 flex flex-col gap-8 px-6 py-4">
       <p className="text-sm text-muted-foreground">
-        {isExpense
+        {type === "expense"
           ? "Du möchtest eine Ausgabe planen? Dann gib bitte alle nötigen Infos ein, um das Budget bestmöglich zu planen :)"
           : "Du möchtest eine Einnahme erfassen? Dann gib bitte alle nötigen Infos ein, um das Budget bestmöglich zu planen :)"}
       </p>
@@ -159,7 +159,7 @@ export function TransactionSheet({
         <Input
           id="counterparty"
           placeholder={
-            isExpense ? "z.B. Lieferant, Firma..." : "z.B. Kunde, Firma..."
+            type === "expense" ? "z.B. Lieferant, Firma..." : "z.B. Kunde, Firma..."
           }
           value={counterparty}
           onChange={(e) => setCounterparty(e.target.value)}
@@ -172,7 +172,7 @@ export function TransactionSheet({
         <Textarea
           id="description"
           placeholder={
-            isExpense ? "Details zur Ausgabe..." : "Details zur Einnahme..."
+            type === "expense" ? "Details zur Ausgabe..." : "Details zur Einnahme..."
           }
           value={description}
           onChange={(e) => setDescription(e.target.value)}

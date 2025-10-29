@@ -39,12 +39,13 @@ export default defineSchema({
     transactions: defineTable({
         projectId: v.string(),
         date: v.number(), //epoch timestamp
-        amount: v.number(),
-        reference: v.string(),
+        amount: v.number(), // negative for expenses, positive for income
+        description: v.string(),
+        counterparty: v.string(), 
         categoryId: v.string(),
         donorId: v.string(),
-        isExpense: v.boolean(),
         importedBy: v.string(),
+        importedTransactionId: v.optional(v.string()),
         importSource: v.optional(v.union(
             v.literal("sparkasse"),
             v.literal("volksbank"),
@@ -52,7 +53,7 @@ export default defineSchema({
         )),
         status: v.union(
             v.literal("expected"),
-            v.literal("actual")
+            v.literal("processed")
         ),
         matchedTransactionId: v.optional(v.string()),
         organizationId: v.id("organizations"),

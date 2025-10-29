@@ -15,8 +15,8 @@ export const columns = [
   {
     id: "indicator",
     cell: ({ row }: any) => {
-      const isExpense = row.original.isExpense;
-      const dotColor = isExpense ? "bg-red-500" : "bg-green-500";
+      const amount = row.getValue("amount");
+      const dotColor = amount < 0 ? "bg-red-500" : "bg-green-500";
 
       return (
         <div className="flex items-center px-1 justify-center">
@@ -50,14 +50,14 @@ export const columns = [
     header: "Projekt",
   },
   {
-    accessorKey: "reference",
-    header: "Referenz",
+    accessorKey: "description",
+    header: "Beschreibung",
     cell: ({ row }: any) => {
-      const reference = row.getValue("reference");
+      const description = row.getValue("description") || row.original.reference || "";
       return (
         <div className="max-w-64 min-w-32">
           <div className="whitespace-pre-wrap break-words text-sm">
-            {reference}
+            {description}
           </div>
         </div>
       );
@@ -84,16 +84,13 @@ export const columns = [
     },
     cell: ({ row }: any) => {
       const amount = row.getValue("amount");
-      const isExpense = row.original.isExpense;
-
-      const absoluteAmount = Math.abs(amount);
 
       const formattedAmount = new Intl.NumberFormat("de-DE", {
         style: "currency",
         currency: "EUR",
-      }).format(absoluteAmount);
+      }).format(Math.abs(amount));
 
-      const displayAmount = isExpense
+      const displayAmount = amount < 0
         ? `- ${formattedAmount}`
         : `+ ${formattedAmount}`;
 
@@ -111,9 +108,9 @@ export const columns = [
         "secondary";
       let displayText = "Geplant";
 
-      if (status === "actual") {
+      if (status === "processed") {
         variant = "default";
-        displayText = "Bezahlt";
+        displayText = "Abgerechnet";
       } else if (status === "expected") {
         variant = "secondary";
         displayText = "Geplant";

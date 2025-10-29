@@ -13,8 +13,7 @@ import { DateRange } from "react-day-picker";
 export interface Transaction {
   id: string;
   date: number;
-  amount: number;
-  isExpense: boolean;
+  amount: number; // negative for expenses, positive for income
 }
 
 export interface ChartDataPoint {
@@ -49,12 +48,12 @@ function aggregateTransactionsByMonth(
     });
 
     const income = monthTransactions
-      .filter((t) => !t.isExpense)
+      .filter((t) => t.amount > 0)
       .reduce((sum, t) => sum + t.amount, 0);
 
     const expense = monthTransactions
-      .filter((t) => t.isExpense)
-      .reduce((sum, t) => sum + t.amount, 0);
+      .filter((t) => t.amount < 0)
+      .reduce((sum, t) => sum + Math.abs(t.amount), 0);
 
     return {
       label: format(monthDate, "MMMM", { locale: de }),
@@ -85,12 +84,12 @@ function aggregateTransactionsByDay(
     });
 
     const income = dayTransactions
-      .filter((t) => !t.isExpense)
+      .filter((t) => t.amount > 0)
       .reduce((sum, t) => sum + t.amount, 0);
 
     const expense = dayTransactions
-      .filter((t) => t.isExpense)
-      .reduce((sum, t) => sum + t.amount, 0);
+      .filter((t) => t.amount < 0)
+      .reduce((sum, t) => sum + Math.abs(t.amount), 0);
 
     return {
       label: format(day, "d. MMM", { locale: de }),
