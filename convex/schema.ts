@@ -78,9 +78,20 @@ export default defineSchema({
         name: v.string(),
         type: v.union(
             v.literal("donation"),
-            v.literal("non-profit"),
             v.literal("sponsoring"),
-            v.literal("government"),
-        )
-    }),
+        ),
+        organizationId: v.id("organizations"),
+        createdBy: v.id("users"),
+    })
+        .index("by_organization", ["organizationId"]),
+    donationExpenseLinks: defineTable({
+        expenseId: v.id("transactions"),
+        donationId: v.id("transactions"),
+        amount: v.number(),
+        organizationId: v.id("organizations"),
+        createdBy: v.id("users"),
+    })
+        .index("by_expense", ["expenseId"])
+        .index("by_donation", ["donationId"])
+        .index("by_organization", ["organizationId"]),
 })

@@ -9,10 +9,14 @@
  */
 
 import type * as auth from "../auth.js";
+import type * as functions_donationExpenseLinkMutations from "../functions/donationExpenseLinkMutations.js";
+import type * as functions_donorMutations from "../functions/donorMutations.js";
 import type * as functions_organizationMutations from "../functions/organizationMutations.js";
 import type * as functions_projectMutations from "../functions/projectMutations.js";
 import type * as functions_transactionMutations from "../functions/transactionMutations.js";
 import type * as http from "../http.js";
+import type * as queries_donationQueries from "../queries/donationQueries.js";
+import type * as queries_donorQueries from "../queries/donorQueries.js";
 import type * as queries_getAllocatedBudget from "../queries/getAllocatedBudget.js";
 import type * as queries_getAvailableBudget from "../queries/getAvailableBudget.js";
 import type * as queries_getReceivedBudget from "../queries/getReceivedBudget.js";
@@ -40,10 +44,14 @@ import type {
  */
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
+  "functions/donationExpenseLinkMutations": typeof functions_donationExpenseLinkMutations;
+  "functions/donorMutations": typeof functions_donorMutations;
   "functions/organizationMutations": typeof functions_organizationMutations;
   "functions/projectMutations": typeof functions_projectMutations;
   "functions/transactionMutations": typeof functions_transactionMutations;
   http: typeof http;
+  "queries/donationQueries": typeof queries_donationQueries;
+  "queries/donorQueries": typeof queries_donorQueries;
   "queries/getAllocatedBudget": typeof queries_getAllocatedBudget;
   "queries/getAvailableBudget": typeof queries_getAvailableBudget;
   "queries/getReceivedBudget": typeof queries_getReceivedBudget;

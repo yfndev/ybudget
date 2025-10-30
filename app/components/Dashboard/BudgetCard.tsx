@@ -15,7 +15,8 @@ const BudgetCard = ({
   changePercent,
   description,
 }: BudgetCardTypes) => {
-  const formattedAmount = `${amount.toLocaleString("de-DE", {
+  const safeAmount = typeof amount === "number" && !isNaN(amount) ? amount : 0;
+  const formattedAmount = `${safeAmount.toLocaleString("de-DE", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })} €`;

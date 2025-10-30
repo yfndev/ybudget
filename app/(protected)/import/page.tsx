@@ -10,14 +10,19 @@ import { useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { api } from "../../../convex/_generated/api";
+import { Id } from "../../../convex/_generated/dataModel";
 
 export default function ImportTransactionsPage() {
   const [index, setIndex] = useState(0);
   const [projectId, setProjectId] = useState("");
   const [categoryId, setCategoryId] = useState("");
+  const [donorId, setDonorId] = useState("");
   const [matchedTransactionId, setMatchedTransactionId] = useState<
     string | null
   >(null);
+  const [selectedDonationIds, setSelectedDonationIds] = useState<
+    Id<"transactions">[]
+  >([]);
 
   const transactions = useQuery(
     api.queries.transactionQueries.getUnassignedProcessedTransactions
@@ -36,11 +41,16 @@ export default function ImportTransactionsPage() {
   const updateTransaction = useMutation(
     api.functions.transactionMutations.updateProcessedTransaction
   );
+  const createDonationLink = useMutation(
+    api.functions.donationExpenseLinkMutations.createDonationExpenseLink
+  );
 
   const clearForm = () => {
     setProjectId("");
     setCategoryId("");
+    setDonorId("");
     setMatchedTransactionId(null);
+    setSelectedDonationIds([]);
   };
 
   const handleExpectedTransactionSelect = (expectedTransactionId: string) => {
@@ -75,6 +85,7 @@ export default function ImportTransactionsPage() {
     const current = transactions[index];
     setProjectId(current.projectId || "");
     setCategoryId(current.categoryId || "");
+    setDonorId(current.donorId || "");
     setMatchedTransactionId(current.matchedTransactionId || null);
   }, [index, transactions]);
 
@@ -88,15 +99,35 @@ export default function ImportTransactionsPage() {
     }
 
     try {
+      const transactionId = transactions[index]._id;
+      const isIncome = transactions[index].amount > 0;
       await updateTransaction({
-        transactionId: transactions[index]._id,
+        transactionId,
         projectId,
         categoryId,
+        ...(isIncome && donorId ? { donorId } : {}),
         matchedTransactionId:
           matchedTransactionId && matchedTransactionId !== ""
             ? matchedTransactionId
             : undefined,
       });
+
+      const isExpense = transactions[index].amount < 0;
+      if (isExpense && selectedDonationIds.length > 0) {
+        for (const donationId of selectedDonationIds) {
+          try {
+            await createDonationLink({
+              expenseId: transactionId,
+              donationId: donationId,
+            });
+          } catch (error: any) {
+            toast.error(
+              `Fehler bei Zuordnung: ${error.message || "Unbekannter Fehler"}`
+            );
+          }
+        }
+      }
+
       toast.success("Transaktion gespeichert");
       goToNext();
     } catch (error) {
@@ -122,15 +153,7 @@ export default function ImportTransactionsPage() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [
-    index,
-    projectId,
-    categoryId,
-    matchedTransactionId,
-    transactions,
-    expectedTransactions,
-    updateTransaction,
-  ]);
+  }, [index, transactions, saveCurrent]);
 
   const current = transactions?.[index];
   const isLoading = transactions === undefined;
@@ -158,8 +181,12 @@ export default function ImportTransactionsPage() {
               totalCount={transactions?.length || 0}
               projectId={projectId}
               categoryId={categoryId}
+              donorId={donorId}
+              selectedDonationIds={selectedDonationIds}
               onProjectChange={setProjectId}
               onCategoryChange={setCategoryId}
+              onDonorChange={setDonorId}
+              onDonationIdsChange={setSelectedDonationIds}
             />
           </div>
         </div>

@@ -34,49 +34,51 @@ export const ExpectedTransactionMatches = ({
   return (
     <div ref={ref} className="w-1/4 flex flex-col h-full flex-shrink-0">
       <div className="mb-4">
-        <h3 className="text-lg font-medium">Mögliche Matches</h3>
-        <p className="text-sm text-muted-foreground">
-          (anhand geplanter Ausgaben)
-        </p>
+        <h3 className="text-lg font-semibold">Matche geplante Ausgaben:</h3>
       </div>
-
-      <div className="space-y-3">
-        {expectedTransactions.map((match) => (
-          <div
-            key={match._id}
-            className={`p-3 border rounded-lg cursor-pointer transition-colors ${
-              selectedMatch === match._id
-                ? "border-primary bg-primary/5"
-                : "border-border hover:border-primary/50"
-            }`}
-            onClick={() => {
-              setSelectedMatch(match._id);
-              onSelect?.(match._id);
-            }}
-          >
-            <div className="flex justify-between gap-5 items-center text-xs">
-              <div className="mb-2">
-                <p className=" font-semibold text-sm">{match.counterparty}</p>
-                <p className=" text-sm">{match.description}</p>
-              </div>
-              <div className="flex flex-col items-end">
-                <span className="text-muted-foreground">
-                  {new Date(match.date).toLocaleDateString("de-DE")}
-                </span>
-                <p className="text-xs text-muted-foreground">
-                  {match.projectName}
-                </p>
-                <span className="font-medium pt-4">
-                  {new Intl.NumberFormat("de-DE", {
-                    style: "currency",
-                    currency: "EUR",
-                  }).format(Math.abs(match.amount))}
-                </span>
+      {expectedTransactions.length > 0 ? (
+        <div className="space-y-3">
+          {expectedTransactions.map((match) => (
+            <div
+              key={match._id}
+              className={`p-3 border rounded-lg cursor-pointer transition-colors ${
+                selectedMatch === match._id
+                  ? "border-primary bg-primary/5"
+                  : "border-border hover:border-primary/50"
+              }`}
+              onClick={() => {
+                setSelectedMatch(match._id);
+                onSelect?.(match._id);
+              }}
+            >
+              <div className="flex justify-between gap-5 items-center text-xs">
+                <div className="mb-2">
+                  <p className="font-semibold text-sm">{match.counterparty}</p>
+                  <p className="text-sm">{match.description}</p>
+                </div>
+                <div className="flex flex-col items-end">
+                  <span className="text-muted-foreground">
+                    {new Date(match.date).toLocaleDateString("de-DE")}
+                  </span>
+                  <p className="text-xs text-muted-foreground">
+                    {match.projectName}
+                  </p>
+                  <span className="font-medium pt-4">
+                    {new Intl.NumberFormat("de-DE", {
+                      style: "currency",
+                      currency: "EUR",
+                    }).format(Math.abs(match.amount))}
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div className="text-sm text-muted-foreground">
+          Keine möglichen Matches vorhanden
+        </div>
+      )}
     </div>
   );
 };

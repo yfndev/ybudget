@@ -12,6 +12,7 @@ export const addExpectedTransaction = mutation({
     counterparty: v.string(),
     categoryId: v.string(),
     status: v.literal("expected"),
+    donorId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const user = await getAuthenticatedUser(ctx);
@@ -26,7 +27,7 @@ export const addExpectedTransaction = mutation({
       description: args.description,
       counterparty: args.counterparty,
       categoryId: args.categoryId,
-      donorId: "",
+      donorId: args.donorId || "",
       importedBy: user._id,
       status: args.status,
       organizationId: user.organizationId,
@@ -93,6 +94,7 @@ export const updateProcessedTransaction = mutation({
     transactionId: v.string(),
     projectId: v.optional(v.string()),
     categoryId: v.optional(v.string()),
+    donorId: v.optional(v.string()),
     matchedTransactionId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
@@ -104,6 +106,7 @@ export const updateProcessedTransaction = mutation({
     const updateData: {
       projectId?: string;
       categoryId?: string;
+      donorId?: string;
       matchedTransactionId?: string;
     } = {};
 
@@ -112,6 +115,9 @@ export const updateProcessedTransaction = mutation({
     }
     if (args.categoryId !== undefined) {
       updateData.categoryId = args.categoryId;
+    }
+    if (args.donorId !== undefined) {
+      updateData.donorId = args.donorId;
     }
     if (args.matchedTransactionId !== undefined) {
       updateData.matchedTransactionId = args.matchedTransactionId;

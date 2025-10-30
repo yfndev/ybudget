@@ -4,12 +4,11 @@ import BudgetCard from "@/components/Dashboard/BudgetCard";
 import { PageHeader } from "@/components/Layout/PageHeader";
 import { EditableDataTable } from "@/components/Tables/EditableDataTable";
 import { columns } from "@/components/Tables/columns";
-import { mockDonors } from "@/components/data/mockDonors";
-import { mockTransactions } from "@/components/data/mockTransactions";
 import { SidebarInset } from "@/components/ui/sidebar";
 import { useParams } from "next/navigation";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
+import { Id } from "../../../../convex/_generated/dataModel";
 
 export default function DonorDetail() {
   const params = useParams();
@@ -18,7 +17,36 @@ export default function DonorDetail() {
     api.functions.transactionMutations.updateTransaction
   );
 
-  const donor = mockDonors.find((d) => d.id === donorId);
+  const donor = useQuery(
+    api.queries.donorQueries.getDonorById,
+    donorId ? { donorId: donorId as Id<"donors"> } : "skip"
+  );
+
+  const donorTransactions = useQuery(
+    api.queries.donorQueries.getDonorTransactions,
+    donorId ? { donorId: donorId as Id<"donors"> } : "skip"
+  );
+
+  const handleUpdateTransaction = async (
+    rowId: string,
+    field: string,
+    value: any
+  ) => {
+    await updateTransaction({
+      transactionId: rowId as Id<"transactions">,
+      [field]: value,
+    });
+  };
+
+  if (donor === undefined || donorTransactions === undefined) {
+    return (
+      <SidebarInset>
+        <div className="p-6">
+          <p>Lade Förderer...</p>
+        </div>
+      </SidebarInset>
+    );
+  }
 
   if (!donor) {
     return (
@@ -29,21 +57,6 @@ export default function DonorDetail() {
       </SidebarInset>
     );
   }
-
-  const donorTransactions = mockTransactions.filter(
-    (t) => t.donor === donor.name
-  );
-
-  const handleUpdateTransaction = async (
-    rowId: string,
-    field: string,
-    value: any
-  ) => {
-    await updateTransaction({
-      transactionId: rowId,
-      [field]: value,
-    });
-  };
 
   return (
     <SidebarInset>
@@ -66,7 +79,7 @@ export default function DonorDetail() {
           <h2 className="text-xl font-semibold mb-4">Transaktionen</h2>
           <EditableDataTable
             columns={columns}
-            data={donorTransactions}
+            data={donorTransactions || []}
             onUpdate={handleUpdateTransaction}
           />
         </div>

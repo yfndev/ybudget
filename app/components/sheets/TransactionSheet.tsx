@@ -26,6 +26,7 @@ import { api } from "../../../convex/_generated/api";
 import { AmountInput } from "./AmountInput";
 import { SelectCategory } from "./SelectCategory";
 import { SelectProject } from "./SelectProject";
+import { SelectDonor } from "./SelectDonor";
 
 const formatAmount = (amount: string) => (amount ? `${amount} €` : "");
 
@@ -47,6 +48,7 @@ export function TransactionSheet({
   const [counterparty, setCounterparty] = useState("");
   const [description, setDescription] = useState("");
   const [project, setProject] = useState("");
+  const [donor, setDonor] = useState("");
 
   const addTransaction = useMutation(
     api.functions.transactionMutations.addExpectedTransaction
@@ -62,6 +64,7 @@ export function TransactionSheet({
     setCounterparty("");
     setDescription("");
     setProject("");
+    setDonor("");
   };
 
   useEffect(() => {
@@ -79,6 +82,7 @@ export function TransactionSheet({
         counterparty: counterparty,
         categoryId: category,
         status: "expected",
+        donorId: type === "income" ? donor : "",
       });
       toast.success(
         type === "expense" ? "Ausgabe gespeichert!" : "Einnahme gespeichert!"
@@ -184,6 +188,13 @@ export function TransactionSheet({
         <Label>Kategorie</Label>
         <SelectCategory value={category} onValueChange={setCategory} />
       </div>
+
+      {type === "income" && (
+        <div className="flex flex-col gap-2">
+          <Label>Förderer</Label>
+          <SelectDonor value={donor} onValueChange={setDonor} />
+        </div>
+      )}
     </div>
   );
 

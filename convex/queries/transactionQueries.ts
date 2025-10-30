@@ -122,7 +122,8 @@ export const getTransactionRecommendations = query({
       .filter((q) =>
         q.and(
           q.eq(q.field("status"), "expected"),
-          q.neq(q.field("projectId"), "")
+          q.neq(q.field("projectId"), ""),
+          q.lt(q.field("amount"), 0)
         )
       );
 
