@@ -7,7 +7,7 @@ import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 
 export default function Donors() {
-  const donors = useQuery(api.queries.donorQueries.getDonors);
+  const donors = useQuery(api.queries.donors.getAllDonors);
 
   return (
     <SidebarInset>

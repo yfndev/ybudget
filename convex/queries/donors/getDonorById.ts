@@ -1,6 +1,6 @@
 import { v } from "convex/values";
 import { query } from "../../_generated/server";
-import { getAuthenticatedUser } from "../../utils/auth";
+import { getCurrentUser } from "../users/getCurrentUser";
 
 export const getDonorById = query({
     args: { donorId: v.id("donors") },
@@ -16,7 +16,7 @@ export const getDonorById = query({
       v.null()
     ),
     handler: async (ctx, args) => {
-      const user = await getAuthenticatedUser(ctx);
+      const user = await getCurrentUser(ctx);
       if (!user) return null;
   
       const donor = await ctx.db.get(args.donorId);

@@ -31,7 +31,7 @@ export function CreateProjectSheet({
   const [description, setDescription] = useState("");
   const [parentId, setParentId] = useState("");
 
-  const user = useQuery(api.queries.userQueries.getCurrentUser);
+  const user = useQuery(api.queries.users.getCurrentUserQuery);
   const addProject = useMutation(api.functions.projectMutations.addProject);
 
   const handleSubmit = async (e: React.FormEvent) => {

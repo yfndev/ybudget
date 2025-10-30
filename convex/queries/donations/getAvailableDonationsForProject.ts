@@ -52,7 +52,7 @@ export const getAvailableDonationsForProject = query({
       const donationId = link.donationId.toString();
       linkMap.set(
         donationId,
-        (linkMap.get(donationId) || 0) + link.amount
+        (linkMap.get(donationId) || 0) + (link.expenseId ? 1 : 0)
       );
     }
 

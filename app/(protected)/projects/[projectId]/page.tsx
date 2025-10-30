@@ -21,16 +21,16 @@ export default function ProjectDetail() {
   const startDate = selectedDateRange.from.getTime();
   const endDate = selectedDateRange.to.getTime();
 
-  const project = useQuery(api.queries.projectQueries.getProjectById, {
+  const project = useQuery(api.queries.projects.getProjectById, {
     projectId,
   });
 
-  const children = useQuery(api.queries.projectQueries.getChildProjects, {
+  const children = useQuery(api.queries.projects.getChildProjects, {
     parentId: projectId,
   });
 
   const transactions = useQuery(
-    api.queries.transactionQueries.getTransactions,
+    api.queries.transactions.getTransactionsByDateRange,
     {
       startDate,
       endDate,
@@ -39,20 +39,20 @@ export default function ProjectDetail() {
   );
 
   const availableBudget = useQuery(
-    api.queries.getAvailableBudget.getAvailableBudget,
+    api.queries.budgets.getAvailableBudget,
     { startDate, endDate, projectId }
   );
   const allocatedBudget = useQuery(
-    api.queries.getAllocatedBudget.getAllocatedBudget,
+    api.queries.budgets.getAllocatedBudget,
     { startDate, endDate, projectId }
   );
-  const spentBudget = useQuery(api.queries.getSpentBudget.getSpentBudget, {
+  const spentBudget = useQuery(api.queries.budgets.getSpentBudget, {
     startDate,
     endDate,
     projectId,
   });
   const receivedBudget = useQuery(
-    api.queries.getReceivedBudget.getReceivedBudget,
+    api.queries.budgets.getReceivedBudget,
     { startDate, endDate, projectId }
   );
 

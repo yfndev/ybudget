@@ -1,11 +1,11 @@
 import { v } from "convex/values";
 import { query } from "../../_generated/server";
-import { getAuthenticatedUser } from "../../utils/auth";
+import { getCurrentUser } from "../users/getCurrentUser";
 
         export const getImportedTransactionIds = query({
     returns: v.array(v.string()),
     handler: async (ctx) => {
-      const user = await getAuthenticatedUser(ctx);
+      const user = await getCurrentUser(ctx);
       if (!user) return [];
   
       const transactions = await ctx.db

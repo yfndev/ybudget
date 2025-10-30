@@ -26,7 +26,7 @@ export const createImportedTransaction = mutation({
     if (!user) throw new Error("Unauthenticated");
 
     const existingTransaction = await ctx.runQuery(
-      api.queries.transactions.getTransactionById,
+      api.queries.transactions.getTransactionById.getTransactionById,
       {
         importedTransactionId: args.importedTransactionId,
       }

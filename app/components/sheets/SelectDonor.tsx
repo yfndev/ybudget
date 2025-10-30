@@ -29,7 +29,7 @@ interface SelectDonorProps {
 export function SelectDonor({ value, onValueChange }: SelectDonorProps) {
   const [open, setOpen] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
-  const donors = useQuery(api.queries.donorQueries.getDonors);
+  const donors = useQuery(api.queries.donors.getAllDonors);
 
   const selectedDonor = donors?.find((d) => d._id.toString() === value);
   const displayText = selectedDonor?.name || "Förderer suchen...";
@@ -90,7 +90,9 @@ export function SelectDonor({ value, onValueChange }: SelectDonorProps) {
                     <Check
                       className={cn(
                         "ml-auto",
-                        value === donor._id.toString() ? "opacity-100" : "opacity-0"
+                        value === donor._id.toString()
+                          ? "opacity-100"
+                          : "opacity-0"
                       )}
                     />
                   </CommandItem>
@@ -114,4 +116,3 @@ export function SelectDonor({ value, onValueChange }: SelectDonorProps) {
     </>
   );
 }
-

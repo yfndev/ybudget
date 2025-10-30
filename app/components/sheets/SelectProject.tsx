@@ -29,7 +29,7 @@ interface SelectProjectProps {
 export function SelectProject({ value, onValueChange }: SelectProjectProps) {
   const [open, setOpen] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
-  const projects = useQuery(api.queries.projectQueries.getProjects);
+  const projects = useQuery(api.queries.projects.getAllProjects);
 
   const selectedProject = projects?.find((p) => p._id === value);
   const displayText = selectedProject?.name || "Projekt suchen...";

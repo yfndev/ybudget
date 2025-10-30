@@ -1,14 +1,14 @@
 import { v } from "convex/values";
 import { Id } from "../../_generated/dataModel";
 import { query } from "../../_generated/server";
-import { getAuthenticatedUser } from "../../utils/auth";
+import { getCurrentUser } from "../users/getCurrentUser";
 
 
 
 export const getChildProjects = query({
   args: { parentId: v.string() },
   handler: async (ctx, args) => {
-    const user = await getAuthenticatedUser(ctx);
+    const user = await getCurrentUser(ctx);
     if (!user) return [];
 
     const projects = await ctx.db

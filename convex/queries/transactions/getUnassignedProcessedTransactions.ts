@@ -1,10 +1,10 @@
     import { query } from "../../_generated/server";
-import { getAuthenticatedUser } from "../../utils/auth";
 import { createCategoryMap } from "../../utils/categoryMapping";
+import { getCurrentUser } from "../users/getCurrentUser";
 
 export const getUnassignedProcessedTransactions = query({
     handler: async (ctx) => {
-      const user = await getAuthenticatedUser(ctx);
+      const user = await getCurrentUser(ctx);
       if (!user) return [];
   
       const transactions = await ctx.db

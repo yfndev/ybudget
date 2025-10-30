@@ -1,9 +1,9 @@
 import { query } from "../../_generated/server";
-import { getAuthenticatedUser } from "../../utils/auth";
+import { getCurrentUser } from "../users/getCurrentUser";
 
 export const getTransactionsByDateRange = query({
     handler: async (ctx) => {
-      const user = await getAuthenticatedUser(ctx);
+      const user = await getCurrentUser(ctx);
       if (!user) return [];
   
       return await ctx.db

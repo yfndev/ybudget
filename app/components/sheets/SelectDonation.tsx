@@ -36,7 +36,7 @@ export function SelectDonation({
   const [open, setOpen] = useState(false);
 
   const availableDonations = useQuery(
-    api.queries.donationQueries.getAvailableDonationsForProject,
+    api.queries.donations.getAvailableDonationsForProject,
     projectId ? { projectId } : "skip"
   );
 

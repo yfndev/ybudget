@@ -30,7 +30,7 @@ import { CreateProjectSheet } from "../Sheets/CreateProjectSheet";
 export function ProjectNav() {
   const [sheetOpen, setSheetOpen] = useState(false);
   const pathname = usePathname();
-  const projects = useQuery(api.queries.projectQueries.getProjects);
+  const projects = useQuery(api.queries.projects.getAllProjects);
 
   if (projects === undefined) {
     return (

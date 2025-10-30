@@ -45,7 +45,7 @@ export const ImportCSVCard = ({
   const isIncome = amount > 0;
 
   const availableDonations = useQuery(
-    api.queries.donationQueries.getAvailableDonationsForProject,
+    api.queries.donations.getAvailableDonationsForProject,
     isExpense && projectId ? { projectId } : "skip"
   );
 

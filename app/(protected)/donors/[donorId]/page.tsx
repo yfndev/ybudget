@@ -18,12 +18,12 @@ export default function DonorDetail() {
   );
 
   const donor = useQuery(
-    api.queries.donorQueries.getDonorById,
+    api.queries.donors.getDonorById,
     donorId ? { donorId: donorId as Id<"donors"> } : "skip"
   );
 
   const donorTransactions = useQuery(
-    api.queries.donorQueries.getDonorTransactions,
+    api.queries.donors.getDonorTransactions,
     donorId ? { donorId: donorId as Id<"donors"> } : "skip"
   );
 

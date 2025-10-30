@@ -22,11 +22,11 @@ export const OnboardingDialog = ({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) => {
-  const user = useQuery(api.queries.userQueries.getCurrentUser);
+  const user = useQuery(api.queries.users.getCurrentUserQuery);
   const domain = user?.email ? user.email.split("@")[1] : "";
 
   const existingOrg = useQuery(
-    api.queries.userQueries.getOrganizationByDomain,
+    api.queries.organizations.getOrganizationByDomain,
     domain ? { domain } : "skip"
   );
 

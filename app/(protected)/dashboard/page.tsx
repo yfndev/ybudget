@@ -17,23 +17,23 @@ export default function Dashboard() {
   const startDate = selectedDateRange.from.getTime();
   const endDate = selectedDateRange.to.getTime();
 
-  const projects = useQuery(api.queries.projectQueries.getProjects);
-  const availableBudget = useQuery(
-    api.queries.getAvailableBudget.getAvailableBudget,
-    { startDate, endDate }
-  );
-  const allocatedBudget = useQuery(
-    api.queries.getAllocatedBudget.getAllocatedBudget,
-    { startDate, endDate }
-  );
-  const spentBudget = useQuery(api.queries.getSpentBudget.getSpentBudget, {
+  const projects = useQuery(api.queries.projects.getAllProjects);
+  const availableBudget = useQuery(api.queries.budgets.getAvailableBudget, {
     startDate,
     endDate,
   });
-  const receivedBudget = useQuery(
-    api.queries.getReceivedBudget.getReceivedBudget,
-    { startDate, endDate }
-  );
+  const allocatedBudget = useQuery(api.queries.budgets.getAllocatedBudget, {
+    startDate,
+    endDate,
+  });
+  const spentBudget = useQuery(api.queries.budgets.getSpentBudget, {
+    startDate,
+    endDate,
+  });
+  const receivedBudget = useQuery(api.queries.budgets.getReceivedBudget, {
+    startDate,
+    endDate,
+  });
 
   return (
     <SidebarInset>

@@ -38,7 +38,7 @@ export function ImportCSVSheet({
   const [isDragging, setIsDragging] = useState(false);
 
   const existingIds = useQuery(
-    api.queries.transactionQueries.getImportedTransactionIds
+    api.queries.transactions.getImportedTransactionIds
   );
   const addTransaction = useMutation(
     api.functions.transactionMutations.addImportedTransaction

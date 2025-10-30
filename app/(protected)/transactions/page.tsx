@@ -18,7 +18,7 @@ export default function Transactions() {
   const endDate = selectedDateRange.to.getTime();
 
   const transactions = useQuery(
-    api.queries.transactionQueries.getTransactions,
+    api.queries.transactions.getTransactionsByDateRange,
     {
       startDate,
       endDate,

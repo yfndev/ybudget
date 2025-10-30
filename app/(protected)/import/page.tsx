@@ -25,12 +25,12 @@ export default function ImportTransactionsPage() {
   >([]);
 
   const transactions = useQuery(
-    api.queries.transactionQueries.getUnassignedProcessedTransactions
+    api.queries.transactions.getUnassignedProcessedTransactions
   );
 
   const currentTransaction = transactions?.[index];
   const expectedTransactions = useQuery(
-    api.queries.transactionQueries.getTransactionRecommendations,
+    api.queries.transactions.getTransactionRecommendations,
     currentTransaction
       ? {
           amount: currentTransaction.amount,

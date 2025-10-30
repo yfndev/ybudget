@@ -1,6 +1,6 @@
 import { v } from "convex/values";
 import { query } from "../../_generated/server";
-import { getAuthenticatedUser } from "../../utils/auth";
+import { getCurrentUser } from "../users/getCurrentUser";
 import { createCategoryMap } from "../../utils/categoryMapping";
 
 export const getTransactionsByDateRange = query({
@@ -11,7 +11,7 @@ export const getTransactionsByDateRange = query({
     status: v.optional(v.union(v.literal("processed"), v.literal("expected"))),
   },
   handler: async (ctx, args) => {
-    const user = await getAuthenticatedUser(ctx);
+    const user = await getCurrentUser(ctx);
     if (!user) return [];
 
     let query = ctx.db
