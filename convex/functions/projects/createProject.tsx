@@ -1,8 +1,8 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { mutation } from "../_generated/server";
+import { mutation } from "../../_generated/server";
 
-export const addProject = mutation({
+export const createProject = mutation({
   args: {
     name: v.string(),
     description: v.string(),

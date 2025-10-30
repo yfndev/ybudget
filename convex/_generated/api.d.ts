@@ -11,8 +11,8 @@
 import type * as auth from "../auth.js";
 import type * as functions_donationExpenseLinkMutations from "../functions/donors/createDonationExpenseLink.jsx";
 import type * as functions_donorMutations from "../functions/donors/createDonor.jsx";
-import type * as functions_organizationMutations from "../functions/organizationMutations.js";
-import type * as functions_projectMutations from "../functions/projectMutations.js";
+import type * as functions_organizationMutations from "../functions/organizations/addUserToOrganization.jsx";
+import type * as functions_projectMutations from "../functions/projects/createProject.jsx";
 import type * as functions_transactionMutations from "../functions/transactionMutations.js";
 import type * as http from "../http.js";
 import type * as queries_budgets_getAllocatedBudget from "../queries/budgets/getAllocatedBudget.js";

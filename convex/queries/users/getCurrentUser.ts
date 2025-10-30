@@ -7,6 +7,6 @@ export async function getCurrentUser(ctx: QueryCtx | MutationCtx) {
     const userId = await getAuthUserId(ctx);
     if (!userId) return null;
     const user = await ctx.db.get(userId);
-    if (!user) return null;
+
     return user as Doc<"users"> & { organizationId: NonNullable<Doc<"users">["organizationId"]> };
   }
