@@ -9,9 +9,9 @@ export const createOrganization = mutation({
     },
     handler: async (ctx, args) => {
       const userId = await getAuthUserId(ctx);
-      if (!userId) return;
+      if (!userId) throw new Error("User not found");
       const user = await ctx.db.get(userId);
-      if (!user) return;
+      if (!user) throw new Error("User not found");
   
       const organizationId = await ctx.db.insert("organizations", {
         name: args.name,

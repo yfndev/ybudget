@@ -5,11 +5,11 @@ export const addUserToOrganization = mutation({
   args: {},
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) return;
+    if (!userId) throw new Error("User not found");
 
     const user = await ctx.db.get(userId);
 
-    if (!user?.email) return;
+    if (!user?.email) throw new Error("User Mail not found");
     const domain = user.email.split("@")[1];
     const org = await ctx.db
       .query("organizations")

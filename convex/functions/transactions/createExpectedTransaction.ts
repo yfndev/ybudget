@@ -15,9 +15,7 @@ export const createExpectedTransaction = mutation({
     },
     handler: async (ctx, args) => {
       const user = await getCurrentUser(ctx);
-      if (!user) {
-        throw new Error("Unauthenticated");
-      }
+      if (!user) throw new Error("User not found");
   
       await ctx.db.insert("transactions", {
         projectId: args.projectId,

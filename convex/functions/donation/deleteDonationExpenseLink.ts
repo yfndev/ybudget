@@ -12,9 +12,8 @@ export const deleteDonationExpenseLink = mutation({
       if (!user) throw new Error("Unauthenticated");
   
       const link = await ctx.db.get(args.linkId);
-      if (!link || link.organizationId !== user.organizationId) {
-        throw new Error("Link not found");
-      }
+      if (!link || link.organizationId !== user.organizationId) throw new Error("Link not found or unauthorized");
+    
   
       await ctx.db.delete(args.linkId);
       return null;

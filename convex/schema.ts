@@ -87,7 +87,6 @@ export default defineSchema({
     donationExpenseLinks: defineTable({
         expenseId: v.id("transactions"),
         donationId: v.id("transactions"),
-        amount: v.number(),
         organizationId: v.id("organizations"),
         createdBy: v.id("users"),
     })

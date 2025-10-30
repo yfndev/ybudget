@@ -1,16 +1,16 @@
 import { v } from "convex/values";
 import { query } from "../../_generated/server";
-import { getAuthenticatedUser } from "../../utils/auth";
+import { getCurrentUser } from "../users/getCurrentUser";
 
 export const getTransactionRecommendations = query({
     args: {
       amount: v.number(),
       projectId: v.optional(v.string()),
     },
-    returns: v.array(v.any()),
+
     handler: async (ctx, args) => {
-      const user = await getAuthenticatedUser(ctx);
-      if (!user) return [];
+      const user = await getCurrentUser(ctx);
+      if (!user) throw new Error("User not found");
   
       let query = ctx.db
         .query("transactions")
