@@ -9,22 +9,24 @@
  */
 
 import type * as auth from "../auth.js";
-import type * as functions_donationExpenseLinkMutations from "../functions/donationExpenseLinkMutations.js";
-import type * as functions_donorMutations from "../functions/donorMutations.js";
+import type * as functions_donationExpenseLinkMutations from "../functions/donors/createDonationExpenseLink.jsx";
+import type * as functions_donorMutations from "../functions/donors/createDonor.jsx";
 import type * as functions_organizationMutations from "../functions/organizationMutations.js";
 import type * as functions_projectMutations from "../functions/projectMutations.js";
 import type * as functions_transactionMutations from "../functions/transactionMutations.js";
 import type * as http from "../http.js";
-import type * as queries_donationQueries from "../queries/donationQueries.js";
-import type * as queries_donorQueries from "../queries/donorQueries.js";
-import type * as queries_getAllocatedBudget from "../queries/getAllocatedBudget.js";
+import type * as queries_budgets_getAllocatedBudget from "../queries/budgets/getAllocatedBudget.js";
+import type * as queries_donations_getAvailableDonationsForProject from "../queries/donations/getAvailableDonationsForProject.js";
+import type * as queries_donors_getDonorById from "../queries/donors/getDonorById.js";
+import type * as queries_donors_getDonorTransactions from "../queries/donors/getDonorTransactions.js";
+import type * as queries_donors_getDonors from "../queries/donors/getDonors.js";
 import type * as queries_getAvailableBudget from "../queries/getAvailableBudget.js";
 import type * as queries_getReceivedBudget from "../queries/getReceivedBudget.js";
 import type * as queries_getSpentBudget from "../queries/getSpentBudget.js";
 import type * as queries_organizationQueries from "../queries/organizationQueries.js";
 import type * as queries_projectQueries from "../queries/projectQueries.js";
-import type * as queries_transactionQueries from "../queries/transactionQueries.js";
-import type * as queries_userQueries from "../queries/userQueries.js";
+import type * as queries_transactionQueries from "../queries/transactions/getTransactionsByDateRange.js";
+import type * as queries_userQueries from "../queries/users/getUserOrganizationId.ts/index.js";
 import type * as utils_auth from "../utils/auth.js";
 import type * as utils_categoryMapping from "../utils/categoryMapping.js";
 
@@ -50,9 +52,11 @@ declare const fullApi: ApiFromModules<{
   "functions/projectMutations": typeof functions_projectMutations;
   "functions/transactionMutations": typeof functions_transactionMutations;
   http: typeof http;
-  "queries/donationQueries": typeof queries_donationQueries;
-  "queries/donorQueries": typeof queries_donorQueries;
-  "queries/getAllocatedBudget": typeof queries_getAllocatedBudget;
+  "queries/budgets/getAllocatedBudget": typeof queries_budgets_getAllocatedBudget;
+  "queries/donations/getAvailableDonationsForProject": typeof queries_donations_getAvailableDonationsForProject;
+  "queries/donors/getDonorById": typeof queries_donors_getDonorById;
+  "queries/donors/getDonorTransactions": typeof queries_donors_getDonorTransactions;
+  "queries/donors/getDonors": typeof queries_donors_getDonors;
   "queries/getAvailableBudget": typeof queries_getAvailableBudget;
   "queries/getReceivedBudget": typeof queries_getReceivedBudget;
   "queries/getSpentBudget": typeof queries_getSpentBudget;

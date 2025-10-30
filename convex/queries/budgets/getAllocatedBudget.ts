@@ -1,6 +1,6 @@
 import { v } from "convex/values";
-import { query } from "../_generated/server";
-import { getAuthenticatedUser } from "../utils/auth";
+import { query } from "../../_generated/server";
+import { getAuthenticatedUser } from "../../utils/auth";
 
 export const getAllocatedBudget = query({
   args: {
