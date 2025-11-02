@@ -7,7 +7,10 @@ import { PageHeader } from "@/components/Layout/PageHeader";
 import { SidebarInset } from "@/components/ui/sidebar";
 import { useDateRange } from "@/contexts/DateRangeContext";
 
-import { calculateBudget } from "@/lib/budgetCalculations";
+import {
+  calculateBudget,
+  calculateProgressPercentage,
+} from "@/lib/budgetCalculations";
 import { useQuery } from "convex/react";
 import { useState } from "react";
 import { api } from "../../../convex/_generated/api";
@@ -65,17 +68,19 @@ export default function Dashboard() {
 
         <h2 className="text-xl font-semibold mb-4 mt-4 lg:mt-6">Projekte</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 w-full gap-4 lg:gap-6 ">
-          {projects?.map((project: Doc<"projects">) => (
-
-            <ProjectCard
-              key={project._id}
-              title={project.name}
-              description={project.description}
-              // progress={project.progress}
-              progress={20}
-              projectId={project._id}
-            />
-          ))}
+          {projects?.map((project: Doc<"projects">) => {
+            const projectTransactions =
+              transactions?.filter((t) => t.projectId === project._id) ?? [];
+            return (
+              <ProjectCard
+                key={project._id}
+                title={project.name}
+                description={project.description}
+                progress={calculateProgressPercentage(projectTransactions)}
+                projectId={project._id}
+              />
+            );
+          })}
         </div>
       </div>
     </SidebarInset>
