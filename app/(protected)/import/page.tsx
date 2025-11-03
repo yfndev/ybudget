@@ -112,6 +112,14 @@ export default function ImportTransactionsPage() {
             : undefined,
       });
 
+      // If this transaction is matched with an expected transaction, update the expected transaction too
+      if (matchedTransactionId && matchedTransactionId !== "") {
+        await updateTransaction({
+          transactionId: matchedTransactionId as Id<"transactions">,
+          matchedTransactionId: transactionId,
+        });
+      }
+
       const isExpense = transactions[index].amount < 0;
       if (isExpense && selectedDonationIds.length > 0) {
         for (const donationId of selectedDonationIds) {

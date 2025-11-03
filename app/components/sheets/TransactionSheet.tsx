@@ -25,8 +25,8 @@ import toast from "react-hot-toast";
 import { api } from "../../../convex/_generated/api";
 import { AmountInput } from "./AmountInput";
 import { SelectCategory } from "./SelectCategory";
-import { SelectProject } from "./SelectProject";
 import { SelectDonor } from "./SelectDonor";
+import { SelectProject } from "./SelectProject";
 
 const formatAmount = (amount: string) => (amount ? `${amount} €` : "");
 
@@ -51,7 +51,7 @@ export function TransactionSheet({
   const [donor, setDonor] = useState("");
 
   const addTransaction = useMutation(
-    api.functions.transactionMutations.addExpectedTransaction,
+    api.transactions.functions.createExpectedTransaction
   );
 
   const dateColor = date ? "text-foreground" : "text-muted-foreground";
@@ -85,7 +85,7 @@ export function TransactionSheet({
         donorId: type === "income" ? donor : "",
       });
       toast.success(
-        type === "expense" ? "Ausgabe gespeichert!" : "Einnahme gespeichert!",
+        type === "expense" ? "Ausgabe gespeichert!" : "Einnahme gespeichert!"
       );
       onOpenChange(false);
     } catch (error) {

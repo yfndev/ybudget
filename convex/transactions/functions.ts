@@ -4,7 +4,7 @@ import { getCurrentUser } from "../users/getCurrentUser";
 
 export const createExpectedTransaction = mutation({
   args: {
-    projectId: v.string(),
+    projectId: v.id("projects"),
     date: v.number(),
     amount: v.number(),
     description: v.string(),
@@ -32,8 +32,6 @@ export const createExpectedTransaction = mutation({
   },
 });
 
-// Todo: simpler
-
 export const createImportedTransaction = mutation({
   args: {
     date: v.number(),
@@ -52,14 +50,17 @@ export const createImportedTransaction = mutation({
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
 
-    // const existingTransaction = await ctx.runQuery(
-    //   api..transactions.getTransactionById.getTransactionById,
-    //   {
-    //     importedTransactionId: args.importedTransactionId,
-    //   }
-    // );
 
-    // if (existingTransaction) return { skipped: true };
+    const existing = await ctx.db
+    .query("transactions")
+    .withIndex("by_importedTransactionId", (q) => 
+      q
+        .eq("organizationId", user.organizationId)
+        .eq("importedTransactionId", args.importedTransactionId)
+    )
+    .first();
+
+  if (existing) return { skipped: true };
 
     await ctx.db.insert("transactions", {
       organizationId: user.organizationId,
@@ -71,13 +72,13 @@ export const createImportedTransaction = mutation({
       importedTransactionId: args.importedTransactionId,
       importSource: args.importSource,
       status: "processed",
-      projectId: "",
+      projectId: undefined,
       categoryId: "",
       donorId: "",
       accountName: args.accountName,
     });
 
-    return { inserted: true };
+    return { inserted: true }; 
   },
 });
 

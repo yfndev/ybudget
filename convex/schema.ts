@@ -26,7 +26,8 @@ export default defineSchema({
     .index("email", ["email"])
     .index("phone", ["phone"])
     .index("by_organization", ["organizationId"]),
-  projects: defineTable({
+  
+    projects: defineTable({
     name: v.string(),
     parentId: v.optional(v.id("projects")),
     organizationId: v.id("organizations"),
@@ -34,8 +35,9 @@ export default defineSchema({
     isActive: v.boolean(),
     createdBy: v.string(),
   }).index("by_organization", ["organizationId"]),
+  
   transactions: defineTable({
-    projectId: v.string(),
+    projectId: v.optional(v.id("projects")),
     organizationId: v.id("organizations"),
     date: v.number(), //epoch timestamp
     amount: v.number(), // negative for expenses, positive for income
@@ -56,33 +58,21 @@ export default defineSchema({
     matchedTransactionId: v.optional(v.string()),
     accountName: v.optional(v.string()),
   })
-    .index("by_project_date", ["projectId", "date"])
-    .index("by_organization_date", ["organizationId", "date"])
+    .index("by_organization_project", ["organizationId", "projectId"])
     .index("by_date", ["date"])
     .index("by_organization", ["organizationId"])
-    .searchIndex("search_counterparty_and_description", {
-      searchField: "counterparty",
-      filterFields: ["organizationId", "status"],
-    }),
-
-  categories: defineTable({
+    .index("by_importedTransactionId", ["organizationId", "importedTransactionId"]),
+  
+    categories: defineTable({
     name: v.string(),
     description: v.string(),
     taxCostposition: v.number(), // Kostenstelle
   }),
+  
   donors: defineTable({
     name: v.string(),
     type: v.union(v.literal("donation"), v.literal("sponsoring")),
     organizationId: v.id("organizations"),
     createdBy: v.id("users"),
-  }).index("by_organization", ["organizationId"]),
-  donationExpenseLinks: defineTable({
-    expenseId: v.id("transactions"),
-    donationId: v.id("transactions"),
-    organizationId: v.id("organizations"),
-    createdBy: v.id("users"),
-  })
-    .index("by_expense", ["expenseId"])
-    .index("by_donation", ["donationId"])
-    .index("by_organization", ["organizationId"]),
-});
+  }).index("by_organization", ["organizationId"])
+})

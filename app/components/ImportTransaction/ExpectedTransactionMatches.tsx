@@ -60,9 +60,6 @@ export const ExpectedTransactionMatches = ({
                   <span className="text-muted-foreground">
                     {new Date(match.date).toLocaleDateString("de-DE")}
                   </span>
-                  <p className="text-xs text-muted-foreground">
-                    {match.projectName}
-                  </p>
                   <span className="font-medium pt-4">
                     {new Intl.NumberFormat("de-DE", {
                       style: "currency",

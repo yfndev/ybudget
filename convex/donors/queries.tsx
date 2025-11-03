@@ -11,7 +11,7 @@ export const getAllDonors = query({
     return await ctx.db
       .query("donors")
       .withIndex("by_organization", (q) =>
-        q.eq("organizationId", user.organizationId),
+        q.eq("organizationId", user.organizationId)
       )
       .collect();
   },
@@ -22,12 +22,11 @@ export const getDonorById = query({
 
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
-    if (!user) throw new Error("User not found");
 
     return await ctx.db
       .query("donors")
       .withIndex("by_organization", (q) =>
-        q.eq("organizationId", user.organizationId),
+        q.eq("organizationId", user.organizationId)
       )
       .filter((q) => q.eq(q.field("_id"), args.donorId))
       .first();
@@ -39,12 +38,11 @@ export const getDonorTransactions = query({
 
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
-    if (!user) throw new Error("User not found");
 
     return await ctx.db
       .query("transactions")
       .withIndex("by_organization", (q) =>
-        q.eq("organizationId", user.organizationId),
+        q.eq("organizationId", user.organizationId)
       )
       .filter((q) => q.eq(q.field("donorId"), args.donorId))
       .collect();
