@@ -14,16 +14,22 @@ import { Id } from "../../../../convex/_generated/dataModel";
 export default function DonorDetail() {
   const params = useParams();
   const donorId = params.donorId as string;
-  
+
   const donor = useQuery(api.donors.queries.getDonorSummary, { donorId });
-  
-  const { results: transactions, status, loadMore } = usePaginatedQuery(
+
+  const {
+    results: transactions,
+    status,
+    loadMore,
+  } = usePaginatedQuery(
     api.transactions.queries.getPaginatedTransactions,
-    { donorId: donorId as Id<"donors"> },
+    { donorId },
     { initialNumItems: 50 }
   );
 
-  const updateTransaction = useMutation(api.transactions.functions.updateTransaction);
+  const updateTransaction = useMutation(
+    api.transactions.functions.updateTransaction
+  );
 
   const handleUpdate = async (rowId: string, field: string, value: any) => {
     await updateTransaction({
@@ -65,9 +71,7 @@ export default function DonorDetail() {
             columns={columns}
             data={transactions}
             onUpdate={handleUpdate}
-            hasNextPage={status === "CanLoadMore"}
-            loadMore={() => loadMore(50)}
-            isLoading={status === "LoadingMore"}
+            paginationStatus={status}
           />
         </div>
       </div>

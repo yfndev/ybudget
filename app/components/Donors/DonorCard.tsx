@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "convex-helpers/react/cache";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { api } from "../../../convex/_generated/api";
 import { Card } from "../ui/card";
 import { Progress } from "../ui/progress";
@@ -12,11 +12,12 @@ interface DonorCardProps {
   type: "donation" | "sponsoring";
 }
 
-const formatCurrency = (amount: number) => 
-  new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(amount);
+const formatCurrency = (amount: number) =>
+  new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(
+    amount
+  );
 
 export default function DonorCard({ donorId, name, type }: DonorCardProps) {
-  const router = useRouter();
   const donor = useQuery(api.donors.queries.getDonorSummary, { donorId });
 
   if (!donor) {
@@ -27,52 +28,60 @@ export default function DonorCard({ donorId, name, type }: DonorCardProps) {
     );
   }
 
-  const progress = donor.committedIncome > 0 
-    ? (donor.paidIncome / donor.committedIncome) * 100 
-    : 0;
+  const progress =
+    donor.committedIncome > 0
+      ? (donor.paidIncome / donor.committedIncome) * 100
+      : 0;
 
   return (
-    <Card 
-      className="w-full p-4 cursor-pointer hover:border-primary transition-colors" 
-      onClick={() => router.push(`/donors/${donorId}`)}
-    >
-      <div className="space-y-3">
-        <div className="flex justify-between items-center">
-          <div>
-            <h3 className="text-xl font-semibold">{name}</h3>
-            <span className="text-xs text-muted-foreground capitalize">{type}</span>
-          </div>
-          <span className="text-sm font-medium text-muted-foreground">
-            {Math.round(progress)}%
-          </span>
-        </div>
-        
-        <Progress value={progress} className="h-2" />
-        
-        <div className="grid grid-cols-3 gap-2">
-          <div>
-            <div className="text-xs text-muted-foreground">Zugesagt</div>
-            <div className="text-sm font-semibold">{formatCurrency(donor.committedIncome)}</div>
-          </div>
-          <div>
-            <div className="text-xs text-muted-foreground">Bezahlt</div>
-            <div className="text-sm font-semibold">{formatCurrency(donor.paidIncome)}</div>
-          </div>
-          <div>
-            <div className="text-xs text-muted-foreground">Offen</div>
-            <div className="text-sm font-semibold">{formatCurrency(donor.openIncome)}</div>
-          </div>
-        </div>
-        
-        {donor.totalExpenses > 0 && (
-          <div className="pt-2 border-t flex justify-between text-xs">
-            <span className="text-muted-foreground">Ausgaben:</span>
-            <span className="font-medium text-red-600">
-              -{formatCurrency(donor.totalExpenses)}
+    <Card className="w-full p-4 cursor-pointer hover:border-primary transition-colors">
+      <Link href={`/donors/${donorId}`}>
+        <div className="space-y-3">
+          <div className="flex justify-between items-center">
+            <div>
+              <h3 className="text-xl font-semibold">{name}</h3>
+              <span className="text-xs text-muted-foreground capitalize">
+                {type}
+              </span>
+            </div>
+            <span className="text-sm font-medium text-muted-foreground">
+              {Math.round(progress)}%
             </span>
           </div>
-        )}
-      </div>
+
+          <Progress value={progress} className="h-2" />
+
+          <div className="grid grid-cols-3 gap-2">
+            <div>
+              <div className="text-xs text-muted-foreground">Zugesagt</div>
+              <div className="text-sm font-semibold">
+                {formatCurrency(donor.committedIncome)}
+              </div>
+            </div>
+            <div>
+              <div className="text-xs text-muted-foreground">Bezahlt</div>
+              <div className="text-sm font-semibold">
+                {formatCurrency(donor.paidIncome)}
+              </div>
+            </div>
+            <div>
+              <div className="text-xs text-muted-foreground">Offen</div>
+              <div className="text-sm font-semibold">
+                {formatCurrency(donor.openIncome)}
+              </div>
+            </div>
+          </div>
+
+          {donor.totalExpenses > 0 && (
+            <div className="pt-2 border-t flex justify-between text-xs">
+              <span className="text-muted-foreground">Ausgaben:</span>
+              <span className="font-medium text-red-600">
+                -{formatCurrency(donor.totalExpenses)}
+              </span>
+            </div>
+          )}
+        </div>
+      </Link>
     </Card>
   );
 }
