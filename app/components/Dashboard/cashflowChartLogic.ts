@@ -136,7 +136,7 @@ export function generateCashflowData(
 
     let periodBalance = startBalance;
     for (const transaction of sortedTransactions) {
-      if (transaction.date < periodEndTime) {
+      if (transaction.date < periodEndTime && transaction.status === "processed") {
         periodBalance += transaction.amount;
       }
     }

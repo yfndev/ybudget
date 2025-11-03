@@ -16,9 +16,14 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { useDateRange } from "@/contexts/DateRangeContext";
+import {
+  filterTransactionsBeforeDate,
+  filterTransactionsByDateRange,
+} from "@/lib/transactionFilters";
 import { useQuery } from "convex/react";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
+import { useMemo } from "react";
 import {
   Bar,
   CartesianGrid,
@@ -39,15 +44,15 @@ import {
 
 const chartConfig = {
   actualIncome: {
-    label: "Tatsächliche Einnahmen",
+    label: "Einnahmen",
     color: "#10b981",
   },
   expectedIncome: {
-    label: "Erwartete Einnahmen",
+    label: "Geplante Einnahmen",
     color: "#86efac",
   },
   actualExpenses: {
-    label: "Tatsächliche Ausgaben",
+    label: "Ausgaben",
     color: "#ef4444",
   },
   expectedExpenses: {
@@ -63,42 +68,47 @@ const chartConfig = {
 export function CashflowChartUI() {
   const { selectedDateRange } = useDateRange();
 
-  const pastEndDate = new Date(selectedDateRange.from);
-  pastEndDate.setDate(pastEndDate.getDate() - 1);
-  pastEndDate.setHours(23, 59, 59, 999);
-
-  const allTransactions = useQuery(
-    api.transactions.queries.getTransactionsByDateRange,
-    {
-      startDate: selectedDateRange.from.getTime(),
-      endDate: selectedDateRange.to.getTime(),
-    },
+  const allTransactionsQuery = useQuery(
+    api.transactions.queries.getAllTransactions,
+    {}
   );
 
-  const pastTransactions = useQuery(
-    api.transactions.queries.getTransactionsByDateRange,
-    {
-      startDate: new Date(1970, 0, 1).getTime(),
-      endDate: pastEndDate.getTime(),
-    },
+  const transactions = useMemo(
+    () =>
+      filterTransactionsByDateRange(allTransactionsQuery, selectedDateRange),
+    [allTransactionsQuery, selectedDateRange]
   );
+
+  const pastTransactions = useMemo(() => {
+    if (!allTransactionsQuery) return undefined;
+
+    const pastEndDate = new Date(selectedDateRange.from);
+    pastEndDate.setDate(pastEndDate.getDate() - 1);
+    pastEndDate.setHours(23, 59, 59, 999);
+
+    return filterTransactionsBeforeDate(
+      allTransactionsQuery,
+      pastEndDate,
+      (t) => t.status === "processed"
+    );
+  }, [allTransactionsQuery, selectedDateRange]);
 
   const startBalance = calculateStartBalance(pastTransactions);
 
   const dataPoints =
-    allTransactions !== undefined
+    transactions !== undefined
       ? generateCashflowData(
-          allTransactions,
+          transactions,
           startBalance,
           selectedDateRange.from,
-          selectedDateRange.to,
+          selectedDateRange.to
         )
       : [];
 
   const axisConfig = calculateAxisConfig(
     dataPoints,
     selectedDateRange.from,
-    selectedDateRange.to,
+    selectedDateRange.to
   );
 
   const dateRangeText = `${format(selectedDateRange.from, "d. MMM yyyy", {
@@ -112,7 +122,7 @@ export function CashflowChartUI() {
         <CardDescription>{dateRangeText}</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0 overflow-hidden">
-        {allTransactions === undefined ? (
+        {transactions === undefined ? (
           <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
             Daten werden geladen...
           </div>
@@ -122,7 +132,12 @@ export function CashflowChartUI() {
           </div>
         ) : (
           <ChartContainer config={chartConfig} className="h-[40vh] w-full">
-            <ComposedChart data={dataPoints}>
+            <ComposedChart
+              data={dataPoints}
+              barCategoryGap="0%"
+              maxBarSize={50}
+              stackOffset="sign"
+            >
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
               <XAxis
                 dataKey="date"
@@ -179,11 +194,14 @@ export function CashflowChartUI() {
                       return `${weekday}, ${dayMonth}`;
                     }}
                     labelClassName="font-bold"
-                    formatter={(value, name) => {
+                    formatter={(value, name, props) => {
+                      const numValue = value as number;
+                      if (numValue === 0) return null;
+
                       const formattedNumber = new Intl.NumberFormat("de-DE", {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
-                      }).format(Math.abs(value as number));
+                      }).format(Math.abs(numValue));
                       const formattedValue = `${formattedNumber}€`;
 
                       const itemConfig =
@@ -209,6 +227,7 @@ export function CashflowChartUI() {
                         </div>
                       );
                     }}
+                    filterNull={true}
                   />
                 }
               />
@@ -220,29 +239,33 @@ export function CashflowChartUI() {
               <ReferenceLine y={0} stroke="#e5e7eb" strokeWidth={2} />
               <Bar
                 dataKey="actualIncome"
-                stackId="income"
+                stackId="stack"
                 fill="#10b981"
                 radius={[0, 0, 0, 0]}
+                isAnimationActive={false}
               />
               <Bar
                 dataKey="expectedIncome"
-                stackId="income"
+                stackId="stack"
                 fill="#86efac"
                 fillOpacity={0.7}
                 radius={[4, 4, 0, 0]}
+                isAnimationActive={false}
               />
               <Bar
                 dataKey="actualExpenses"
-                stackId="expenses"
+                stackId="stack"
                 fill="#ef4444"
                 radius={[0, 0, 0, 0]}
+                isAnimationActive={false}
               />
               <Bar
                 dataKey="expectedExpenses"
-                stackId="expenses"
+                stackId="stack"
                 fill="#fb923c"
                 fillOpacity={0.7}
                 radius={[0, 0, 4, 4]}
+                isAnimationActive={false}
               />
               <Line
                 type="monotone"
