@@ -5,71 +5,62 @@ import ProjectCard from "@/components/Dashboard/ProjectCard";
 import { PageHeader } from "@/components/Layout/PageHeader";
 import { SidebarInset } from "@/components/ui/sidebar";
 import { useDateRange } from "@/contexts/DateRangeContext";
-
 import {
   calculateBudget,
   calculateProgressPercentage,
 } from "@/lib/budgetCalculations";
 import { filterTransactionsByDateRange } from "@/lib/transactionFilters";
 import { useQuery } from "convex-helpers/react/cache";
-import { useMemo, useState } from "react";
 import { api } from "../../../convex/_generated/api";
 import type { Doc } from "../../../convex/_generated/dataModel";
 
 export default function Dashboard() {
-  const [open, setOpen] = useState(false);
   const { selectedDateRange } = useDateRange();
-
   const projects = useQuery(api.projects.queries.getAllProjects);
-
   const allTransactions = useQuery(
     api.transactions.queries.getAllTransactions,
     {}
   );
 
-  const transactions = useMemo(
-    () => filterTransactionsByDateRange(allTransactions, selectedDateRange),
-    [allTransactions, selectedDateRange]
+  const transactions = filterTransactionsByDateRange(
+    allTransactions,
+    selectedDateRange
   );
 
-  const budgets = useMemo(
-    () => calculateBudget(allTransactions ?? []),
-    [allTransactions]
-  );
+  const budgets = calculateBudget(transactions ?? []);
 
   return (
     <SidebarInset>
       <div className="p-4 lg:px-6 pb-6 overflow-x-hidden w-full">
         <PageHeader title="Dashboard" />
-        <div className="grid grid-cols-2   lg:grid-cols-4 gap-4 lg:gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
           <BudgetCard
-            title={"Kontostand"}
+            title="Kontostand"
             amount={budgets.currentBalance}
             description="Verfügbarer Betrag auf dem Konto"
           />
           <BudgetCard
-            title={"Kommt noch rein"}
+            title="Kommt noch rein"
             amount={budgets.expectedIncome}
             description="Zugesagtes Geld das noch nicht überwiesen wurde"
           />
           <BudgetCard
-            title={"Muss noch bezahlt werden"}
+            title="Muss noch bezahlt werden"
             amount={budgets.expectedExpenses}
             description="Rechnungen und Zusagen die noch von uns bezahlt werden müssen"
           />
           <BudgetCard
-            title={"Kann ausgegeben werden"}
+            title="Kann ausgegeben werden"
             amount={budgets.availableBudget}
             description="Auf dem Konto + kommt rein - muss bezahlt werden"
           />
         </div>
-        <div className="flex flex-col lg:flex-row  w-full gap-4 lg:gap-6 mt-4 lg:mt-6">
+        <div className="flex flex-col lg:flex-row w-full gap-4 lg:gap-6 mt-4 lg:mt-6">
           <CashflowChartUI />
-          {/* <BudgetChart /> */}
         </div>
 
         <h2 className="text-xl font-semibold mb-4 mt-4 lg:mt-6">Projekte</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 w-full gap-4 lg:gap-6 ">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 w-full gap-4 lg:gap-6">
           {projects?.map((project: Doc<"projects">) => {
             const projectTransactions =
               transactions?.filter((t) => t.projectId === project._id) ?? [];
