@@ -27,6 +27,7 @@ import { AmountInput } from "./AmountInput";
 import { SelectCategory } from "./SelectCategory";
 import { SelectDonor } from "./SelectDonor";
 import { SelectProject } from "./SelectProject";
+import { Id } from "../../../convex/_generated/dataModel";
 
 const formatAmount = (amount: string) => (amount ? `${amount} €` : "");
 
@@ -75,14 +76,14 @@ export function TransactionSheet({
     try {
       const numAmount = parseFloat(amount);
       await addTransaction({
-        projectId: project,
+        projectId: project as Id<"projects">,
         date: date?.getTime() ?? Date.now(),
         amount: type === "expense" ? -numAmount : numAmount,
         description: description,
         counterparty: counterparty,
         categoryId: category,
         status: "expected",
-        donorId: type === "income" ? donor : "",
+        donorId: donor,
       });
       toast.success(
         type === "expense" ? "Ausgabe gespeichert!" : "Einnahme gespeichert!"
@@ -194,12 +195,10 @@ export function TransactionSheet({
         <SelectCategory value={category} onValueChange={setCategory} />
       </div>
 
-      {type === "income" && (
-        <div className="flex flex-col gap-2">
-          <Label>Förderer</Label>
-          <SelectDonor value={donor} onValueChange={setDonor} />
-        </div>
-      )}
+      <div className="flex flex-col gap-2">
+        <Label>Förderer</Label>
+        <SelectDonor value={donor} onValueChange={setDonor} />
+      </div>
     </div>
   );
 

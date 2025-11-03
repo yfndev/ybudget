@@ -19,7 +19,7 @@ import { useQuery } from "convex-helpers/react/cache";
 import { Check, ChevronsUpDown, Plus } from "lucide-react";
 import { useState } from "react";
 import { api } from "../../../convex/_generated/api";
-import { CreateDonorSheet } from "./CreateDonorSheet";
+import { AddDonorDialog } from "./AddDonorDialog";
 
 interface SelectDonorProps {
   value: string;
@@ -28,7 +28,7 @@ interface SelectDonorProps {
 
 export function SelectDonor({ value, onValueChange }: SelectDonorProps) {
   const [open, setOpen] = useState(false);
-  const [sheetOpen, setSheetOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const donors = useQuery(api.donors.queries.getAllDonors);
 
   const selectedDonor = donors?.find((d) => d._id.toString() === value);
@@ -41,8 +41,12 @@ export function SelectDonor({ value, onValueChange }: SelectDonorProps) {
   };
 
   const handleCreateNew = () => {
-    setSheetOpen(true);
+    setDialogOpen(true);
     setOpen(false);
+  };
+
+  const handleDonorCreated = (donorId: string) => {
+    onValueChange(donorId);
   };
 
   return (
@@ -112,7 +116,11 @@ export function SelectDonor({ value, onValueChange }: SelectDonorProps) {
         </PopoverContent>
       </Popover>
 
-      <CreateDonorSheet open={sheetOpen} onOpenChange={setSheetOpen} />
+      <AddDonorDialog 
+        open={dialogOpen} 
+        onOpenChange={setDialogOpen}
+        onDonorCreated={handleDonorCreated}
+      />
     </>
   );
 }
