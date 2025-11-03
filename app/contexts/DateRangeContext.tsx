@@ -1,6 +1,6 @@
 "use client";
 
-import { endOfMonth, startOfMonth } from "date-fns";
+import { addDays, subDays } from "date-fns";
 import { createContext, ReactNode, useContext, useState } from "react";
 
 interface DateRange {
@@ -19,8 +19,8 @@ const DateRangeContext = createContext<DateRangeContextType | undefined>(
 
 export function DateRangeProvider({ children }: { children: ReactNode }) {
   const [selectedDateRange, setSelectedDateRange] = useState<DateRange>({
-    from: startOfMonth(new Date()),
-    to: endOfMonth(new Date()),
+    from: subDays(new Date(), 30),
+    to: addDays(new Date(), 60),
   });
 
   return (

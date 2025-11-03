@@ -9,9 +9,9 @@ import { SidebarInset } from "@/components/ui/sidebar";
 import { useDateRange } from "@/contexts/DateRangeContext";
 import { calculateBudget } from "@/lib/budgetCalculations";
 import { filterTransactionsByDateRange } from "@/lib/transactionFilters";
-import { useMutation, useQuery } from "convex/react";
+import { useMutation, useQuery, usePaginatedQuery } from "convex/react";
 import { useParams } from "next/navigation";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
@@ -29,9 +29,10 @@ export default function ProjectDetail() {
     parentId: projectId,
   });
 
-  const allTransactions = useQuery(
-    api.transactions.queries.getAllTransactions,
-    { projectId },
+  const { results: allTransactions, status, loadMore } = usePaginatedQuery(
+    api.transactions.queries.getPaginatedTransactions,
+    { projectId: projectId as Id<"projects"> },
+    { initialNumItems: 50 }
   );
 
   const transactions = useMemo(
@@ -128,6 +129,9 @@ export default function ProjectDetail() {
             columns={editableColumns}
             data={transactions || []}
             onUpdate={handleUpdateTransaction}
+            hasNextPage={status === "CanLoadMore"}
+            loadMore={loadMore}
+            isLoading={status === "LoadingMore"}
           />
         </div>
       </div>

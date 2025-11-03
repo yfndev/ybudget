@@ -22,17 +22,22 @@ interface EditableDataTableProps<T> {
   columns: ColumnDef<T>[];
   data: T[];
   onUpdate?: (rowId: string, field: string, value: any) => Promise<void>;
+  hasNextPage?: boolean;
+  loadMore?: () => void;
+  isLoading?: boolean;
 }
 
 export function EditableDataTable<T extends { _id: string }>({
   columns,
   data,
   onUpdate,
+  hasNextPage = false,
+  loadMore,
+  isLoading = false,
 }: EditableDataTableProps<T>) {
   const [sorting, setSorting] = useState<SortingState>([
     { id: "date", desc: true },
   ]);
-  const [visibleRows, setVisibleRows] = useState(20);
   const [editingRows, setEditingRows] = useState<Set<string>>(new Set());
   const [editingCell, setEditingCell] = useState<string | null>(null);
   const [pendingChanges, setPendingChanges] = useState<
@@ -114,11 +119,8 @@ export function EditableDataTable<T extends { _id: string }>({
 
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        const totalRows = table.getRowModel().rows.length;
-        if (visibleRows < totalRows) {
-          setVisibleRows(visibleRows + 20);
-        }
+      if (entries[0].isIntersecting && hasNextPage && !isLoading && loadMore) {
+        loadMore();
       }
     });
 
@@ -127,9 +129,9 @@ export function EditableDataTable<T extends { _id: string }>({
     }
 
     return () => observer.disconnect();
-  }, [visibleRows, table]);
+  }, [hasNextPage, isLoading, loadMore]);
 
-  const rows = table.getRowModel().rows.slice(0, visibleRows);
+  const rows = table.getRowModel().rows;
 
   return (
     <div className="rounded-md border overflow-x-auto w-full">
@@ -163,7 +165,13 @@ export function EditableDataTable<T extends { _id: string }>({
                   ))}
                 </TableRow>
               ))}
-              <tr ref={scrollRef} />
+              {hasNextPage && (
+                <TableRow ref={scrollRef}>
+                  <TableCell colSpan={columns.length} className="h-16 text-center">
+                    {isLoading ? "Lade mehr..." : ""}
+                  </TableCell>
+                </TableRow>
+              )}
             </>
           ) : (
             <TableRow>

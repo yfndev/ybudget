@@ -97,7 +97,7 @@ export const updateTransaction = mutation({
 
   handler: async (ctx, { transactionId, ...updates }) => {
     const validUpdates = Object.fromEntries(
-      Object.entries(updates).filter(([_, value]) => value !== undefined),
+      Object.entries(updates).filter(([_, value]) => value !== undefined && value !== ""),
     );
 
     return await ctx.db.patch(transactionId, validUpdates);
