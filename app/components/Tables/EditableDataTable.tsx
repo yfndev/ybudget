@@ -22,19 +22,19 @@ interface EditableDataTableProps<T> {
   columns: ColumnDef<T>[];
   data: T[];
   onUpdate?: (rowId: string, field: string, value: any) => Promise<void>;
-  hasNextPage?: boolean;
+  paginationStatus?: "Loading" | "LoadingMore" | "CanLoadMore" | "Exhausted" | "LoadingFirstPage";
   loadMore?: () => void;
-  isLoading?: boolean;
 }
 
 export function EditableDataTable<T extends { _id: string }>({
   columns,
   data,
   onUpdate,
-  hasNextPage = false,
+  paginationStatus,
   loadMore,
-  isLoading = false,
 }: EditableDataTableProps<T>) {
+  const hasNextPage = paginationStatus === "CanLoadMore";
+  const isLoading = paginationStatus === "LoadingMore" || paginationStatus === "LoadingFirstPage";
   const [sorting, setSorting] = useState<SortingState>([
     { id: "date", desc: true },
   ]);
