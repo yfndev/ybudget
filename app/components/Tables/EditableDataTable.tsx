@@ -1,5 +1,6 @@
 "use client";
 
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -22,7 +23,12 @@ interface EditableDataTableProps<T> {
   columns: ColumnDef<T>[];
   data: T[];
   onUpdate?: (rowId: string, field: string, value: any) => Promise<void>;
-  paginationStatus?: "Loading" | "LoadingMore" | "CanLoadMore" | "Exhausted" | "LoadingFirstPage";
+  paginationStatus?:
+    | "Loading"
+    | "LoadingMore"
+    | "CanLoadMore"
+    | "Exhausted"
+    | "LoadingFirstPage";
   loadMore?: () => void;
 }
 
@@ -34,7 +40,9 @@ export function EditableDataTable<T extends { _id: string }>({
   loadMore,
 }: EditableDataTableProps<T>) {
   const hasNextPage = paginationStatus === "CanLoadMore";
-  const isLoading = paginationStatus === "LoadingMore" || paginationStatus === "LoadingFirstPage";
+  const isLoading =
+    paginationStatus === "LoadingMore" ||
+    paginationStatus === "LoadingFirstPage";
   const [sorting, setSorting] = useState<SortingState>([
     { id: "date", desc: true },
   ]);
@@ -193,12 +201,22 @@ export function EditableDataTable<T extends { _id: string }>({
                 </TableRow>
               )}
             </>
+          ) : isLoading ? (
+            <>
+              {[1, 2, 3, 4, 5].map((i) => (
+                <TableRow key={i}>
+                  {columns.map((_, j) => (
+                    <TableCell key={j}>
+                      <Skeleton className="h-4 w-full" />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))}
+            </>
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
-                {isLoading
-                  ? "Transaktionen werden geladen..."
-                  : "Keine Ergebnisse"}
+                Keine Ergebnisse
               </TableCell>
             </TableRow>
           )}
