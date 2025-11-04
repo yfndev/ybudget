@@ -71,6 +71,8 @@ export default defineSchema({
     name: v.string(),
     description: v.string(),
     taxCostposition: v.number(), // Kostenstelle
+    approved: v.boolean(),
+    createdBy: v.id("users"),
   }),
 
   donors: defineTable({
