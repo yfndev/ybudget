@@ -3,10 +3,10 @@
 import BudgetCard from "@/components/Dashboard/BudgetCard";
 import { PageHeader } from "@/components/Layout/PageHeader";
 import { EditableDataTable } from "@/components/Tables/EditableDataTable";
-import { columns } from "@/components/Tables/columns";
+import { editableColumns } from "@/components/Tables/editableColumns";
 import { SidebarInset } from "@/components/ui/sidebar";
 import { useQuery } from "convex-helpers/react/cache";
-import { useMutation, usePaginatedQuery } from "convex/react";
+import { PaginatedQueryReference, useMutation, usePaginatedQuery } from "convex/react";
 import { useParams } from "next/navigation";
 import { api } from "../../../../convex/_generated/api";
 import type { Id } from "../../../../convex/_generated/dataModel";
@@ -67,7 +67,7 @@ export default function DonorDetail() {
       <div className="mt-6">
         <h2 className="text-xl font-semibold mb-4">Transaktionen</h2>
         <EditableDataTable
-          columns={columns}
+          columns={editableColumns}
           data={transactions}
           onUpdate={handleUpdate}
           paginationStatus={status}

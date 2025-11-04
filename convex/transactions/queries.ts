@@ -87,10 +87,15 @@ export const getPaginatedTransactions = query({
     donorId: v.optional(v.string()),
     paginationOpts: paginationOptsValidator,
   },
+  returns: v.object({
+    continueCursor: v.string(),
+    isDone: v.boolean(),
+    page: v.array(v.any()),
+  }),
   handler: async (ctx, args): Promise<{
-    continueCursor: string | null;
+    continueCursor: string;
     isDone: boolean;
-    splitCursor?: string | null;
+    splitCursor?: string;
     page: EnrichedTransaction[];
   }> => {
     const user = await getCurrentUser(ctx);
@@ -139,6 +144,10 @@ export const getPaginatedTransactions = query({
 
     const page = await addProjectAndCategoryNames(ctx, result.page);
 
-    return { ...result, page };
+    return {
+      isDone: result.isDone,
+      continueCursor: result.continueCursor as string,
+      page,
+    };
   },
 });
