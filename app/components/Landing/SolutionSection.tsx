@@ -103,7 +103,7 @@ export function SolutionSection() {
               </div>
               <div className={feature.side === "right" ? "lg:col-start-1" : ""}>
                 <div className="relative">
-                  <div className="absolute -inset-4 rounded-2xl bg-gradient-to-r from-sky-400 to-blue-500 opacity-10 blur-xl" />
+                  <div className="absolute -inset-4 rounded-2xl bg-gradient-to-r from-gray-200 to-gray-300 opacity-10 blur-xl" />
                   <div className="relative overflow-hidden rounded-xl border border-slate-200 bg-slate-50 shadow-lg">
                     <Image
                       src={feature.screenshot}
@@ -122,4 +122,3 @@ export function SolutionSection() {
     </section>
   );
 }
-
