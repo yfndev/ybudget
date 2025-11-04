@@ -1,8 +1,14 @@
 import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
+import type { Doc } from "../_generated/dataModel";
 import { query } from "../_generated/server";
-import { addProjectNames } from "../helpers/addProjectNames";
+import { addProjectAndCategoryNames } from "../helpers/addProjectNames";
 import { getCurrentUser } from "../users/getCurrentUser";
+
+type EnrichedTransaction = Doc<"transactions"> & {
+  projectName?: string;
+  categoryName?: string;
+};
 
 export const getAllTransactions = query({
   args: {
@@ -27,7 +33,7 @@ export const getAllTransactions = query({
             )
     ).collect();
 
-    return addProjectNames(ctx, transactions);
+    return addProjectAndCategoryNames(ctx, transactions);
   },
 });
 
@@ -71,7 +77,7 @@ export const getTransactionRecommendations = query({
         .collect()
     ).filter((t) => !t.matchedTransactionId || t.matchedTransactionId === "");
 
-    return addProjectNames(ctx, transactions);
+    return addProjectAndCategoryNames(ctx, transactions);
   },
 });
 
@@ -81,7 +87,12 @@ export const getPaginatedTransactions = query({
     donorId: v.optional(v.string()),
     paginationOpts: paginationOptsValidator,
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<{
+    continueCursor: string | null;
+    isDone: boolean;
+    splitCursor?: string | null;
+    page: EnrichedTransaction[];
+  }> => {
     const user = await getCurrentUser(ctx);
 
     let dbQuery;
@@ -126,7 +137,7 @@ export const getPaginatedTransactions = query({
       cursor: args.paginationOpts.cursor,
     });
 
-    const page = await addProjectNames(ctx, result.page);
+    const page = await addProjectAndCategoryNames(ctx, result.page);
 
     return { ...result, page };
   },

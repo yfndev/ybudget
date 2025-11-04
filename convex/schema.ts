@@ -43,7 +43,7 @@ export default defineSchema({
     amount: v.number(), // negative for expenses, positive for income
     description: v.string(),
     counterparty: v.string(),
-    categoryId: v.string(),
+    categoryId: v.optional(v.id("categories")),
     donorId: v.string(),
     importedBy: v.string(),
     importedTransactionId: v.optional(v.string()),

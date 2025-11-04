@@ -5,10 +5,15 @@ interface DateRange {
   to: Date;
 }
 
+export type EnrichedTransaction = Doc<"transactions"> & {
+  projectName?: string;
+  categoryName?: string;
+};
+
 export function filterTransactionsByDateRange(
-  transactions: Doc<"transactions">[] | undefined,
+  transactions: EnrichedTransaction[] | undefined,
   dateRange: DateRange,
-): Doc<"transactions">[] | undefined {
+): EnrichedTransaction[] | undefined {
   if (!transactions) return undefined;
 
   const startDate = dateRange.from.getTime();
@@ -18,10 +23,10 @@ export function filterTransactionsByDateRange(
 }
 
 export function filterTransactionsBeforeDate(
-  transactions: Doc<"transactions">[] | undefined,
+  transactions: EnrichedTransaction[] | undefined,
   beforeDate: Date,
-  additionalFilter?: (t: Doc<"transactions">) => boolean,
-): Doc<"transactions">[] | undefined {
+  additionalFilter?: (t: EnrichedTransaction) => boolean,
+): EnrichedTransaction[] | undefined {
   if (!transactions) return undefined;
 
   const beforeTimestamp = beforeDate.getTime();

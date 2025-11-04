@@ -1,14 +1,16 @@
+"use client";
+
 import { PageHeader } from "@/components/Layout/PageHeader";
-import { columns } from "@/components/Tables/columns";
 import { EditableDataTable } from "@/components/Tables/EditableDataTable";
+import { editableColumns } from "@/components/Tables/editableColumns";
 import { formatDate } from "@/lib/formatDate";
+import type { EnrichedTransaction } from "@/lib/transactionFilters";
 import type { PaginationStatus } from "convex/react";
 import type { DateRange } from "react-day-picker";
-import type { Doc } from "../../../convex/_generated/dataModel";
 
 interface TransactionsPageUIProps {
   selectedDateRange: DateRange;
-  transactions: Doc<"transactions">[];
+  transactions: EnrichedTransaction[];
   status: PaginationStatus;
   loadMore: () => void;
   onUpdateTransaction: (
@@ -35,7 +37,7 @@ export default function TransactionsOverviewUI({
         {fromDate} - {toDate}
       </div>
       <EditableDataTable
-        columns={columns}
+        columns={editableColumns}
         data={transactions}
         onUpdate={onUpdateTransaction}
         paginationStatus={status}

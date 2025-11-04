@@ -9,12 +9,13 @@ export const createExpectedTransaction = mutation({
     amount: v.number(),
     description: v.string(),
     counterparty: v.string(),
-    categoryId: v.string(),
+    categoryId: v.id("categories"),
     status: v.literal("expected"),
     donorId: v.optional(v.string()),
   },
 
   handler: async (ctx, args) => {
+   
     const user = await getCurrentUser(ctx);
 
     return await ctx.db.insert("transactions", {
@@ -72,7 +73,7 @@ export const createImportedTransaction = mutation({
       importSource: args.importSource,
       status: "processed",
       projectId: undefined,
-      categoryId: "",
+      categoryId: undefined,
       donorId: "",
       accountName: args.accountName,
     });
@@ -87,8 +88,8 @@ export const updateTransaction = mutation({
     date: v.optional(v.number()),
     amount: v.optional(v.number()),
     description: v.optional(v.string()),
-    projectId: v.optional(v.string()),
-    categoryId: v.optional(v.string()),
+    projectId: v.optional(v.id("projects")),
+    categoryId: v.optional(v.id("categories")),
     donorId: v.optional(v.string()),
     matchedTransactionId: v.optional(v.string()),
     status: v.optional(v.union(v.literal("expected"), v.literal("processed"))),
