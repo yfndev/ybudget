@@ -12,11 +12,13 @@ export function DashboardDropdown({
   onOpenIncome,
   onOpenImport,
   onOpenDonor,
+  onOpenCategory,
 }: {
   onOpenExpense: () => void;
   onOpenIncome: () => void;
   onOpenImport: () => void;
   onOpenDonor: () => void;
+  onOpenCategory: () => void;
 }) {
   return (
     <DropdownMenu>
@@ -39,6 +41,9 @@ export function DashboardDropdown({
           <DropdownMenuItem onSelect={onOpenImport}>
             CSV importieren
             {/* <DropdownMenuShortcut>⇧⌘B</DropdownMenuShortcut> */}
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={onOpenCategory}>
+            <span> Kategorie hinzufügen</span>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem>

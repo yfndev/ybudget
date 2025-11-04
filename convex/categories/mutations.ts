@@ -2,21 +2,28 @@ import { v } from "convex/values";
 import { mutation } from "../_generated/server";
 import { getCurrentUser } from "../users/getCurrentUser";
 
-
 export const createCategory = mutation({
   args: {
     name: v.string(),
     description: v.string(),
-    taxCostposition: v.number(),
+    taxsphere: v.union(
+      v.literal("non-profit"),
+      v.literal("asset-management"),
+      v.literal("purpose-operations"),
+      v.literal("commercial-operations"),
+    ),
+    parentId: v.optional(v.id("categories")),
+
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
     return ctx.db.insert("categories", {
       name: args.name,
       description: args.description,
-      taxCostposition: args.taxCostposition,
+      taxsphere: args.taxsphere,
       approved: false,
       createdBy: user._id,
+      parentId: args.parentId,
     });
   },
 });

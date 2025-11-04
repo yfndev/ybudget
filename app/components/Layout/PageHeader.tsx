@@ -10,6 +10,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { CreateCategoryDialog } from "../dialogs/CreateCategoryDialog";
 import { AddDonorDialog } from "../Sheets/AddDonorDialog";
 import { Skeleton } from "../ui/skeleton";
 
@@ -31,6 +32,7 @@ export function PageHeader({
   const [isIncomeOpen, setIsIncomeOpen] = useState(false);
   const [isImportOpen, setIsImportOpen] = useState(false);
   const [isDonorOpen, setIsDonorOpen] = useState(false);
+  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
 
   const handleBackClick = () => {
     if (backUrl) {
@@ -80,6 +82,7 @@ export function PageHeader({
                 onOpenIncome={() => setIsIncomeOpen(true)}
                 onOpenImport={() => setIsImportOpen(true)}
                 onOpenDonor={() => setIsDonorOpen(true)}
+                onOpenCategory={() => setIsCategoryOpen(true)}
               />
             </div>
           </div>
@@ -101,6 +104,10 @@ export function PageHeader({
         onOpenChange={setIsImportOpen}
       />
       <AddDonorDialog open={isDonorOpen} onOpenChange={setIsDonorOpen} />
+      <CreateCategoryDialog
+        open={isCategoryOpen}
+        onOpenChange={setIsCategoryOpen}
+      />
     </>
   );
 }

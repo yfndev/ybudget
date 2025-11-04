@@ -70,10 +70,17 @@ export default defineSchema({
   categories: defineTable({
     name: v.string(),
     description: v.string(),
-    taxCostposition: v.number(), // Kostenstelle
+    taxsphere: v.union(
+      v.literal("non-profit"), // Ideeller Bereich
+      v.literal("asset-management"), // Vermögensverwaltung
+      v.literal("purpose-operations"), // Zweckbetrieb
+      v.literal("commercial-operations"), // Wirtschaftlicher Geschäftsbetrieb
+    ),
     approved: v.boolean(),
     createdBy: v.id("users"),
-  }),
+    parentId: v.optional(v.id("categories")),
+    icon: v.optional(v.string()),
+  }).index("by_parent", ["parentId"]),
 
   donors: defineTable({
     name: v.string(),

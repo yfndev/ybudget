@@ -8,40 +8,24 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import {
-  Building2,
-  Check,
-  ChevronsUpDown,
-  Folder,
-  Laptop,
-  Megaphone,
-  MoreHorizontal,
-  Plane,
-  Search,
-  Users,
-  Utensils,
-  X,
-} from "lucide-react";
+import { useQuery } from "convex/react";
+import { Check, ChevronsUpDown, Search, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { MOCK_CATEGORY_GROUPS } from "../data/mockCategories";
-
-const CATEGORY_ICONS: Record<string, React.ElementType> = {
-  Verpflegung: Utensils,
-  "Location & Infrastruktur": Building2,
-  "Honorare & Personal": Users,
-  Reisekosten: Plane,
-  "Marketing & Werbung": Megaphone,
-  Verwaltung: Folder,
-  "IT & Digitale Tools": Laptop,
-  Sonstiges: MoreHorizontal,
-};
+import { api } from "../../../convex/_generated/api";
+import type { Id } from "../../../convex/_generated/dataModel";
+import {
+  filterGroups,
+  findGroupIndex,
+  findItemIndex,
+  groupCategories,
+} from "@/lib/categoryHelpers";
 
 export function SelectCategory({
   value,
   onValueChange,
 }: {
-  value: string;
-  onValueChange: (value: string) => void;
+  value: Id<"categories"> | undefined;
+  onValueChange: (value: Id<"categories">) => void;
 }) {
   const [open, setOpen] = useState(false);
   const [activeGroupIdx, setActiveGroupIdx] = useState(0);
@@ -50,25 +34,20 @@ export function SelectCategory({
   const inputRef = useRef<HTMLInputElement>(null);
   const itemRefs = useRef<Map<number, HTMLButtonElement>>(new Map());
 
-  const selectedItem = MOCK_CATEGORY_GROUPS.flatMap((g) => g.items).find(
-    (item) => item.value === value
+  const categories = useQuery(api.categories.queries.getAllCategories);
+  const selectedItem = categories?.find((cat) => cat._id === value);
+
+  const groupedCategories = useMemo(
+    () => (categories ? groupCategories(categories) : []),
+    [categories]
   );
 
-  const filteredGroups = useMemo(() => {
-    if (!search) return MOCK_CATEGORY_GROUPS;
-    const searchLower = search.toLowerCase();
-    return MOCK_CATEGORY_GROUPS.map((group) => ({
-      ...group,
-      items: group.items.filter(
-        (item) =>
-          item.label.toLowerCase().includes(searchLower) ||
-          item.description.toLowerCase().includes(searchLower) ||
-          group.group.toLowerCase().includes(searchLower)
-      ),
-    })).filter((group) => group.items.length > 0);
-  }, [search]);
+  const filteredGroups = useMemo(
+    () => filterGroups(groupedCategories, search),
+    [groupedCategories, search]
+  );
 
-  const activeItems = filteredGroups[activeGroupIdx]?.items || [];
+  const activeItems = filteredGroups[activeGroupIdx]?.children || [];
 
   useEffect(() => {
     if (search && filteredGroups.length > 0) {
@@ -80,26 +59,23 @@ export function SelectCategory({
   useEffect(() => {
     if (!open) {
       setSearch("");
-      const groupIdx = MOCK_CATEGORY_GROUPS.findIndex((g) =>
-        g.items.some((i) => i.value === value)
-      );
-      setActiveGroupIdx(groupIdx >= 0 ? groupIdx : 0);
+      const groupIdx = findGroupIndex(groupedCategories, value);
+      setActiveGroupIdx(groupIdx);
       if (groupIdx >= 0) {
-        const itemIdx = MOCK_CATEGORY_GROUPS[groupIdx].items.findIndex(
-          (i) => i.value === value
+        setActiveItemIdx(
+          findItemIndex(groupedCategories[groupIdx], value)
         );
-        setActiveItemIdx(itemIdx >= 0 ? itemIdx : 0);
-      } else {
-        setActiveItemIdx(0);
       }
-    } else if (inputRef.current) {
-      inputRef.current.focus();
+    } else {
+      inputRef.current?.focus();
     }
-  }, [open, value]);
+  }, [open, value, groupedCategories]);
 
   useEffect(() => {
-    const element = itemRefs.current.get(activeItemIdx);
-    element?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    itemRefs.current.get(activeItemIdx)?.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+    });
   }, [activeItemIdx]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -135,7 +111,7 @@ export function SelectCategory({
       case "Enter":
         e.preventDefault();
         if (activeItems[activeItemIdx]) {
-          onValueChange(activeItems[activeItemIdx].value);
+          onValueChange(activeItems[activeItemIdx]._id);
           setOpen(false);
         }
         break;
@@ -160,7 +136,7 @@ export function SelectCategory({
                 value ? "text-foreground" : "text-muted-foreground"
               )}
             >
-              {value ? selectedItem?.label : "Kategorie wählen..."}
+              {value ? selectedItem?.name : "Kategorie wählen..."}
             </span>
             {selectedItem?.description && (
               <span className="text-xs text-muted-foreground line-clamp-1 text-left">
@@ -178,8 +154,8 @@ export function SelectCategory({
         sideOffset={4}
         onKeyDown={handleKeyDown}
       >
-        <div className="border-b ">
-          <div className="flex items-center gap-2 w-full h-9 rounded-md  border-input bg-background px-3 text-sm transition-all ">
+        <div className="border-b">
+          <div className="flex items-center gap-2 w-full h-9 rounded-md border-input bg-background px-3 text-sm transition-all">
             <Search className="h-4 w-4 text-muted-foreground shrink-0" />
             <Input
               ref={inputRef}
@@ -220,44 +196,40 @@ export function SelectCategory({
           ) : (
             <>
               <div className="w-64 border-r bg-muted/30 overflow-y-auto">
-                {filteredGroups.map((group, idx) => {
-                  const Icon = CATEGORY_ICONS[group.group] || MoreHorizontal;
-                  return (
-                    <button
-                      key={group.group}
-                      className={cn(
-                        "w-full text-left px-4 py-3 text-sm font-semibold hover:bg-accent/50 transition-colors flex items-center gap-3 group",
-                        idx === activeGroupIdx && "bg-accent"
-                      )}
-                      onMouseEnter={() => {
-                        setActiveGroupIdx(idx);
-                        setActiveItemIdx(0);
-                      }}
-                      type="button"
-                    >
-                      <Icon className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors shrink-0" />
-                      <span className="flex-1">
-                        {idx + 1}. {group.group}
-                      </span>
-                    </button>
-                  );
-                })}
+                {filteredGroups.map((group, idx) => (
+                  <button
+                    key={group.parent._id}
+                    className={cn(
+                      "w-full text-left px-4 py-3 text-sm font-semibold hover:bg-accent/50 transition-colors flex items-center gap-3 group",
+                      idx === activeGroupIdx && "bg-accent"
+                    )}
+                    onMouseEnter={() => {
+                      setActiveGroupIdx(idx);
+                      setActiveItemIdx(0);
+                    }}
+                    type="button"
+                  >
+                    <span className="flex-1">
+                      {idx + 1}. {group.parent.name}
+                    </span>
+                  </button>
+                ))}
               </div>
-              <div className="flex-1 overflow-y-auto ">
+              <div className="flex-1 overflow-y-auto">
                 {activeItems.map((item, itemIdx) => (
                   <button
-                    key={item.value}
+                    key={item._id}
                     ref={(el) => {
                       if (el) itemRefs.current.set(itemIdx, el);
                       else itemRefs.current.delete(itemIdx);
                     }}
                     className={cn(
-                      "w-full text-left px-2 py-1  hover:bg-accent transition-all group",
+                      "w-full text-left px-2 py-1 hover:bg-accent transition-all group",
                       itemIdx === activeItemIdx && "bg-accent",
-                      value === item.value && "bg-accent/50"
+                      value === item._id && "bg-accent/50"
                     )}
                     onClick={() => {
-                      onValueChange(item.value);
+                      onValueChange(item._id);
                       setOpen(false);
                     }}
                     onMouseEnter={() => setActiveItemIdx(itemIdx)}
@@ -266,12 +238,7 @@ export function SelectCategory({
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0">
                         <div className="text-sm font-medium leading-snug mb-1 flex items-center gap-2">
-                          {item.label}
-                          {value === item.value && (
-                            <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-muted text-[10px] font-semibold text-muted-foreground">
-                              Ausgewählt
-                            </span>
-                          )}
+                          {item.name}
                         </div>
                         <div className="text-xs text-muted-foreground leading-relaxed">
                           {item.description}
@@ -280,7 +247,7 @@ export function SelectCategory({
                       <Check
                         className={cn(
                           "h-4 w-4 shrink-0 mt-0.5 transition-all",
-                          value === item.value ? "opacity-100" : "opacity-0"
+                          value === item._id ? "opacity-100" : "opacity-0"
                         )}
                       />
                     </div>

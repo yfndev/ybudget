@@ -2,6 +2,8 @@
 
 * [ ] add income to categories
 
+- [ ] add donor expense restrictions (only show donor if restriction is met)
+
 * [ ] UX improvements for creating transaction (easier key handling)
 
 * [ ] check how to show expected transactions in table (also if they are already matched)
@@ -13,3 +15,6 @@ archive:
 
 - [x] save name of organization locally in browser
 - [x] add prediction for expected transactions on dashboard
+
+No:
+! change sheets to dialogs
