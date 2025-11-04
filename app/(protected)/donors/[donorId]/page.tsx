@@ -24,11 +24,11 @@ export default function DonorDetail() {
   } = usePaginatedQuery(
     api.transactions.queries.getPaginatedTransactions,
     { donorId },
-    { initialNumItems: 50 },
+    { initialNumItems: 50 }
   );
 
   const updateTransaction = useMutation(
-    api.transactions.functions.updateTransaction,
+    api.transactions.functions.updateTransaction
   );
 
   const handleUpdate = async (rowId: string, field: string, value: any) => {
@@ -49,32 +49,30 @@ export default function DonorDetail() {
   }
 
   return (
-    <SidebarInset>
-      <div className="p-4 lg:px-6 pb-6 overflow-x-hidden w-full">
-        <PageHeader
-          title={donor.donor.name}
-          subtitle={donor.donor.type}
-          showBackButton={true}
-          backUrl="/donors"
-        />
+    <div>
+      <PageHeader
+        title={donor.donor.name}
+        subtitle={donor.donor.type}
+        showBackButton={true}
+        backUrl="/donors"
+      />
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-          <BudgetCard title="Zugesagt" amount={donor.committedIncome} />
-          <BudgetCard title="Bezahlt" amount={donor.paidIncome} />
-          <BudgetCard title="Offen" amount={donor.openIncome} />
-          <BudgetCard title="Ausgaben" amount={-donor.totalExpenses} />
-        </div>
-
-        <div className="mt-6">
-          <h2 className="text-xl font-semibold mb-4">Transaktionen</h2>
-          <EditableDataTable
-            columns={columns}
-            data={transactions}
-            onUpdate={handleUpdate}
-            paginationStatus={status}
-          />
-        </div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+        <BudgetCard title="Zugesagt" amount={donor.committedIncome} />
+        <BudgetCard title="Bezahlt" amount={donor.paidIncome} />
+        <BudgetCard title="Offen" amount={donor.openIncome} />
+        <BudgetCard title="Ausgaben" amount={-donor.totalExpenses} />
       </div>
-    </SidebarInset>
+
+      <div className="mt-6">
+        <h2 className="text-xl font-semibold mb-4">Transaktionen</h2>
+        <EditableDataTable
+          columns={columns}
+          data={transactions}
+          onUpdate={handleUpdate}
+          paginationStatus={status}
+        />
+      </div>
+    </div>
   );
 }

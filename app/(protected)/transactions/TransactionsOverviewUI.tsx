@@ -1,7 +1,6 @@
 import { PageHeader } from "@/components/Layout/PageHeader";
 import { columns } from "@/components/Tables/columns";
 import { EditableDataTable } from "@/components/Tables/EditableDataTable";
-import { SidebarInset } from "@/components/ui/sidebar";
 import { formatDate } from "@/lib/formatDate";
 import type { PaginationStatus } from "convex/react";
 import type { DateRange } from "react-day-picker";
@@ -30,20 +29,18 @@ export default function TransactionsOverviewUI({
   const toDate = formatDate(selectedDateRange.to);
 
   return (
-    <SidebarInset>
-      <div className="p-4 lg:px-6 pb-6 overflow-x-hidden w-full">
-        <PageHeader title="Transaktionen" />
-        <div className="text-sm text-muted-foreground">
-          {fromDate} - {toDate}
-        </div>
-        <EditableDataTable
-          columns={columns}
-          data={transactions}
-          onUpdate={onUpdateTransaction}
-          paginationStatus={status}
-          loadMore={loadMore}
-        />
+    <div>
+      <PageHeader title="Transaktionen" />
+      <div className="text-sm text-muted-foreground">
+        {fromDate} - {toDate}
       </div>
-    </SidebarInset>
+      <EditableDataTable
+        columns={columns}
+        data={transactions}
+        onUpdate={onUpdateTransaction}
+        paginationStatus={status}
+        loadMore={loadMore}
+      />
+    </div>
   );
 }

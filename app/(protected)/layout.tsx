@@ -43,10 +43,15 @@ const StableContent = memo(function StableContent({
     <DateRangeProvider>
       <SidebarProvider>
         <AppSidebar />
-        {children}
-        {showOnboarding && (
-          <OnboardingDialog open={true} onOpenChange={handleOnboardingChange} />
-        )}
+        <div className="p-4 lg:px-6 pb-6 overflow-x-hidden w-full">
+          {children}
+          {showOnboarding && (
+            <OnboardingDialog
+              open={true}
+              onOpenChange={handleOnboardingChange}
+            />
+          )}
+        </div>
       </SidebarProvider>
     </DateRangeProvider>
   );
