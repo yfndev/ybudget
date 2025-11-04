@@ -15,8 +15,8 @@ import { SelectCategoryUI } from "./SelectCategoryUI";
 export const SelectCategory = forwardRef<
   HTMLButtonElement,
   {
-    value: Id<"categories"> | undefined;
-    onValueChange: (value: Id<"categories">) => void;
+    value: string | undefined;
+    onValueChange: (value: string) => void;
     onTabPressed?: () => void;
   }
 >(function SelectCategory({ value, onValueChange, onTabPressed }, triggerRef) {
@@ -52,12 +52,12 @@ export const SelectCategory = forwardRef<
     if (e.key === "ArrowDown") {
       e.preventDefault();
       setActiveItemIdx((prev) =>
-        prev < activeItems.length - 1 ? prev + 1 : 0,
+        prev < activeItems.length - 1 ? prev + 1 : 0
       );
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
       setActiveItemIdx((prev) =>
-        prev > 0 ? prev - 1 : activeItems.length - 1,
+        prev > 0 ? prev - 1 : activeItems.length - 1
       );
     } else if (e.key === "ArrowRight") {
       e.preventDefault();
@@ -84,10 +84,18 @@ export const SelectCategory = forwardRef<
     if (!newOpen) {
       setSearch("");
     } else {
-      const groupIdx = findGroupIndex(grouped, value);
+      const groupIdx = findGroupIndex(
+        grouped,
+        value as Id<"categories"> | undefined
+      );
       setActiveGroupIdx(groupIdx >= 0 ? groupIdx : 0);
       if (groupIdx >= 0) {
-        setActiveItemIdx(findItemIndex(grouped[groupIdx], value));
+        setActiveItemIdx(
+          findItemIndex(
+            grouped[groupIdx],
+            value as Id<"categories"> | undefined
+          )
+        );
       }
     }
   };
@@ -101,7 +109,7 @@ export const SelectCategory = forwardRef<
     <SelectCategoryUI
       open={open}
       onOpenChange={handleOpenChange}
-      value={value}
+      value={value as Id<"categories"> | undefined}
       selectedItem={selectedItem}
       search={search}
       onSearchChange={setSearch}
