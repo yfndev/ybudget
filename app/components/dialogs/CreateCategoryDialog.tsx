@@ -113,7 +113,7 @@ export function CreateCategoryDialog({
                     | "non-profit"
                     | "asset-management"
                     | "purpose-operations"
-                    | "commercial-operations"
+                    | "commercial-operations",
                 )
               }
             >
@@ -144,7 +144,7 @@ export function CreateCategoryDialog({
               value={parentId || "none"}
               onValueChange={(value) =>
                 setParentId(
-                  value === "none" ? undefined : (value as Id<"categories">)
+                  value === "none" ? undefined : (value as Id<"categories">),
                 )
               }
             >

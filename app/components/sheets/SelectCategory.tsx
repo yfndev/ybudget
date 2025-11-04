@@ -52,12 +52,12 @@ export const SelectCategory = forwardRef<
     if (e.key === "ArrowDown") {
       e.preventDefault();
       setActiveItemIdx((prev) =>
-        prev < activeItems.length - 1 ? prev + 1 : 0
+        prev < activeItems.length - 1 ? prev + 1 : 0,
       );
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
       setActiveItemIdx((prev) =>
-        prev > 0 ? prev - 1 : activeItems.length - 1
+        prev > 0 ? prev - 1 : activeItems.length - 1,
       );
     } else if (e.key === "ArrowRight") {
       e.preventDefault();

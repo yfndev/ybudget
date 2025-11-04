@@ -92,7 +92,10 @@ export const getPaginatedTransactions = query({
     isDone: v.boolean(),
     page: v.array(v.any()),
   }),
-  handler: async (ctx, args): Promise<{
+  handler: async (
+    ctx,
+    args,
+  ): Promise<{
     continueCursor: string;
     isDone: boolean;
     splitCursor?: string;

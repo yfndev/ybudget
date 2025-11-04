@@ -24,7 +24,7 @@ import {
   LogOut,
   Settings,
 } from "lucide-react";
-import { Doc } from "../../../convex/_generated/dataModel";
+import type { Doc } from "../../../convex/_generated/dataModel";
 import { SignOut } from "../Auth/LogoutButton";
 
 export function NavUser({ user }: { user: Doc<"users"> | null | undefined }) {

@@ -15,7 +15,6 @@ export const createExpectedTransaction = mutation({
   },
 
   handler: async (ctx, args) => {
-   
     const user = await getCurrentUser(ctx);
 
     return await ctx.db.insert("transactions", {
