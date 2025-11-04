@@ -9,7 +9,7 @@ import { useParams } from "next/navigation";
 import { useMemo } from "react";
 import toast from "react-hot-toast";
 import { api } from "../../../../convex/_generated/api";
-import { Id } from "../../../../convex/_generated/dataModel";
+import type { Id } from "../../../../convex/_generated/dataModel";
 import ProjectDashboardSkeleton from "./ProjectDashboardSkeleton";
 import ProjectDashboardUI from "./ProjectDashboardUI";
 
@@ -28,27 +28,27 @@ export default function ProjectDetail() {
   } = usePaginatedQuery(
     api.transactions.queries.getPaginatedTransactions,
     { projectId: projectId as Id<"projects"> },
-    { initialNumItems: 50 }
+    { initialNumItems: 50 },
   );
 
   const transactions = useMemo(
     () => filterTransactionsByDateRange(allTransactions, selectedDateRange),
-    [allTransactions, selectedDateRange]
+    [allTransactions, selectedDateRange],
   );
 
   const budgets = useMemo(
     () => calculateBudget(transactions ?? []),
-    [transactions]
+    [transactions],
   );
 
   const updateTransaction = useMutation(
-    api.transactions.functions.updateTransaction
+    api.transactions.functions.updateTransaction,
   );
 
   const handleUpdateTransaction = async (
     transactionId: string,
     field: string,
-    value: any
+    value: any,
   ) => {
     try {
       await updateTransaction({

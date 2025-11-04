@@ -5,7 +5,7 @@ import { useEffect } from "react";
 export function useImportKeyboard(
   onNext: () => void,
   onPrev: () => void,
-  onSave: () => void | Promise<void>
+  onSave: () => void | Promise<void>,
 ) {
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {

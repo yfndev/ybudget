@@ -3,7 +3,7 @@
 import { useQuery } from "convex-helpers/react/cache";
 import { useMemo, useState } from "react";
 import { api } from "../../../convex/_generated/api";
-import { Doc } from "../../../convex/_generated/dataModel";
+import type { Doc } from "../../../convex/_generated/dataModel";
 
 type UseFetchImportTransactionsResult = {
   transactions: Array<Doc<"transactions">> | undefined;
@@ -19,7 +19,7 @@ export function useFetchImportTransactions(): UseFetchImportTransactionsResult {
   const [index, setIndex] = useState(0);
 
   const transactions = useQuery(
-    api.transactions.queries.getUnassignedProcessedTransactions
+    api.transactions.queries.getUnassignedProcessedTransactions,
   );
 
   const current = useMemo(() => {
@@ -34,7 +34,7 @@ export function useFetchImportTransactions(): UseFetchImportTransactionsResult {
           amount: current.amount,
           projectId: current.projectId || undefined,
         }
-      : "skip"
+      : "skip",
   );
 
   return {

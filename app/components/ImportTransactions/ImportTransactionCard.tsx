@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { useQuery } from "convex-helpers/react/cache";
 import { api } from "../../../convex/_generated/api";
-import { Id } from "../../../convex/_generated/dataModel";
+import type { Id } from "../../../convex/_generated/dataModel";
 import { ImportTransactionCardUI } from "./ImportTransactionCardUI";
 
 interface ImportTransactionCardProps {
@@ -44,12 +44,12 @@ export const ImportTransactionCard = ({
 
   const availableDonations = useQuery(
     api.donations.queries.getAvailableDonationsForProject,
-    isExpense && projectId ? { projectId } : "skip"
+    isExpense && projectId ? { projectId } : "skip",
   );
 
   const hasDonations = useMemo(
     () => availableDonations !== undefined && availableDonations.length > 0,
-    [availableDonations]
+    [availableDonations],
   );
 
   return (

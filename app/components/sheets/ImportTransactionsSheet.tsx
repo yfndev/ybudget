@@ -40,7 +40,7 @@ export function ImportTransactionsSheet({
 
   const allTransactions = useQuery(
     api.transactions.queries.getAllTransactions,
-    {}
+    {},
   );
 
   const existingIds = useMemo(() => {
@@ -50,7 +50,7 @@ export function ImportTransactionsSheet({
       .filter(Boolean) as string[];
   }, [allTransactions]);
   const addTransaction = useMutation(
-    api.transactions.functions.createImportedTransaction
+    api.transactions.functions.createImportedTransaction,
   );
 
   const handleFile = (file: File) => {
@@ -86,7 +86,7 @@ export function ImportTransactionsSheet({
 
     const skipped = csvData.length - newTransactions.length;
     const toastId = toast.loading(
-      `Importiere 0/${newTransactions.length} Transaktionen...`
+      `Importiere 0/${newTransactions.length} Transaktionen...`,
     );
 
     try {
@@ -111,13 +111,13 @@ export function ImportTransactionsSheet({
           `Importiere ${processed}/${newTransactions.length} Transaktionen...`,
           {
             id: toastId,
-          }
+          },
         );
       }
 
       toast.success(
         `${inserted} neue Transaktionen importiert, ${skipped} Duplikate übersprungen`,
-        { id: toastId }
+        { id: toastId },
       );
       setCsvData([]);
       setImportSource("");

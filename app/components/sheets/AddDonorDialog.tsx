@@ -85,7 +85,12 @@ export const AddDonorDialog = ({
 
           <div className="flex flex-col gap-2">
             <Label>Art des Förderers</Label>
-            <Select value={type} onValueChange={(value: "donation" | "sponsoring") => setType(value)}>
+            <Select
+              value={type}
+              onValueChange={(value: "donation" | "sponsoring") =>
+                setType(value)
+              }
+            >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>

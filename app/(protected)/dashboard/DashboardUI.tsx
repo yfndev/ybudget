@@ -5,7 +5,7 @@ import { SidebarInset } from "@/components/ui/sidebar";
 import { CashflowChartUI } from "@/components/Dashboard/CashflowChartUI";
 import ProjectCard from "@/components/Dashboard/ProjectCard";
 import { calculateProgressPercentage } from "@/lib/budgetCalculations";
-import { Doc } from "../../../convex/_generated/dataModel";
+import type { Doc } from "../../../convex/_generated/dataModel";
 
 interface DashboardUIProps {
   projects: Doc<"projects">[];

@@ -1,4 +1,4 @@
-import { Doc } from "../../convex/_generated/dataModel";
+import type { Doc } from "../../convex/_generated/dataModel";
 
 export const calculateBudget = (transactions: Doc<"transactions">[]) => {
   let currentBalance = 0;

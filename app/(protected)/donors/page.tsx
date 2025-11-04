@@ -13,7 +13,7 @@ export default function DonorsPage() {
     <SidebarInset>
       <div className="p-4 lg:px-6 pb-6 overflow-x-hidden w-full">
         <PageHeader title="Förderer" />
-        
+
         <div className="space-y-6">
           <p className="text-muted-foreground">
             Verwalte deine Förderer und verfolge deren finanzielle Beiträge
@@ -21,7 +21,9 @@ export default function DonorsPage() {
 
           {donors?.length === 0 ? (
             <div className="text-center py-12">
-              <h3 className="text-lg font-semibold">Keine Förderer vorhanden</h3>
+              <h3 className="text-lg font-semibold">
+                Keine Förderer vorhanden
+              </h3>
               <p className="text-muted-foreground mt-2">
                 Erstelle deinen ersten Förderer, um zu beginnen.
               </p>

@@ -1,4 +1,4 @@
-import { Id } from "../../../convex/_generated/dataModel";
+import type { Id } from "../../../convex/_generated/dataModel";
 import { SelectCategory } from "../Sheets/SelectCategory";
 import { SelectDonation } from "../Sheets/SelectDonation";
 import { SelectDonor } from "../Sheets/SelectDonor";

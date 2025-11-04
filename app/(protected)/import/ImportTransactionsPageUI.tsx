@@ -3,8 +3,8 @@ import { ImportTransactionCard } from "@/components/ImportTransactions/ImportTra
 import { PageHeader } from "@/components/Layout/PageHeader";
 import { Progress } from "@/components/ui/progress";
 import { SidebarInset } from "@/components/ui/sidebar";
-import { Doc } from "../../../convex/_generated/dataModel";
-import { ImportFormState } from "../../hooks/ImportTransactions/useImportForm";
+import type { Doc } from "../../../convex/_generated/dataModel";
+import type { ImportFormState } from "../../hooks/ImportTransactions/useImportForm";
 
 interface ImportTransactionsPageUIProps {
   expectedTransactions: Doc<"transactions">[];

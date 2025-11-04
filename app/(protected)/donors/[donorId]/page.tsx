@@ -9,7 +9,7 @@ import { useQuery } from "convex-helpers/react/cache";
 import { useMutation, usePaginatedQuery } from "convex/react";
 import { useParams } from "next/navigation";
 import { api } from "../../../../convex/_generated/api";
-import { Id } from "../../../../convex/_generated/dataModel";
+import type { Id } from "../../../../convex/_generated/dataModel";
 
 export default function DonorDetail() {
   const params = useParams();
@@ -24,11 +24,11 @@ export default function DonorDetail() {
   } = usePaginatedQuery(
     api.transactions.queries.getPaginatedTransactions,
     { donorId },
-    { initialNumItems: 50 }
+    { initialNumItems: 50 },
   );
 
   const updateTransaction = useMutation(
-    api.transactions.functions.updateTransaction
+    api.transactions.functions.updateTransaction,
   );
 
   const handleUpdate = async (rowId: string, field: string, value: any) => {

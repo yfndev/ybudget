@@ -26,8 +26,8 @@ export default defineSchema({
     .index("email", ["email"])
     .index("phone", ["phone"])
     .index("by_organization", ["organizationId"]),
-  
-    projects: defineTable({
+
+  projects: defineTable({
     name: v.string(),
     parentId: v.optional(v.id("projects")),
     organizationId: v.id("organizations"),
@@ -35,7 +35,7 @@ export default defineSchema({
     isActive: v.boolean(),
     createdBy: v.string(),
   }).index("by_organization", ["organizationId"]),
-  
+
   transactions: defineTable({
     projectId: v.optional(v.id("projects")),
     organizationId: v.id("organizations"),
@@ -62,18 +62,21 @@ export default defineSchema({
     .index("by_date", ["date"])
     .index("by_organization", ["organizationId"])
     .index("by_organization_donor", ["organizationId", "donorId"])
-    .index("by_importedTransactionId", ["organizationId", "importedTransactionId"]),
-  
-    categories: defineTable({
+    .index("by_importedTransactionId", [
+      "organizationId",
+      "importedTransactionId",
+    ]),
+
+  categories: defineTable({
     name: v.string(),
     description: v.string(),
     taxCostposition: v.number(), // Kostenstelle
   }),
-  
+
   donors: defineTable({
     name: v.string(),
     type: v.union(v.literal("donation"), v.literal("sponsoring")),
     organizationId: v.id("organizations"),
     createdBy: v.id("users"),
-  }).index("by_organization", ["organizationId"])
-})
+  }).index("by_organization", ["organizationId"]),
+});

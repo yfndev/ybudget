@@ -7,7 +7,9 @@ export const getAllDonors = query({
     const user = await getCurrentUser(ctx);
     return ctx.db
       .query("donors")
-      .withIndex("by_organization", (q) => q.eq("organizationId", user.organizationId))
+      .withIndex("by_organization", (q) =>
+        q.eq("organizationId", user.organizationId),
+      )
       .collect();
   },
 });
@@ -20,14 +22,18 @@ export const getDonorSummary = query({
     const [donor, transactions] = await Promise.all([
       ctx.db
         .query("donors")
-        .withIndex("by_organization", (q) => q.eq("organizationId", user.organizationId))
+        .withIndex("by_organization", (q) =>
+          q.eq("organizationId", user.organizationId),
+        )
         .filter((q) => q.eq(q.field("_id"), args.donorId))
         .first(),
       ctx.db
         .query("transactions")
-        .withIndex("by_organization", (q) => q.eq("organizationId", user.organizationId))
+        .withIndex("by_organization", (q) =>
+          q.eq("organizationId", user.organizationId),
+        )
         .filter((q) => q.eq(q.field("donorId"), args.donorId))
-        .collect()
+        .collect(),
     ]);
 
     if (!donor) throw new Error("Donor not found");
@@ -36,10 +42,12 @@ export const getDonorSummary = query({
     let paidIncome = 0;
     let totalExpenses = 0;
 
-    transactions.forEach(transaction => {
+    transactions.forEach((transaction) => {
       if (transaction.amount > 0) {
-        if (transaction.status === "expected") committedIncome += transaction.amount;
-        if (transaction.status === "processed") paidIncome += transaction.amount;
+        if (transaction.status === "expected")
+          committedIncome += transaction.amount;
+        if (transaction.status === "processed")
+          paidIncome += transaction.amount;
       } else {
         totalExpenses += Math.abs(transaction.amount);
       }
@@ -61,9 +69,10 @@ export const getDonorTransactions = query({
     const user = await getCurrentUser(ctx);
     return ctx.db
       .query("transactions")
-      .withIndex("by_organization", (q) => q.eq("organizationId", user.organizationId))
+      .withIndex("by_organization", (q) =>
+        q.eq("organizationId", user.organizationId),
+      )
       .filter((q) => q.eq(q.field("donorId"), args.donorId))
       .collect();
   },
 });
-

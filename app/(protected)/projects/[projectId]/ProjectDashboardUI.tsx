@@ -3,8 +3,8 @@ import { PageHeader } from "@/components/Layout/PageHeader";
 import { EditableDataTable } from "@/components/Tables/EditableDataTable";
 import { editableColumns } from "@/components/Tables/editableColumns";
 import { SidebarInset } from "@/components/ui/sidebar";
-import { PaginationStatus } from "convex/react";
-import { Doc } from "../../../../convex/_generated/dataModel";
+import type { PaginationStatus } from "convex/react";
+import type { Doc } from "../../../../convex/_generated/dataModel";
 
 interface ProjectDashboardUIProps {
   project: Doc<"projects">;

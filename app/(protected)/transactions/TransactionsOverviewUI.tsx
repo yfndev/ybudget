@@ -3,9 +3,9 @@ import { columns } from "@/components/Tables/columns";
 import { EditableDataTable } from "@/components/Tables/EditableDataTable";
 import { SidebarInset } from "@/components/ui/sidebar";
 import { formatDate } from "@/lib/formatDate";
-import { PaginationStatus } from "convex/react";
-import { DateRange } from "react-day-picker";
-import { Doc } from "../../../convex/_generated/dataModel";
+import type { PaginationStatus } from "convex/react";
+import type { DateRange } from "react-day-picker";
+import type { Doc } from "../../../convex/_generated/dataModel";
 
 interface TransactionsPageUIProps {
   selectedDateRange: DateRange;
@@ -15,7 +15,7 @@ interface TransactionsPageUIProps {
   onUpdateTransaction: (
     rowId: string,
     field: string,
-    value: any
+    value: any,
   ) => Promise<void>;
 }
 

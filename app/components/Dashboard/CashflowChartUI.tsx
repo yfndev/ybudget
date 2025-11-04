@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  ChartConfig,
+  type ChartConfig,
   ChartContainer,
   ChartLegend,
   ChartLegendContent,
@@ -70,13 +70,15 @@ interface CashflowChartUIProps {
   transactions?: Doc<"transactions">[];
 }
 
-export function CashflowChartUI({ transactions: providedTransactions }: CashflowChartUIProps) {
+export function CashflowChartUI({
+  transactions: providedTransactions,
+}: CashflowChartUIProps) {
   const { selectedDateRange } = useDateRange();
 
   // Only fetch all transactions if not provided (for standalone usage)
   const allTransactionsQuery = useQuery(
     api.transactions.queries.getAllTransactions,
-    providedTransactions ? undefined : {}
+    providedTransactions ? undefined : {},
   );
 
   const transactions = useMemo(() => {
@@ -84,7 +86,10 @@ export function CashflowChartUI({ transactions: providedTransactions }: Cashflow
       // Use provided transactions (already filtered)
       return providedTransactions;
     }
-    return filterTransactionsByDateRange(allTransactionsQuery, selectedDateRange);
+    return filterTransactionsByDateRange(
+      allTransactionsQuery,
+      selectedDateRange,
+    );
   }, [providedTransactions, allTransactionsQuery, selectedDateRange]);
 
   const pastTransactions = useMemo(() => {
@@ -98,7 +103,7 @@ export function CashflowChartUI({ transactions: providedTransactions }: Cashflow
     return filterTransactionsBeforeDate(
       sourceTransactions,
       pastEndDate,
-      (t) => t.status === "processed"
+      (t) => t.status === "processed",
     );
   }, [providedTransactions, allTransactionsQuery, selectedDateRange]);
 
@@ -110,14 +115,14 @@ export function CashflowChartUI({ transactions: providedTransactions }: Cashflow
           transactions,
           startBalance,
           selectedDateRange.from,
-          selectedDateRange.to
+          selectedDateRange.to,
         )
       : [];
 
   const axisConfig = calculateAxisConfig(
     dataPoints,
     selectedDateRange.from,
-    selectedDateRange.to
+    selectedDateRange.to,
   );
 
   const dateRangeText = `${format(selectedDateRange.from, "d. MMM yyyy", {

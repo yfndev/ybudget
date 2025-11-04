@@ -50,17 +50,16 @@ export const createImportedTransaction = mutation({
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
 
-
     const existing = await ctx.db
-    .query("transactions")
-    .withIndex("by_importedTransactionId", (q) => 
-      q
-        .eq("organizationId", user.organizationId)
-        .eq("importedTransactionId", args.importedTransactionId)
-    )
-    .first();
+      .query("transactions")
+      .withIndex("by_importedTransactionId", (q) =>
+        q
+          .eq("organizationId", user.organizationId)
+          .eq("importedTransactionId", args.importedTransactionId),
+      )
+      .first();
 
-  if (existing) return { skipped: true };
+    if (existing) return { skipped: true };
 
     await ctx.db.insert("transactions", {
       organizationId: user.organizationId,
@@ -78,7 +77,7 @@ export const createImportedTransaction = mutation({
       accountName: args.accountName,
     });
 
-    return { inserted: true }; 
+    return { inserted: true };
   },
 });
 
@@ -97,7 +96,9 @@ export const updateTransaction = mutation({
 
   handler: async (ctx, { transactionId, ...updates }) => {
     const validUpdates = Object.fromEntries(
-      Object.entries(updates).filter(([_, value]) => value !== undefined && value !== ""),
+      Object.entries(updates).filter(
+        ([_, value]) => value !== undefined && value !== "",
+      ),
     );
 
     return await ctx.db.patch(transactionId, validUpdates);

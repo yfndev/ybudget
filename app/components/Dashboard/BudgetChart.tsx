@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  ChartConfig,
+  type ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
@@ -35,7 +35,7 @@ export function BudgetChart() {
     {
       startDate: selectedDateRange.from.getTime(),
       endDate: selectedDateRange.to.getTime(),
-    }
+    },
   );
 
   const dateRangeText = `${format(selectedDateRange.from, "d. MMM yyyy", {
@@ -52,7 +52,7 @@ export function BudgetChart() {
         d.income === 0 &&
         d.expectedIncome === 0 &&
         d.expense === 0 &&
-        d.expectedExpense === 0
+        d.expectedExpense === 0,
     );
 
   return (

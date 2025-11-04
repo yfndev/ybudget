@@ -14,7 +14,11 @@ import {
   setOnboardingComplete,
 } from "../lib/onboardingStorage";
 
-const StableContent = memo(function StableContent({ children }: { children: React.ReactNode }) {
+const StableContent = memo(function StableContent({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const needsOrg = useQuery(api.users.queries.getUserOrganizationId, {});
   const [showOnboarding, setShowOnboarding] = useState(false);
 
@@ -54,7 +58,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      router.push('/login');
+      router.push("/login");
     }
   }, [isAuthenticated, isLoading, router]);
 

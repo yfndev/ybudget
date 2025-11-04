@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { Doc, Id } from "../../../convex/_generated/dataModel";
+import type { Doc, Id } from "../../../convex/_generated/dataModel";
 
 export type ImportFormState = {
   projectId: string;
@@ -44,7 +44,7 @@ export function useImportForm() {
         selectedDonationIds: [],
       });
     },
-    [clearForm]
+    [clearForm],
   );
 
   return {

@@ -27,7 +27,7 @@ import { AmountInput } from "./AmountInput";
 import { SelectCategory } from "./SelectCategory";
 import { SelectDonor } from "./SelectDonor";
 import { SelectProject } from "./SelectProject";
-import { Id } from "../../../convex/_generated/dataModel";
+import type { Id } from "../../../convex/_generated/dataModel";
 
 const formatAmount = (amount: string) => (amount ? `${amount} €` : "");
 
@@ -52,7 +52,7 @@ export function TransactionSheet({
   const [donor, setDonor] = useState("");
 
   const addTransaction = useMutation(
-    api.transactions.functions.createExpectedTransaction
+    api.transactions.functions.createExpectedTransaction,
   );
 
   const dateColor = date ? "text-foreground" : "text-muted-foreground";
@@ -86,7 +86,7 @@ export function TransactionSheet({
         donorId: donor,
       });
       toast.success(
-        type === "expense" ? "Ausgabe gespeichert!" : "Einnahme gespeichert!"
+        type === "expense" ? "Ausgabe gespeichert!" : "Einnahme gespeichert!",
       );
       onOpenChange(false);
     } catch (error) {

@@ -10,11 +10,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  ColumnDef,
+  type ColumnDef,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
-  SortingState,
+  type SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import { useEffect, useRef, useState } from "react";
@@ -168,7 +168,7 @@ export function EditableDataTable<T extends { _id: string }>({
                 <TableHead key={header.id}>
                   {flexRender(
                     header.column.columnDef.header,
-                    header.getContext()
+                    header.getContext(),
                   )}
                 </TableHead>
               ))}
@@ -184,7 +184,7 @@ export function EditableDataTable<T extends { _id: string }>({
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}

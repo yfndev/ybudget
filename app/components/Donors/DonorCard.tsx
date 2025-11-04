@@ -14,7 +14,7 @@ interface DonorCardProps {
 
 const formatCurrency = (amount: number) =>
   new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(
-    amount
+    amount,
   );
 
 export default function DonorCard({ donorId, name, type }: DonorCardProps) {

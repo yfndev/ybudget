@@ -4,11 +4,11 @@ import { useMutation } from "convex/react";
 import { useCallback } from "react";
 import toast from "react-hot-toast";
 import { api } from "../../../convex/_generated/api";
-import { Doc, Id } from "../../../convex/_generated/dataModel";
+import type { Doc, Id } from "../../../convex/_generated/dataModel";
 
 export function useImportSave() {
   const updateTransaction = useMutation(
-    api.transactions.functions.updateTransaction
+    api.transactions.functions.updateTransaction,
   );
 
   const save = useCallback(
@@ -19,7 +19,7 @@ export function useImportSave() {
         categoryId: string;
         donorId: string;
         matchedTransactionId: string | null;
-      }
+      },
     ) => {
       const { projectId, categoryId, donorId, matchedTransactionId } = formData;
 
@@ -57,7 +57,7 @@ export function useImportSave() {
         return false;
       }
     },
-    [updateTransaction]
+    [updateTransaction],
   );
 
   return { save };

@@ -1,6 +1,6 @@
 import { v } from "convex/values";
 import { api } from "../_generated/api";
-import { Id } from "../_generated/dataModel";
+import type { Id } from "../_generated/dataModel";
 import { mutation } from "../_generated/server";
 import { getCurrentUser } from "../users/getCurrentUser";
 

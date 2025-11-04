@@ -5,9 +5,6 @@ interface DateRange {
   to: Date;
 }
 
-
-
-
 export function filterTransactionsByDateRange(
   transactions: Doc<"transactions">[] | undefined,
   dateRange: DateRange,
@@ -17,9 +14,7 @@ export function filterTransactionsByDateRange(
   const startDate = dateRange.from.getTime();
   const endDate = dateRange.to.getTime();
 
-  return transactions.filter(
-    (t) => t.date >= startDate && t.date <= endDate,
-  );
+  return transactions.filter((t) => t.date >= startDate && t.date <= endDate);
 }
 
 export function filterTransactionsBeforeDate(
@@ -37,4 +32,3 @@ export function filterTransactionsBeforeDate(
     return dateMatches && additionalMatches;
   });
 }
-

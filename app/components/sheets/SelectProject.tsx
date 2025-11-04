@@ -62,7 +62,7 @@ export function SelectProject({ value, onValueChange }: SelectProjectProps) {
             <span
               className={cn(
                 "font-medium",
-                value ? "text-foreground" : "text-muted-foreground"
+                value ? "text-foreground" : "text-muted-foreground",
               )}
             >
               {displayText}
@@ -89,7 +89,7 @@ export function SelectProject({ value, onValueChange }: SelectProjectProps) {
                     <Check
                       className={cn(
                         "ml-auto",
-                        value === project._id ? "opacity-100" : "opacity-0"
+                        value === project._id ? "opacity-100" : "opacity-0",
                       )}
                     />
                   </CommandItem>
@@ -109,8 +109,8 @@ export function SelectProject({ value, onValueChange }: SelectProjectProps) {
         </PopoverContent>
       </Popover>
 
-      <CreateProjectDialog 
-        open={dialogOpen} 
+      <CreateProjectDialog
+        open={dialogOpen}
         onOpenChange={setDialogOpen}
         onProjectCreated={handleProjectCreated}
       />
