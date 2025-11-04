@@ -13,7 +13,6 @@ export const createCategory = mutation({
       v.literal("commercial-operations"),
     ),
     parentId: v.optional(v.id("categories")),
-
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);

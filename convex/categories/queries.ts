@@ -5,4 +5,3 @@ export const getAllCategories = query({
     return ctx.db.query("categories").collect();
   },
 });
-

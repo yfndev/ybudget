@@ -6,7 +6,11 @@ import { EditableDataTable } from "@/components/Tables/EditableDataTable";
 import { editableColumns } from "@/components/Tables/editableColumns";
 import { SidebarInset } from "@/components/ui/sidebar";
 import { useQuery } from "convex-helpers/react/cache";
-import { PaginatedQueryReference, useMutation, usePaginatedQuery } from "convex/react";
+import {
+  PaginatedQueryReference,
+  useMutation,
+  usePaginatedQuery,
+} from "convex/react";
 import { useParams } from "next/navigation";
 import { api } from "../../../../convex/_generated/api";
 import type { Id } from "../../../../convex/_generated/dataModel";
@@ -24,11 +28,11 @@ export default function DonorDetail() {
   } = usePaginatedQuery(
     api.transactions.queries.getPaginatedTransactions,
     { donorId },
-    { initialNumItems: 50 }
+    { initialNumItems: 50 },
   );
 
   const updateTransaction = useMutation(
-    api.transactions.functions.updateTransaction
+    api.transactions.functions.updateTransaction,
   );
 
   const handleUpdate = async (rowId: string, field: string, value: any) => {
@@ -57,7 +61,10 @@ export default function DonorDetail() {
         backUrl="/donors"
       />
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6" id="tour-donor-budget">
+      <div
+        className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6"
+        id="tour-donor-budget"
+      >
         <BudgetCard title="Zugesagt" amount={donor.committedIncome} />
         <BudgetCard title="Bezahlt" amount={donor.paidIncome} />
         <BudgetCard title="Offen" amount={donor.openIncome} />

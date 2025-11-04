@@ -8,12 +8,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  type ChartConfig,
   ChartContainer,
   ChartLegend,
   ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
+  type ChartConfig,
 } from "@/components/ui/chart";
 import { useDateRange } from "@/contexts/DateRangeContext";
 import {
@@ -78,7 +78,7 @@ export function CashflowChartUI({
   // Only fetch all transactions if not provided (for standalone usage)
   const allTransactionsQuery = useQuery(
     api.transactions.queries.getAllTransactions,
-    providedTransactions ? undefined : {},
+    providedTransactions ? "skip" : {}
   );
 
   const transactions = useMemo(() => {
@@ -88,7 +88,7 @@ export function CashflowChartUI({
     }
     return filterTransactionsByDateRange(
       allTransactionsQuery,
-      selectedDateRange,
+      selectedDateRange
     );
   }, [providedTransactions, allTransactionsQuery, selectedDateRange]);
 
@@ -103,7 +103,7 @@ export function CashflowChartUI({
     return filterTransactionsBeforeDate(
       sourceTransactions,
       pastEndDate,
-      (t) => t.status === "processed",
+      (t) => t.status === "processed"
     );
   }, [providedTransactions, allTransactionsQuery, selectedDateRange]);
 
@@ -115,14 +115,14 @@ export function CashflowChartUI({
           transactions,
           startBalance,
           selectedDateRange.from,
-          selectedDateRange.to,
+          selectedDateRange.to
         )
       : [];
 
   const axisConfig = calculateAxisConfig(
     dataPoints,
     selectedDateRange.from,
-    selectedDateRange.to,
+    selectedDateRange.to
   );
 
   const dateRangeText = `${format(selectedDateRange.from, "d. MMM yyyy", {

@@ -36,12 +36,12 @@ export function SelectDonation({
   const [open, setOpen] = useState(false);
 
   const availableDonations = useQuery(
-    api.queries.donations.getAvailableDonationsForProject,
+    api.donations.queries.getAvailableDonationsForProject,
     projectId ? { projectId } : "skip",
   );
 
   const selectedDonations =
-    availableDonations?.filter((d) => value.includes(d.donationId)) || [];
+    availableDonations?.filter((d) => value.includes(d._id)) || [];
 
   const handleSelect = (donationId: Id<"transactions">) => {
     if (value.includes(donationId)) {
@@ -70,16 +70,16 @@ export function SelectDonation({
               <div className="flex flex-wrap gap-1">
                 {selectedDonations.map((donation) => (
                   <Badge
-                    key={donation.donationId}
+                    key={donation._id}
                     variant="secondary"
                     className="text-xs"
                   >
-                    {donation.donorName}
+                    {donation.counterparty}
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         onValueChange(
-                          value.filter((id) => id !== donation.donationId),
+                          value.filter((id) => id !== donation._id),
                         );
                       }}
                       className="ml-1 hover:bg-accent rounded-full p-0.5"
@@ -108,17 +108,17 @@ export function SelectDonation({
             <CommandEmpty>Keine Spenden verfügbar</CommandEmpty>
             <CommandGroup>
               {availableDonations.map((donation) => {
-                const isSelected = value.includes(donation.donationId);
+                const isSelected = value.includes(donation._id);
                 return (
                   <CommandItem
-                    key={donation.donationId}
-                    value={donation.donationId}
-                    onSelect={() => handleSelect(donation.donationId)}
+                    key={donation._id}
+                    value={donation._id}
+                    onSelect={() => handleSelect(donation._id)}
                   >
                     <div className="flex flex-col flex-1">
                       <div className="flex items-center justify-between">
                         <span className="font-medium">
-                          {donation.donorName}
+                          {donation.counterparty}
                         </span>
                         <Check
                           className={cn(
@@ -132,15 +132,7 @@ export function SelectDonation({
                           {new Intl.NumberFormat("de-DE", {
                             style: "currency",
                             currency: "EUR",
-                          }).format(donation.donationAmount)}
-                        </span>
-                        <span>•</span>
-                        <span className="text-primary font-medium">
-                          {new Intl.NumberFormat("de-DE", {
-                            style: "currency",
-                            currency: "EUR",
-                          }).format(donation.availableAmount)}{" "}
-                          verfügbar
+                          }).format(donation.amount)}
                         </span>
                       </div>
                     </div>

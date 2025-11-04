@@ -37,8 +37,8 @@ export function useImportSave() {
         const isIncome = transaction.amount > 0;
         await updateTransaction({
           transactionId: transaction._id,
-          projectId,
-          categoryId,
+          projectId: projectId as Id<"projects">,
+          categoryId: categoryId as Id<"categories">,
           ...(isIncome && donorId ? { donorId } : {}),
           matchedTransactionId: normalizedMatchedId || undefined,
         });

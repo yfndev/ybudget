@@ -5,13 +5,11 @@ export async function addProjectAndCategoryNames<
   Transaction extends {
     projectId?: Id<"projects">;
     categoryId?: Id<"categories">;
-  }
+  },
 >(
   ctx: QueryCtx,
   items: Transaction[],
-): Promise<
-  (Transaction & { projectName?: string; categoryName?: string })[]
-> {
+): Promise<(Transaction & { projectName?: string; categoryName?: string })[]> {
   const projectIds = [
     ...new Set(items.map((item) => item.projectId).filter(Boolean)),
   ];
@@ -25,9 +23,7 @@ export async function addProjectAndCategoryNames<
   ]);
 
   const projectMap = new Map(
-    projects
-      .filter(Boolean)
-      .map((project) => [project!._id, project!.name]),
+    projects.filter(Boolean).map((project) => [project!._id, project!.name]),
   );
   const categoryMap = new Map(
     categories
@@ -38,6 +34,8 @@ export async function addProjectAndCategoryNames<
   return items.map((item) => ({
     ...item,
     projectName: item.projectId ? projectMap.get(item.projectId) : undefined,
-    categoryName: item.categoryId ? categoryMap.get(item.categoryId) : undefined,
+    categoryName: item.categoryId
+      ? categoryMap.get(item.categoryId)
+      : undefined,
   }));
 }

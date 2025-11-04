@@ -35,7 +35,7 @@ export function CreateDonorSheet({
   const [name, setName] = useState("");
   const [type, setType] = useState<"donation" | "sponsoring">("donation");
 
-  const addDonor = useMutation(api.functions.donorMutations.addDonor);
+  const addDonor = useMutation(api.donors.functions.createDonor);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

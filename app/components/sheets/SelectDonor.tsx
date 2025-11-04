@@ -74,12 +74,12 @@ export function SelectDonor({
     } else if (e.key === "ArrowDown" && open) {
       e.preventDefault();
       setHighlightedIndex((prev) =>
-        prev < (donors?.length ?? 0) ? prev + 1 : 0
+        prev < (donors?.length ?? 0) ? prev + 1 : 0,
       );
     } else if (e.key === "ArrowUp" && open) {
       e.preventDefault();
       setHighlightedIndex((prev) =>
-        prev > 0 ? prev - 1 : (donors?.length ?? 0) - 1
+        prev > 0 ? prev - 1 : (donors?.length ?? 0) - 1,
       );
     } else if (e.key === "Enter" && open) {
       e.preventDefault();
@@ -114,7 +114,7 @@ export function SelectDonor({
             <span
               className={cn(
                 "font-medium",
-                value ? "text-foreground" : "text-muted-foreground"
+                value ? "text-foreground" : "text-muted-foreground",
               )}
             >
               {displayText}
@@ -150,7 +150,7 @@ export function SelectDonor({
                         "ml-auto",
                         value === donor._id.toString()
                           ? "opacity-100"
-                          : "opacity-0"
+                          : "opacity-0",
                       )}
                     />
                   </CommandItem>
