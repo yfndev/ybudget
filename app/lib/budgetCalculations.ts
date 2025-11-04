@@ -1,4 +1,4 @@
-import { Doc } from "../../convex/_generated/dataModel";
+import type { Doc } from "../../convex/_generated/dataModel";
 
 export const calculateBudget = (transactions: Doc<"transactions">[]) => {
   let currentBalance = 0;
@@ -14,12 +14,12 @@ export const calculateBudget = (transactions: Doc<"transactions">[]) => {
     }
   }
 
-  const availableBudget = currentBalance + expectedIncome - expectedExpenses;
+  const availableBudget = currentBalance + expectedIncome + expectedExpenses;
 
   return {
     currentBalance,
     expectedIncome,
-    expectedExpenses,
+    expectedExpenses: Math.abs(expectedExpenses),
     availableBudget,
   };
 };
@@ -28,12 +28,12 @@ export const calculateProgressPercentage = (
   transactions: Doc<"transactions">[],
 ): number => {
   const totalIncome = transactions
-    .filter((t) => t.amount > 0)
-    .reduce((sum, t) => sum + t.amount, 0);
+    .filter((transaction) => transaction.amount > 0)
+    .reduce((sum, transaction) => sum + transaction.amount, 0);
 
   const totalExpenses = transactions
-    .filter((t) => t.amount < 0)
-    .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+    .filter((transaction) => transaction.amount < 0)
+    .reduce((sum, transaction) => sum + Math.abs(transaction.amount), 0);
 
   return totalIncome === 0
     ? 0

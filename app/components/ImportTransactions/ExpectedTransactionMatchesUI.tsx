@@ -1,38 +1,29 @@
-import { useEffect, useRef, useState } from "react";
-
 interface ExpectedTransaction {
   _id: string;
   description: string;
   amount: number;
   date: number;
-  projectName?: string;
   counterparty: string;
 }
 
-interface ExpectedTransactionMatchesProps {
+interface ExpectedTransactionMatchesUIProps {
   expectedTransactions: ExpectedTransaction[];
-  onSelect?: (transactionId: string) => void;
+  selectedMatch: string | null;
+  containerRef: React.RefObject<HTMLDivElement | null>;
+  onSelect: (id: string) => void;
 }
 
-export const ExpectedTransactionMatches = ({
+export const ExpectedTransactionMatchesUI = ({
   expectedTransactions,
+  selectedMatch,
+  containerRef,
   onSelect,
-}: ExpectedTransactionMatchesProps) => {
-  const [selectedMatch, setSelectedMatch] = useState<string | null>(null);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClick = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setSelectedMatch(null);
-      }
-    };
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, []);
-
+}: ExpectedTransactionMatchesUIProps) => {
   return (
-    <div ref={ref} className="w-1/4 flex flex-col h-full flex-shrink-0">
+    <div
+      ref={containerRef as React.RefObject<HTMLDivElement>}
+      className="w-1/4 flex flex-col h-full flex-shrink-0"
+    >
       <div className="mb-4">
         <h3 className="text-lg font-semibold">Matche geplante Ausgaben:</h3>
       </div>
@@ -46,10 +37,7 @@ export const ExpectedTransactionMatches = ({
                   ? "border-primary bg-primary/5"
                   : "border-border hover:border-primary/50"
               }`}
-              onClick={() => {
-                setSelectedMatch(match._id);
-                onSelect?.(match._id);
-              }}
+              onClick={() => onSelect(match._id)}
             >
               <div className="flex justify-between gap-5 items-center text-xs">
                 <div className="mb-2">

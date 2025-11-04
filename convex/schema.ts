@@ -26,8 +26,8 @@ export default defineSchema({
     .index("email", ["email"])
     .index("phone", ["phone"])
     .index("by_organization", ["organizationId"]),
-  
-    projects: defineTable({
+
+  projects: defineTable({
     name: v.string(),
     parentId: v.optional(v.id("projects")),
     organizationId: v.id("organizations"),
@@ -35,7 +35,7 @@ export default defineSchema({
     isActive: v.boolean(),
     createdBy: v.string(),
   }).index("by_organization", ["organizationId"]),
-  
+
   transactions: defineTable({
     projectId: v.optional(v.id("projects")),
     organizationId: v.id("organizations"),
@@ -43,7 +43,7 @@ export default defineSchema({
     amount: v.number(), // negative for expenses, positive for income
     description: v.string(),
     counterparty: v.string(),
-    categoryId: v.string(),
+    categoryId: v.optional(v.id("categories")),
     donorId: v.string(),
     importedBy: v.string(),
     importedTransactionId: v.optional(v.string()),
@@ -61,18 +61,31 @@ export default defineSchema({
     .index("by_organization_project", ["organizationId", "projectId"])
     .index("by_date", ["date"])
     .index("by_organization", ["organizationId"])
-    .index("by_importedTransactionId", ["organizationId", "importedTransactionId"]),
-  
-    categories: defineTable({
+    .index("by_organization_donor", ["organizationId", "donorId"])
+    .index("by_importedTransactionId", [
+      "organizationId",
+      "importedTransactionId",
+    ]),
+
+  categories: defineTable({
     name: v.string(),
     description: v.string(),
-    taxCostposition: v.number(), // Kostenstelle
-  }),
-  
+    taxsphere: v.union(
+      v.literal("non-profit"), // Ideeller Bereich
+      v.literal("asset-management"), // Vermögensverwaltung
+      v.literal("purpose-operations"), // Zweckbetrieb
+      v.literal("commercial-operations"), // Wirtschaftlicher Geschäftsbetrieb
+    ),
+    approved: v.boolean(),
+    createdBy: v.id("users"),
+    parentId: v.optional(v.id("categories")),
+    icon: v.optional(v.string()),
+  }).index("by_parent", ["parentId"]),
+
   donors: defineTable({
     name: v.string(),
     type: v.union(v.literal("donation"), v.literal("sponsoring")),
     organizationId: v.id("organizations"),
     createdBy: v.id("users"),
-  }).index("by_organization", ["organizationId"])
-})
+  }).index("by_organization", ["organizationId"]),
+});

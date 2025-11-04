@@ -1,216 +1,95 @@
 "use client";
 
-import { ExpectedTransactionMatches } from "@/components/ImportTransaction/ExpectedTransactionMatches";
-import { ImportTransactionCard } from "@/components/ImportTransaction/ImportTransactionCard";
-import { ImportTransactionsSkeleton } from "@/components/ImportTransaction/ImportTransactionsSkeleton";
-import { PageHeader } from "@/components/Layout/PageHeader";
-import { Progress } from "@/components/ui/progress";
-import { SidebarInset } from "@/components/ui/sidebar";
-import { useQuery } from "convex-helpers/react/cache";
-import { useMutation } from "convex/react";
-import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
-import { api } from "../../../convex/_generated/api";
-import { Id } from "../../../convex/_generated/dataModel";
+import { useCallback, useEffect } from "react";
+import { useFetchImportTransactions } from "../../hooks/ImportTransactions/useFetchImportTransactions";
+import { useImportForm } from "../../hooks/ImportTransactions/useImportForm";
+import { useImportKeyboard } from "../../hooks/ImportTransactions/useImportKeyboard";
+import { useImportSave } from "../../hooks/ImportTransactions/useImportSave";
+import ImportTransactionsPageUI from "./ImportTransactionsPageUI";
+import { ImportTransactionsSkeleton } from "./ImportTransactionsSkeleton";
 
 export default function ImportTransactionsPage() {
-  const [index, setIndex] = useState(0);
-  const [projectId, setProjectId] = useState("");
-  const [categoryId, setCategoryId] = useState("");
-  const [donorId, setDonorId] = useState("");
-  const [matchedTransactionId, setMatchedTransactionId] = useState<
-    string | null
-  >(null);
-  const [selectedDonationIds, setSelectedDonationIds] = useState<
-    Id<"transactions">[]
-  >([]);
+  const {
+    transactions,
+    expectedTransactions,
+    current,
+    index,
+    totalCount,
+    isLoading,
+    setIndex,
+  } = useFetchImportTransactions();
 
-  const transactions = useQuery(
-    api.transactions.queries.getUnassignedProcessedTransactions
-  );
+  const form = useImportForm();
+  const { save } = useImportSave();
 
-  const currentTransaction = transactions?.[index];
-  const expectedTransactions = useQuery(
-    api.transactions.queries.getTransactionRecommendations,
-    currentTransaction
-      ? {
-          amount: currentTransaction.amount,
-          projectId: currentTransaction.projectId || undefined,
-        }
-      : "skip"
-  );
-  const updateTransaction = useMutation(
-    api.transactions.functions.updateTransaction
-  );
+  const { initFromTransaction, clearForm } = form;
 
-  const clearForm = () => {
-    setProjectId("");
-    setCategoryId("");
-    setDonorId("");
-    setMatchedTransactionId(null);
-    setSelectedDonationIds([]);
-  };
+  useEffect(() => {
+    initFromTransaction(current);
+  }, [current, initFromTransaction]);
 
-  const handleExpectedTransactionSelect = (expectedTransactionId: string) => {
-    setMatchedTransactionId(expectedTransactionId);
-    const expected = expectedTransactions?.find(
-      (t) => t._id === expectedTransactionId
-    );
-    if (expected) {
-      if (expected.projectId) setProjectId(expected.projectId);
-      if (expected.categoryId) setCategoryId(expected.categoryId);
-    }
-  };
-
-  const goToNext = () => {
+  const handleNext = useCallback(() => {
     if (!transactions || index >= transactions.length - 1) return;
     setIndex(index + 1);
     clearForm();
-  };
+  }, [transactions, index, setIndex, clearForm]);
 
-  const goToPrevious = () => {
+  const handlePrev = useCallback(() => {
     if (index === 0) return;
     setIndex(index - 1);
     clearForm();
-  };
+  }, [index, setIndex, clearForm]);
 
-  useEffect(() => {
-    if (!transactions || !transactions[index]) {
-      clearForm();
-      return;
-    }
-
-    const current = transactions[index];
-    setProjectId(current.projectId || "");
-    setCategoryId(current.categoryId || "");
-    setDonorId(current.donorId || "");
-    setMatchedTransactionId(current.matchedTransactionId || null);
-  }, [index, transactions]);
-
-  const saveCurrent = async () => {
+  const handleSave = useCallback(async () => {
     if (!transactions || !transactions[index]) return;
-
-    if (!projectId || !categoryId) {
-      toast("Transaktion übersprungen", { icon: "⏭️" });
-      goToNext();
-      return;
+    const success = await save(transactions[index], {
+      projectId: form.projectId,
+      categoryId: form.categoryId,
+      donorId: form.donorId,
+      matchedTransactionId: form.matchedTransactionId,
+    });
+    if (success) {
+      handleNext();
     }
+  }, [
+    transactions,
+    index,
+    form.projectId,
+    form.categoryId,
+    form.donorId,
+    form.matchedTransactionId,
+    save,
+    handleNext,
+  ]);
 
-    try {
-      const transactionId = transactions[index]._id;
-      const isIncome = transactions[index].amount > 0;
-      await updateTransaction({
-        transactionId,
-        projectId,
-        categoryId,
-        ...(isIncome && donorId ? { donorId } : {}),
-        matchedTransactionId:
-          matchedTransactionId && matchedTransactionId !== ""
-            ? matchedTransactionId
-            : undefined,
-      });
-
-      // If this transaction is matched with an expected transaction, update the expected transaction too
-      if (matchedTransactionId && matchedTransactionId !== "") {
-        await updateTransaction({
-          transactionId: matchedTransactionId as Id<"transactions">,
-          matchedTransactionId: transactionId,
-        });
+  const handleExpectedTransactionSelect = useCallback(
+    (expectedTransactionId: string) => {
+      form.setMatchedTransactionId(expectedTransactionId);
+      const expected = expectedTransactions.find(
+        (t) => t._id === expectedTransactionId,
+      );
+      if (expected) {
+        if (expected.projectId) form.setProjectId(expected.projectId);
+        if (expected.categoryId) form.setCategoryId(expected.categoryId);
       }
+    },
+    [expectedTransactions, form],
+  );
 
-      toast.success("Transaktion gespeichert");
-      goToNext();
-    } catch (error) {
-      toast.error("Fehler beim Speichern");
-    }
-  };
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowRight" && !e.metaKey && !e.ctrlKey) {
-        e.preventDefault();
-        goToNext();
-      }
-      if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault();
-        saveCurrent();
-      }
-      if (e.key === "ArrowLeft" && !e.metaKey && !e.ctrlKey) {
-        e.preventDefault();
-        goToPrevious();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [index, transactions, saveCurrent]);
-
-  const current = transactions?.[index];
-  const isLoading = transactions === undefined;
+  useImportKeyboard(handleNext, handlePrev, handleSave);
 
   if (isLoading) {
     return <ImportTransactionsSkeleton />;
   }
 
-  if (!transactions || transactions.length === 0) {
-    return (
-      <SidebarInset>
-        <div className="p-4 lg:px-6 pb-6 flex flex-col h-full">
-          <PageHeader title="Transaktionen zuordnen" />
-          <div className="flex-1 flex items-center justify-center">
-            <div className="text-center text-muted-foreground">
-              <p className="text-lg font-medium">
-                Keine Transaktionen zum Zuordnen
-              </p>
-              <p className="text-sm mt-2">
-                Alle importierten Transaktionen wurden bereits zugeordnet.
-              </p>
-            </div>
-          </div>
-        </div>
-      </SidebarInset>
-    );
-  }
-
-  if (!current) {
-    return null;
-  }
-
   return (
-    <SidebarInset>
-      <div className="p-4 lg:px-6 pb-6 flex flex-col h-full">
-        <PageHeader title="Transaktionen zuordnen" />
-        <div className="flex-1 flex mt-16 gap-16 ">
-          <ExpectedTransactionMatches
-            expectedTransactions={expectedTransactions || []}
-            onSelect={handleExpectedTransactionSelect}
-          />
-          <div className="mt-16 flex-shrink-0">
-            <ImportTransactionCard
-              title={current.counterparty}
-              description={current.description}
-              amount={current.amount}
-              date={new Date(current.date)}
-              currentIndex={index + 1}
-              totalCount={transactions.length}
-              projectId={projectId}
-              categoryId={categoryId}
-              donorId={donorId}
-              selectedDonationIds={selectedDonationIds}
-              onProjectChange={setProjectId}
-              onCategoryChange={setCategoryId}
-              onDonorChange={setDonorId}
-              onDonationIdsChange={setSelectedDonationIds}
-            />
-          </div>
-        </div>
-        <div className="mt-auto pt-6">
-          <Progress
-            className="w-3/4 mx-auto"
-            value={((index + 1) / transactions.length) * 100}
-          />
-        </div>
-      </div>
-    </SidebarInset>
+    <ImportTransactionsPageUI
+      expectedTransactions={expectedTransactions}
+      current={current}
+      index={index}
+      totalCount={totalCount}
+      form={form}
+      onExpectedTransactionSelect={handleExpectedTransactionSelect}
+    />
   );
 }

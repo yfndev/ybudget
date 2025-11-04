@@ -7,7 +7,7 @@ import {
   Upload,
   Users,
 } from "lucide-react";
-import * as React from "react";
+import type * as React from "react";
 import { memo } from "react";
 
 import {
@@ -56,9 +56,11 @@ const data = {
   ],
 };
 
-function AppSidebarComponent({ ...props }: React.ComponentProps<typeof Sidebar>) {
+function AppSidebarComponent({
+  ...props
+}: React.ComponentProps<typeof Sidebar>) {
   const organizationName = useQuery(
-    api.organizations.queries.getOrganizationName
+    api.organizations.queries.getOrganizationName,
   );
   return (
     <Sidebar variant="sidebar" {...props}>

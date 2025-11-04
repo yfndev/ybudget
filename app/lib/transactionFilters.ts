@@ -5,28 +5,28 @@ interface DateRange {
   to: Date;
 }
 
-
-
+export type EnrichedTransaction = Doc<"transactions"> & {
+  projectName?: string;
+  categoryName?: string;
+};
 
 export function filterTransactionsByDateRange(
-  transactions: Doc<"transactions">[] | undefined,
+  transactions: EnrichedTransaction[] | undefined,
   dateRange: DateRange,
-): Doc<"transactions">[] | undefined {
+): EnrichedTransaction[] | undefined {
   if (!transactions) return undefined;
 
   const startDate = dateRange.from.getTime();
   const endDate = dateRange.to.getTime();
 
-  return transactions.filter(
-    (t) => t.date >= startDate && t.date <= endDate,
-  );
+  return transactions.filter((t) => t.date >= startDate && t.date <= endDate);
 }
 
 export function filterTransactionsBeforeDate(
-  transactions: Doc<"transactions">[] | undefined,
+  transactions: EnrichedTransaction[] | undefined,
   beforeDate: Date,
-  additionalFilter?: (t: Doc<"transactions">) => boolean,
-): Doc<"transactions">[] | undefined {
+  additionalFilter?: (t: EnrichedTransaction) => boolean,
+): EnrichedTransaction[] | undefined {
   if (!transactions) return undefined;
 
   const beforeTimestamp = beforeDate.getTime();
@@ -37,4 +37,3 @@ export function filterTransactionsBeforeDate(
     return dateMatches && additionalMatches;
   });
 }
-

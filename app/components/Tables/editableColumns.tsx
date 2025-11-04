@@ -26,17 +26,40 @@ const getEditingState = (row: any, table: any) => {
   return { rowId, status, isPlanned, isRowEditing };
 };
 
-const createEditableCellHandlers = (rowId: string, table: any) => {
-  return {
-    handleSave: (field: string) => (value: any) => {
-      table.options.meta?.onUpdate(rowId, field, value);
-    },
-    handleCancel: () => {
-      table.options.meta?.onCancelRow(rowId);
-    },
-    handleEdit: () => {},
-  };
+const createEditableCellHandlers = (rowId: string, table: any) => ({
+  handleSave: (field: string) => (value: any) =>
+    table.options.meta?.onUpdate(rowId, field, value),
+  handleCancel: () => table.options.meta?.onCancelRow(rowId),
+  handleEdit: () => {},
+});
+
+const renderEditableCell = (
+  CellComponent: any,
+  handlers: any,
+  value: any,
+  displayValue: any,
+  fieldId: string
+) => (
+  <CellComponent
+    value={value}
+    displayValue={displayValue}
+    onSave={handlers.handleSave(fieldId)}
+    onCancel={handlers.handleCancel}
+    isEditing={true}
+    onEdit={handlers.handleEdit}
+  />
+);
+
+const renderAmount = (amount: number) => {
+  const formatted = new Intl.NumberFormat("de-DE", {
+    style: "currency",
+    currency: "EUR",
+  }).format(Math.abs(amount));
+  return amount < 0 ? `- ${formatted}` : `+ ${formatted}`;
 };
+
+const renderDate = (date: any) =>
+  date ? new Date(date).toLocaleDateString("de-DE") : "";
 
 export const editableColumns = [
   {
@@ -53,61 +76,51 @@ export const editableColumns = [
   },
   {
     accessorKey: "date",
-    header: ({ column }: any) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting()}
-          className="h-8 px-2"
-        >
-          Datum
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    header: ({ column }: any) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting()}
+        className="h-8 px-2"
+      >
+        Datum
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
     cell: ({ row, table }: any) => {
-      const { rowId, isPlanned, isRowEditing } = getEditingState(row, table);
-      const handlers = createEditableCellHandlers(rowId, table);
+      const { isPlanned, isRowEditing } = getEditingState(row, table);
+      const handlers = createEditableCellHandlers(row.original._id, table);
 
       if (isPlanned && isRowEditing) {
         return (
           <div className="pl-2">
-            <EditableDateCell
-              value={row.getValue("date")}
-              onSave={handlers.handleSave("date")}
-              onCancel={handlers.handleCancel}
-              isEditing={true}
-              onEdit={handlers.handleEdit}
-            />
+            {renderEditableCell(
+              EditableDateCell,
+              handlers,
+              row.getValue("date"),
+              undefined,
+              "date"
+            )}
           </div>
         );
       }
 
-      const dateValue = row.getValue("date");
-      const formattedDate = dateValue
-        ? new Date(dateValue).toLocaleDateString("de-DE")
-        : "";
-
-      return <div className="pl-2">{formattedDate}</div>;
+      return <div className="pl-2">{renderDate(row.getValue("date"))}</div>;
     },
   },
   {
     accessorKey: "projectName",
     header: "Projekt",
     cell: ({ row, table }: any) => {
-      const { rowId, isPlanned, isRowEditing } = getEditingState(row, table);
-      const handlers = createEditableCellHandlers(rowId, table);
+      const { isPlanned, isRowEditing } = getEditingState(row, table);
+      const handlers = createEditableCellHandlers(row.original._id, table);
 
       if (isPlanned && isRowEditing) {
-        return (
-          <EditableProjectCell
-            value={row.original.projectId}
-            displayValue={row.original.projectName}
-            onSave={handlers.handleSave("projectId")}
-            onCancel={handlers.handleCancel}
-            isEditing={true}
-            onEdit={handlers.handleEdit}
-          />
+        return renderEditableCell(
+          EditableProjectCell,
+          handlers,
+          row.original.projectId,
+          row.original.projectName,
+          "projectId"
         );
       }
 
@@ -122,23 +135,20 @@ export const editableColumns = [
     accessorKey: "description",
     header: "Beschreibung",
     cell: ({ row, table }: any) => {
-      const { rowId, isPlanned, isRowEditing } = getEditingState(row, table);
-      const handlers = createEditableCellHandlers(rowId, table);
-
-      if (isPlanned && isRowEditing) {
-        return (
-          <EditableTextareaCell
-            value={row.getValue("description") || row.original.reference || ""}
-            onSave={handlers.handleSave("description")}
-            onCancel={handlers.handleCancel}
-            isEditing={true}
-            onEdit={handlers.handleEdit}
-          />
-        );
-      }
-
+      const { isPlanned, isRowEditing } = getEditingState(row, table);
+      const handlers = createEditableCellHandlers(row.original._id, table);
       const description =
         row.getValue("description") || row.original.reference || "";
+
+      if (isPlanned && isRowEditing) {
+        return renderEditableCell(
+          EditableTextareaCell,
+          handlers,
+          description,
+          undefined,
+          "description"
+        );
+      }
 
       return (
         <div className="max-w-64 min-w-32">
@@ -153,78 +163,67 @@ export const editableColumns = [
     accessorKey: "categoryName",
     header: "Kategorie",
     cell: ({ row, table }: any) => {
-      const { rowId, isPlanned, isRowEditing } = getEditingState(row, table);
-      const handlers = createEditableCellHandlers(rowId, table);
+      const { isPlanned, isRowEditing } = getEditingState(row, table);
+      const handlers = createEditableCellHandlers(row.original._id, table);
 
       if (isPlanned && isRowEditing) {
-        return (
-          <EditableCategoryCell
-            value={row.original.categoryId}
-            onSave={handlers.handleSave("categoryId")}
-            onCancel={handlers.handleCancel}
-            isEditing={true}
-            onEdit={handlers.handleEdit}
-          />
+        return renderEditableCell(
+          EditableCategoryCell,
+          handlers,
+          row.original.categoryId,
+          row.original.categoryName,
+          "categoryId"
         );
       }
 
-      return (
-        <div className="p-1">
-          {row.original.categoryName || row.original.categoryId || ""}
-        </div>
-      );
+      return <div className="p-1">{row.original.categoryName || ""}</div>;
     },
   },
   {
     accessorKey: "amount",
-    header: ({ column }: any) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting()}
-          className="h-8 px-2 w-full justify-end"
-        >
-          Betrag
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    header: ({ column }: any) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting()}
+        className="h-8 px-2 w-full justify-end"
+      >
+        Betrag
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
     cell: ({ row, table }: any) => {
-      const { rowId, isPlanned, isRowEditing } = getEditingState(row, table);
-      const handlers = createEditableCellHandlers(rowId, table);
+      const { isPlanned, isRowEditing } = getEditingState(row, table);
+      const handlers = createEditableCellHandlers(row.original._id, table);
+      const amount = row.getValue("amount");
 
       if (isPlanned && isRowEditing) {
         return (
           <div className="flex justify-end pr-2">
-            <EditableAmountCell
-              value={row.getValue("amount")}
-              onSave={handlers.handleSave("amount")}
-              onCancel={handlers.handleCancel}
-              isEditing={true}
-              onEdit={handlers.handleEdit}
-            />
+            {renderEditableCell(
+              EditableAmountCell,
+              handlers,
+              amount,
+              undefined,
+              "amount"
+            )}
           </div>
         );
       }
 
-      const amount = row.getValue("amount");
-      const formattedAmount = new Intl.NumberFormat("de-DE", {
-        style: "currency",
-        currency: "EUR",
-      }).format(Math.abs(amount));
-      const displayAmount =
-        amount < 0 ? `- ${formattedAmount}` : `+ ${formattedAmount}`;
-
-      return <div className="text-right font-medium pr-2">{displayAmount}</div>;
+      return (
+        <div className="text-right font-medium pr-2">
+          {renderAmount(amount)}
+        </div>
+      );
     },
   },
   {
     accessorKey: "status",
     header: "Status",
     cell: ({ row, table }: any) => {
-      const { rowId, isPlanned, isRowEditing } = getEditingState(row, table);
+      const { isPlanned, isRowEditing } = getEditingState(row, table);
+      const handlers = createEditableCellHandlers(row.original._id, table);
       const status = row.getValue("status");
-      const handlers = createEditableCellHandlers(rowId, table);
 
       if (isPlanned && isRowEditing) {
         return (
@@ -255,7 +254,7 @@ export const editableColumns = [
       const { rowId, isPlanned, isRowEditing } = getEditingState(row, table);
       const isUpdating = table.options.meta?.isUpdating || false;
 
-      const handleEditClick = () => {
+      const handleEdit = () => {
         if (isPlanned && !isRowEditing) {
           table.options.meta?.setEditingRows((prev: Set<string>) => {
             const updated = new Set(prev);
@@ -265,21 +264,13 @@ export const editableColumns = [
         }
       };
 
-      const handleSaveClick = async () => {
-        await table.options.meta?.onSaveRow(rowId);
-      };
-
-      const handleCancelClick = () => {
-        table.options.meta?.onCancelRow(rowId);
-      };
-
       if (isRowEditing) {
         return (
           <div className="flex items-center gap-2">
             <Button
               variant="ghost"
               size="sm"
-              onClick={handleSaveClick}
+              onClick={() => table.options.meta?.onSaveRow(rowId)}
               disabled={isUpdating}
               className="h-8 w-8 p-0"
             >
@@ -288,7 +279,7 @@ export const editableColumns = [
             <Button
               variant="ghost"
               size="sm"
-              onClick={handleCancelClick}
+              onClick={() => table.options.meta?.onCancelRow(rowId)}
               disabled={isUpdating}
               className="h-8 w-8 p-0"
             >
@@ -310,9 +301,7 @@ export const editableColumns = [
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={handleEditClick}>
-              Bearbeiten
-            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleEdit}>Bearbeiten</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );

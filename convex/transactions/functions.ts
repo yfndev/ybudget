@@ -9,12 +9,13 @@ export const createExpectedTransaction = mutation({
     amount: v.number(),
     description: v.string(),
     counterparty: v.string(),
-    categoryId: v.string(),
+    categoryId: v.id("categories"),
     status: v.literal("expected"),
     donorId: v.optional(v.string()),
   },
 
   handler: async (ctx, args) => {
+   
     const user = await getCurrentUser(ctx);
 
     return await ctx.db.insert("transactions", {
@@ -50,17 +51,16 @@ export const createImportedTransaction = mutation({
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
 
-
     const existing = await ctx.db
-    .query("transactions")
-    .withIndex("by_importedTransactionId", (q) => 
-      q
-        .eq("organizationId", user.organizationId)
-        .eq("importedTransactionId", args.importedTransactionId)
-    )
-    .first();
+      .query("transactions")
+      .withIndex("by_importedTransactionId", (q) =>
+        q
+          .eq("organizationId", user.organizationId)
+          .eq("importedTransactionId", args.importedTransactionId),
+      )
+      .first();
 
-  if (existing) return { skipped: true };
+    if (existing) return { skipped: true };
 
     await ctx.db.insert("transactions", {
       organizationId: user.organizationId,
@@ -73,12 +73,12 @@ export const createImportedTransaction = mutation({
       importSource: args.importSource,
       status: "processed",
       projectId: undefined,
-      categoryId: "",
+      categoryId: undefined,
       donorId: "",
       accountName: args.accountName,
     });
 
-    return { inserted: true }; 
+    return { inserted: true };
   },
 });
 
@@ -88,8 +88,8 @@ export const updateTransaction = mutation({
     date: v.optional(v.number()),
     amount: v.optional(v.number()),
     description: v.optional(v.string()),
-    projectId: v.optional(v.string()),
-    categoryId: v.optional(v.string()),
+    projectId: v.optional(v.id("projects")),
+    categoryId: v.optional(v.id("categories")),
     donorId: v.optional(v.string()),
     matchedTransactionId: v.optional(v.string()),
     status: v.optional(v.union(v.literal("expected"), v.literal("processed"))),
@@ -97,7 +97,9 @@ export const updateTransaction = mutation({
 
   handler: async (ctx, { transactionId, ...updates }) => {
     const validUpdates = Object.fromEntries(
-      Object.entries(updates).filter(([_, value]) => value !== undefined && value !== ""),
+      Object.entries(updates).filter(
+        ([_, value]) => value !== undefined && value !== "",
+      ),
     );
 
     return await ctx.db.patch(transactionId, validUpdates);

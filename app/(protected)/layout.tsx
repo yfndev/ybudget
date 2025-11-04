@@ -14,7 +14,11 @@ import {
   setOnboardingComplete,
 } from "../lib/onboardingStorage";
 
-const StableContent = memo(function StableContent({ children }: { children: React.ReactNode }) {
+const StableContent = memo(function StableContent({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const needsOrg = useQuery(api.users.queries.getUserOrganizationId, {});
   const [showOnboarding, setShowOnboarding] = useState(false);
 
@@ -39,10 +43,15 @@ const StableContent = memo(function StableContent({ children }: { children: Reac
     <DateRangeProvider>
       <SidebarProvider>
         <AppSidebar />
-        {children}
-        {showOnboarding && (
-          <OnboardingDialog open={true} onOpenChange={handleOnboardingChange} />
-        )}
+        <div className="p-4 lg:px-6 pb-6 overflow-x-hidden w-full">
+          {children}
+          {showOnboarding && (
+            <OnboardingDialog
+              open={true}
+              onOpenChange={handleOnboardingChange}
+            />
+          )}
+        </div>
       </SidebarProvider>
     </DateRangeProvider>
   );
@@ -54,7 +63,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      router.push('/login');
+      router.push("/login");
     }
   }, [isAuthenticated, isLoading, router]);
 

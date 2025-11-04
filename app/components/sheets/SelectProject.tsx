@@ -17,18 +17,25 @@ import {
 import { cn } from "@/lib/utils";
 import { useQuery } from "convex-helpers/react/cache";
 import { Check, ChevronsUpDown, Plus } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { api } from "../../../convex/_generated/api";
 import { CreateProjectDialog } from "./CreateProjectDialog";
 
 interface SelectProjectProps {
   value: string;
   onValueChange: (value: string) => void;
+  onTabPressed?: () => void;
 }
 
-export function SelectProject({ value, onValueChange }: SelectProjectProps) {
+export function SelectProject({
+  value,
+  onValueChange,
+  onTabPressed,
+}: SelectProjectProps) {
   const [open, setOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(0);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const projects = useQuery(api.projects.queries.getAllProjects);
 
   const selectedProject = projects?.find((p) => p._id === value);
@@ -49,15 +56,60 @@ export function SelectProject({ value, onValueChange }: SelectProjectProps) {
     onValueChange(projectId);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Tab") {
+      if (!open) {
+        e.preventDefault();
+        setOpen(true);
+      } else {
+        e.preventDefault();
+        if (onTabPressed) {
+          setOpen(false);
+          onTabPressed();
+        }
+      }
+    } else if (e.key === "ArrowDown" && !open) {
+      e.preventDefault();
+      setOpen(true);
+    } else if (e.key === "ArrowDown" && open) {
+      e.preventDefault();
+      setHighlightedIndex((prev) =>
+        prev < (projects?.length ?? 0) ? prev + 1 : 0
+      );
+    } else if (e.key === "ArrowUp" && open) {
+      e.preventDefault();
+      setHighlightedIndex((prev) =>
+        prev > 0 ? prev - 1 : (projects?.length ?? 0) - 1
+      );
+    } else if (e.key === "Enter" && open) {
+      e.preventDefault();
+      if (projects && projects[highlightedIndex]) {
+        handleSelect(projects[highlightedIndex]._id);
+      }
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      setOpen(false);
+    }
+  };
+
+  const handleOpenChange = (newOpen: boolean) => {
+    setOpen(newOpen);
+    if (newOpen) {
+      setHighlightedIndex(0);
+    }
+  };
+
   return (
     <>
-      <Popover open={open} onOpenChange={setOpen}>
+      <Popover open={open} onOpenChange={handleOpenChange}>
         <PopoverTrigger asChild>
           <Button
+            ref={buttonRef}
             variant="outline"
             role="combobox"
             aria-expanded={open}
             className="w-full justify-between"
+            onKeyDown={handleKeyDown}
           >
             <span
               className={cn(
@@ -79,11 +131,13 @@ export function SelectProject({ value, onValueChange }: SelectProjectProps) {
             <CommandList>
               <CommandEmpty>Keine Projekte :(</CommandEmpty>
               <CommandGroup>
-                {projects?.map((project) => (
+                {projects?.map((project, idx) => (
                   <CommandItem
                     key={project._id}
                     value={project._id}
                     onSelect={handleSelect}
+                    className={cn(idx === highlightedIndex && "bg-accent")}
+                    onMouseEnter={() => setHighlightedIndex(idx)}
                   >
                     {project.name}
                     <Check
@@ -109,8 +163,8 @@ export function SelectProject({ value, onValueChange }: SelectProjectProps) {
         </PopoverContent>
       </Popover>
 
-      <CreateProjectDialog 
-        open={dialogOpen} 
+      <CreateProjectDialog
+        open={dialogOpen}
         onOpenChange={setDialogOpen}
         onProjectCreated={handleProjectCreated}
       />

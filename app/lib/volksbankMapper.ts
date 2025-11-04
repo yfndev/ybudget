@@ -1,7 +1,7 @@
-import { TransactionData } from "./csvMappers";
+import type { TransactionData } from "./csvMappers";
 
 function parseDate(dateString: string): number {
-  const parts = dateString.split(/[\/\-\.]/);
+  const parts = dateString.split(/[/\-.]/);
   if (parts.length === 3) {
     const day = parseInt(parts[0], 10);
     const month = parseInt(parts[1], 10) - 1;

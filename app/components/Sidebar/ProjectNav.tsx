@@ -51,7 +51,7 @@ function ProjectNavComponent() {
 
   const items = parentProjects.map((project: Doc<"projects">) => {
     const childProjects = projects.filter(
-      (p: Doc<"projects">) => p.parentId === project._id
+      (p: Doc<"projects">) => p.parentId === project._id,
     );
 
     return {
@@ -119,7 +119,7 @@ function ProjectNavComponent() {
                                 </Link>
                               </SidebarMenuSubButton>
                             </SidebarMenuSubItem>
-                          )
+                          ),
                         )}
                       </SidebarMenuSub>
                     </CollapsibleContent>
@@ -127,7 +127,7 @@ function ProjectNavComponent() {
                 ) : null}
               </SidebarMenuItem>
             </Collapsible>
-          )
+          ),
         )}
       </SidebarMenu>
       <CreateProjectDialog open={dialogOpen} onOpenChange={setDialogOpen} />

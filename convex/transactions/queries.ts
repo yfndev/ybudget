@@ -1,7 +1,14 @@
+import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
+import type { Doc } from "../_generated/dataModel";
 import { query } from "../_generated/server";
-import { addProjectNames } from "../helpers/addProjectNames";
+import { addProjectAndCategoryNames } from "../helpers/addProjectNames";
 import { getCurrentUser } from "../users/getCurrentUser";
+
+type EnrichedTransaction = Doc<"transactions"> & {
+  projectName?: string;
+  categoryName?: string;
+};
 
 export const getAllTransactions = query({
   args: {
@@ -10,20 +17,23 @@ export const getAllTransactions = query({
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
 
-    const transactions = await (args.projectId
-      ? ctx.db
-          .query("transactions")
-          .withIndex("by_organization_project", (q) =>
-            q.eq("organizationId", user.organizationId).eq("projectId", args.projectId)
-          )
-      : ctx.db
-          .query("transactions")
-          .withIndex("by_organization", (q) =>
-            q.eq("organizationId", user.organizationId)
-          )
+    const transactions = await (
+      args.projectId
+        ? ctx.db
+            .query("transactions")
+            .withIndex("by_organization_project", (q) =>
+              q
+                .eq("organizationId", user.organizationId)
+                .eq("projectId", args.projectId),
+            )
+        : ctx.db
+            .query("transactions")
+            .withIndex("by_organization", (q) =>
+              q.eq("organizationId", user.organizationId),
+            )
     ).collect();
 
-    return addProjectNames(ctx, transactions);
+    return addProjectAndCategoryNames(ctx, transactions);
   },
 });
 
@@ -34,7 +44,7 @@ export const getUnassignedProcessedTransactions = query({
     const transactions = await ctx.db
       .query("transactions")
       .withIndex("by_organization_project", (q) =>
-        q.eq("organizationId", user.organizationId).eq("projectId", undefined)
+        q.eq("organizationId", user.organizationId).eq("projectId", undefined),
       )
       .filter((q) => q.eq(q.field("status"), "processed"))
       .collect();
@@ -51,62 +61,93 @@ export const getTransactionRecommendations = query({
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
 
-    const transactions = (await ctx.db
-      .query("transactions")
-      .withIndex("by_organization_project", (q) =>
-        q.eq("organizationId", user.organizationId)
-      )
-      .filter((q) =>
-        q.and(
-          q.eq(q.field("status"), "expected"),
-          q.neq(q.field("projectId"), undefined),
-          q.lt(q.field("amount"), 0)
+    const transactions = (
+      await ctx.db
+        .query("transactions")
+        .withIndex("by_organization_project", (q) =>
+          q.eq("organizationId", user.organizationId),
         )
-      )
-      .collect()).filter(
-        (t) => !t.matchedTransactionId || t.matchedTransactionId === ""
-      );
+        .filter((q) =>
+          q.and(
+            q.eq(q.field("status"), "expected"),
+            q.neq(q.field("projectId"), undefined),
+            q.lt(q.field("amount"), 0),
+          ),
+        )
+        .collect()
+    ).filter((t) => !t.matchedTransactionId || t.matchedTransactionId === "");
 
-    return addProjectNames(ctx, transactions);
+    return addProjectAndCategoryNames(ctx, transactions);
   },
 });
 
 export const getPaginatedTransactions = query({
   args: {
     projectId: v.optional(v.id("projects")),
-    donorId: v.optional(v.id("donors")),
-    paginationOpts: v.object({
-      numItems: v.number(),
-      cursor: v.union(v.string(), v.null()),
-      id: v.optional(v.number()),
-    }),
+    donorId: v.optional(v.string()),
+    paginationOpts: paginationOptsValidator,
   },
-  handler: async (ctx, args) => {
+  returns: v.object({
+    continueCursor: v.string(),
+    isDone: v.boolean(),
+    page: v.array(v.any()),
+  }),
+  handler: async (ctx, args): Promise<{
+    continueCursor: string;
+    isDone: boolean;
+    splitCursor?: string;
+    page: EnrichedTransaction[];
+  }> => {
     const user = await getCurrentUser(ctx);
 
-    let dbQuery = ctx.db
-      .query("transactions")
-      .withIndex("by_organization", (q) =>
-        q.eq("organizationId", user.organizationId)
-      );
-
-    if (args.projectId) {
-      dbQuery = dbQuery.filter((q) => q.eq(q.field("projectId"), args.projectId));
+    let dbQuery;
+    if (args.projectId && args.donorId) {
+      dbQuery = ctx.db
+        .query("transactions")
+        .withIndex("by_organization_project", (q) =>
+          q
+            .eq("organizationId", user.organizationId)
+            .eq("projectId", args.projectId),
+        );
+    } else if (args.projectId) {
+      dbQuery = ctx.db
+        .query("transactions")
+        .withIndex("by_organization_project", (q) =>
+          q
+            .eq("organizationId", user.organizationId)
+            .eq("projectId", args.projectId),
+        );
+    } else if (args.donorId) {
+      dbQuery = ctx.db
+        .query("transactions")
+        .withIndex("by_organization_donor", (q) =>
+          q
+            .eq("organizationId", user.organizationId)
+            .eq("donorId", args.donorId!),
+        );
+    } else {
+      dbQuery = ctx.db
+        .query("transactions")
+        .withIndex("by_organization", (q) =>
+          q.eq("organizationId", user.organizationId),
+        );
     }
 
-    if (args.donorId) {
+    if (args.donorId && args.projectId) {
       dbQuery = dbQuery.filter((q) => q.eq(q.field("donorId"), args.donorId));
     }
 
-    const result = await dbQuery
-      .order("desc")
-      .paginate({
-        numItems: args.paginationOpts.numItems,
-        cursor: args.paginationOpts.cursor,
-      });
+    const result = await dbQuery.order("desc").paginate({
+      numItems: args.paginationOpts.numItems,
+      cursor: args.paginationOpts.cursor,
+    });
 
-    const page = await addProjectNames(ctx, result.page);
+    const page = await addProjectAndCategoryNames(ctx, result.page);
 
-    return { ...result, page };
+    return {
+      isDone: result.isDone,
+      continueCursor: result.continueCursor as string,
+      page,
+    };
   },
 });

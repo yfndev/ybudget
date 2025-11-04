@@ -9,8 +9,11 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { CreateCategoryDialog } from "../dialogs/CreateCategoryDialog";
 import { AddDonorDialog } from "../Sheets/AddDonorDialog";
+import { CreateProjectDialog } from "../Sheets/CreateProjectDialog";
+import { Skeleton } from "../ui/skeleton";
 
 interface PageHeaderProps {
   title?: string;
@@ -30,6 +33,32 @@ export function PageHeader({
   const [isIncomeOpen, setIsIncomeOpen] = useState(false);
   const [isImportOpen, setIsImportOpen] = useState(false);
   const [isDonorOpen, setIsDonorOpen] = useState(false);
+  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+  const [isProjectOpen, setIsProjectOpen] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.metaKey && (e.code === "KeyE" || e.key === "e")) {
+        e.preventDefault();
+        setIsExpenseOpen(true);
+      } else if (e.metaKey && (e.code === "KeyI" || e.key === "i")) {
+        e.preventDefault();
+        setIsIncomeOpen(true);
+      } else if (e.metaKey && e.code === "KeyP") {
+        e.preventDefault();
+        setIsProjectOpen(true);
+      } else if (e.metaKey && e.code === "KeyD") {
+        e.preventDefault();
+        setIsDonorOpen(true);
+      } else if (e.metaKey && e.code === "KeyK") {
+        e.preventDefault();
+        setIsCategoryOpen(true);
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   const handleBackClick = () => {
     if (backUrl) {
@@ -61,7 +90,11 @@ export function PageHeader({
                 </Button>
               )}
               <div>
-                <h1 className="text-xl font-semibold">{title}</h1>
+                {title ? (
+                  <h1 className="text-xl font-semibold">{title}</h1>
+                ) : (
+                  <Skeleton className="h-7 w-48" />
+                )}
                 {subtitle && (
                   <p className="text-sm text-muted-foreground">{subtitle}</p>
                 )}
@@ -75,6 +108,8 @@ export function PageHeader({
                 onOpenIncome={() => setIsIncomeOpen(true)}
                 onOpenImport={() => setIsImportOpen(true)}
                 onOpenDonor={() => setIsDonorOpen(true)}
+                onOpenCategory={() => setIsCategoryOpen(true)}
+                onOpenProject={() => setIsProjectOpen(true)}
               />
             </div>
           </div>
@@ -96,6 +131,14 @@ export function PageHeader({
         onOpenChange={setIsImportOpen}
       />
       <AddDonorDialog open={isDonorOpen} onOpenChange={setIsDonorOpen} />
+      <CreateCategoryDialog
+        open={isCategoryOpen}
+        onOpenChange={setIsCategoryOpen}
+      />
+      <CreateProjectDialog
+        open={isProjectOpen}
+        onOpenChange={setIsProjectOpen}
+      />
     </>
   );
 }

@@ -100,14 +100,11 @@ export function CreateProjectDialog({
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Abbrechen
-          </Button>
-          <Button 
-            onClick={handleSubmit} 
+          <Button
+            onClick={handleSubmit}
             disabled={!name.trim() || !description.trim()}
           >
-            Erstellen
+            Projekt erstellen
           </Button>
         </DialogFooter>
       </DialogContent>

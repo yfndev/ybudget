@@ -1,5 +1,6 @@
 "use client";
 
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -9,11 +10,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  ColumnDef,
+  type ColumnDef,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
-  SortingState,
+  type SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import { useEffect, useRef, useState } from "react";
@@ -22,19 +23,26 @@ interface EditableDataTableProps<T> {
   columns: ColumnDef<T>[];
   data: T[];
   onUpdate?: (rowId: string, field: string, value: any) => Promise<void>;
-  hasNextPage?: boolean;
+  paginationStatus?:
+    | "Loading"
+    | "LoadingMore"
+    | "CanLoadMore"
+    | "Exhausted"
+    | "LoadingFirstPage";
   loadMore?: () => void;
-  isLoading?: boolean;
 }
 
 export function EditableDataTable<T extends { _id: string }>({
   columns,
   data,
   onUpdate,
-  hasNextPage = false,
+  paginationStatus,
   loadMore,
-  isLoading = false,
 }: EditableDataTableProps<T>) {
+  const hasNextPage = paginationStatus === "CanLoadMore";
+  const isLoading =
+    paginationStatus === "LoadingMore" ||
+    paginationStatus === "LoadingFirstPage";
   const [sorting, setSorting] = useState<SortingState>([
     { id: "date", desc: true },
   ]);
@@ -160,7 +168,7 @@ export function EditableDataTable<T extends { _id: string }>({
                 <TableHead key={header.id}>
                   {flexRender(
                     header.column.columnDef.header,
-                    header.getContext()
+                    header.getContext(),
                   )}
                 </TableHead>
               ))}
@@ -176,7 +184,7 @@ export function EditableDataTable<T extends { _id: string }>({
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}
@@ -193,12 +201,22 @@ export function EditableDataTable<T extends { _id: string }>({
                 </TableRow>
               )}
             </>
+          ) : isLoading ? (
+            <>
+              {[1, 2, 3, 4, 5].map((i) => (
+                <TableRow key={i}>
+                  {columns.map((_, j) => (
+                    <TableCell key={j}>
+                      <Skeleton className="h-4 w-full" />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))}
+            </>
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
-                {isLoading
-                  ? "Transaktionen werden geladen..."
-                  : "Keine Ergebnisse"}
+                Keine Ergebnisse
               </TableCell>
             </TableRow>
           )}

@@ -17,18 +17,25 @@ import {
 import { cn } from "@/lib/utils";
 import { useQuery } from "convex-helpers/react/cache";
 import { Check, ChevronsUpDown, Plus } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { api } from "../../../convex/_generated/api";
 import { AddDonorDialog } from "./AddDonorDialog";
 
 interface SelectDonorProps {
   value: string;
   onValueChange: (value: string) => void;
+  onTabPressed?: () => void;
 }
 
-export function SelectDonor({ value, onValueChange }: SelectDonorProps) {
+export function SelectDonor({
+  value,
+  onValueChange,
+  onTabPressed,
+}: SelectDonorProps) {
   const [open, setOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(0);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const donors = useQuery(api.donors.queries.getAllDonors);
 
   const selectedDonor = donors?.find((d) => d._id.toString() === value);
@@ -49,15 +56,60 @@ export function SelectDonor({ value, onValueChange }: SelectDonorProps) {
     onValueChange(donorId);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Tab") {
+      if (!open) {
+        e.preventDefault();
+        setOpen(true);
+      } else {
+        e.preventDefault();
+        if (onTabPressed) {
+          setOpen(false);
+          onTabPressed();
+        }
+      }
+    } else if (e.key === "ArrowDown" && !open) {
+      e.preventDefault();
+      setOpen(true);
+    } else if (e.key === "ArrowDown" && open) {
+      e.preventDefault();
+      setHighlightedIndex((prev) =>
+        prev < (donors?.length ?? 0) ? prev + 1 : 0
+      );
+    } else if (e.key === "ArrowUp" && open) {
+      e.preventDefault();
+      setHighlightedIndex((prev) =>
+        prev > 0 ? prev - 1 : (donors?.length ?? 0) - 1
+      );
+    } else if (e.key === "Enter" && open) {
+      e.preventDefault();
+      if (donors && donors[highlightedIndex]) {
+        handleSelect(donors[highlightedIndex]._id.toString());
+      }
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      setOpen(false);
+    }
+  };
+
+  const handleOpenChange = (newOpen: boolean) => {
+    setOpen(newOpen);
+    if (newOpen) {
+      setHighlightedIndex(0);
+    }
+  };
+
   return (
     <>
-      <Popover open={open} onOpenChange={setOpen}>
+      <Popover open={open} onOpenChange={handleOpenChange}>
         <PopoverTrigger asChild>
           <Button
+            ref={buttonRef}
             variant="outline"
             role="combobox"
             aria-expanded={open}
             className="w-full justify-between"
+            onKeyDown={handleKeyDown}
           >
             <span
               className={cn(
@@ -79,11 +131,13 @@ export function SelectDonor({ value, onValueChange }: SelectDonorProps) {
             <CommandList>
               <CommandEmpty>Keine Förderer :(</CommandEmpty>
               <CommandGroup>
-                {donors?.map((donor) => (
+                {donors?.map((donor, idx) => (
                   <CommandItem
                     key={donor._id}
                     value={donor._id.toString()}
                     onSelect={handleSelect}
+                    className={cn(idx === highlightedIndex && "bg-accent")}
+                    onMouseEnter={() => setHighlightedIndex(idx)}
                   >
                     <div className="flex items-center justify-between w-full">
                       <span>{donor.name}</span>
@@ -116,8 +170,8 @@ export function SelectDonor({ value, onValueChange }: SelectDonorProps) {
         </PopoverContent>
       </Popover>
 
-      <AddDonorDialog 
-        open={dialogOpen} 
+      <AddDonorDialog
+        open={dialogOpen}
         onOpenChange={setDialogOpen}
         onDonorCreated={handleDonorCreated}
       />

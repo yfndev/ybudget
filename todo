@@ -1,8 +1,20 @@
-- [ ] check how to show expected transactions in table (also if they are already matched)
 - [ ] load categories from database (maybe style nicer) and double-check with chatgpt again
-+ [ ] add income to categories
-- [ ] save name of organization locally in browser
-- [ ] save if user needs onboarding in locally in browser, so that it doesnt have to do it every time
-- [ ] how to do booking between projects
-- [ ] csv export 
-- [ ] add prediction for expected transactions on dashboard
+
+* [ ] add income to categories
+
+- [ ] add donor expense restrictions (only show donor if restriction is met)
+
+* [ ] UX improvements for creating transaction (easier key handling)
+
+* [ ] check how to show expected transactions in table (also if they are already matched)
+* [ ] save if user needs onboarding in locally in browser, so that it doesnt have to do it every time
+* [ ] how to do booking between projects -> moving money between projects
+* [ ] csv export
+
+archive:
+
+- [x] save name of organization locally in browser
+- [x] add prediction for expected transactions on dashboard
+
+No:
+! change sheets to dialogs

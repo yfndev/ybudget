@@ -1,7 +1,13 @@
 "use client";
 
 import { addDays, endOfDay, startOfDay, subDays } from "date-fns";
-import { createContext, ReactNode, useContext, useMemo, useState } from "react";
+import {
+  createContext,
+  type ReactNode,
+  useContext,
+  useMemo,
+  useState,
+} from "react";
 
 interface DateRange {
   from: Date;
@@ -14,7 +20,7 @@ interface DateRangeContextType {
 }
 
 const DateRangeContext = createContext<DateRangeContextType | undefined>(
-  undefined
+  undefined,
 );
 
 export function DateRangeProvider({ children }: { children: ReactNode }) {
@@ -25,7 +31,7 @@ export function DateRangeProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo(
     () => ({ selectedDateRange, setSelectedDateRange }),
-    [selectedDateRange]
+    [selectedDateRange],
   );
 
   return (
