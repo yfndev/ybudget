@@ -27,14 +27,14 @@ import {
 } from "@/components/ui/sidebar";
 import { CreateProjectDialog } from "../Sheets/CreateProjectDialog";
 
-function ProjectNavComponent() {
+function ProjectNavComponent({ id }: { id?: string }) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const pathname = usePathname();
   const projects = useQuery(api.projects.queries.getAllProjects);
 
   if (projects === undefined) {
     return (
-      <SidebarGroup>
+      <SidebarGroup id={id}>
         <SidebarGroupLabel>Projekte</SidebarGroupLabel>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -69,7 +69,7 @@ function ProjectNavComponent() {
   });
 
   return (
-    <SidebarGroup>
+    <SidebarGroup id={id}>
       <SidebarGroupLabel>Projekte</SidebarGroupLabel>
       <SidebarGroupAction onClick={() => setDialogOpen(true)}>
         <Plus />

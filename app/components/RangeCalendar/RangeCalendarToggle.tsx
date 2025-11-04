@@ -22,7 +22,7 @@ export function RangeCalendarToggle() {
   }, [open]);
 
   return (
-    <div ref={containerRef} className="relative z-10">
+    <div ref={containerRef} className="relative z-10" data-onborda-exclude>
       <Button variant="outline" onClick={() => setOpen(!open)}>
         Datumsbereich wählen
       </Button>

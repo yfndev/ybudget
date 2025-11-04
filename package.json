@@ -37,6 +37,7 @@
     "date-fns": "^4.1.0",
     "lucide-react": "^0.546.0",
     "next": "15.5.4",
+    "onborda": "^1.2.5",
     "papaparse": "^5.5.3",
     "pnpm": "^10.18.3",
     "prettier": "^3.6.2",

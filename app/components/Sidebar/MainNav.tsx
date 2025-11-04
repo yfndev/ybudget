@@ -12,15 +12,17 @@ import {
 
 export function MainNav({
   mainNav,
+  id,
 }: {
   mainNav: {
     name: string;
     url: string;
     icon: LucideIcon;
   }[];
+  id?: string;
 }) {
   return (
-    <SidebarGroup className="group-data-[collapsible=icon]:hidden">
+    <SidebarGroup className="group-data-[collapsible=icon]:hidden" id={id}>
       <SidebarMenu>
         {mainNav.map((item) => (
           <SidebarMenuItem key={item.name}>

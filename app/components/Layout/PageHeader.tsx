@@ -70,7 +70,10 @@ export function PageHeader({
 
   return (
     <>
-      <header className="flex w-full h-16 items-center overflow-visible">
+      <header
+        className="flex w-full h-16 items-center overflow-visible"
+        id="tour-page-header"
+      >
         <div className="flex w-full items-center gap-2 ">
           <SidebarTrigger className="-ml-1" />
           <Separator
@@ -103,33 +106,41 @@ export function PageHeader({
             <div className="flex flex-row gap-4">
               <RangeCalendarToggle />
 
-              <DashboardDropdown
-                onOpenExpense={() => setIsExpenseOpen(true)}
-                onOpenIncome={() => setIsIncomeOpen(true)}
-                onOpenImport={() => setIsImportOpen(true)}
-                onOpenDonor={() => setIsDonorOpen(true)}
-                onOpenCategory={() => setIsCategoryOpen(true)}
-                onOpenProject={() => setIsProjectOpen(true)}
-              />
+              <div id="tour-add-dropdown">
+                <DashboardDropdown
+                  onOpenExpense={() => setIsExpenseOpen(true)}
+                  onOpenIncome={() => setIsIncomeOpen(true)}
+                  onOpenImport={() => setIsImportOpen(true)}
+                  onOpenDonor={() => setIsDonorOpen(true)}
+                  onOpenCategory={() => setIsCategoryOpen(true)}
+                  onOpenProject={() => setIsProjectOpen(true)}
+                />
+              </div>
             </div>
           </div>
         </div>
       </header>
 
-      <TransactionSheet
-        type="expense"
-        open={isExpenseOpen}
-        onOpenChange={setIsExpenseOpen}
-      />
-      <TransactionSheet
-        type="income"
-        open={isIncomeOpen}
-        onOpenChange={setIsIncomeOpen}
-      />
-      <ImportTransactionsSheet
-        open={isImportOpen}
-        onOpenChange={setIsImportOpen}
-      />
+      <div id="tour-expense-sheet">
+        <TransactionSheet
+          type="expense"
+          open={isExpenseOpen}
+          onOpenChange={setIsExpenseOpen}
+        />
+      </div>
+      <div id="tour-income-sheet">
+        <TransactionSheet
+          type="income"
+          open={isIncomeOpen}
+          onOpenChange={setIsIncomeOpen}
+        />
+      </div>
+      <div id="tour-csv-upload">
+        <ImportTransactionsSheet
+          open={isImportOpen}
+          onOpenChange={setIsImportOpen}
+        />
+      </div>
       <AddDonorDialog open={isDonorOpen} onOpenChange={setIsDonorOpen} />
       <CreateCategoryDialog
         open={isCategoryOpen}
@@ -139,6 +150,8 @@ export function PageHeader({
         open={isProjectOpen}
         onOpenChange={setIsProjectOpen}
       />
+      <div id="tour-transaction-form" className="hidden" />
+      <div id="tour-csv-preview" className="hidden" />
     </>
   );
 }

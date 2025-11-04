@@ -28,7 +28,7 @@ export default function ImportTransactionsPageUI({
   onExpectedTransactionSelect,
 }: ImportTransactionsPageUIProps) {
   return (
-    <div>
+    <div id="tour-import-page">
       <PageHeader title="Transaktionen zuordnen" />
 
       {totalCount === 0 ? (
@@ -42,12 +42,14 @@ export default function ImportTransactionsPageUI({
       ) : (
         <>
           <div className="flex-1 flex mt-16 gap-16">
-            <ExpectedTransactionMatches
-              expectedTransactions={expectedTransactions}
-              onSelect={onExpectedTransactionSelect}
-            />
+            <div id="tour-expected-matches">
+              <ExpectedTransactionMatches
+                expectedTransactions={expectedTransactions}
+                onSelect={onExpectedTransactionSelect}
+              />
+            </div>
             {current && (
-              <div className="mt-16 flex-shrink-0">
+              <div className="mt-16 flex-shrink-0" id="tour-import-card">
                 <ImportTransactionCard
                   title={current.counterparty || ""}
                   description={current.description}
@@ -67,7 +69,7 @@ export default function ImportTransactionsPageUI({
               </div>
             )}
           </div>
-          <div className="mt-auto pt-6">
+          <div className="mt-auto pt-6" id="tour-import-progress">
             <Progress
               className="w-3/4 mx-auto"
               value={totalCount > 0 ? ((index + 1) / totalCount) * 100 : 0}

@@ -21,6 +21,7 @@ import {
 
 import { useQuery } from "convex-helpers/react/cache";
 import { api } from "../../../convex/_generated/api";
+import { StartTourButton } from "../Onboarding/StartTourButton";
 import { MainNav } from "./MainNav";
 import { ProjectNav } from "./ProjectNav";
 import { SearchForm } from "./SearchForm";
@@ -56,11 +57,12 @@ function AppSidebarComponent(props: React.ComponentProps<typeof Sidebar>) {
         <SearchForm />
       </SidebarHeader>
       <SidebarContent>
-        <MainNav mainNav={mainNav} />
-        <ProjectNav />
+        <MainNav mainNav={mainNav} id="tour-main-nav" />
+        <ProjectNav id="tour-project-nav" />
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter className="flex flex-row items-center justify-between">
         <NavUser user={user} />
+        <StartTourButton />
       </SidebarFooter>
     </Sidebar>
   );

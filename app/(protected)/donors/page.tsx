@@ -25,14 +25,15 @@ export default function DonorsPage() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {donors?.map((donor) => (
-              <DonorCard
-                key={donor._id}
-                donorId={donor._id}
-                name={donor.name}
-                type={donor.type}
-              />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="tour-donors-grid">
+            {donors?.map((donor, index) => (
+              <div key={donor._id} id={index === 0 ? "tour-donor-card" : undefined}>
+                <DonorCard
+                  donorId={donor._id}
+                  name={donor.name}
+                  type={donor.type}
+                />
+              </div>
             ))}
           </div>
         )}

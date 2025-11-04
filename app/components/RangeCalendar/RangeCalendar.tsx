@@ -59,7 +59,7 @@ const RangeCalendar = ({
   };
 
   return (
-    <Card className="z-50 max-w-xs py-4">
+    <Card className=" max-w-xs py-4">
       <CardContent className="px-4">
         <Calendar
           mode="range"

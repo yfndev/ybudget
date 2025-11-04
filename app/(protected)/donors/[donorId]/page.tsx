@@ -57,14 +57,14 @@ export default function DonorDetail() {
         backUrl="/donors"
       />
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6" id="tour-donor-budget">
         <BudgetCard title="Zugesagt" amount={donor.committedIncome} />
         <BudgetCard title="Bezahlt" amount={donor.paidIncome} />
         <BudgetCard title="Offen" amount={donor.openIncome} />
         <BudgetCard title="Ausgaben" amount={-donor.totalExpenses} />
       </div>
 
-      <div className="mt-6">
+      <div className="mt-6" id="tour-donor-transactions">
         <h2 className="text-xl font-semibold mb-4">Transaktionen</h2>
         <EditableDataTable
           columns={editableColumns}

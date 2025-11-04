@@ -36,13 +36,15 @@ export default function TransactionsOverviewUI({
       <div className="text-sm text-muted-foreground pb-4 ">
         {fromDate} - {toDate}
       </div>
-      <EditableDataTable
-        columns={editableColumns}
-        data={transactions}
-        onUpdate={onUpdateTransaction}
-        paginationStatus={status}
-        loadMore={loadMore}
-      />
+      <div id="tour-transactions-table">
+        <EditableDataTable
+          columns={editableColumns}
+          data={transactions}
+          onUpdate={onUpdateTransaction}
+          paginationStatus={status}
+          loadMore={loadMore}
+        />
+      </div>
     </div>
   );
 }
