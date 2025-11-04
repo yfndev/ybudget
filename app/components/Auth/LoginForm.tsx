@@ -4,48 +4,45 @@ import { useAuthActions } from "@convex-dev/auth/react";
 import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Field, FieldDescription, FieldGroup } from "@/components/ui/field";
 import { cn } from "@/lib/utils";
+import { Separator } from "@radix-ui/react-separator";
 
 export function LoginForm({
   className,
   ...props
-}: React.ComponentProps<"div">) {
+}: React.ComponentProps<"form">) {
   const { signIn } = useAuthActions();
 
-  const handleGoogleSignIn = () => {
+  const handleGoogleSignIn = (e: React.FormEvent) => {
+    e.preventDefault();
     void signIn("google");
   };
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card className="p-8 shadow-lg">
-        <div className="flex flex-col items-center gap-6 text-center">
-          <div className="flex size-16 items-center justify-center rounded-2xl bg-primary/10">
+    <form
+      className={cn("flex flex-col gap-6", className)}
+      onSubmit={handleGoogleSignIn}
+      {...props}
+    >
+      <FieldGroup>
+        <div className="flex flex-col items-center gap-2 text-center">
+          <div className="flex size-16 items-center justify-center rounded-2xl bg-primary/10 mb-2">
             <Image
               src="/AppIcon.png"
               alt="YBudget"
-              width={32}
-              height={32}
+              width={48}
+              height={48}
               className="size-12"
             />
           </div>
-
-          <div className="space-y-2">
-            <h1 className="text-3xl font-bold tracking-tight">
-              Willkommen zurück zu YBudget
-            </h1>
-            <p className="text-muted-foreground">
-              Melde dich an, um dein Budget zu verwalten!
-            </p>
-          </div>
-
-          <Button
-            variant="outline"
-            type="button"
-            onClick={handleGoogleSignIn}
-            className="w-full h-12 text-base font-medium"
-          >
+          <h1 className="text-2xl font-bold">Willkommen bei YBudget</h1>
+          <p className="text-muted-foreground text-sm text-balance">
+            Melde dich mit deinem Google-Konto an
+          </p>
+        </div>
+        <Field>
+          <Button variant="outline" type="submit" className="w-full">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -58,20 +55,20 @@ export function LoginForm({
             </svg>
             Mit Google anmelden
           </Button>
-        </div>
-      </Card>
-
-      <p className="text-center text-sm text-muted-foreground px-6">
-        Durch das Klicken auf Weiter stimmst du unseren{" "}
-        <a href="#" className="underline underline-offset-4 hover:text-primary">
-          Nutzungsbedingungen
-        </a>{" "}
-        und{" "}
-        <a href="#" className="underline underline-offset-4 hover:text-primary">
-          Datenschutzrichtlinien
-        </a>{" "}
-        zu.
-      </p>
-    </div>
+          <Separator className="my-4" />
+          <FieldDescription className="text-center">
+            Durch das Anmelden stimmst du unseren{" "}
+            <a href="#" className="underline underline-offset-4">
+              Nutzungsbedingungen
+            </a>
+            und
+            <a href="#" className="underline underline-offset-4">
+              Datenschutzrichtlinien
+            </a>
+            zu.
+          </FieldDescription>
+        </Field>
+      </FieldGroup>
+    </form>
   );
 }
