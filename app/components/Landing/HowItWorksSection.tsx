@@ -48,7 +48,7 @@ export function HowItWorksSection() {
 
         <div className="mt-16">
           <div className="relative">
-            <div className="absolute left-1/2 top-0 hidden h-full w-0.5 -translate-x-1/2 bg-gradient-to-b from-sky-500 to-purple-500 lg:block" />
+            <div className="absolute left-1/2 top-0 hidden h-full w-0.5 -translate-x-1/2 bg-gradient-to-b from-primary to-primary/60 lg:block" />
 
             <div className="space-y-12">
               {steps.map((step, index) => {
@@ -75,13 +75,13 @@ export function HowItWorksSection() {
                             index % 2 === 0 ? "" : "lg:flex-row-reverse"
                           }`}
                         >
-                          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500 to-blue-600 text-white shadow-lg">
+                          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-primary text-white shadow-lg">
                             <Icon className="h-8 w-8" />
                           </div>
                           <div
                             className={index % 2 === 0 ? "lg:text-right" : ""}
                           >
-                            <div className="text-sm font-semibold text-sky-600">
+                            <div className="text-sm font-semibold text-primary">
                               Schritt {step.number}
                             </div>
                             <h3 className="mt-1 text-xl font-bold text-slate-900">
@@ -100,7 +100,7 @@ export function HowItWorksSection() {
                       />
                     </div>
 
-                    <div className="absolute left-1/2 top-1/2 hidden h-6 w-6 -translate-x-1/2 -translate-y-1/2 rounded-full border-4 border-white bg-sky-500 shadow-lg lg:block" />
+                    <div className="absolute left-1/2 top-1/2 hidden h-6 w-6 -translate-x-1/2 -translate-y-1/2 rounded-full border-4 border-white bg-primary shadow-lg lg:block" />
                   </motion.div>
                 );
               })}

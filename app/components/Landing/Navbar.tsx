@@ -45,7 +45,7 @@ export function Navbar() {
                   key={item.name}
                   href={item.href}
                   onClick={(e) => scrollToSection(e, item.href)}
-                  className="text-sm font-medium text-slate-700 transition-colors hover:text-sky-500"
+                  className="text-sm font-medium text-slate-700 transition-colors hover:text-primary"
                 >
                   {item.name}
                 </a>
@@ -82,7 +82,7 @@ export function Navbar() {
                 key={item.name}
                 href={item.href}
                 onClick={(e) => scrollToSection(e, item.href)}
-                className="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 transition-colors hover:bg-slate-50 hover:text-sky-500"
+                className="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 transition-colors hover:bg-slate-50 hover:text-primary"
               >
                 {item.name}
               </a>

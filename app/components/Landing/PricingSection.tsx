@@ -79,13 +79,13 @@ export function PricingSection() {
               transition={{ duration: 0.5, delay: index * 0.1 }}
               className={`relative flex flex-col rounded-2xl border bg-white p-8 shadow-sm transition-all hover:shadow-md ${
                 tier.popular
-                  ? "border-sky-500 ring-2 ring-sky-500"
+                  ? "border-primary ring-2 ring-primary"
                   : "border-slate-200"
               }`}
             >
               {tier.popular && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                  <div className="flex items-center gap-1 rounded-full bg-gradient-to-r from-sky-500 to-blue-600 px-4 py-1 text-sm font-semibold text-white shadow-lg">
+                  <div className="flex items-center gap-1 rounded-full bg-primary px-4 py-1 text-sm font-semibold text-white shadow-lg">
                     <Sparkles className="h-4 w-4" />
                     Beliebteste Wahl
                   </div>
