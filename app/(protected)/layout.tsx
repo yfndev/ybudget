@@ -3,6 +3,7 @@
 import { OnboardingDialog } from "@/components/Onboarding/OnboardingDialog";
 import { TourCard } from "@/components/Onboarding/TourCard";
 import { tourSteps } from "@/components/Onboarding/tourSteps";
+import { TrialBanner } from "@/components/Payment/TrialBanner";
 import { AppSidebar } from "@/components/Sidebar/AppSidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { DateRangeProvider } from "@/contexts/DateRangeContext";
@@ -50,6 +51,7 @@ const StableContent = memo(function StableContent({
             shadowOpacity="0.5"
             cardComponent={TourCard}
           >
+            <TrialBanner />
             <div className="flex flex-col w-full">
               <div className="p-4 lg:px-6 pb-6 overflow-x-hidden w-full">
                 {children}

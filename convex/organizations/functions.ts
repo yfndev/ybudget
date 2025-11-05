@@ -41,7 +41,7 @@ export const setupUserOrganization = mutation({
     if (!domain) throw new Error("Email domain not found");
 
     const existingOrgId = (await ctx.runQuery(
-      api.organizations.queries.findOrganizationByDomain,
+      api.organizations.queries.getOrganizationByDomain,
       { domain },
     )) as Id<"organizations"> | null;
 
