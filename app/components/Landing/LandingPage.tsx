@@ -5,6 +5,7 @@ import { FinalCTASection } from "./FinalCTASection";
 import { Footer } from "./Footer";
 import { HeroSection } from "./HeroSection";
 import { HowItWorksSection } from "./HowItWorksSection";
+import { Navbar } from "./Navbar";
 import { PricingSection } from "./PricingSection";
 import { ProblemSection } from "./ProblemSection";
 import { SocialProofSection } from "./SocialProofSection";
@@ -13,8 +14,8 @@ import { SolutionSection } from "./SolutionSection";
 export function LandingPage() {
   return (
     <main className="min-h-screen">
+      <Navbar />
       <HeroSection />
-      {/* <TrustBar /> */}
       <ProblemSection />
       <SolutionSection />
       <SocialProofSection />
