@@ -15,7 +15,7 @@ const features = [
       "Erwartete Ausgaben planen und tracken",
       "Budget-Warnungen bei Überschreitung",
     ],
-    screenshot: "/screenshots/Main Nav.png",
+    screenshot: "/screenshots/Dashboard Overview.png",
   },
   {
     side: "right",
