@@ -21,7 +21,9 @@ export default defineSchema({
     isAnonymous: v.optional(v.boolean()),
     firstName: v.optional(v.string()),
     lastName: v.optional(v.string()),
+
     organizationId: v.optional(v.id("organizations")),
+    role: v.optional(v.union(v.literal("admin"), v.literal("editor"), v.literal("viewer"))),
   })
     .index("email", ["email"])
     .index("phone", ["phone"])
