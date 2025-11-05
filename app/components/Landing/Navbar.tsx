@@ -16,7 +16,10 @@ export function Navbar() {
     { name: "FAQ", href: "#faq" },
   ];
 
-  const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+  const scrollToSection = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    href: string
+  ) => {
     e.preventDefault();
     const element = document.querySelector(href);
     if (element) {
@@ -31,7 +34,7 @@ export function Navbar() {
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center">
             <Link href="/" className="text-2xl font-bold text-slate-900">
-              Y<span className="text-sky-500">Budget</span>
+              <span className="text-primary">YBudget</span>
             </Link>
           </div>
 
