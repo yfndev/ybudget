@@ -72,11 +72,11 @@ export default function UsersPage() {
   if (!isAdmin) {
     return (
       <div>
-        <PageHeader title="Users" />
+        <PageHeader title="Benutzer" />
         <div className="text-center py-12">
-          <h3 className="text-lg font-semibold">Access Denied</h3>
+          <h3 className="text-lg font-semibold">Zugriff verweigert</h3>
           <p className="text-muted-foreground mt-2">
-            You need admin permissions to view this page.
+            Du benötigst Admin-Berechtigungen, um diese Seite anzuzeigen.
           </p>
         </div>
       </div>
@@ -85,18 +85,18 @@ export default function UsersPage() {
 
   return (
     <div>
-      <PageHeader title="Users" />
+      <PageHeader title="Benutzer" />
 
       <div className="space-y-6">
         <p className="text-muted-foreground">
-          Manage user roles and permissions for your organization
+          Verwalte Benutzerrollen und Berechtigungen für deine Organisation
         </p>
 
         {!users || users.length === 0 ? (
           <div className="text-center py-12">
-            <h3 className="text-lg font-semibold">No users found</h3>
+            <h3 className="text-lg font-semibold">Keine Benutzer gefunden</h3>
             <p className="text-muted-foreground mt-2">
-              No users in your organization yet.
+              Noch keine Benutzer in deiner Organisation.
             </p>
           </div>
         ) : (
@@ -104,9 +104,9 @@ export default function UsersPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>User</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Role</TableHead>
+                  <TableHead>Benutzer</TableHead>
+                  <TableHead>E-Mail</TableHead>
+                  <TableHead>Rolle</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -121,12 +121,12 @@ export default function UsersPage() {
                           </AvatarFallback>
                         </Avatar>
                         <span className="font-medium">
-                          {user.name || "Unknown User"}
+                          {user.name || "Unbekannter Benutzer"}
                         </span>
                       </div>
                     </TableCell>
                     <TableCell className="text-muted-foreground">
-                      {user.email || "No email"}
+                      {user.email || "Keine E-Mail"}
                     </TableCell>
                     <TableCell>
                       <Select
@@ -137,7 +137,7 @@ export default function UsersPage() {
                         disabled={!isAdmin}
                       >
                         <SelectTrigger className="w-[140px]">
-                          <SelectValue placeholder="Select role" />
+                          <SelectValue placeholder="Rolle auswählen" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="admin">Admin</SelectItem>

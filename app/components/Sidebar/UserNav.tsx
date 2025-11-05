@@ -17,14 +17,8 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
-import { api } from "@/convex/_generated/api";
 import type { Doc } from "@/convex/_generated/dataModel";
-import { CustomerPortalLink } from "@convex-dev/polar/react";
-import {
-  ChevronsUpDown,
-  LogOut,
-  Settings,
-} from "lucide-react";
+import { ChevronsUpDown, LogOut, Users } from "lucide-react";
 import Link from "next/link";
 
 export function NavUser({ user }: { user: Doc<"users"> | null | undefined }) {
@@ -102,8 +96,8 @@ export function NavUser({ user }: { user: Doc<"users"> | null | undefined }) {
               <DropdownMenuGroup>
                 <DropdownMenuItem asChild>
                   <Link href="/settings/users">
-                    <Settings />
-                    Users
+                    <Users />
+                    Team
                   </Link>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
