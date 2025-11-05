@@ -5,7 +5,7 @@ import { getCurrentUser } from "../users/getCurrentUser";
 export const createProject = mutation({
   args: {
     name: v.string(),
-    description: v.string(),
+    description: v.optional(v.string()),
     parentId: v.optional(v.id("projects")),
   },
   handler: async (ctx, args) => {

@@ -42,12 +42,12 @@ export function CreateProjectDialog({
   };
 
   const handleSubmit = async () => {
-    if (!name.trim() || !description.trim()) return;
+    if (!name.trim()) return;
 
     try {
       const projectId = await addProject({
         name: name.trim(),
-        description: description.trim(),
+        description: description.trim() || undefined,
         parentId: parentId ? (parentId as any) : undefined,
       });
       toast.success("Projekt erstellt!");
@@ -82,7 +82,7 @@ export function CreateProjectDialog({
           </div>
 
           <div className="flex flex-col gap-2">
-            <Label htmlFor="project-description">Beschreibung</Label>
+            <Label htmlFor="project-description">Beschreibung (optional)</Label>
             <Textarea
               id="project-description"
               placeholder="Beschreibe dein Projekt..."
@@ -102,7 +102,7 @@ export function CreateProjectDialog({
         <DialogFooter>
           <Button
             onClick={handleSubmit}
-            disabled={!name.trim() || !description.trim()}
+            disabled={!name.trim()}
           >
             Projekt erstellen
           </Button>

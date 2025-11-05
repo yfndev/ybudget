@@ -41,15 +41,20 @@ export const getUnassignedProcessedTransactions = query({
   handler: async (ctx) => {
     const user = await getCurrentUser(ctx);
 
-    const transactions = await ctx.db
+    const allTransactions = await ctx.db
       .query("transactions")
-      .withIndex("by_organization_project", (q) =>
-        q.eq("organizationId", user.organizationId).eq("projectId", undefined),
+      .withIndex("by_organization", (q) =>
+        q.eq("organizationId", user.organizationId),
       )
-      .filter((q) => q.eq(q.field("status"), "processed"))
       .collect();
 
-    return transactions;
+    const unassigned = allTransactions.filter(
+      (t) =>
+        t.status === "processed" &&
+        (!t.projectId || !t.categoryId || !t.donorId || t.donorId === ""),
+    );
+
+    return unassigned.sort((a, b) => b.date - a.date);
   },
 });
 
