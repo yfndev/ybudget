@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -23,6 +24,12 @@ import { useMutation } from "convex/react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
+type TaxSphere =
+  | "non-profit"
+  | "asset-management"
+  | "purpose-operations"
+  | "commercial-operations";
+
 interface AddDonorDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -36,21 +43,33 @@ export const AddDonorDialog = ({
 }: AddDonorDialogProps) => {
   const [name, setName] = useState("");
   const [type, setType] = useState<"donation" | "sponsoring">("donation");
+  const [onlyNonProfit, setOnlyNonProfit] = useState(false);
 
   const createDonor = useMutation(api.donors.functions.createDonor);
 
   const resetForm = () => {
     setName("");
     setType("donation");
+    setOnlyNonProfit(false);
   };
 
   const handleSubmit = async () => {
     if (!name.trim()) return;
 
+    const allowedTaxSpheres: TaxSphere[] = onlyNonProfit
+      ? ["non-profit", "purpose-operations"]
+      : [
+          "non-profit",
+          "asset-management",
+          "purpose-operations",
+          "commercial-operations",
+        ];
+
     try {
       const donorId = await createDonor({
         name: name.trim(),
         type,
+        allowedTaxSpheres,
       });
       toast.success("Förderer erstellt!");
       onDonorCreated?.(donorId);
@@ -71,7 +90,7 @@ export const AddDonorDialog = ({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="space-y-6 py-4">
           <div className="flex flex-col gap-2">
             <Label htmlFor="donor-name">Name</Label>
             <Input
@@ -99,6 +118,20 @@ export const AddDonorDialog = ({
                 <SelectItem value="sponsoring">Sponsoring</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="flex items-center space-x-3">
+            <Checkbox
+              id="only-nonprofit"
+              checked={onlyNonProfit}
+              onCheckedChange={(checked) => setOnlyNonProfit(checked === true)}
+            />
+            <label
+              htmlFor="only-nonprofit"
+              className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+            >
+              Förderer darf nur für gemeinnützige Ausgaben verwendet werden
+            </label>
           </div>
         </div>
 
