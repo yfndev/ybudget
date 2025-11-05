@@ -63,6 +63,7 @@ export const setupUserOrganization = mutation({
       await ctx.runMutation(api.users.functions.addUserToOrganization, {
         userId: user._id,
         organizationId: existingOrgId,
+        role: "editor",
       });
       return existingOrgId;
     }
@@ -79,6 +80,7 @@ export const setupUserOrganization = mutation({
     await ctx.runMutation(api.users.functions.addUserToOrganization, {
       userId: user._id,
       organizationId,
+      role: "admin",
     });
 
     return organizationId;

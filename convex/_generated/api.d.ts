@@ -24,6 +24,8 @@ import type * as transactions_functions from "../transactions/functions.js";
 import type * as transactions_queries from "../transactions/queries.js";
 import type * as users_functions from "../users/functions.js";
 import type * as users_getCurrentUser from "../users/getCurrentUser.js";
+import type * as users_mutations from "../users/mutations.js";
+import type * as users_permissions from "../users/permissions.js";
 import type * as users_queries from "../users/queries.js";
 import type * as utils_categoryMapping from "../utils/categoryMapping.js";
 
@@ -58,6 +60,8 @@ declare const fullApi: ApiFromModules<{
   "transactions/queries": typeof transactions_queries;
   "users/functions": typeof users_functions;
   "users/getCurrentUser": typeof users_getCurrentUser;
+  "users/mutations": typeof users_mutations;
+  "users/permissions": typeof users_permissions;
   "users/queries": typeof users_queries;
   "utils/categoryMapping": typeof utils_categoryMapping;
 }>;

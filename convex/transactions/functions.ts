@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { mutation } from "../_generated/server";
 import { getCurrentUser } from "../users/getCurrentUser";
+import { requireRole } from "../users/permissions";
 
 export const createExpectedTransaction = mutation({
   args: {
@@ -15,6 +16,7 @@ export const createExpectedTransaction = mutation({
   },
 
   handler: async (ctx, args) => {
+    await requireRole(ctx, "editor");
     const user = await getCurrentUser(ctx);
 
     return await ctx.db.insert("transactions", {
@@ -48,6 +50,7 @@ export const createImportedTransaction = mutation({
   },
 
   handler: async (ctx, args) => {
+    await requireRole(ctx, "editor");
     const user = await getCurrentUser(ctx);
 
     const existing = await ctx.db
@@ -95,6 +98,7 @@ export const updateTransaction = mutation({
   },
 
   handler: async (ctx, { transactionId, ...updates }) => {
+    await requireRole(ctx, "editor");
     const validUpdates = Object.fromEntries(
       Object.entries(updates).filter(
         ([_, value]) => value !== undefined && value !== "",
