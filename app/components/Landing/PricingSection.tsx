@@ -1,9 +1,9 @@
 "use client";
 
+import { useQuery } from "convex/react";
 import { motion } from "framer-motion";
 import { Check, Sparkles } from "lucide-react";
 import Link from "next/link";
-import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Button } from "../ui/button";
 
@@ -17,12 +17,13 @@ interface Tier {
   href: string;
   popular: boolean;
   productId?: string;
+  priceCalculation?: string;
 }
 
 const staticTiers: Tier[] = [
   {
     name: "YBudget Premium",
-    price: "24,99€",
+    price: "49,99€",
     period: "/ Monat",
     description: "Volle Flexibilität mit monatlicher Zahlung",
     features: [
@@ -41,10 +42,10 @@ const staticTiers: Tier[] = [
   },
   {
     name: "YBudget  Premium Yearly",
-    price: "249€",
+    price: "499,99€",
     period: "/ Jahr",
-    priceCalculation: "24,99€ × 12 = 299,88€",
-    description: "Spare über 50€ mit jährlicher Zahlung",
+    priceCalculation: "49,99€ × 12 = 499,99€",
+    description: "Spare über 100€ mit jährlicher Zahlung",
     features: [
       "Unbegrenzte Projekte",
       "Unbegrenzte Transaktionen",
@@ -139,7 +140,7 @@ export function PricingSection() {
                     </span>
                   )}
                 </div>
-                {"priceCalculation" in tier && tier.priceCalculation && (
+                {tier.priceCalculation && (
                   <p className="mt-2 text-sm text-slate-500 line-through">
                     {tier.priceCalculation}
                   </p>
