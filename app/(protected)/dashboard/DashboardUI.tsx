@@ -64,7 +64,7 @@ export default function DashboardUI({
         Projekte
       </h2>
       <div
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 w-full gap-4 lg:gap-6"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 w-full gap-4 lg:gap-6"
         data-onborda-exclude
       >
         {projects?.map((project: Doc<"projects">) => {
