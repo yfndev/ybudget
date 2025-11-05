@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
+    
     "start": "next start",
     "format": "prettier --write .",
     "lint": "biome lint --write"
