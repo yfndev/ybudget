@@ -10,20 +10,6 @@ function getUserDomain(email: string | undefined): string | null {
   return domain || null;
 }
 
-export const findOrganizationByDomain = mutation({
-  args: {
-    domain: v.string(),
-  },
-
-  handler: async (ctx, args) => {
-    const organization = await ctx.db
-      .query("organizations")
-      .withIndex("by_domain", (q) => q.eq("domain", args.domain))
-      .first();
-
-    return organization?._id ?? null;
-  },
-});
 
 export const createOrganization = mutation({
   args: {
@@ -54,8 +40,8 @@ export const setupUserOrganization = mutation({
     const domain = getUserDomain(user.email);
     if (!domain) throw new Error("Email domain not found");
 
-    const existingOrgId = (await ctx.runMutation(
-      api.organizations.functions.findOrganizationByDomain,
+    const existingOrgId = (await ctx.runQuery(
+      api.organizations.queries.findOrganizationByDomain,
       { domain },
     )) as Id<"organizations"> | null;
 

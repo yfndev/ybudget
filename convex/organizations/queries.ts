@@ -23,3 +23,17 @@ export const getOrganizationByDomain = query({
     return organization;
   },
 });
+
+export const findOrganizationByDomain = query({
+  args: {
+    domain: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const organization = await ctx.db
+      .query("organizations")
+      .withIndex("by_domain", (q) => q.eq("domain", args.domain))
+      .first();
+
+    return organization?._id ?? null;
+  },
+});
