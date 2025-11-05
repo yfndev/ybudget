@@ -1,6 +1,6 @@
 "use client";
 
-import { HelpCircle } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 const footerLinks = {
@@ -102,7 +102,13 @@ export function Footer() {
 
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-slate-200 pt-8 sm:flex-row">
           <div className="flex items-center gap-2">
-            <HelpCircle className="h-5 w-5 text-sky-500" />
+            <Image
+              src="/AppIcon.png"
+              alt="YBudget"
+              width={24}
+              height={24}
+              className="size-8"
+            />
             <span className="font-semibold text-slate-900">YBudget</span>
           </div>
           <p className="text-sm text-slate-500">
@@ -113,4 +119,3 @@ export function Footer() {
     </footer>
   );
 }
-

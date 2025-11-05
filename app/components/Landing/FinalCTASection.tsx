@@ -32,15 +32,7 @@ export function FinalCTASection() {
               size="lg"
               className="h-12 bg-white px-8 text-base font-semibold text-slate-900 hover:bg-slate-100"
             >
-              <Link href="/login">Kostenlos starten</Link>
-            </Button>
-            <Button
-              asChild
-              size="lg"
-              variant="outline"
-              className="h-12 border-white px-8 text-base font-semibold text-white hover:bg-white/10"
-            >
-              <Link href="#demo">Demo buchen</Link>
+              <Link href="/login">YBudget testen</Link>
             </Button>
           </div>
 
@@ -63,4 +55,3 @@ export function FinalCTASection() {
     </section>
   );
 }
-
