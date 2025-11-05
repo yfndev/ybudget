@@ -31,14 +31,14 @@ export default function ProjectDetail() {
     { initialNumItems: 50 }
   );
 
-  const transactions = useMemo(
+  const filteredTransactions = useMemo(
     () => filterTransactionsByDateRange(allTransactions, selectedDateRange),
     [allTransactions, selectedDateRange]
   );
 
   const budgets = useMemo(
-    () => calculateBudget(transactions ?? []),
-    [transactions]
+    () => calculateBudget(allTransactions ?? []),
+    [allTransactions]
   );
 
   const updateTransaction = useMutation(
@@ -69,7 +69,7 @@ export default function ProjectDetail() {
   return (
     <ProjectDashboardUI
       project={project}
-      transactions={transactions ?? []}
+      transactions={filteredTransactions ?? []}
       budgets={budgets}
       status={status}
       loadMore={loadMore}
