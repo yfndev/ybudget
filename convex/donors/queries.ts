@@ -16,7 +16,7 @@ export const getAllDonors = query({
 
 export const getEligibleDonorsForCategory = query({
   args: {
-    categoryId: v.optional(v.id("categories")),
+    donorId: v.id("donors"),
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
