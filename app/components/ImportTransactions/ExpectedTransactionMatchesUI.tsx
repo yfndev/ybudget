@@ -1,3 +1,5 @@
+import { Card, CardContent } from "@/components/ui/card";
+
 interface ExpectedTransaction {
   _id: string;
   description: string;
@@ -22,47 +24,53 @@ export const ExpectedTransactionMatchesUI = ({
   return (
     <div
       ref={containerRef as React.RefObject<HTMLDivElement>}
-      className="w-1/4 flex flex-col h-full flex-shrink-0"
+      className="flex flex-col"
     >
-      <div className="mb-4">
-        <h3 className="text-lg font-semibold">Matche geplante Ausgaben:</h3>
-      </div>
+      <h3 className="text-2xl font-semibold mb-6">Matche geplante Ausgaben:</h3>
+
       {expectedTransactions.length > 0 ? (
-        <div className="space-y-3">
-          {expectedTransactions.map((match) => (
-            <div
-              key={match._id}
-              className={`p-3 border rounded-lg cursor-pointer transition-colors ${
-                selectedMatch === match._id
+        <div className="flex flex-col gap-4">
+          {expectedTransactions.map((transaction) => (
+            <Card
+              key={transaction._id}
+              className={`cursor-pointer transition-all ${
+                selectedMatch === transaction._id
                   ? "border-primary bg-primary/5"
-                  : "border-border hover:border-primary/50"
+                  : "hover:border-primary/50"
               }`}
-              onClick={() => onSelect(match._id)}
+              onClick={() => onSelect(transaction._id)}
             >
-              <div className="flex justify-between gap-5 items-center text-xs">
-                <div className="mb-2">
-                  <p className="font-semibold text-sm">{match.counterparty}</p>
-                  <p className="text-sm">{match.description}</p>
+              <CardContent className="p-4">
+                <div className="flex items-start justify-between w-full ">
+                  <div className="flex-1">
+                    <p className="font-semibold text-base mb-1">
+                      {transaction.counterparty}
+                    </p>
+                    <p className="text-sm text-muted-foreground line-clamp-2">
+                      {transaction.description}
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                    <span className="text-sm text-muted-foreground whitespace-nowrap">
+                      {new Date(transaction.date).toLocaleDateString("de-DE")}
+                    </span>
+                    <span className="font-semibold text-base whitespace-nowrap">
+                      {new Intl.NumberFormat("de-DE", {
+                        style: "currency",
+                        currency: "EUR",
+                      }).format(Math.abs(transaction.amount))}
+                    </span>
+                  </div>
                 </div>
-                <div className="flex flex-col items-end">
-                  <span className="text-muted-foreground">
-                    {new Date(match.date).toLocaleDateString("de-DE")}
-                  </span>
-                  <span className="font-medium pt-4">
-                    {new Intl.NumberFormat("de-DE", {
-                      style: "currency",
-                      currency: "EUR",
-                    }).format(Math.abs(match.amount))}
-                  </span>
-                </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           ))}
         </div>
       ) : (
-        <div className="text-sm text-muted-foreground">
+        <p className="text-sm text-muted-foreground">
           Keine möglichen Matches vorhanden
-        </div>
+        </p>
       )}
     </div>
   );
