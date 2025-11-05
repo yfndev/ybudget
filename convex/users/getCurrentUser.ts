@@ -7,5 +7,8 @@ export async function getCurrentUser(ctx: QueryCtx | MutationCtx) {
   if (!userId) throw new Error("Unauthorized user");
   const user = await ctx.db.get(userId);
   if (!user) throw new Error("User not found");
-  return user as Doc<"users"> & { organizationId: Id<"organizations"> };
+  return user as Doc<"users"> & {
+    organizationId: Id<"organizations">;
+    role?: "admin" | "editor" | "viewer";
+  };
 }

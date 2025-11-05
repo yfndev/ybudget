@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { mutation } from "../_generated/server";
 import { getCurrentUser } from "../users/getCurrentUser";
+import { requireRole } from "../users/permissions";
 
 export const createProject = mutation({
   args: {
@@ -9,6 +10,7 @@ export const createProject = mutation({
     parentId: v.optional(v.id("projects")),
   },
   handler: async (ctx, args) => {
+    await requireRole(ctx, "editor");
     const user = await getCurrentUser(ctx);
 
     return await ctx.db.insert("projects", {

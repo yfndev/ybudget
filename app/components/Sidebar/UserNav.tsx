@@ -19,16 +19,12 @@ import {
 } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Doc } from "@/convex/_generated/dataModel";
-import {
-  BadgeCheck,
-  ChevronsUpDown,
-  CreditCard,
-  LogOut,
-  Settings,
-} from "lucide-react";
+import { ChevronsUpDown, LogOut, Users } from "lucide-react";
+import Link from "next/link";
 
 export function NavUser({ user }: { user: Doc<"users"> | null | undefined }) {
   const { isMobile } = useSidebar();
+  const isAdmin = user?.role === "admin";
 
   if (!user) {
     return (
@@ -97,24 +93,17 @@ export function NavUser({ user }: { user: Doc<"users"> | null | undefined }) {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <Settings />
-                Einstelungen
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCard />
-                Zahlung
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
+            {isAdmin && (
+              <DropdownMenuGroup>
+                <DropdownMenuItem asChild>
+                  <Link href="/settings/users">
+                    <Users />
+                    Team
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            )}
+            {isAdmin && <DropdownMenuSeparator />}
             <DropdownMenuItem>
               <LogOut />
               <SignOut>Abmelden</SignOut>

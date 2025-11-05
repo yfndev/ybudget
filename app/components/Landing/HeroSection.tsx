@@ -8,7 +8,7 @@ import { Button } from "../ui/button";
 
 export function HeroSection() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 px-4 pt-32 pb-24 sm:px-6 lg:px-8">
+    <section className="relative overflow-hidden  px-4 pt-32 pb-24 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -45,9 +45,7 @@ export function HeroSection() {
               size="lg"
               variant="outline"
               className="h-12 px-8 text-base font-semibold"
-            >
-              <Link href="#demo">Live Demo ansehen</Link>
-            </Button>
+            ></Button>
           </div>
         </motion.div>
 
@@ -58,7 +56,7 @@ export function HeroSection() {
           className="mt-16"
         >
           <div className="relative mx-auto max-w-5xl">
-            <div className="absolute -inset-4 rounded-3xl bg-gradient-to-r from-primary/40 via-primary/60 to-primary/80 opacity-20 blur-2xl" />
+            <div className="absolute -inset-4 rounded-3xl bg-gradient-to-r from-gray-50 via-gray-100 to-gray-200 opacity-20 blur-2xl" />
             <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
               <Image
                 src="/screenshots/Dashboard Overview.png"

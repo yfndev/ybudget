@@ -1,4 +1,6 @@
 
+- [ ] add simple user roles (person creating org is admin), all new ones are editors (can edit table, match and add transactions), then you have viewers who can only see transaction overview, donors, dashboard (not matching or sheets)
+
 - [ ] add income to categories
 - [ ] add more categories
 - [ ] add donor expense restrictions (only show donor if restriction is met) 

@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { mutation } from "../_generated/server";
 import { getCurrentUser } from "../users/getCurrentUser";
+import { requireRole } from "../users/permissions";
 
 export const createCategory = mutation({
   args: {
@@ -15,6 +16,7 @@ export const createCategory = mutation({
     parentId: v.optional(v.id("categories")),
   },
   handler: async (ctx, args) => {
+    await requireRole(ctx, "admin");
     const user = await getCurrentUser(ctx);
     return ctx.db.insert("categories", {
       name: args.name,
