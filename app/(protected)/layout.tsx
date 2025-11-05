@@ -13,8 +13,6 @@ import { useConvexAuth } from "convex/react";
 import { useRouter } from "next/navigation";
 import { Onborda, OnbordaProvider } from "onborda";
 import { memo, useEffect, useState } from "react";
-import { SubscriptionGuard } from "@/components/SubscriptionGuard";
-import { TrialBadge } from "@/components/TrialBadge";
 
 const StableContent = memo(function StableContent({
   children,
@@ -43,31 +41,28 @@ const StableContent = memo(function StableContent({
   return (
     <OnbordaProvider>
       <DateRangeProvider>
-        <SubscriptionGuard>
-          <SidebarProvider>
-            <AppSidebar />
-            <Onborda
-              steps={tourSteps}
-              showOnborda={false}
-              shadowRgb="0,0,0"
-              shadowOpacity="0.5"
-              cardComponent={TourCard}
-            >
-              <div className="flex flex-col w-full">
-                <TrialBadge />
-                <div className="p-4 lg:px-6 pb-6 overflow-x-hidden w-full">
-                  {children}
-                  {showOnboarding && (
-                    <OnboardingDialog
-                      open={true}
-                      onOpenChange={handleOnboardingChange}
-                    />
-                  )}
-                </div>
+        <SidebarProvider>
+          <AppSidebar />
+          <Onborda
+            steps={tourSteps}
+            showOnborda={false}
+            shadowRgb="0,0,0"
+            shadowOpacity="0.5"
+            cardComponent={TourCard}
+          >
+            <div className="flex flex-col w-full">
+              <div className="p-4 lg:px-6 pb-6 overflow-x-hidden w-full">
+                {children}
+                {showOnboarding && (
+                  <OnboardingDialog
+                    open={true}
+                    onOpenChange={handleOnboardingChange}
+                  />
+                )}
               </div>
-            </Onborda>
-          </SidebarProvider>
-        </SubscriptionGuard>
+            </div>
+          </Onborda>
+        </SidebarProvider>
       </DateRangeProvider>
     </OnbordaProvider>
   );
