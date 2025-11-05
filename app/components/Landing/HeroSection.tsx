@@ -8,7 +8,7 @@ import { Button } from "../ui/button";
 
 export function HeroSection() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 px-4 py-24 sm:px-6 lg:px-8">
+    <section className="relative overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 px-4 pt-32 pb-24 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -61,7 +61,7 @@ export function HeroSection() {
             <div className="absolute -inset-4 rounded-3xl bg-gradient-to-r from-sky-400 via-blue-500 to-purple-500 opacity-20 blur-2xl" />
             <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
               <Image
-                src="/screenshots/dashboard-overview.png"
+                src="/screenshots/Dashboard Overview.png"
                 alt="YBudget Dashboard mit Budget-Übersicht, Transaktionen und Projekten"
                 width={1200}
                 height={800}
@@ -75,4 +75,3 @@ export function HeroSection() {
     </section>
   );
 }
-

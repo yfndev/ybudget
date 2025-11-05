@@ -73,7 +73,7 @@ function FAQItem({
 
 export function FAQSection() {
   return (
-    <section className="bg-white px-4 py-24 sm:px-6 lg:px-8">
+    <section id="faq" className="bg-white px-4 py-24 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-4xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
