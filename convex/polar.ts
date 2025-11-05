@@ -24,10 +24,8 @@ export const polar = new Polar(components.polar, {
   // whatever you want), and replace the values with the actual product IDs from your
   // Polar dashboard
   products: {
-    premiumMonthly: "product_id_from_polar",
-    premiumYearly: "product_id_from_polar",
-    premiumPlusMonthly: "product_id_from_polar",
-    premiumPlusYearly: "product_id_from_polar",
+    premiumMonthly: "e8eb1cbd-3293-4398-8d48-4ceba2a9456c",
+    premiumYearly: "4965e6c6-e62a-4e81-98e3-44618f48ae1b",
   },
   // Optional: Set Polar configuration directly in code
   organizationToken: process.env.POLAR_ORGANIZATION_TOKEN, // Defaults to POLAR_ORGANIZATION_TOKEN env var

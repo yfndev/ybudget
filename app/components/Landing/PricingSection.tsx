@@ -3,9 +3,23 @@
 import { motion } from "framer-motion";
 import { Check, Sparkles } from "lucide-react";
 import Link from "next/link";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 import { Button } from "../ui/button";
 
-const tiers = [
+interface Tier {
+  name: string;
+  price: string;
+  period: string;
+  description: string;
+  features: string[];
+  cta: string;
+  href: string;
+  popular: boolean;
+  productId?: string;
+}
+
+const staticTiers: Tier[] = [
   {
     name: "Starter",
     price: "0€",
@@ -59,6 +73,25 @@ const tiers = [
 ];
 
 export function PricingSection() {
+  const products = useQuery(api.polar.getConfiguredProducts);
+
+  // Merge Polar products with static tiers
+  const tiers: Tier[] = staticTiers.map((tier) => {
+    // Map Professional tier to premiumMonthly
+    if (tier.name === "Professional" && products?.premiumMonthly) {
+      const product = products.premiumMonthly;
+      const price = product.prices?.[0];
+      if (price?.priceAmount) {
+        return {
+          ...tier,
+          price: `${(price.priceAmount / 100).toFixed(0)}€`,
+          productId: product.id,
+        };
+      }
+    }
+    return tier;
+  });
+
   return (
     <section className="bg-slate-50 px-4 py-24 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">

@@ -1,5 +1,4 @@
 "use client";
-
 import { SignOut } from "@/components/Auth/LogoutButton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -18,7 +17,9 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
+import { api } from "@/convex/_generated/api";
 import type { Doc } from "@/convex/_generated/dataModel";
+import { CustomerPortalLink } from "@convex-dev/polar/react";
 import {
   BadgeCheck,
   ChevronsUpDown,
@@ -110,6 +111,14 @@ export function NavUser({ user }: { user: Doc<"users"> | null | undefined }) {
                 Account
               </DropdownMenuItem>
               <DropdownMenuItem>
+                <CustomerPortalLink
+                  polarApi={{
+                    generateCustomerPortalUrl:
+                      api.polar.generateCustomerPortalUrl,
+                  }}
+                >
+                  Manage Subscription
+                </CustomerPortalLink>
                 <CreditCard />
                 Zahlung
               </DropdownMenuItem>

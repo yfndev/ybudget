@@ -96,4 +96,26 @@ export default defineSchema({
     organizationId: v.id("organizations"),
     createdBy: v.id("users"),
   }).index("by_organization", ["organizationId"]),
+
+  subscriptions: defineTable({
+    organizationId: v.id("organizations"),
+    status: v.union(
+      v.literal("trial"),
+      v.literal("active"),
+      v.literal("expired"),
+      v.literal("cancelled"),
+    ),
+    trialStartDate: v.optional(v.number()), // epoch timestamp
+    trialEndDate: v.optional(v.number()), // epoch timestamp
+    subscriptionStartDate: v.optional(v.number()),
+    subscriptionEndDate: v.optional(v.number()),
+    polarSubscriptionId: v.optional(v.string()),
+    plan: v.optional(
+      v.union(
+        v.literal("starter"),
+        v.literal("professional"),
+        v.literal("enterprise"),
+      ),
+    ),
+  }).index("by_organization", ["organizationId"]),
 });

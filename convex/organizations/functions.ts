@@ -81,6 +81,11 @@ export const setupUserOrganization = mutation({
       organizationId,
     });
 
+    // Start trial automatically for new organization
+    await ctx.runMutation(api.subscriptions.functions.startTrial, {
+      organizationId,
+    });
+
     return organizationId;
   },
 });

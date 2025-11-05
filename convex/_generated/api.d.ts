@@ -22,6 +22,7 @@ import type * as organizations_queries from "../organizations/queries.js";
 import type * as polar from "../polar.js";
 import type * as projects_functions from "../projects/functions.js";
 import type * as projects_queries from "../projects/queries.js";
+import type * as subscriptions_functions from "../subscriptions/functions.js";
 import type * as transactions_functions from "../transactions/functions.js";
 import type * as transactions_queries from "../transactions/queries.js";
 import type * as users_functions from "../users/functions.js";
@@ -58,6 +59,7 @@ declare const fullApi: ApiFromModules<{
   polar: typeof polar;
   "projects/functions": typeof projects_functions;
   "projects/queries": typeof projects_queries;
+  "subscriptions/functions": typeof subscriptions_functions;
   "transactions/functions": typeof transactions_functions;
   "transactions/queries": typeof transactions_queries;
   "users/functions": typeof users_functions;
