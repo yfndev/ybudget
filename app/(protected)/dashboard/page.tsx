@@ -14,17 +14,17 @@ export default function Dashboard() {
     {}
   );
 
-  const transactions = filterTransactionsByDateRange(
+  const filteredTransactions = filterTransactionsByDateRange(
     allTransactions,
     selectedDateRange
   );
 
-  const budgets = calculateBudget(transactions ?? []);
+  const budgets = calculateBudget(allTransactions ?? []);
 
   return (
     <DashboardUI
       projects={projects ?? []}
-      transactions={transactions ?? []}
+      transactions={filteredTransactions ?? []}
       budgets={budgets}
     />
   );
