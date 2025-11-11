@@ -12,22 +12,49 @@ export const getOrganizationName = query({
   },
 });
 
-export const getOrganizationByDomain = query({
-  args: { domain: v.string() },
-  handler: async (ctx, args) => {
-    const organization = await ctx.db
-      .query("organizations")
-      .withIndex("by_domain", (q) => q.eq("domain", args.domain))
-      .first();
-
-    return organization;
-  },
-});
-
 export const getUserOrganization = query({
   args: {},
   handler: async (ctx) => {
     const user = await getCurrentUser(ctx);
     return await ctx.db.get(user.organizationId);
+  },
+});
+
+export const checkOrganizationExistsByUserDomain = query({
+  args: {},
+  returns: v.union(
+    v.object({
+      exists: v.literal(true),
+      organizationName: v.string(),
+    }),
+    v.object({
+      exists: v.literal(false),
+    })
+  ),
+  handler: async (ctx) => {
+    const user = await getCurrentUser(ctx);
+    
+    if (!user.email) {
+      return { exists: false as const };
+    }
+
+    const domain = user.email.split("@")[1];
+    if (!domain) {
+      return { exists: false as const };
+    }
+
+    const organization = await ctx.db
+      .query("organizations")
+      .withIndex("by_domain", (q) => q.eq("domain", domain))
+      .first();
+
+    if (organization) {
+      return {
+        exists: true as const,
+        organizationName: organization.name,
+      };
+    }
+
+    return { exists: false as const };
   },
 });

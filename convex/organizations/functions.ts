@@ -1,7 +1,7 @@
 import { v } from "convex/values";
-import { api } from "../_generated/api";
+import { internal } from "../_generated/api";
 import type { Id } from "../_generated/dataModel";
-import { mutation } from "../_generated/server";
+import { mutation, MutationCtx } from "../_generated/server";
 import { getCurrentUser } from "../users/getCurrentUser";
 
 function getUserDomain(email: string | undefined): string | null {
@@ -10,6 +10,29 @@ function getUserDomain(email: string | undefined): string | null {
   return domain || null;
 }
 
+async function getOrganizationByDomain(
+  ctx: MutationCtx,
+  domain: string
+): Promise<Id<"organizations"> | null> {
+  const organization = await ctx.db
+    .query("organizations")
+    .withIndex("by_domain", (q) => q.eq("domain", domain))
+    .first();
+
+  return organization?._id ?? null;
+}
+
+async function addUserToOrganization(
+  ctx: MutationCtx,
+  userId: Id<"users">,
+  organizationId: Id<"organizations">,
+  role: "admin" | "editor" | "viewer"
+): Promise<void> {
+  await ctx.db.patch(userId, {
+    organizationId,
+    role,
+  });
+}
 
 export const createOrganization = mutation({
   args: {
@@ -17,7 +40,7 @@ export const createOrganization = mutation({
     domain: v.string(),
     userId: v.id("users"),
   },
-
+  returns: v.id("organizations"),
   handler: async (ctx, args) => {
     return await ctx.db.insert("organizations", {
       name: args.name,
@@ -31,49 +54,51 @@ export const setupUserOrganization = mutation({
   args: {
     organizationName: v.optional(v.string()),
   },
-
+  returns: v.union(
+    v.object({
+      organizationId: v.id("organizations"),
+      isNew: v.boolean(),
+    }),
+    v.null()
+  ),
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
 
-    if (user.organizationId) return user.organizationId;
+    if (user.organizationId) {
+      return {
+        organizationId: user.organizationId,
+        isNew: false,
+      };
+    }
 
     const domain = getUserDomain(user.email);
     if (!domain) throw new Error("Email domain not found");
 
-    const existingOrgId = (await ctx.runQuery(
-      api.organizations.queries.getOrganizationByDomain,
-      { domain },
-    )) as Id<"organizations"> | null;
+    const existingOrgId = await getOrganizationByDomain(ctx, domain);
 
     if (existingOrgId) {
-      await ctx.runMutation(api.users.functions.addUserToOrganization, {
-        userId: user._id,
+      await addUserToOrganization(ctx, user._id, existingOrgId, "viewer");
+      return {
         organizationId: existingOrgId,
-        role: "editor",
-      });
-      return existingOrgId;
+        isNew: false,
+      };
     }
 
-    const organizationId = (await ctx.runMutation(
-      api.organizations.functions.createOrganization,
-      {
-        name: args.organizationName ?? `${domain} Organization`,
-        domain,
-        userId: user._id,
-      },
-    )) as Id<"organizations">;
-
-    await ctx.runMutation(api.users.functions.addUserToOrganization, {
-      userId: user._id,
-      organizationId,
-      role: "admin",
+    const organizationId = await ctx.db.insert("organizations", {
+      name: args.organizationName ?? `${domain} Organization`,
+      domain,
+      createdBy: user._id,
     });
 
+    await addUserToOrganization(ctx, user._id, organizationId, "admin");
 
-    await ctx.runMutation(api.subscriptions.functions.startTrial, {
+    await ctx.scheduler.runAfter(0, internal.subscriptions.mutations.initializeTrial, {
       organizationId,
     });
 
-    return organizationId;
+    return {
+      organizationId,
+      isNew: true,
+    };
   },
 });

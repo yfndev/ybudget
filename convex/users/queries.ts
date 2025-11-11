@@ -6,10 +6,10 @@ import { requireRole } from "./permissions";
 
 export const getUserOrganizationId = query({
   args: {},
-  returns: v.id("organizations"),
+  returns: v.union(v.id("organizations"), v.null()),
   handler: async (ctx) => {
     const user = await getCurrentUser(ctx);
-    return user.organizationId;
+    return user.organizationId ?? null;
   },
 });
 
