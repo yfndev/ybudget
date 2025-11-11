@@ -19,7 +19,7 @@ const formatCurrency = (amount: number) =>
   );
 
 export default function DonorCard({ donorId, name, type }: DonorCardProps) {
-  const donor = useQuery(api.donors.queries.getDonorSummary, { donorId });
+  const donor = useQuery(api.donors.queries.getEligibleDonorsForCategory, { donorId });
 
   if (!donor) {
     return (
