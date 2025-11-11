@@ -1,7 +1,7 @@
 // convex/payments.ts
 
 import { v } from "convex/values";
-import { Id } from "./_generated/dataModel";
+import type { Id } from "./_generated/dataModel";
 import { internalMutation } from "./_generated/server";
 import { getCurrentUser } from "./users/getCurrentUser";
 

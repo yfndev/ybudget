@@ -1,5 +1,5 @@
-import { Id } from "../_generated/dataModel";
-import { MutationCtx, QueryCtx } from "../_generated/server";
+import type { Id } from "../_generated/dataModel";
+import type { MutationCtx, QueryCtx } from "../_generated/server";
 
 export async function validateDonorForCategory(
   ctx: QueryCtx | MutationCtx,

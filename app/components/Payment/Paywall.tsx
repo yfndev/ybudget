@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { api } from "@/convex/_generated/api";
 import { useAction } from "convex/react";
 import { Check } from "lucide-react";
-import { FormEvent, useState } from "react";
+import { type FormEvent, useState } from "react";
 
 export function Paywall() {
   const [interval, setInterval] = useState<"monthly" | "yearly">("monthly");

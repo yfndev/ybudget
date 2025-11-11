@@ -18,7 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { api } from "@/convex/_generated/api";
-import { Id } from "@/convex/_generated/dataModel";
+import type { Id } from "@/convex/_generated/dataModel";
 import { useIsAdmin } from "@/hooks/useCurrentUserRole";
 import { useMutation, useQuery } from "convex/react";
 import { toast } from "react-hot-toast";

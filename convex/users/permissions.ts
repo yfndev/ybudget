@@ -1,4 +1,4 @@
-import { QueryCtx, MutationCtx } from "../_generated/server";
+import type { QueryCtx, MutationCtx } from "../_generated/server";
 import { getCurrentUser } from "./getCurrentUser";
 
 export type UserRole = "admin" | "editor" | "viewer";
