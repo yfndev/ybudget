@@ -5,7 +5,6 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
-    
     "start": "next start",
     "format": "prettier --write .",
     "lint": "biome lint --write"
@@ -50,6 +49,7 @@
     "react-hot-toast": "^2.6.0",
     "react-papaparse": "^4.4.0",
     "recharts": "2.15.4",
+    "stripe": "^19.3.0",
     "tailwind-merge": "^3.3.1",
     "uuid": "^13.0.0"
   },
