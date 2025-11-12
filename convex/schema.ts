@@ -8,9 +8,24 @@ export default defineSchema({
     name: v.string(),
     domain: v.string(),
     createdBy: v.string(),
+    subscriptionStatus: v.optional(
+      v.union(
+        v.literal("trial"),
+        v.literal("active"),
+        v.literal("canceled"),
+        v.literal("expired"),
+      ),
+    ),
+    subscriptionTier: v.optional(
+      v.union(v.literal("monthly"), v.literal("yearly")),
+    ),
+    stripeCustomerId: v.optional(v.string()),
+    stripeSubscriptionId: v.optional(v.string()),
+    trialEndsAt: v.optional(v.number()),
   })
     .index("by_name", ["name"])
-    .index("by_domain", ["domain"]),
+    .index("by_domain", ["domain"])
+    .index("by_stripeCustomerId", ["stripeCustomerId"]),
   users: defineTable({
     name: v.optional(v.string()),
     image: v.optional(v.string()),
@@ -36,6 +51,7 @@ export default defineSchema({
     parentId: v.optional(v.id("projects")),
     organizationId: v.id("organizations"),
     description: v.optional(v.string()),
+
     isActive: v.boolean(),
     createdBy: v.string(),
   }).index("by_organization", ["organizationId"]),
@@ -48,8 +64,8 @@ export default defineSchema({
     description: v.string(),
     counterparty: v.string(),
     categoryId: v.optional(v.id("categories")),
-    donorId: v.string(),
-    importedBy: v.string(),
+    donorId: v.optional(v.id("donors")),
+    importedBy: v.id("users"),
     importedTransactionId: v.optional(v.string()),
     importSource: v.optional(
       v.union(
@@ -89,17 +105,31 @@ export default defineSchema({
   donors: defineTable({
     name: v.string(),
     type: v.union(v.literal("donation"), v.literal("sponsoring")),
-    allowedTaxSpheres: v.optional(
-      v.array(
-        v.union(
-          v.literal("non-profit"),
-          v.literal("asset-management"),
-          v.literal("purpose-operations"),
-          v.literal("commercial-operations"),
-        ),
+    allowedTaxSpheres: v.array(
+      v.union(
+        v.literal("non-profit"),
+        v.literal("asset-management"),
+        v.literal("purpose-operations"),
+        v.literal("commercial-operations"),
       ),
     ),
     organizationId: v.id("organizations"),
     createdBy: v.id("users"),
   }).index("by_organization", ["organizationId"]),
+
+  payments: defineTable({
+    tier: v.union(v.literal("monthly"), v.literal("yearly")),
+    status: v.union(
+      v.literal("pending"),
+      v.literal("completed"),
+      v.literal("failed"),
+    ),
+    organizationId: v.id("organizations"),
+    stripeSessionId: v.optional(v.string()),
+    stripeCustomerId: v.optional(v.string()),
+    stripeSubscriptionId: v.optional(v.string()),
+    paidAt: v.optional(v.number()),
+  })
+    .index("by_stripeSessionId", ["stripeSessionId"])
+    .index("by_organization", ["organizationId"]),
 });
