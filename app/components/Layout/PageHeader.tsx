@@ -1,7 +1,7 @@
 "use client";
 
 import { DashboardDropdown } from "@/components/Dashboard/DashboardDropdown";
-import { CreateCategoryDialog } from "@/components/Dialogs/CreateCategoryDialog";
+import { CreateCategoryDialog } from "@/components/dialogs/CreateCategoryDialog";
 import { RangeCalendarToggle } from "@/components/RangeCalendar/RangeCalendarToggle";
 import { AddDonorDialog } from "@/components/Sheets/AddDonorDialog";
 import { CreateProjectDialog } from "@/components/Sheets/CreateProjectDialog";

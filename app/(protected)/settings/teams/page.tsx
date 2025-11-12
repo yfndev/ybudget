@@ -1,6 +1,6 @@
 "use client";
 
-import { CreateTeamDialog } from "@/components/Dialogs/CreateTeamDialog";
+import { CreateTeamDialog } from "@/components/dialogs/CreateTeamDialog";
 import { PageHeader } from "@/components/Layout/PageHeader";
 import { AccessDenied } from "@/components/Settings/AccessDenied";
 import { CreateProjectDialog } from "@/components/Sheets/CreateProjectDialog";
