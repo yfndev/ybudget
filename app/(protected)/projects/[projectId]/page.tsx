@@ -28,28 +28,27 @@ export default function ProjectDetail() {
   } = usePaginatedQuery(
     api.transactions.queries.getPaginatedTransactions,
     { projectId: projectId as Id<"projects"> },
-    { initialNumItems: 50 },
+    { initialNumItems: 50 }
   );
 
   const filteredTransactions = useMemo(
-  const filteredTransactions = useMemo(
     () => filterTransactionsByDateRange(allTransactions, selectedDateRange),
-    [allTransactions, selectedDateRange],
+    [allTransactions, selectedDateRange]
   );
 
   const budgets = useMemo(
     () => calculateBudget(allTransactions ?? []),
-    [allTransactions],
+    [allTransactions]
   );
 
   const updateTransaction = useMutation(
-    api.transactions.functions.updateTransaction,
+    api.transactions.functions.updateTransaction
   );
 
   const handleUpdateTransaction = async (
     transactionId: string,
     field: string,
-    value: any,
+    value: any
   ) => {
     try {
       await updateTransaction({
@@ -70,7 +69,6 @@ export default function ProjectDetail() {
   return (
     <ProjectDashboardUI
       project={project}
-      transactions={filteredTransactions ?? []}
       transactions={filteredTransactions ?? []}
       budgets={budgets}
       status={status}
