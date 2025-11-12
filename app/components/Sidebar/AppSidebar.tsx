@@ -33,7 +33,7 @@ function AppSidebarComponent(props: React.ComponentProps<typeof Sidebar>) {
   const user = useQuery(api.users.queries.getCurrentUserProfile);
 
   return (
-    <Sidebar variant="sidebar" {...props}>
+    <Sidebar variant="sidebar" collapsible="icon" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>

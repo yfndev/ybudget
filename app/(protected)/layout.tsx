@@ -54,15 +54,15 @@ const StableContent = memo(function StableContent({
   return (
     <OnbordaProvider>
       <DateRangeProvider>
-        <SidebarProvider>
-          <AppSidebar />
-          <Onborda
-            steps={tourSteps}
-            showOnborda={false}
-            shadowRgb="0,0,0"
-            shadowOpacity="0.5"
-            cardComponent={TourCard}
-          >
+        <Onborda
+          steps={tourSteps}
+          showOnborda={false}
+          shadowRgb="0,0,0"
+          shadowOpacity="0.5"
+          cardComponent={TourCard}
+        >
+          <SidebarProvider>
+            <AppSidebar />
             {shouldShowTrialBanner && <TrialBanner />}
             {shouldShowPaywall && <Paywall />}
             <div className="flex flex-col w-full">
@@ -76,8 +76,8 @@ const StableContent = memo(function StableContent({
                 )}
               </div>
             </div>
-          </Onborda>
-        </SidebarProvider>
+          </SidebarProvider>
+        </Onborda>
       </DateRangeProvider>
     </OnbordaProvider>
   );
