@@ -22,23 +22,20 @@ export default function LoginPage() {
 
       <Unauthenticated>
         <div className="flex min-h-svh">
-          <div className="hidden lg:flex flex-1 bg-gradient-to-br from-slate-50 to-slate-100 items-center justify-center">
-            <div className="relative w-full h-full">
-              <Image
-                src="https://images.pexels.com/photos/7688174/pexels-photo-7688174.jpeg"
-                alt="YBudget Team"
-                fill
-                className="object-cover"
-                priority
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-            </div>
-          </div>
-
-          <div className="flex-1 flex items-center justify-center p-6 md:p-10">
+          <div className="flex-2 flex items-center justify-center px-8 py-16 lg:px-16">
             <div className="w-full max-w-md">
               <LoginForm />
             </div>
+          </div>
+          <div className="hidden lg:flex flex-1 items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 p-16">
+            <Image
+              src="/LoginIllustration.svg"
+              alt="YBudget Illustration"
+              width={450}
+              height={338}
+              className="max-w-full h-auto opacity-80"
+              priority
+            />
           </div>
         </div>
       </Unauthenticated>

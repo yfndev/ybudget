@@ -1,7 +1,6 @@
 "use client";
 
 import { useAuthActions } from "@convex-dev/auth/react";
-import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import { Field, FieldDescription, FieldGroup } from "@/components/ui/field";
@@ -21,28 +20,28 @@ export function LoginForm({
 
   return (
     <form
-      className={cn("flex flex-col gap-6", className)}
+      className={cn("flex flex-col gap-12", className)}
       onSubmit={handleGoogleSignIn}
       {...props}
     >
       <FieldGroup>
-        <div className="flex flex-col items-center gap-2 text-center">
-          <div className="flex size-16 items-center justify-center rounded-2xl bg-primary/10 mb-2">
-            <Image
-              src="/AppIcon.png"
-              alt="YBudget"
-              width={48}
-              height={48}
-              className="size-12"
-            />
+        <div className="flex flex-col items-center gap-12 text-center">
+          <div className="space-y-6">
+            <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+              Willkommen bei <span className="text-primary">YBudget</span>
+            </h1>
+            <p className="text-muted-foreground text-base max-w-sm mx-auto">
+              Melde dich mit deinem Google-Konto an, um direkt reinzustarten.
+            </p>
           </div>
-          <h1 className="text-2xl font-bold">Willkommen bei YBudget</h1>
-          <p className="text-muted-foreground text-sm text-balance">
-            Melde dich mit deinem Google-Konto an
-          </p>
         </div>
         <Field>
-          <Button variant="outline" type="submit" className="w-full">
+          <Button
+            variant="outline"
+            type="submit"
+            size="lg"
+            className="w-full h-12 text-base"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -55,14 +54,20 @@ export function LoginForm({
             </svg>
             Mit Google anmelden
           </Button>
-          <Separator className="my-4" />
-          <FieldDescription className="text-center">
+          <Separator className="my-8" />
+          <FieldDescription className="text-center text-xs text-muted-foreground/80">
             Durch das Anmelden stimmst du unseren{" "}
-            <a href="#" className="underline underline-offset-4">
+            <a
+              href="#"
+              className="underline underline-offset-4 hover:text-muted-foreground"
+            >
               Nutzungsbedingungen
             </a>
             und
-            <a href="#" className="underline underline-offset-4">
+            <a
+              href="#"
+              className="underline underline-offset-4 hover:text-muted-foreground"
+            >
               Datenschutzrichtlinien
             </a>
             zu.
