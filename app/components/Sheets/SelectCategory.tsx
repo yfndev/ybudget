@@ -10,7 +10,7 @@ import {
   groupCategories,
 } from "@/lib/categoryHelpers";
 import { useQuery } from "convex/react";
-import { forwardRef, useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
 
 export const SelectCategory = forwardRef<
   HTMLButtonElement,
@@ -52,12 +52,12 @@ export const SelectCategory = forwardRef<
     if (e.key === "ArrowDown") {
       e.preventDefault();
       setActiveItemIdx((prev) =>
-        prev < activeItems.length - 1 ? prev + 1 : 0,
+        prev < activeItems.length - 1 ? prev + 1 : 0
       );
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
       setActiveItemIdx((prev) =>
-        prev > 0 ? prev - 1 : activeItems.length - 1,
+        prev > 0 ? prev - 1 : activeItems.length - 1
       );
     } else if (e.key === "ArrowRight") {
       e.preventDefault();
@@ -86,24 +86,26 @@ export const SelectCategory = forwardRef<
     } else {
       const groupIdx = findGroupIndex(
         grouped,
-        value as Id<"categories"> | undefined,
+        value as Id<"categories"> | undefined
       );
       setActiveGroupIdx(groupIdx >= 0 ? groupIdx : 0);
       if (groupIdx >= 0) {
         setActiveItemIdx(
           findItemIndex(
             grouped[groupIdx],
-            value as Id<"categories"> | undefined,
-          ),
+            value as Id<"categories"> | undefined
+          )
         );
       }
     }
   };
 
-  if (search && filtered.length > 0) {
-    setActiveGroupIdx(0);
-    setActiveItemIdx(0);
-  }
+  useEffect(() => {
+    if (search && filtered.length > 0) {
+      setActiveGroupIdx(0);
+      setActiveItemIdx(0);
+    }
+  }, [search, filtered.length]);
 
   return (
     <SelectCategoryUI

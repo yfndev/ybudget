@@ -102,7 +102,7 @@ export default defineSchema({
       v.literal("commercial-operations"), // Wirtschaftlicher Geschäftsbetrieb
     ),
     approved: v.boolean(),
-    createdBy: v.id("users"),
+    createdBy: v.optional(v.id("users")),
     parentId: v.optional(v.id("categories")),
     icon: v.optional(v.string()),
   }).index("by_parent", ["parentId"]),
