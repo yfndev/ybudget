@@ -7,11 +7,18 @@ import { useOnborda } from "onborda";
 export function StartTourButton() {
   const { startOnborda } = useOnborda();
 
+  const handleStartTour = () => {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("onborda:main-tour");
+    }
+    startOnborda("main-tour");
+  };
+
   return (
     <Button
       variant="ghost"
       size="icon"
-      onClick={() => startOnborda("main-tour")}
+      onClick={handleStartTour}
       title="Tour starten"
       className="h-8 w-8"
     >
