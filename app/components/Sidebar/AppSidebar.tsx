@@ -17,6 +17,7 @@ import { StartTourButton } from "@/components/Onboarding/StartTourButton";
 import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex-helpers/react/cache";
 import Image from "next/image";
+import Link from "next/link";
 import { MainNav } from "./MainNav";
 import { ProjectNav } from "./ProjectNav";
 import { NavUser } from "./UserNav";
@@ -37,7 +38,7 @@ function AppSidebarComponent(props: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="#">
+              <Link href="/dashboard">
                 <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                   <Image
                     src="/AppIcon.png"
@@ -49,7 +50,7 @@ function AppSidebarComponent(props: React.ComponentProps<typeof Sidebar>) {
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">YBudget</span>
                 </div>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
