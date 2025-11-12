@@ -1,8 +1,10 @@
+import { getAuthUserId } from "@convex-dev/auth/server";
 import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
 import type { Doc } from "../_generated/dataModel";
 import { query } from "../_generated/server";
 import { addProjectAndCategoryNames } from "../helpers/addProjectNames";
+import { filterByProjectAccess } from "../teams/permissions";
 import { getCurrentUser } from "../users/getCurrentUser";
 
 type EnrichedTransaction = Doc<"transactions"> & {
@@ -15,6 +17,9 @@ export const getAllTransactions = query({
     projectId: v.optional(v.id("projects")),
   },
   handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return [];
+
     const user = await getCurrentUser(ctx);
 
     const transactions = await (
@@ -33,12 +38,22 @@ export const getAllTransactions = query({
             )
     ).collect();
 
-    return addProjectAndCategoryNames(ctx, transactions);
+    const filtered = await filterByProjectAccess(
+      ctx,
+      user._id,
+      user.organizationId,
+      transactions,
+    );
+
+    return addProjectAndCategoryNames(ctx, filtered);
   },
 });
 
 export const getUnassignedProcessedTransactions = query({
   handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return [];
+
     const user = await getCurrentUser(ctx);
 
     const allTransactions = await ctx.db
@@ -54,7 +69,14 @@ export const getUnassignedProcessedTransactions = query({
         (!t.projectId || !t.categoryId || !t.donorId || t.donorId === ""),
     );
 
-    return unassigned.sort((a, b) => b.date - a.date);
+    const filtered = await filterByProjectAccess(
+      ctx,
+      user._id,
+      user.organizationId,
+      unassigned,
+    );
+
+    return filtered.sort((a, b) => b.date - a.date);
   },
 });
 
@@ -64,6 +86,9 @@ export const getTransactionRecommendations = query({
     projectId: v.optional(v.id("projects")),
   },
   handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return [];
+
     const user = await getCurrentUser(ctx);
 
     const transactions = (
@@ -82,7 +107,14 @@ export const getTransactionRecommendations = query({
         .collect()
     ).filter((t) => !t.matchedTransactionId || t.matchedTransactionId === "");
 
-    return addProjectAndCategoryNames(ctx, transactions);
+    const filtered = await filterByProjectAccess(
+      ctx,
+      user._id,
+      user.organizationId,
+      transactions,
+    );
+
+    return addProjectAndCategoryNames(ctx, filtered);
   },
 });
 
@@ -106,6 +138,15 @@ export const getPaginatedTransactions = query({
     splitCursor?: string;
     page: EnrichedTransaction[];
   }> => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      return {
+        isDone: true,
+        continueCursor: "",
+        page: [],
+      };
+    }
+
     const user = await getCurrentUser(ctx);
 
     let dbQuery;
@@ -116,7 +157,8 @@ export const getPaginatedTransactions = query({
           q
             .eq("organizationId", user.organizationId)
             .eq("projectId", args.projectId),
-        );
+        )
+        .filter((q) => q.eq(q.field("donorId"), args.donorId));
     } else if (args.projectId) {
       dbQuery = ctx.db
         .query("transactions")
@@ -131,7 +173,7 @@ export const getPaginatedTransactions = query({
         .withIndex("by_organization_donor", (q) =>
           q
             .eq("organizationId", user.organizationId)
-            .eq("donorId", args.donorId!),
+            .eq("donorId", args.donorId),
         );
     } else {
       dbQuery = ctx.db
@@ -141,16 +183,19 @@ export const getPaginatedTransactions = query({
         );
     }
 
-    if (args.donorId && args.projectId) {
-      dbQuery = dbQuery.filter((q) => q.eq(q.field("donorId"), args.donorId));
-    }
-
     const result = await dbQuery.order("desc").paginate({
       numItems: args.paginationOpts.numItems,
       cursor: args.paginationOpts.cursor,
     });
 
-    const page = await addProjectAndCategoryNames(ctx, result.page);
+    const filtered = await filterByProjectAccess(
+      ctx,
+      user._id,
+      user.organizationId,
+      result.page,
+    );
+
+    const page = await addProjectAndCategoryNames(ctx, filtered);
 
     return {
       isDone: result.isDone,

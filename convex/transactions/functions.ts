@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { mutation } from "../_generated/server";
 import { validateDonorForCategory } from "../donors/validation";
+import { canAccessProject } from "../teams/permissions";
 import { getCurrentUser } from "../users/getCurrentUser";
 import { requireRole } from "../users/permissions";
 
@@ -18,8 +19,11 @@ export const createExpectedTransaction = mutation({
 
   handler: async (ctx, args) => {
     await requireRole(ctx, "editor");
-    await requireRole(ctx, "editor");
     const user = await getCurrentUser(ctx);
+
+    if (!(await canAccessProject(ctx, user._id, args.projectId, "editor"))) {
+      throw new Error("No access to this project");
+    }
 
     await validateDonorForCategory(ctx, args.donorId, args.categoryId);
 
@@ -54,7 +58,6 @@ export const createImportedTransaction = mutation({
   },
 
   handler: async (ctx, args) => {
-    await requireRole(ctx, "editor");
     await requireRole(ctx, "editor");
     const user = await getCurrentUser(ctx);
 
@@ -103,21 +106,30 @@ export const updateTransaction = mutation({
   },
 
   handler: async (ctx, { transactionId, ...updates }) => {
+    await requireRole(ctx, "editor");
+    const user = await getCurrentUser(ctx);
+
     const transaction = await ctx.db.get(transactionId);
-    if (!transaction) {
-      throw new Error("Transaction not found");
+    if (!transaction) throw new Error("Transaction not found");
+
+    if (
+      transaction.projectId &&
+      !(await canAccessProject(ctx, user._id, transaction.projectId, "editor"))
+    ) {
+      throw new Error("No access to this project");
     }
 
-    const finalDonorId =
-      updates.donorId !== undefined ? updates.donorId : transaction.donorId;
-    const finalCategoryId =
-      updates.categoryId !== undefined
-        ? updates.categoryId
-        : transaction.categoryId;
+    if (
+      updates.projectId &&
+      !(await canAccessProject(ctx, user._id, updates.projectId, "editor"))
+    ) {
+      throw new Error("No access to the new project");
+    }
+
+    const finalDonorId = updates.donorId ?? transaction.donorId;
+    const finalCategoryId = updates.categoryId ?? transaction.categoryId;
 
     await validateDonorForCategory(ctx, finalDonorId, finalCategoryId);
-
-    await requireRole(ctx, "editor");
 
     const validUpdates = Object.fromEntries(
       Object.entries(updates).filter(([_, value]) => value !== undefined),
