@@ -106,13 +106,13 @@ export default defineSchema({
     name: v.string(),
     type: v.union(v.literal("donation"), v.literal("sponsoring")),
     allowedTaxSpheres: v.array(
-      v.union(
-        v.literal("non-profit"),
-        v.literal("asset-management"),
-        v.literal("purpose-operations"),
-        v.literal("commercial-operations"),
+        v.union(
+          v.literal("non-profit"),
+          v.literal("asset-management"),
+          v.literal("purpose-operations"),
+          v.literal("commercial-operations"),
+        ),
       ),
-    ),
     organizationId: v.id("organizations"),
     createdBy: v.id("users"),
   }).index("by_organization", ["organizationId"]),
@@ -132,4 +132,35 @@ export default defineSchema({
   })
     .index("by_stripeSessionId", ["stripeSessionId"])
     .index("by_organization", ["organizationId"]),
+
+  teams: defineTable({
+    name: v.string(),
+    organizationId: v.id("organizations"),
+    description: v.optional(v.string()),
+    createdAt: v.number(),
+    createdBy: v.id("users"),
+  }).index("by_organization", ["organizationId"]),
+
+  teamMemberships: defineTable({
+    userId: v.id("users"),
+    teamId: v.id("teams"),
+    role: v.union(
+      v.literal("viewer"),
+      v.literal("editor"),
+      v.literal("admin"),
+    ),
+    createdAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_team", ["teamId"])
+    .index("by_user_team", ["userId", "teamId"]),
+
+  teamProjects: defineTable({
+    teamId: v.id("teams"),
+    projectId: v.id("projects"),
+    createdAt: v.number(),
+  })
+    .index("by_team", ["teamId"])
+    .index("by_project", ["projectId"])
+    .index("by_team_project", ["teamId", "projectId"]),
 });
