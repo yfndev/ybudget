@@ -1,17 +1,11 @@
 "use client";
 
+import { CreateTeamDialog } from "@/components/Dialogs/CreateTeamDialog";
 import { PageHeader } from "@/components/Layout/PageHeader";
 import { AccessDenied } from "@/components/Settings/AccessDenied";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
@@ -36,7 +30,7 @@ import { Plus, Shield, Users } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 
-type UserRole = "admin" | "editor" | "viewer";
+type UserRole = "admin" | "finance" | "editor" | "viewer";
 
 export default function UsersPage() {
   const users = useQuery(api.users.queries.listOrganizationUsers);
@@ -51,7 +45,7 @@ export default function UsersPage() {
       toast.success("Rolle erfolgreich aktualisiert");
     } catch (error) {
       toast.error(
-        "Fehler beim Aktualisieren der Rolle. Mindestens ein Admin ist erforderlich.",
+        "Fehler beim Aktualisieren der Rolle. Mindestens ein Admin ist erforderlich."
       );
     }
   };
@@ -134,19 +128,19 @@ function UserRow({
   onRoleChange: (userId: Id<"users">, role: UserRole) => void;
   isAdmin: boolean;
 }) {
-  const allTeams = useQuery(api.teams.functions.getAllTeams);
+  const allTeams = useQuery(api.teams.queries.getAllTeams);
   const userTeamMemberships = useQuery(
-    api.teams.functions.getUserTeamMemberships,
-    { userId: user._id },
+    api.teams.queries.getUserTeamMemberships,
+    { userId: user._id }
   );
   const addTeamMember = useMutation(api.teams.functions.addTeamMember);
   const removeTeamMember = useMutation(api.teams.functions.removeTeamMember);
 
   const assignedTeamIds = new Set(
-    userTeamMemberships?.map((m: any) => m.teamId) || [],
+    userTeamMemberships?.map((m: any) => m.teamId) || []
   );
   const teamMembershipMap = new Map(
-    userTeamMemberships?.map((m: any) => [m.teamId, m._id]) || [],
+    userTeamMemberships?.map((m: any) => [m.teamId, m._id]) || []
   );
 
   const handleToggleTeam = async (teamId: Id<"teams">) => {
@@ -200,6 +194,7 @@ function UserRow({
                 Admin
               </div>
             </SelectItem>
+            <SelectItem value="finance">Finance</SelectItem>
             <SelectItem value="editor">Editor</SelectItem>
             <SelectItem value="viewer">Viewer</SelectItem>
           </SelectContent>
@@ -227,82 +222,5 @@ function UserRow({
         </div>
       </TableCell>
     </TableRow>
-  );
-}
-
-function CreateTeamDialog({
-  open,
-  onOpenChange,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}) {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const createTeam = useMutation(api.teams.functions.createTeam);
-
-  const handleCreate = async () => {
-    if (!name.trim()) {
-      toast.error("Bitte gib einen Team-Namen ein");
-      return;
-    }
-
-    try {
-      await createTeam({
-        name: name.trim(),
-        description: description.trim() || undefined,
-      });
-      toast.success("Team erfolgreich erstellt");
-      onOpenChange(false);
-      setName("");
-      setDescription("");
-    } catch (error) {
-      toast.error("Fehler beim Erstellen des Teams");
-    }
-  };
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Neues Team erstellen</DialogTitle>
-          <DialogDescription>
-            Erstelle ein Team, um Benutzer zu gruppieren und Projekt-Zugriff zu
-            verwalten
-          </DialogDescription>
-        </DialogHeader>
-        <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Team-Name</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="z.B. Marketing, Entwicklung, Finanzen"
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
-            />
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium">
-              Beschreibung (optional)
-            </label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Was ist der Zweck dieses Teams?"
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-ring min-h-[80px]"
-            />
-          </div>
-        </div>
-        <div className="flex justify-end gap-2">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Abbrechen
-          </Button>
-          <Button onClick={handleCreate} disabled={!name.trim()}>
-            Team erstellen
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
   );
 }
