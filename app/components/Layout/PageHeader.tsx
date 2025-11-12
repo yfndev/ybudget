@@ -1,7 +1,7 @@
 "use client";
 
 import { DashboardDropdown } from "@/components/Dashboard/DashboardDropdown";
-import { CreateCategoryDialog } from "@/components/dialogs/CreateCategoryDialog";
+import { CreateCategoryDialog } from "@/components/Dialogs/CreateCategoryDialog";
 import { RangeCalendarToggle } from "@/components/RangeCalendar/RangeCalendarToggle";
 import { AddDonorDialog } from "@/components/Sheets/AddDonorDialog";
 import { CreateProjectDialog } from "@/components/Sheets/CreateProjectDialog";
@@ -71,7 +71,7 @@ export function PageHeader({
   return (
     <>
       <header
-        className="flex w-full h-16 items-center overflow-visible"
+        className="flex  w-full h-16 items-center overflow-visible"
         id="tour-page-header"
       >
         <div className="flex w-full items-center gap-2 ">

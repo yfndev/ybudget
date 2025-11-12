@@ -11,12 +11,12 @@ export default function Dashboard() {
   const projects = useQuery(api.projects.queries.getAllProjects);
   const allTransactions = useQuery(
     api.transactions.queries.getAllTransactions,
-    {}
+    {},
   );
 
   const filteredTransactions = filterTransactionsByDateRange(
     allTransactions,
-    selectedDateRange
+    selectedDateRange,
   );
 
   const budgets = calculateBudget(allTransactions ?? []);

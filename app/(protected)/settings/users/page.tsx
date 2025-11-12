@@ -18,7 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { api } from "@/convex/_generated/api";
-import { Id } from "@/convex/_generated/dataModel";
+import type { Id } from "@/convex/_generated/dataModel";
 import { useIsAdmin } from "@/hooks/useCurrentUserRole";
 import { useMutation, useQuery } from "convex/react";
 import { toast } from "react-hot-toast";
@@ -36,7 +36,7 @@ export default function UsersPage() {
       toast.success("Rolle erfolgreich aktualisiert");
     } catch (error) {
       toast.error(
-        "Fehler beim aktualisieren der Rolle. Mindestens ein Admin ist erforderlich."
+        "Fehler beim aktualisieren der Rolle. Mindestens ein Admin ist erforderlich.",
       );
     }
   };

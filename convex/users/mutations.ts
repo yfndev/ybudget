@@ -19,7 +19,7 @@ export const updateUserRole = mutation({
       const allUsers = await ctx.db
         .query("users")
         .withIndex("by_organization", (q) =>
-          q.eq("organizationId", currentUser.organizationId)
+          q.eq("organizationId", currentUser.organizationId),
         )
         .collect();
 
@@ -27,7 +27,7 @@ export const updateUserRole = mutation({
 
       if (adminCount <= 1) {
         throw new Error(
-          "Der letzte Admin kann nicht entfernt werden. Mindestens ein Admin ist erforderlich."
+          "Der letzte Admin kann nicht entfernt werden. Mindestens ein Admin ist erforderlich.",
         );
       }
     }

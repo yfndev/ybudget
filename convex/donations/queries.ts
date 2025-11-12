@@ -17,7 +17,7 @@ export const getAvailableDonationsForProject = query({
         q.and(
           q.eq(q.field("projectId"), args.projectId),
           q.gt(q.field("amount"), 0),
-          q.neq(q.field("donorId"), ""),
+          q.neq(q.field("donorId"), undefined),
           q.eq(q.field("status"), "processed"), // only actual donations, not expected ones
         ),
       )

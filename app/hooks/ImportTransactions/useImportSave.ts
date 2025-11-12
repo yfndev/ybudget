@@ -6,7 +6,6 @@ import { useMutation } from "convex/react";
 import { useCallback } from "react";
 import toast from "react-hot-toast";
 
-
 export function useImportSave() {
   const updateTransaction = useMutation(
     api.transactions.functions.updateTransaction,
@@ -40,7 +39,7 @@ export function useImportSave() {
           transactionId: transaction._id,
           projectId: projectId as Id<"projects">,
           categoryId: categoryId as Id<"categories">,
-          ...(isIncome && donorId ? { donorId } : {}),
+          ...(isIncome && donorId ? { donorId: donorId as Id<"donors"> } : {}),
           matchedTransactionId: normalizedMatchedId || undefined,
         });
 

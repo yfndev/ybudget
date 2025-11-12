@@ -89,7 +89,7 @@ export const getTransactionRecommendations = query({
 export const getPaginatedTransactions = query({
   args: {
     projectId: v.optional(v.id("projects")),
-    donorId: v.optional(v.string()),
+    donorId: v.optional(v.id("donors")),
     paginationOpts: paginationOptsValidator,
   },
   returns: v.object({

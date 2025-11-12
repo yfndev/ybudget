@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  LayoutDashboard,
-  PiggyBank,
-  SquareCheckBig,
-  Upload,
-  Users,
-} from "lucide-react";
+import { LayoutDashboard, SquareCheckBig, Upload, Users } from "lucide-react";
 import { memo } from "react";
 
 import {
@@ -22,6 +16,7 @@ import {
 import { StartTourButton } from "@/components/Onboarding/StartTourButton";
 import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex-helpers/react/cache";
+import Image from "next/image";
 import { MainNav } from "./MainNav";
 import { ProjectNav } from "./ProjectNav";
 import { SearchForm } from "./SearchForm";
@@ -45,7 +40,12 @@ function AppSidebarComponent(props: React.ComponentProps<typeof Sidebar>) {
             <SidebarMenuButton size="lg" asChild>
               <a href="#">
                 <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <PiggyBank className="size-4" />
+                  <Image
+                    src="/AppIcon.png"
+                    alt="YBudget"
+                    width={48}
+                    height={48}
+                  />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">YBudget</span>

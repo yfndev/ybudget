@@ -52,12 +52,12 @@ export const SelectCategory = forwardRef<
     if (e.key === "ArrowDown") {
       e.preventDefault();
       setActiveItemIdx((prev) =>
-        prev < activeItems.length - 1 ? prev + 1 : 0
+        prev < activeItems.length - 1 ? prev + 1 : 0,
       );
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
       setActiveItemIdx((prev) =>
-        prev > 0 ? prev - 1 : activeItems.length - 1
+        prev > 0 ? prev - 1 : activeItems.length - 1,
       );
     } else if (e.key === "ArrowRight") {
       e.preventDefault();
@@ -86,15 +86,15 @@ export const SelectCategory = forwardRef<
     } else {
       const groupIdx = findGroupIndex(
         grouped,
-        value as Id<"categories"> | undefined
+        value as Id<"categories"> | undefined,
       );
       setActiveGroupIdx(groupIdx >= 0 ? groupIdx : 0);
       if (groupIdx >= 0) {
         setActiveItemIdx(
           findItemIndex(
             grouped[groupIdx],
-            value as Id<"categories"> | undefined
-          )
+            value as Id<"categories"> | undefined,
+          ),
         );
       }
     }

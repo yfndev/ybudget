@@ -14,13 +14,13 @@ const TRANSACTIONS_PER_PAGE = 50;
 export default function Transactions() {
   const { selectedDateRange } = useDateRange();
   const updateTransaction = useMutation(
-    api.transactions.functions.updateTransaction
+    api.transactions.functions.updateTransaction,
   );
 
   const { results, status, loadMore } = usePaginatedQuery(
     api.transactions.queries.getPaginatedTransactions,
     {},
-    { initialNumItems: TRANSACTIONS_PER_PAGE }
+    { initialNumItems: TRANSACTIONS_PER_PAGE },
   );
 
   const transactions = useMemo(() => {

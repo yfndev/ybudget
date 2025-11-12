@@ -3,22 +3,25 @@
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { api } from "@/convex/_generated/api";
+import type { Id } from "@/convex/_generated/dataModel";
 import { useQuery } from "convex-helpers/react/cache";
 import Link from "next/link";
 
 interface DonorCardProps {
-  donorId: string;
+  donorId: Id<"donors">;
   name: string;
   type: "donation" | "sponsoring";
 }
 
 const formatCurrency = (amount: number) =>
   new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(
-    amount
+    amount,
   );
 
 export default function DonorCard({ donorId, name, type }: DonorCardProps) {
-  const donor = useQuery(api.donors.queries.getDonorSummary, { donorId });
+  const donor = useQuery(api.donors.queries.getEligibleDonorsForCategory, {
+    donorId,
+  });
 
   if (!donor) {
     return (

@@ -22,7 +22,7 @@ export const AmountInput = forwardRef<
 >(
   (
     { value, onChange, autoFocus = false, id = "amount", onTabPressed },
-    ref
+    ref,
   ) => {
     const valueColor = value ? "text-foreground" : "text-muted-foreground";
 
@@ -55,7 +55,7 @@ export const AmountInput = forwardRef<
         </InputGroupAddon>
       </InputGroup>
     );
-  }
+  },
 );
 
 AmountInput.displayName = "AmountInput";

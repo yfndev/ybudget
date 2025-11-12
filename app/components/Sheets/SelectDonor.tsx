@@ -16,6 +16,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { api } from "@/convex/_generated/api";
+import type { Id } from "@/convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
 import { useQuery } from "convex-helpers/react/cache";
 import { Check, ChevronsUpDown, Plus } from "lucide-react";
@@ -25,12 +26,14 @@ interface SelectDonorProps {
   value: string;
   onValueChange: (value: string) => void;
   onTabPressed?: () => void;
+  categoryId?: Id<"categories">;
 }
 
 export function SelectDonor({
   value,
   onValueChange,
   onTabPressed,
+  categoryId,
 }: SelectDonorProps) {
   const [open, setOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -74,12 +77,12 @@ export function SelectDonor({
     } else if (e.key === "ArrowDown" && open) {
       e.preventDefault();
       setHighlightedIndex((prev) =>
-        prev < (donors?.length ?? 0) ? prev + 1 : 0
+        prev < (donors?.length ?? 0) ? prev + 1 : 0,
       );
     } else if (e.key === "ArrowUp" && open) {
       e.preventDefault();
       setHighlightedIndex((prev) =>
-        prev > 0 ? prev - 1 : (donors?.length ?? 0) - 1
+        prev > 0 ? prev - 1 : (donors?.length ?? 0) - 1,
       );
     } else if (e.key === "Enter" && open) {
       e.preventDefault();
@@ -114,7 +117,7 @@ export function SelectDonor({
             <span
               className={cn(
                 "font-medium",
-                value ? "text-foreground" : "text-muted-foreground"
+                value ? "text-foreground" : "text-muted-foreground",
               )}
             >
               {displayText}
@@ -150,7 +153,7 @@ export function SelectDonor({
                         "ml-auto",
                         value === donor._id.toString()
                           ? "opacity-100"
-                          : "opacity-0"
+                          : "opacity-0",
                       )}
                     />
                   </CommandItem>

@@ -5,10 +5,22 @@ import { Check, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { Button } from "../ui/button";
 
-const tiers = [
+interface Tier {
+  name: string;
+  price: string;
+  period: string;
+  description: string;
+  features: string[];
+  cta: string;
+  href: string;
+  popular: boolean;
+  priceCalculation?: string;
+}
+
+const tiers: Tier[] = [
   {
     name: "YBudget Premium",
-    price: "24,99€",
+    price: "29,99€",
     period: "/ Monat",
     description: "Volle Flexibilität mit monatlicher Zahlung",
     features: [
@@ -26,10 +38,10 @@ const tiers = [
     popular: false,
   },
   {
-    name: "YBudget  Premium Yearly",
-    price: "249€",
+    name: "YBudget Premium Yearly",
+    price: "299,00€",
     period: "/ Jahr",
-    priceCalculation: "24,99€ × 12 = 299,88€",
+    priceCalculation: "29,99€ × 12 = 299,00€",
     description: "Spare über 50€ mit jährlicher Zahlung",
     features: [
       "Unbegrenzte Projekte",
@@ -106,7 +118,7 @@ export function PricingSection() {
                     </span>
                   )}
                 </div>
-                {"priceCalculation" in tier && tier.priceCalculation && (
+                {tier.priceCalculation && (
                   <p className="mt-2 text-sm text-slate-500 line-through">
                     {tier.priceCalculation}
                   </p>

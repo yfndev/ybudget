@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { api } from "@/convex/_generated/api";
 import { DialogClose } from "@radix-ui/react-dialog";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
@@ -24,24 +24,34 @@ export const OnboardingDialog = ({
 }) => {
   const [name, setName] = useState("");
 
-  const setupUserOrganization = useMutation(
-    api.organizations.functions.setupUserOrganization
+  const orgCheck = useQuery(
+    api.organizations.queries.checkOrganizationExistsByUserDomain,
   );
+
+  const setupUserOrganization = useMutation(
+    api.organizations.functions.setupUserOrganization,
+  );
+
+  const isJoiningExisting = orgCheck?.exists === true;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      const organizationId = await setupUserOrganization({
+      const result = await setupUserOrganization({
         organizationName: name.trim() || undefined,
       });
 
-      if (!organizationId) {
+      if (!result?.organizationId) {
         toast.error("Fehler beim Einrichten der Organisation");
         return;
       }
 
-      toast.success("Willkommen bei YBudget! 🥳");
+      if (result.isNew) {
+        toast.success("Willkommen bei YBudget! 🥳");
+      } else {
+        toast.success("Willkommen im Team! 🥳");
+      }
       onOpenChange(false);
     } catch (error) {
       toast.error("Fehler beim Einrichten");
@@ -53,22 +63,30 @@ export const OnboardingDialog = ({
       <DialogContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Willkommen bei YBudget :)</DialogTitle>
+            <DialogTitle>
+              {isJoiningExisting
+                ? "Organisation beitreten"
+                : "Willkommen bei YBudget :)"}
+            </DialogTitle>
             <DialogDescription>
-              Lass uns direkt loslegen und deinen Verein einrichten.
+              {isJoiningExisting
+                ? `Du wirst der Organisation "${orgCheck.organizationName}" als Betrachter hinzugefügt. Ein Administrator kann deine Rolle später ändern.`
+                : "Lass uns direkt loslegen und deinen Verein einrichten."}
             </DialogDescription>
           </DialogHeader>
 
-          <div className="grid gap-3 mt-4">
-            <Label htmlFor="name-1">Wie heißt dein Verein?</Label>
-            <Input
-              id="name-1"
-              name="name"
-              placeholder="Young Founders Network e.V."
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </div>
+          {!isJoiningExisting && (
+            <div className="grid gap-3 mt-4">
+              <Label htmlFor="name-1">Wie heißt dein Verein?</Label>
+              <Input
+                id="name-1"
+                name="name"
+                placeholder="Young Founders Network e.V."
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
+          )}
 
           <DialogFooter className="mt-8">
             <DialogClose asChild>
@@ -76,7 +94,9 @@ export const OnboardingDialog = ({
                 Abbrechen
               </Button>
             </DialogClose>
-            <Button type="submit">Loslegen</Button>
+            <Button type="submit">
+              {isJoiningExisting ? "Beitreten" : "Loslegen"}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

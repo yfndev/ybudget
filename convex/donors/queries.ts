@@ -14,8 +14,10 @@ export const getAllDonors = query({
   },
 });
 
-export const getDonorSummary = query({
-  args: { donorId: v.string() },
+export const getEligibleDonorsForCategory = query({
+  args: {
+    donorId: v.id("donors"),
+  },
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
 
@@ -64,15 +66,14 @@ export const getDonorSummary = query({
 });
 
 export const getDonorTransactions = query({
-  args: { donorId: v.string() },
+  args: { donorId: v.id("donors") },
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
     return ctx.db
       .query("transactions")
-      .withIndex("by_organization", (q) =>
-        q.eq("organizationId", user.organizationId),
+      .withIndex("by_organization_donor", (q) =>
+        q.eq("organizationId", user.organizationId).eq("donorId", args.donorId),
       )
-      .filter((q) => q.eq(q.field("donorId"), args.donorId))
       .collect();
   },
 });

@@ -13,9 +13,11 @@ import { useParams } from "next/navigation";
 
 export default function DonorDetail() {
   const params = useParams();
-  const donorId = params.donorId as string;
+  const donorId = params.donorId as Id<"donors">;
 
-  const donor = useQuery(api.donors.queries.getDonorSummary, { donorId });
+  const donor = useQuery(api.donors.queries.getEligibleDonorsForCategory, {
+    donorId,
+  });
 
   const {
     results: transactions,
@@ -24,11 +26,11 @@ export default function DonorDetail() {
   } = usePaginatedQuery(
     api.transactions.queries.getPaginatedTransactions,
     { donorId },
-    { initialNumItems: 50 }
+    { initialNumItems: 50 },
   );
 
   const updateTransaction = useMutation(
-    api.transactions.functions.updateTransaction
+    api.transactions.functions.updateTransaction,
   );
 
   const handleUpdate = async (rowId: string, field: string, value: any) => {

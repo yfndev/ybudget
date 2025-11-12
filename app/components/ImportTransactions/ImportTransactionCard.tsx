@@ -44,12 +44,12 @@ export const ImportTransactionCard = ({
 
   const availableDonations = useQuery(
     api.donations.queries.getAvailableDonationsForProject,
-    isExpense && projectId ? { projectId } : "skip"
+    isExpense && projectId ? { projectId } : "skip",
   );
 
   const hasDonations = useMemo(
     () => availableDonations !== undefined && availableDonations.length > 0,
-    [availableDonations]
+    [availableDonations],
   );
 
   return (

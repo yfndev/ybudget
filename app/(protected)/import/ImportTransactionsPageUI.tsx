@@ -69,7 +69,10 @@ export default function ImportTransactionsPageUI({
               </div>
             )}
           </div>
-          <div className="fixed bottom-0 left-0 right-0 pb-6 pt-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex justify-center" id="tour-import-progress">
+          <div
+            className="fixed bottom-0 left-0 right-0 pb-6 pt-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex justify-center"
+            id="tour-import-progress"
+          >
             <Progress
               className="w-1/2"
               value={totalCount > 0 ? ((index + 1) / totalCount) * 100 : 0}

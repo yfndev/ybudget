@@ -56,7 +56,7 @@ export function TransactionSheet({
   const categoryButtonRef = useRef<HTMLButtonElement>(null);
 
   const addTransaction = useMutation(
-    api.transactions.functions.createExpectedTransaction
+    api.transactions.functions.createExpectedTransaction,
   );
 
   const dateColor = date ? "text-foreground" : "text-muted-foreground";
@@ -82,7 +82,7 @@ export function TransactionSheet({
 
   const handleSubmit = async () => {
     if (!amount || !project || !counterparty || !category) {
-      toast.error("Bitte füllen Sie alle erforderlichen Felder aus");
+      toast.error("Füll bitte alle erforderlichen Felder aus");
       return;
     }
 
@@ -96,14 +96,14 @@ export function TransactionSheet({
         counterparty,
         categoryId: category as Id<"categories">,
         status: "expected",
-        donorId: donor,
+        donorId: donor ? (donor as Id<"donors">) : undefined,
       });
       toast.success(
-        type === "expense" ? "Ausgabe gespeichert!" : "Einnahme gespeichert!"
+        type === "expense" ? "Ausgabe gespeichert!" : "Einnahme gespeichert!",
       );
       onOpenChange(false);
     } catch (error) {
-      toast.error("Fehler beim Speichern :(");
+      toast.error("Oh nein! Es gab einen Fehler beim Speichern :(");
     }
   };
 
@@ -261,7 +261,11 @@ export function TransactionSheet({
 
           <div className="flex flex-col gap-2">
             <Label>Förderer</Label>
-            <SelectDonor value={donor} onValueChange={setDonor} />
+            <SelectDonor
+              value={donor}
+              onValueChange={setDonor}
+              categoryId={category ? (category as Id<"categories">) : undefined}
+            />
           </div>
         </div>
 
