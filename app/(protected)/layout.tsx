@@ -40,7 +40,7 @@ const StableContent = memo(function StableContent({
 
   const user = useQuery(api.users.queries.getCurrentUserProfile);
   const subscription = useQuery(
-    api.subscriptions.queries.getSubscriptionStatus,
+    api.subscriptions.queries.getSubscriptionStatus
   );
 
   const shouldShowPaywall =
@@ -92,6 +92,21 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
       router.push("/login");
     }
   }, [isAuthenticated, isLoading, router]);
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return <StableContent>{children}</StableContent>;
 }
