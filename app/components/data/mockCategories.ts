@@ -219,7 +219,7 @@ export const CATEGORY_GROUPS = [
         description: "Professionelle Licht- und Tontechnik",
         taxsphere: "purpose-operations" as const,
       },
-    
+
       {
         value: "wlan-it-infrastructure",
         label: "WLAN/IT-Infrastruktur",

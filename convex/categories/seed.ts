@@ -3,8 +3,6 @@ import { CATEGORY_GROUPS } from "../../app/components/data/mockCategories";
 import { Id } from "../_generated/dataModel";
 import { internalMutation } from "../_generated/server";
 
-
-
 export const seedCategories = internalMutation({
   args: {},
   returns: v.object({
@@ -47,4 +45,3 @@ export const seedCategories = internalMutation({
     return { seeded: true, categoriesCreated };
   },
 });
-
