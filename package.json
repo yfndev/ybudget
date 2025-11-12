@@ -1,7 +1,6 @@
 {
   "name": "ybudget",
   "version": "1.0.0",
-  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev:stripe": "next dev --turbopack & npx convex dev & stripe listen --forward-to https://standing-firefly-934.convex.site/stripe",
@@ -29,6 +28,7 @@
     "@radix-ui/react-select": "^2.2.6",
     "@radix-ui/react-separator": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.3",
+    "@radix-ui/react-tabs": "^1.1.13",
     "@radix-ui/react-tooltip": "^1.2.8",
     "@tanstack/react-table": "^8.21.3",
     "@types/papaparse": "^5.3.16",
