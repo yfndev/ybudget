@@ -62,13 +62,13 @@ export function TransactionSheet({
 
   const dateColor = date ? "text-foreground" : "text-muted-foreground";
 
-  const focusNext = (ref: React.RefObject<HTMLElement>) => {
+  const focusNext = (ref: React.RefObject<HTMLElement | null>) => {
     setTimeout(() => ref.current?.focus(), 0);
   };
 
   const handleKeyPress = (
     e: React.KeyboardEvent,
-    nextRef: React.RefObject<HTMLElement>,
+    nextRef: React.RefObject<HTMLElement | null>,
   ) => {
     if (e.key === "Enter" || e.key === "Tab") {
       e.preventDefault();
