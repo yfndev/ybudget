@@ -40,7 +40,7 @@ const StableContent = memo(function StableContent({
 
   const user = useQuery(api.users.queries.getCurrentUserProfile);
   const subscription = useQuery(
-    api.subscriptions.queries.getSubscriptionStatus
+    api.subscriptions.queries.getSubscriptionStatus,
   );
 
   const shouldShowPaywall =

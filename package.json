@@ -10,7 +10,6 @@
     "start": "next start",
     "format": "prettier --write .",
     "lint": "biome lint --write"
-    "lint": "biome lint --write"
   },
   "dependencies": {
     "@auth/core": "^0.37.4",

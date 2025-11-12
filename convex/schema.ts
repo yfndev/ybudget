@@ -37,7 +37,6 @@ export default defineSchema({
     firstName: v.optional(v.string()),
     lastName: v.optional(v.string()),
 
-
     organizationId: v.optional(v.id("organizations")),
     role: v.optional(
       v.union(v.literal("admin"), v.literal("editor"), v.literal("viewer")),

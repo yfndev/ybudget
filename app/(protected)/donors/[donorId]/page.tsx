@@ -15,7 +15,9 @@ export default function DonorDetail() {
   const params = useParams();
   const donorId = params.donorId as Id<"donors">;
 
-  const donor = useQuery(api.donors.queries.getEligibleDonorsForCategory, { donorId });
+  const donor = useQuery(api.donors.queries.getEligibleDonorsForCategory, {
+    donorId,
+  });
 
   const {
     results: transactions,

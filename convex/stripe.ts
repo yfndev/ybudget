@@ -7,14 +7,14 @@ import { action, internalAction } from "./_generated/server";
 
 const getTiers = (stripeKey: string) => {
   const isProduction = stripeKey.startsWith("sk_live_");
-  
+
   if (isProduction) {
     return {
       monthly: "price_1SSD0wRxVFqrremh8GocLXsZ",
       yearly: "price_1SSD1hRxVFqrremh6nN2Efli",
     };
   }
-  
+
   return {
     monthly: "price_1SSMc2RucjQoYr9Aq0Ga4SvT",
     yearly: "price_1SSMcGRucjQoYr9AGbAuLfxq",
