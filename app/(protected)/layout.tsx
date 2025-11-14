@@ -22,6 +22,7 @@ const StableContent = memo(function StableContent({
 }) {
   const needsOrg = useQuery(api.users.queries.getUserOrganizationId, {});
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showPaywallManually, setShowPaywallManually] = useState(false);
 
   useEffect(() => {
     if (needsOrg === undefined) return;
@@ -44,9 +45,10 @@ const StableContent = memo(function StableContent({
   );
 
   const shouldShowPaywall =
-    subscription &&
-    subscription.status !== "no_subscription" &&
-    !subscription.hasAccess;
+    showPaywallManually ||
+    (subscription &&
+      subscription.status !== "no_subscription" &&
+      !subscription.hasAccess);
 
   const shouldShowTrialBanner =
     subscription?.status === "trial" && subscription.hasAccess;
@@ -64,7 +66,11 @@ const StableContent = memo(function StableContent({
           <SidebarProvider>
             <AppSidebar />
             <div className="flex flex-col w-full">
-              {shouldShowTrialBanner && <TrialBanner />}
+              {shouldShowTrialBanner && (
+                <TrialBanner
+                  onUpgradeClick={() => setShowPaywallManually(true)}
+                />
+              )}
               {shouldShowPaywall && <Paywall />}
 
               <div className="p-4 lg:px-6 pb-6 overflow-x-hidden w-full">

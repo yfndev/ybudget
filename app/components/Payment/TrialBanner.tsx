@@ -1,9 +1,14 @@
+import { Button } from "@/components/ui/button";
 import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
 
-export function TrialBanner() {
+interface TrialBannerProps {
+  onUpgradeClick: () => void;
+}
+
+export function TrialBanner({ onUpgradeClick }: TrialBannerProps) {
   const subscription = useQuery(
-    api.subscriptions.queries.getSubscriptionStatus,
+    api.subscriptions.queries.getSubscriptionStatus
   );
 
   if (
@@ -15,12 +20,15 @@ export function TrialBanner() {
   }
 
   return (
-    <div className="bg-gray-100 py-2 items-center flex justify-center w-full">
-      <div className="mr-60">
-        <h2 className=" font-medium">
+    <div className="bg-gray-100 py-2 items-center flex justify-center w-full ">
+      <div className="flex items-center gap-4">
+        <p className="text-sm font-medium text-gray-700">
           Dein Trial läuft in {subscription.daysLeftInTrial}
           {subscription.daysLeftInTrial === 1 ? "Tag" : "Tagen"} ab.
-        </h2>
+        </p>
+        <Button onClick={onUpgradeClick} size="sm" variant="outline">
+          Jetzt upgraden
+        </Button>
       </div>
     </div>
   );
