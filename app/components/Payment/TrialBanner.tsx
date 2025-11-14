@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { api } from "@/convex/_generated/api";
+import { useCurrentUserRole } from "@/hooks/useCurrentUserRole";
 import { useQuery } from "convex/react";
 
 interface TrialBannerProps {
@@ -10,6 +11,7 @@ export function TrialBanner({ onUpgradeClick }: TrialBannerProps) {
   const subscription = useQuery(
     api.subscriptions.queries.getSubscriptionStatus
   );
+  const userRole = useCurrentUserRole();
 
   if (
     !subscription ||
@@ -19,6 +21,8 @@ export function TrialBanner({ onUpgradeClick }: TrialBannerProps) {
     return null;
   }
 
+  const canUpgrade = userRole === "admin" || userRole === "finance";
+
   return (
     <div className="bg-gray-100 py-2 items-center flex justify-center w-full ">
       <div className="flex items-center gap-4">
@@ -26,9 +30,11 @@ export function TrialBanner({ onUpgradeClick }: TrialBannerProps) {
           Dein Trial läuft in {subscription.daysLeftInTrial}
           {subscription.daysLeftInTrial === 1 ? "Tag" : "Tagen"} ab.
         </p>
-        <Button onClick={onUpgradeClick} size="sm" variant="outline">
-          Jetzt upgraden
-        </Button>
+        {canUpgrade && (
+          <Button onClick={onUpgradeClick} size="sm" variant="outline">
+            Jetzt upgraden
+          </Button>
+        )}
       </div>
     </div>
   );
