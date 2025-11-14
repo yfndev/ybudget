@@ -26,11 +26,13 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
+import { useCanEdit } from "@/hooks/useCurrentUserRole";
 
 function ProjectNavComponent({ id }: { id?: string }) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const pathname = usePathname();
   const projects = useQuery(api.projects.queries.getAllProjects);
+  const canEdit = useCanEdit();
 
   if (projects === undefined) {
     return (
@@ -71,10 +73,12 @@ function ProjectNavComponent({ id }: { id?: string }) {
   return (
     <SidebarGroup id={id}>
       <SidebarGroupLabel>Projekte</SidebarGroupLabel>
-      <SidebarGroupAction onClick={() => setDialogOpen(true)}>
-        <Plus />
-        <span className="sr-only">Projekt hinzufügen</span>
-      </SidebarGroupAction>
+      {canEdit && (
+        <SidebarGroupAction onClick={() => setDialogOpen(true)}>
+          <Plus />
+          <span className="sr-only">Projekt hinzufügen</span>
+        </SidebarGroupAction>
+      )}
       <SidebarMenu>
         {items.map(
           (item: {
@@ -130,7 +134,9 @@ function ProjectNavComponent({ id }: { id?: string }) {
           ),
         )}
       </SidebarMenu>
-      <CreateProjectDialog open={dialogOpen} onOpenChange={setDialogOpen} />
+      {canEdit && (
+        <CreateProjectDialog open={dialogOpen} onOpenChange={setDialogOpen} />
+      )}
     </SidebarGroup>
   );
 }

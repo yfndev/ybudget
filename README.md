@@ -1,36 +1,87 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# YBudget 💰
 
-## Getting Started
+> Open-source budget management built for NGOs, by NGOs.
 
-First, run the development server:
+YBudget helps german non profit associations manage their budgets when Excel isn't enough anymore. Built as a capstone project at [CODE University](https://code.berlin/) for the [Young Founders Network e.V.](https://youngfounders.network) by [Joël Heil Escobar](https://www.linkedin.com/in/joel-heil-escobar)
+
+**The problem?** Most budget tools are too expensive, too complex, or don't provide the transparency non-profits need.
+
+**Our solution?** Simple, affordable, and open-source.
+
+## Features
+
+- 📊 **Budget Planning** - Organize projects by donors, track expenses in real-time, get warnings when approaching limits
+- 💳 **Transaction Import** - Import CSV from all German banks (Sparkasse, Volksbank, & Moss) with smart matching
+- 🎯 **Project Organization** - Assign expenses to projects, see remaining budgets at a glance
+
+## Tech Stack
+
+![Next.js](https://img.shields.io/badge/Next.js_15-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
+![Convex](https://img.shields.io/badge/Convex-FF6F00?style=for-the-badge&logo=convex&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![shadcn/ui](https://img.shields.io/badge/shadcn%2Fui-000000?style=for-the-badge&logo=shadcnui&logoColor=white)
+![Stripe](https://img.shields.io/badge/Stripe-008CDD?style=for-the-badge&logo=stripe&logoColor=white)
+
+## Self-Hosting
+
+YBudget is fully self-hostable. Connect it to your own Convex backend and deploy it on your favorite platform (I used Vercel).
+
+**Prerequisites:** Node.js 20+, pnpm, [Convex account](https://www.convex.dev/) (free tier available)
+
+**Quick Start:**
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+# Clone and install
+git clone https://github.com/yourusername/ybudget.git
+cd ybudget
+pnpm install
+
+# Set up Convex
+npx convex dev
+
+# Configure environment variables
+cp env.example .env.local
+# Edit .env.local with your Convex URLs
+# Set auth/stripe variables in Convex Dashboard → Settings → Environment Variables
+
+# Run locally
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**Environment Variables:**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- See `env.example` for required variables
+- Set `CONVEX_DEPLOYMENT` and `NEXT_PUBLIC_CONVEX_URL` in `.env.local`
+- Set `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`, `SITE_URL`, and optional Stripe keys in Convex Dashboard
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**Deploy:**
 
-## Learn More
+```bash
+npx vercel          # Deploy Next.js
+npx convex deploy   # Deploy Convex functions
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Contributing
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+We're building the next generation of software for NGOs and we'd love your help on our mission to make budgeting as easy as possible 🙌
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**How to contribute:**
 
-## Deploy on Vercel
+1. Fork the repo
+2. Create a feature branch (`git checkout -b feat/amazing-feature`)
+3. Commit your changes
+4. Open a Pull Request
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**Ideas, feedback, or questions?**  
+📧 [team@ybudget.de](mailto:team@ybudget.de) | 🐛 [Open an issue](https://github.com/yourusername/ybudget/issues)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## About
+
+Built by Joël, one of the founders of the [Young Founders Network e.V.](https://youngfounders.network) a non-profit supporting young founders through startup resources, community, and entrepreneurial education.
+
+This started as a capstone project at [CODE University](https://code.berlin/) to solve our own budget management challenges. Now we're open-sourcing it for other NGOs.
+
+---
+
+Built with ❤️ by the Young Founders Network team
