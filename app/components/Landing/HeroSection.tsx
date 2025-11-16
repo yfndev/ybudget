@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Calendar, Coins, Sparkles } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "../ui/button";
@@ -16,13 +16,42 @@ export function HeroSection() {
           transition={{ duration: 0.5 }}
           className="text-center"
         >
-          <h1 className="text-5xl font-bold tracking-tight text-slate-900 sm:text-6xl lg:text-7xl">
-            Budgetverwaltung für
-            <br />
-            <span className="text-primary">gemeinnützige Vereine.</span>
-          </h1>
+          <div className="relative inline-block">
+            <motion.div
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="absolute -left-12 -top-8 hidden lg:block"
+            >
+              <Sparkles className="h-6 w-6 text-primary/60" />
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="absolute -right-16 top-0 hidden lg:block"
+            >
+              <Calendar className="h-8 w-8 text-slate-400" />
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+              className="absolute -left-16 bottom-8 hidden lg:block"
+            >
+              <Coins className="h-7 w-7 text-amber-500/60" />
+            </motion.div>
+
+            <h1 className="text-5xl font-bold tracking-tight text-slate-900 sm:text-6xl lg:text-7xl">
+              Budgetverwaltung für
+              <br />
+              <span className="text-primary">gemeinnützige Vereine.</span>
+            </h1>
+          </div>
           <p className="mt-6 text-xl text-slate-600 sm:text-2xl">
-            Einfach. Transparent. Zuverlässig.
+            Zeit ist Geld. Spare beides.
           </p>
           <p className="mx-auto mt-6 max-w-3xl text-lg text-slate-600">
             YBudget hilft dir, Budgets zu planen, Ausgaben zu tracken und
