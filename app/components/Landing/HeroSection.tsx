@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, Calendar, Coins, Sparkles } from "lucide-react";
+import { ArrowRight, Coins, Sparkles } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "../ui/button";
@@ -21,7 +21,7 @@ export function HeroSection() {
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="absolute -left-12 -top-8 hidden lg:block"
+              className="absolute -left-16 top-42 hidden lg:block"
             >
               <Sparkles className="h-6 w-6 text-primary/60" />
             </motion.div>
@@ -30,16 +30,7 @@ export function HeroSection() {
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, delay: 0.4 }}
-              className="absolute -right-16 top-0 hidden lg:block"
-            >
-              <Calendar className="h-8 w-8 text-slate-400" />
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.5 }}
-              className="absolute -left-16 bottom-8 hidden lg:block"
+              className="absolute -right-12 -top-8  hidden lg:block"
             >
               <Coins className="h-7 w-7 text-amber-500/60" />
             </motion.div>
