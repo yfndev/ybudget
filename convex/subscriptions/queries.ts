@@ -40,7 +40,9 @@ export const getProjectLimits = query({
 
     const projectCount = await ctx.db
       .query("projects")
-      .withIndex("by_organization", (q) => q.eq("organizationId", organizationId))
+      .withIndex("by_organization", (q) =>
+        q.eq("organizationId", organizationId),
+      )
       .collect();
 
     const currentProjects = projectCount.length;
