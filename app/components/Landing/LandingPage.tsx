@@ -18,7 +18,7 @@ export function LandingPage() {
       <HeroSection />
       <ProblemSection />
       <SolutionSection />
-      <SocialProofSection />
+      {/* <SocialProofSection /> */}
       <HowItWorksSection />
       <PricingSection />
       <FAQSection />
