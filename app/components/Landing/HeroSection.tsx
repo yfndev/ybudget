@@ -46,7 +46,7 @@ export function HeroSection() {
           </p>
           <p className="mx-auto mt-6 max-w-3xl text-lg text-slate-600">
             YBudget hilft dir, Budgets zu planen, Ausgaben zu tracken und
-            Berichte für Förderer zu erstellen – einfach und schnell.
+            Berichte für Förderer zu erstellen. Einfach und schnell :)
           </p>
 
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">

@@ -1,25 +1,25 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { useState } from "react";
 
 const faqs = [
   {
     question: "Ist YBudget wirklich kostenlos für kleine Vereine?",
     answer:
-      "Ja! Vereine mit bis zu 3 Projekten können YBudget komplett kostenlos nutzen – ohne Zeitlimit und ohne versteckte Kosten.",
+      "Yess :) wir möchten es so vielen Vereinen wie möglich zur Verfügung stellen und daher ist es für kleinere Vereine mit bis zu 3 Projekten komplett kostenlos. Ohne Zeitlimit und ohne versteckte Kosten.",
   },
   {
     question: "Welche Banken werden unterstützt?",
     answer:
-      "YBudget unterstützt CSV-Exporte aller deutschen Banken (Sparkasse, Volksbank, DKB, N26, etc.). Du lädst einfach deinen Kontoauszug hoch.",
+      "Aktuell kann man Sparkasse, Volksbank und Moss importieren. Schreib mir einfach, falls wir eine andere Bank unterstützen sollten.",
   },
-  {
-    question: "Kann ich meine Daten exportieren?",
-    answer:
-      "Ja! Du kannst Berichte als PDF oder CSV exportieren und an jeden teilen – dein Steuerberater, dein Vorstand oder deine Förderer.",
-  },
+  // {
+  //   question: "Kann ich meine Daten exportieren?",
+  //   answer:
+  //     "Ja! Du kannst Berichte als PDF oder CSV exportieren und an jeden teilen – dein Steuerberater, dein Vorstand oder deine Förderer.",
+  // },
   {
     question: "Wie sicher sind meine Daten?",
     answer:
