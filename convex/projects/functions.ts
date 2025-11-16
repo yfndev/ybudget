@@ -15,8 +15,15 @@ export const createProject = mutation({
     await requireRole(ctx, "editor");
     const user = await getCurrentUser(ctx);
 
-    const organization = await ctx.db.get(user.organizationId);
-    const isPremium = organization?.subscriptionStatus === "active";
+    const activePayment = await ctx.db
+      .query("payments")
+      .withIndex("by_organization", (q) =>
+        q.eq("organizationId", user.organizationId),
+      )
+      .filter((q) => q.eq(q.field("status"), "completed"))
+      .first();
+    
+    const isPremium = activePayment !== null;
 
     if (!isPremium) {
       const existingProjects = await ctx.db

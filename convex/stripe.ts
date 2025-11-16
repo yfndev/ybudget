@@ -33,9 +33,12 @@ export const pay = action({
       apiVersion: "2025-10-29.clover",
     });
 
-    const paymentId: any = await ctx.runMutation(internal.payments.create, {
-      tier: args.tier,
-    });
+    const paymentId: any = await ctx.runMutation(
+      internal.payments.functions.create,
+      {
+        tier: args.tier,
+      },
+    );
     const tiers = getTiers(process.env.STRIPE_KEY!);
     const priceId = tiers[args.tier];
 
@@ -49,7 +52,7 @@ export const pay = action({
       automatic_tax: { enabled: true },
     });
 
-    await ctx.runMutation(internal.payments.markPending, {
+    await ctx.runMutation(internal.payments.functions.markPending, {
       paymentId,
       stripeId: session.id,
     });
@@ -70,17 +73,17 @@ export const createCustomerPortalSession = action({
       throw new Error("No organization found for user");
     }
 
-    const organization: any = await ctx.runQuery(
-      internal.organizations.queries.getOrganizationById,
+    const payment: any = await ctx.runQuery(
+      internal.payments.queries.getActivePayment,
       { organizationId: user.organizationId },
     );
 
-    if (!organization) {
-      throw new Error("Organization not found");
+    if (!payment) {
+      throw new Error("No active payment found for organization");
     }
 
-    if (!organization.stripeCustomerId) {
-      throw new Error("No Stripe customer ID found for organization");
+    if (!payment.stripeCustomerId) {
+      throw new Error("No Stripe customer ID found for payment");
     }
 
     const domain = process.env.HOSTING_URL ?? "http://localhost:3000";
@@ -89,7 +92,7 @@ export const createCustomerPortalSession = action({
     });
 
     const session = await stripe.billingPortal.sessions.create({
-      customer: organization.stripeCustomerId,
+      customer: payment.stripeCustomerId,
       return_url: `${domain}/dashboard`,
     });
 
@@ -115,7 +118,7 @@ export const fulfill = internalAction({
 
       if (event.type === "checkout.session.completed") {
         const session = event.data.object as any;
-        await ctx.runMutation(internal.payments.fulfill, {
+        await ctx.runMutation(internal.payments.functions.fulfill, {
           stripeSessionId: session.id,
           stripeCustomerId: session.customer,
           stripeSubscriptionId: session.subscription,

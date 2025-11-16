@@ -8,18 +8,9 @@ export default defineSchema({
     name: v.string(),
     domain: v.string(),
     createdBy: v.string(),
-    subscriptionStatus: v.optional(
-      v.union(v.literal("active"), v.literal("canceled")),
-    ),
-    subscriptionTier: v.optional(
-      v.union(v.literal("monthly"), v.literal("yearly")),
-    ),
-    stripeCustomerId: v.optional(v.string()),
-    stripeSubscriptionId: v.optional(v.string()),
   })
     .index("by_name", ["name"])
-    .index("by_domain", ["domain"])
-    .index("by_stripeCustomerId", ["stripeCustomerId"]),
+    .index("by_domain", ["domain"]),
   users: defineTable({
     name: v.optional(v.string()),
     image: v.optional(v.string()),
@@ -98,7 +89,6 @@ export default defineSchema({
     approved: v.boolean(),
     createdBy: v.optional(v.id("users")),
     parentId: v.optional(v.id("categories")),
-    icon: v.optional(v.string()),
   }).index("by_parent", ["parentId"]),
 
   donors: defineTable({
@@ -122,6 +112,7 @@ export default defineSchema({
       v.literal("pending"),
       v.literal("completed"),
       v.literal("failed"),
+      v.literal("canceled"),
     ),
     organizationId: v.id("organizations"),
     stripeSessionId: v.optional(v.string()),
@@ -130,7 +121,9 @@ export default defineSchema({
     paidAt: v.optional(v.number()),
   })
     .index("by_stripeSessionId", ["stripeSessionId"])
-    .index("by_organization", ["organizationId"]),
+    .index("by_organization", ["organizationId"])
+    .index("by_stripeCustomerId", ["stripeCustomerId"])
+    .index("by_stripeSubscriptionId", ["stripeSubscriptionId"]),
 
   teams: defineTable({
     name: v.string(),

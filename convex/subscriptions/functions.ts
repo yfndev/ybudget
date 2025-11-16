@@ -7,19 +7,19 @@ export const cancelSubscription = internalMutation({
   },
   returns: v.null(),
   handler: async (ctx, { stripeSubscriptionId }) => {
-    const organization = await ctx.db
-      .query("organizations")
-      .filter((q) =>
-        q.eq(q.field("stripeSubscriptionId"), stripeSubscriptionId),
+    const payment = await ctx.db
+      .query("payments")
+      .withIndex("by_stripeSubscriptionId", (q) =>
+        q.eq("stripeSubscriptionId", stripeSubscriptionId),
       )
       .first();
 
-    if (!organization) {
-      throw new Error("Organization not found");
+    if (!payment) {
+      throw new Error("Payment not found");
     }
 
-    await ctx.db.patch(organization._id, {
-      subscriptionStatus: "canceled" as const,
+    await ctx.db.patch(payment._id, {
+      status: "canceled" as const,
     });
 
     return null;
