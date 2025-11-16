@@ -69,19 +69,13 @@ export const getOrganizationById = internalQuery({
       domain: v.string(),
       createdBy: v.string(),
       subscriptionStatus: v.optional(
-        v.union(
-          v.literal("trial"),
-          v.literal("active"),
-          v.literal("canceled"),
-          v.literal("expired"),
-        ),
+        v.union(v.literal("active"), v.literal("canceled")),
       ),
       subscriptionTier: v.optional(
         v.union(v.literal("monthly"), v.literal("yearly")),
       ),
       stripeCustomerId: v.optional(v.string()),
       stripeSubscriptionId: v.optional(v.string()),
-      trialEndsAt: v.optional(v.number()),
     }),
     v.null(),
   ),

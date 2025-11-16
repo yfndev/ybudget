@@ -1,70 +1,84 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { api } from "@/convex/_generated/api";
 import { useAction } from "convex/react";
-import { Check } from "lucide-react";
-import { type FormEvent, useState } from "react";
+import { Sparkles } from "lucide-react";
+import { useState } from "react";
 
-export function Paywall() {
-  const [interval, setInterval] = useState<"monthly" | "yearly">("monthly");
+interface PaywallProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
 
+export function Paywall({ open, onOpenChange }: PaywallProps) {
+  const [isLoading, setIsLoading] = useState(false);
   const initializePayment = useAction(api.stripe.pay);
 
-  async function handlePayment(event: FormEvent) {
-    event.preventDefault();
-    const paymentUrl = await initializePayment({ tier: interval });
-
+  async function handleUpgrade() {
+    setIsLoading(true);
+    const paymentUrl = await initializePayment({ tier: "monthly" });
     if (paymentUrl) {
       window.location.href = paymentUrl;
     }
+    setIsLoading(false);
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-md bg-card border-border shadow-2xl">
-        <div className="p-8">
-          <div className="mb-6">
-            <h2 className="text-3xl font-bold text-card-foreground mb-2">
-              ⏰ Deine Testphase ist vorbei
-            </h2>
-            <p className="text-muted-foreground text-sm">
-              Abonniere YBudget Premium, um weiterhin alle Features nutzen zu
-              können.
-            </p>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <div className="flex items-center gap-2 mb-2">
+            <Sparkles className="w-5 h-5 text-primary" />
+            <DialogTitle className="text-2xl">
+              Hey! Es freut uns, dass dir yBudget gefällt!
+            </DialogTitle>
           </div>
+          <DialogDescription className="text-base pt-2">
+            Du hast bereits 3 Projekte erstellt. Um unbegrenzt viele Projekte zu
+            erstellen und alle Premium-Features zu nutzen, upgrade bitte auf
+            unseren Premium Plan.
+          </DialogDescription>
+        </DialogHeader>
 
-          <div className="mb-8 space-y-3">
-            <p className="text-sm font-medium text-card-foreground mb-4">
-              Upgraden auf ybudget Premium:
-            </p>
-            {[
-              "Budgets planen in Minuten, nicht Stunden",
-              "Transaktionen zuordnen statt suchen",
-              "Ausgaben organisieren nach Projekten",
-              "Berichte für Förderer in 2 Klicks",
-            ].map((feature, i) => (
-              <div key={i} className="flex items-center gap-3">
-                <Check className="w-5 h-5 text-primary flex-shrink-0" />
-                <span className="text-sm text-card-foreground">{feature}</span>
-              </div>
-            ))}
-          </div>
-
-          <div className="space-y-3">
-            <form onSubmit={handlePayment}>
-              <Button
-                type="submit"
-                className="w-full bg-primary text-primary-foreground hover:opacity-90"
-                size="lg"
-              >
-                YBudget abonnieren
-              </Button>
-            </form>
+        <div className="space-y-4 py-4">
+          <div className="bg-muted/50 rounded-lg p-4 space-y-2">
+            <p className="font-semibold text-sm">Mit Premium erhältst du:</p>
+            <ul className="space-y-1 text-sm text-muted-foreground">
+              <li>✨ Unbegrenzt Projekte</li>
+              <li>📊 Erweiterte Berichte</li>
+              <li>⚡ Prioritäts-Support</li>
+              <li>🎯 Alle zukünftigen Features</li>
+            </ul>
           </div>
         </div>
-      </Card>
-    </div>
+
+        <DialogFooter className="flex-col sm:flex-col gap-2">
+          <Button
+            onClick={handleUpgrade}
+            disabled={isLoading}
+            className="w-full"
+            size="lg"
+          >
+            {isLoading ? "Wird geladen..." : "Jetzt upgraden"}
+          </Button>
+          <Button
+            variant="ghost"
+            onClick={() => onOpenChange(false)}
+            className="w-full"
+          >
+            Vielleicht später
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

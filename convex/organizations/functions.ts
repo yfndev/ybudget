@@ -1,5 +1,4 @@
 import { v } from "convex/values";
-import { internal } from "../_generated/api";
 import type { Id } from "../_generated/dataModel";
 import { mutation, type MutationCtx } from "../_generated/server";
 import { getCurrentUser } from "../users/getCurrentUser";
@@ -91,14 +90,6 @@ export const setupUserOrganization = mutation({
     });
 
     await addUserToOrganization(ctx, user._id, organizationId, "admin");
-
-    await ctx.scheduler.runAfter(
-      0,
-      internal.subscriptions.functions.initializeTrial,
-      {
-        organizationId,
-      },
-    );
 
     return {
       organizationId,
