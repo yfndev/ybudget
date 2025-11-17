@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuthActions } from "@convex-dev/auth/react";
+import posthog from "posthog-js";
 
 import { Button } from "@/components/ui/button";
 import { Field, FieldDescription, FieldGroup } from "@/components/ui/field";
@@ -15,6 +16,10 @@ export function LoginForm({
 
   const handleGoogleSignIn = (e: React.FormEvent) => {
     e.preventDefault();
+    posthog.capture("user_signed_in", {
+      method: "google",
+      timestamp: new Date().toISOString(),
+    });
     void signIn("google");
   };
 

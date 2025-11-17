@@ -10,6 +10,7 @@ import { filterTransactionsByDateRange } from "@/lib/transactionFilters";
 import { useQuery } from "convex-helpers/react/cache";
 import { useMutation, usePaginatedQuery } from "convex/react";
 import { useParams } from "next/navigation";
+import posthog from "posthog-js";
 import { useMemo } from "react";
 import toast from "react-hot-toast";
 
@@ -55,8 +56,16 @@ export default function ProjectDetail() {
         transactionId: transactionId as Id<"transactions">,
         [field]: value,
       });
+
+      posthog.capture("transaction_updated", {
+        field_updated: field,
+        project_id: projectId,
+        timestamp: new Date().toISOString(),
+      });
+
       toast.success("Transaktion aktualisiert");
     } catch (error) {
+      posthog.captureException(error as Error);
       toast.error("Fehler beim Aktualisieren");
       throw error;
     }

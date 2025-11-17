@@ -11,6 +11,7 @@ import { useQuery } from "convex-helpers/react/cache";
 import { useConvexAuth } from "convex/react";
 import { useRouter } from "next/navigation";
 import { Onborda, OnbordaProvider } from "onborda";
+import posthog from "posthog-js";
 import { memo, useEffect, useState } from "react";
 
 const StableContent = memo(function StableContent({
@@ -19,6 +20,7 @@ const StableContent = memo(function StableContent({
   children: React.ReactNode;
 }) {
   const needsOrg = useQuery(api.users.queries.getUserOrganizationId, {});
+  const userProfile = useQuery(api.users.queries.getCurrentUserProfile);
   const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
@@ -29,6 +31,17 @@ const StableContent = memo(function StableContent({
       setShowOnboarding(false);
     }
   }, [needsOrg]);
+
+  useEffect(() => {
+    if (userProfile && userProfile._id) {
+      posthog.identify(userProfile._id, {
+        email: userProfile.email || undefined,
+        name: userProfile.name || undefined,
+        role: userProfile.role || undefined,
+        organizationId: userProfile.organizationId || undefined,
+      });
+    }
+  }, [userProfile]);
 
   const handleOnboardingChange = (open: boolean) => {
     if (!open) {

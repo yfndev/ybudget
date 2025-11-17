@@ -22,6 +22,7 @@ import { useQuery } from "convex-helpers/react/cache";
 import { useMutation } from "convex/react";
 import { Upload } from "lucide-react";
 import Papa from "papaparse";
+import posthog from "posthog-js";
 import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 
@@ -115,6 +116,14 @@ export function ImportTransactionsSheet({
         );
       }
 
+      posthog.capture("transaction_imported", {
+        source: importSource,
+        total_transactions: csvData.length,
+        new_transactions: inserted,
+        skipped_duplicates: skipped,
+        timestamp: new Date().toISOString(),
+      });
+
       toast.success(
         `${inserted} neue Transaktionen importiert, ${skipped} Duplikate übersprungen`,
         { id: toastId },
@@ -123,6 +132,12 @@ export function ImportTransactionsSheet({
       setImportSource("");
       onOpenChange(false);
     } catch (error) {
+      posthog.captureException(error as Error);
+      posthog.capture("import_error", {
+        source: importSource,
+        total_attempted: csvData.length,
+        error_message: error instanceof Error ? error.message : "Unknown error",
+      });
       toast.error("Fehler beim Importieren", { id: toastId });
     }
   };

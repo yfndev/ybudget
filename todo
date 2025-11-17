@@ -1,10 +1,11 @@
-- [ ] csv export for donors -> BY HAND
 
 - [ ] add analytics (posthog)
 - [ ] check how to show expected transactions in table (also if they are already matched)
+- [ ] refactor every component into UX and UI component
 
 archive (latest on top):
 
+- [x] csv export for donors
 - [x] add user groups and view permissions on group/project level & user level
 - [x] add more categories
 - [x] add income to categories

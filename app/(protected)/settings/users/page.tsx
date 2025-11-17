@@ -27,6 +27,7 @@ import { useIsAdmin } from "@/hooks/useCurrentUserRole";
 import { getInitials } from "@/lib/utils";
 import { useMutation, useQuery } from "convex/react";
 import { Plus, Shield, Users } from "lucide-react";
+import posthog from "posthog-js";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 
@@ -42,8 +43,15 @@ export default function UsersPage() {
   const handleRoleChange = async (userId: Id<"users">, role: UserRole) => {
     try {
       await updateUserRole({ userId, role });
+
+      posthog.capture("user_role_updated", {
+        new_role: role,
+        timestamp: new Date().toISOString(),
+      });
+
       toast.success("Rolle erfolgreich aktualisiert");
     } catch (error) {
+      posthog.captureException(error as Error);
       toast.error(
         "Fehler beim Aktualisieren der Rolle. Mindestens ein Admin ist erforderlich.",
       );
@@ -153,9 +161,16 @@ function UserRow({
         }
       } else {
         await addTeamMember({ teamId, userId: user._id, role: "viewer" });
+
+        posthog.capture("team_member_added", {
+          team_role: "viewer",
+          timestamp: new Date().toISOString(),
+        });
+
         toast.success("Zum Team hinzugefügt");
       }
     } catch (error) {
+      posthog.captureException(error as Error);
       toast.error("Fehler beim Ändern der Team-Zugehörigkeit");
     }
   };

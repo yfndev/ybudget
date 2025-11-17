@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { api } from "@/convex/_generated/api";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { useMutation, useQuery } from "convex/react";
+import posthog from "posthog-js";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
@@ -47,6 +48,13 @@ export const OnboardingDialog = ({
         return;
       }
 
+      posthog.capture("organization_setup_completed", {
+        is_new_organization: result.isNew,
+        is_joining_existing: isJoiningExisting,
+        has_name: !!name.trim(),
+        timestamp: new Date().toISOString(),
+      });
+
       if (result.isNew) {
         toast.success("Willkommen bei YBudget! 🥳");
       } else {
@@ -54,6 +62,7 @@ export const OnboardingDialog = ({
       }
       onOpenChange(false);
     } catch (error) {
+      posthog.captureException(error as Error);
       toast.error("Fehler beim Einrichten");
     }
   };
