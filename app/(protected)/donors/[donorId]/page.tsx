@@ -1,6 +1,7 @@
 "use client";
 
 import BudgetCard from "@/components/Dashboard/BudgetCard";
+import DonorCSVExport from "@/components/Donors/DonorCSVExport";
 import { PageHeader } from "@/components/Layout/PageHeader";
 import { EditableDataTable } from "@/components/Tables/EditableDataTable";
 import { editableColumns } from "@/components/Tables/editableColumns";
@@ -26,11 +27,11 @@ export default function DonorDetail() {
   } = usePaginatedQuery(
     api.transactions.queries.getPaginatedTransactions,
     { donorId },
-    { initialNumItems: 50 },
+    { initialNumItems: 50 }
   );
 
   const updateTransaction = useMutation(
-    api.transactions.functions.updateTransaction,
+    api.transactions.functions.updateTransaction
   );
 
   const handleUpdate = async (rowId: string, field: string, value: any) => {
@@ -70,7 +71,14 @@ export default function DonorDetail() {
       </div>
 
       <div className="mt-6" id="tour-donor-transactions">
-        <h2 className="text-xl font-semibold mb-4">Transaktionen</h2>
+        <div className="flex flex-row justify-between">
+          <h2 className="text-xl font-semibold mb-4">Transaktionen</h2>
+
+          <DonorCSVExport
+            donorId={donorId as Id<"donors">}
+            donorName={donor.donor.name}
+          />
+        </div>
         <EditableDataTable
           columns={editableColumns}
           data={transactions}
