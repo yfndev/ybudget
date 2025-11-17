@@ -44,3 +44,5 @@ next-env.d.ts
 CLAUDE.md
 .cursor/rules/convex_rules.mdc
 .claude/settings.local.json
+
+.env.local

@@ -1,0 +1,77 @@
+[
+  {
+    "event": "transaction_imported",
+    "description": "User successfully imports transactions from CSV file",
+    "file": "app/components/Sheets/ImportTransactionsSheet.tsx"
+  },
+  {
+    "event": "transaction_saved",
+    "description": "User categorizes and saves an imported transaction",
+    "file": "app/hooks/ImportTransactions/useImportSave.ts"
+  },
+  {
+    "event": "transaction_updated",
+    "description": "User updates an existing transaction's details",
+    "file": "app/(protected)/projects/[projectId]/page.tsx"
+  },
+  {
+    "event": "project_created",
+    "description": "User creates a new project for budget tracking",
+    "file": "app/components/Sheets/CreateProjectDialog.tsx"
+  },
+  {
+    "event": "donor_created",
+    "description": "User adds a new donor to the organization",
+    "file": "app/components/Sheets/AddDonorDialog.tsx"
+  },
+  {
+    "event": "organization_setup_completed",
+    "description": "New user completes organization onboarding",
+    "file": "app/components/Onboarding/OnboardingDialog.tsx"
+  },
+  {
+    "event": "user_signed_in",
+    "description": "User successfully authenticates with Google OAuth",
+    "file": "app/components/Auth/LoginForm.tsx"
+  },
+  {
+    "event": "user_signed_out",
+    "description": "User logs out of the application",
+    "file": "app/components/Auth/LogoutButton.tsx"
+  },
+  {
+    "event": "user_role_updated",
+    "description": "Admin changes a user's organization role",
+    "file": "app/(protected)/settings/users/page.tsx"
+  },
+  {
+    "event": "team_member_added",
+    "description": "User is added to a team within the organization",
+    "file": "app/(protected)/settings/users/page.tsx"
+  },
+  {
+    "event": "dashboard_viewed",
+    "description": "User views the main dashboard (conversion funnel top)",
+    "file": "app/(protected)/dashboard/page.tsx"
+  },
+  {
+    "event": "import_page_viewed",
+    "description": "User opens transaction import workflow (conversion funnel entry)",
+    "file": "app/(protected)/import/page.tsx"
+  },
+  {
+    "event": "project_detail_viewed",
+    "description": "User views detailed project dashboard",
+    "file": "app/(protected)/projects/[projectId]/page.tsx"
+  },
+  {
+    "event": "import_error",
+    "description": "Error occurs during transaction import process",
+    "file": "app/components/Sheets/ImportTransactionsSheet.tsx"
+  },
+  {
+    "event": "transaction_save_error",
+    "description": "Error occurs when saving categorized transaction",
+    "file": "app/hooks/ImportTransactions/useImportSave.ts"
+  }
+]

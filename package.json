@@ -44,6 +44,7 @@
     "onborda": "^1.2.5",
     "papaparse": "^5.5.3",
     "pnpm": "^10.18.3",
+    "posthog-js": "^1.293.0",
     "prettier": "^3.6.2",
     "react": "19.1.0",
     "react-csv": "^2.2.2",
