@@ -22,7 +22,7 @@ export const createProject = mutation({
       )
       .filter((q) => q.eq(q.field("status"), "completed"))
       .first();
-    
+
     const isPremium = activePayment !== null;
 
     if (!isPremium) {

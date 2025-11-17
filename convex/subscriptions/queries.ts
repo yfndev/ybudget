@@ -35,7 +35,7 @@ export const getProjectLimits = query({
     }
 
     const organizationId = user.organizationId;
-    
+
     const activePayment = await ctx.db
       .query("payments")
       .withIndex("by_organization", (q) =>
@@ -43,7 +43,7 @@ export const getProjectLimits = query({
       )
       .filter((q) => q.eq(q.field("status"), "completed"))
       .first();
-    
+
     const isPremium = activePayment !== null;
 
     const projectCount = await ctx.db
@@ -66,7 +66,7 @@ export const getProjectLimits = query({
 
 export const getOrganizationPayments = query({
   args: {},
- 
+
   handler: async (ctx) => {
     const user = await getCurrentUser(ctx);
 

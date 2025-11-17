@@ -1,14 +1,13 @@
-- [ ] add user groups and view permissions on group/project level & user level
+- [ ] csv export for donors -> BY HAND
 
-- [ ] add income to categories
-- [ ] add more categories
-
-
+- [ ] add analytics (posthog)
 - [ ] check how to show expected transactions in table (also if they are already matched)
-- [ ] csv export for donors
 
 archive (latest on top):
 
+- [x] add user groups and view permissions on group/project level & user level
+- [x] add more categories
+- [x] add income to categories
 - [x] add simple user roles (person creating org is admin), all new ones are editors (can edit table, match and add transactions), then you have viewers who can only see transaction overview, donors, dashboard (not matching or sheets)
 - [x] add donor expense restrictions (only show donor if restriction is met) 
 - [x] load categories from database (maybe style nicer) and double-check with chatgpt again

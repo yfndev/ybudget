@@ -15,7 +15,6 @@ import type * as donations_queries from "../donations/queries.js";
 import type * as donors_functions from "../donors/functions.js";
 import type * as donors_queries from "../donors/queries.js";
 import type * as donors_validation from "../donors/validation.js";
-import type * as helpers_addProjectNames from "../helpers/addProjectNames.js";
 import type * as http from "../http.js";
 import type * as organizations_functions from "../organizations/functions.js";
 import type * as organizations_queries from "../organizations/queries.js";
@@ -35,6 +34,7 @@ import type * as users_functions from "../users/functions.js";
 import type * as users_getCurrentUser from "../users/getCurrentUser.js";
 import type * as users_permissions from "../users/permissions.js";
 import type * as users_queries from "../users/queries.js";
+import type * as utils_addProjectNames from "../utils/addProjectNames.js";
 import type * as utils_categoryMapping from "../utils/categoryMapping.js";
 
 import type {
@@ -59,7 +59,6 @@ declare const fullApi: ApiFromModules<{
   "donors/functions": typeof donors_functions;
   "donors/queries": typeof donors_queries;
   "donors/validation": typeof donors_validation;
-  "helpers/addProjectNames": typeof helpers_addProjectNames;
   http: typeof http;
   "organizations/functions": typeof organizations_functions;
   "organizations/queries": typeof organizations_queries;
@@ -79,6 +78,7 @@ declare const fullApi: ApiFromModules<{
   "users/getCurrentUser": typeof users_getCurrentUser;
   "users/permissions": typeof users_permissions;
   "users/queries": typeof users_queries;
+  "utils/addProjectNames": typeof utils_addProjectNames;
   "utils/categoryMapping": typeof utils_categoryMapping;
 }>;
 declare const fullApiWithMounts: typeof fullApi;

@@ -112,6 +112,9 @@ importers:
       react:
         specifier: 19.1.0
         version: 19.1.0
+      react-csv:
+        specifier: ^2.2.2
+        version: 2.2.2
       react-day-picker:
         specifier: ^9.11.1
         version: 9.11.1(react@19.1.0)
@@ -149,6 +152,9 @@ importers:
       "@types/react":
         specifier: ^19
         version: 19.2.2
+      "@types/react-csv":
+        specifier: ^1.1.10
+        version: 1.1.10
       "@types/react-dom":
         specifier: ^19
         version: 19.2.2(@types/react@19.2.2)
@@ -1914,6 +1920,12 @@ packages:
         integrity: sha512-T3VuKMC2H0lgsjI9buTB3uuKj3EMD2eap1MOuEQuBQ44EnDx/IkGhU6EwiTf9zG3za4SKlmwKAImdDKdNnCsXg==,
       }
 
+  "@types/react-csv@1.1.10":
+    resolution:
+      {
+        integrity: sha512-PESAyASL7Nfi/IyBR3ufd8qZkyoS+7jOylKmJxRZUZLFASLo4NZaRsJ8rNP8pCcbIziADyWBbLPD1nPddhsL4g==,
+      }
+
   "@types/react-dom@19.2.2":
     resolution:
       {
@@ -2745,6 +2757,12 @@ packages:
         integrity: sha512-YWWTjgABSKcvs/nWBi9PycY/JiPJqOD4JA6o9Sej2AtvSGarXxKC3OQSk4pAarbdQlKAh5D4FCQkJNkW+GAn3w==,
       }
     engines: { node: ">=0.6" }
+
+  react-csv@2.2.2:
+    resolution:
+      {
+        integrity: sha512-RG5hOcZKZFigIGE8LxIEV/OgS1vigFQT4EkaHeKgyuCbUAu9Nbd/1RYq++bJcJJ9VOqO/n9TZRADsXNDR4VEpw==,
+      }
 
   react-day-picker@9.11.1:
     resolution:
@@ -4295,6 +4313,10 @@ snapshots:
     dependencies:
       "@types/node": 20.19.22
 
+  "@types/react-csv@1.1.10":
+    dependencies:
+      "@types/react": 19.2.2
+
   "@types/react-dom@19.2.2(@types/react@19.2.2)":
     dependencies:
       "@types/react": 19.2.2
@@ -4724,6 +4746,8 @@ snapshots:
   qs@6.14.0:
     dependencies:
       side-channel: 1.1.0
+
+  react-csv@2.2.2: {}
 
   react-day-picker@9.11.1(react@19.1.0):
     dependencies:

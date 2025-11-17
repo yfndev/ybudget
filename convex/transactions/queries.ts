@@ -3,9 +3,9 @@ import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
 import type { Doc } from "../_generated/dataModel";
 import { query } from "../_generated/server";
-import { addProjectAndCategoryNames } from "../helpers/addProjectNames";
 import { filterByProjectAccess } from "../teams/permissions";
 import { getCurrentUser } from "../users/getCurrentUser";
+import { addProjectAndCategoryNames } from "../utils/addProjectNames";
 
 type EnrichedTransaction = Doc<"transactions"> & {
   projectName?: string;
