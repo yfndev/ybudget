@@ -56,7 +56,7 @@ function ProjectNavComponent({ id }: { id?: string }) {
 
   const items = parentProjects.map((project: Doc<"projects">) => {
     const childProjects = projects.filter(
-      (p: Doc<"projects">) => p.parentId === project._id,
+      (p: Doc<"projects">) => p.parentId === project._id
     );
 
     return {
@@ -91,7 +91,7 @@ function ProjectNavComponent({ id }: { id?: string }) {
       <div className="flex items-center justify-between px-2">
         <SidebarGroupLabel>Projekte</SidebarGroupLabel>
         {canEdit && projectCountText && (
-          <span className="text-xs text-muted-foreground">
+          <span className="text-xs pr-5 text-muted-foreground">
             {projectCountText}
           </span>
         )}
@@ -146,7 +146,7 @@ function ProjectNavComponent({ id }: { id?: string }) {
                                 </Link>
                               </SidebarMenuSubButton>
                             </SidebarMenuSubItem>
-                          ),
+                          )
                         )}
                       </SidebarMenuSub>
                     </CollapsibleContent>
@@ -154,7 +154,7 @@ function ProjectNavComponent({ id }: { id?: string }) {
                 ) : null}
               </SidebarMenuItem>
             </Collapsible>
-          ),
+          )
         )}
       </SidebarMenu>
       {canEdit && (
