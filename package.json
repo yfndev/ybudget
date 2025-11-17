@@ -46,6 +46,7 @@
     "pnpm": "^10.18.3",
     "prettier": "^3.6.2",
     "react": "19.1.0",
+    "react-csv": "^2.2.2",
     "react-day-picker": "^9.11.1",
     "react-dom": "19.1.0",
     "react-hot-toast": "^2.6.0",
