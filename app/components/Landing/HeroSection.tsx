@@ -21,7 +21,7 @@ export function HeroSection() {
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="absolute -left-16 top-42 hidden lg:block"
+              className="absolute -left-16  top-46 hidden lg:block"
             >
               <Sparkles className="h-6 w-6 text-primary/60" />
             </motion.div>
