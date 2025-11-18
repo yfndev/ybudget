@@ -40,27 +40,27 @@ For this analysis, I used the **STRIDE** framework (Spoofing, Tampering, Repudia
 
 #### TB01: User <-> Frontend (NextJS)
 
-| **Category**                 | **User**                        |                | **Frontend (NextJS)**                                                                  |                                                                                             |
-| ---------------------------- | ------------------------------- | -------------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-|                              | **Strengths**                   | **Weaknesses** | **Strengths**                                                                          | **Weaknesses**                                                                              |
-| **Spoofing**                 | OAuth via Google (no passwords) |                | HTTPS/TLS enforced, Auth check with redirect to login or dashboard in protected layout |                                                                                             |
-| **Tampering**                |                                 |                |                                                                                        | No CSP headers configured (to tell browser which ressources to load to prevent XSS attacks) |
-| **Repudiation**              |                                 |                | PostHog tracking (login, role updates, transactions, etc.)                             |                                                                                             |
-| **Information Disclosure**   |                                 |                | HTTPOnly cookies for sessions                                                          |                                                                                             |
-| **Denial of Service**        |                                 |                |                                                                                        | No bot protection on login                                                                  |
-| **Escalation of Privileges** |                                 |                | Role-based UI rendering using `useIsAdmin()`, AccessDenied UI                          |                                                                                             |
+| **Category**                 | **User**                        |                | **Frontend (NextJS)**                                                                    |                            |
+| ---------------------------- | ------------------------------- | -------------- | ---------------------------------------------------------------------------------------- | -------------------------- |
+|                              | **Strengths**                   | **Weaknesses** | **Strengths**                                                                            | **Weaknesses**             |
+| **Spoofing**                 | OAuth using Google (no passwords) |                | HTTPS/TLS enforced, Auth check with redirect to login or dashboard in protected layout   |                            |
+| **Tampering**                |                                 |                | CSP headers configured (to tell browser which ressources to load to prevent XSS attacks) |                            |
+| **Repudiation**              |                                 |                | PostHog tracking (login, role updates, transactions, etc.)                               |                            |
+| **Information Disclosure**   |                                 |                | HTTPOnly cookies for sessions                                                            |                            |
+| **Denial of Service**        |                                 |                |                                                                                          | No bot protection on login |
+| **Escalation of Privileges** |                                 |                | Role-based UI rendering using `useIsAdmin()`, AccessDenied UI                            |                            |
 
 #### TB02: Frontend (NextJS) <-> Backend (Convex)
 
 | **Category**                 | **Frontend (NextJS)**      |                | **Backend (Convex)**                          |                                                                   |
 | ---------------------------- | -------------------------- | -------------- | --------------------------------------------- | ----------------------------------------------------------------- |
 |                              | **Strengths**              | **Weaknesses** | **Strengths**                                 | **Weaknesses**                                                    |
-| **Spoofing**                 | JWT tokens via Convex Auth |                | JWT validation automatic                      |                                                                   |
+| **Spoofing**                 | JWT tokens using Convex Auth |                | JWT validation automatic                      |                                                                   |
 | **Tampering**                |                            |                | Convex validators on all inputs               |                                                                   |
 | **Repudiation**              |                            | No request IDs |                                               | No comprehensive audit logging, only general logging of functions |
-| **Information Disclosure**   | HTTPS/TLS enforced         |                | Encrypted responses                           | 
+| **Information Disclosure**   | HTTPS/TLS enforced         |                | Encrypted responses                           |
 | **Denial of Service**        |                            |                | Rate limiting of queries/ mutations built-in  |                                                                   |
-| **Escalation of Privileges** | Token-based auth           |                | Role based access control via `requireRole()` | Permissions re-checked on every request (no caching)              |
+| **Escalation of Privileges** | Token-based auth           |                | Role based access control using `requireRole()` | Permissions re-checked on every request (no caching)              |
 
 #### TB03: Backend (Convex) <-> Database
 
@@ -91,7 +91,7 @@ For this analysis, I used the **STRIDE** framework (Spoofing, Tampering, Repudia
 | **Category**                 | **Backend (Convex)**              |                                       | **Google OAuth**             |                |
 | ---------------------------- | --------------------------------- | ------------------------------------- | ---------------------------- | -------------- |
 |                              | **Strengths**                     | **Weaknesses**                        | **Strengths**                | **Weaknesses** |
-| **Spoofing**                 | OAuth 2.0 handled via Convex Auth | No visible state parameter validation | Google identity verification |                |
+| **Spoofing**                 | OAuth 2.0 handled with Convex Auth | No visible state parameter validation | Google identity verification |                |
 | **Tampering**                | Token validation automatic        |                                       | Signed tokens                |                |
 | **Repudiation**              |                                   | No failed attempt tracking            |                              |                |
 | **Information Disclosure**   | HTTPS/TLS                         |                                       | Minimal user data exposure   |                |
@@ -102,7 +102,7 @@ For this analysis, I used the **STRIDE** framework (Spoofing, Tampering, Repudia
 
 - **Frontend**: Next.js 15 (server and client components for security, XSS protection)
 - **Backend**: Convex (handles database encryption, queries/mutations and infrastructure)
-- **Authentication**: Google OAuth 2.0 user verification implemented via Convex Auth → no passwords stored
+- **Authentication**: Google OAuth 2.0 user verification implemented with Convex Auth → no passwords stored
   → Convex Auth also handles Session management, JWT tokens, HTTPOnly cookies
 - **Payment**: Stripe (handles payment compliance)
 - **Deployment**: Vercel (CDN security, DDoS protection, TLS enforcement) + Convex Cloud

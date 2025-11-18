@@ -88,7 +88,7 @@ We take security seriously at YBudget. Here's how we protect your financial data
 
 - We use OAuth 2.0 with Google instead of instead of traditional username/password authentication
 - Eliminates frequent password vulnerabilities (weak passwords or password reuse)
-- Implemented via `@convex-dev/auth` → Google Provider in `convex/auth.ts`
+- Implemented with [Convex Auth](https://labs.convex.dev/auth) → Google Provider in `convex/auth.ts`
 
 **2. OrganizationId Isolation**
 
