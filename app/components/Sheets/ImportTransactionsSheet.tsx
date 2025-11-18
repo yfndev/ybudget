@@ -41,7 +41,7 @@ export function ImportTransactionsSheet({
 
   const allTransactions = useQuery(
     api.transactions.queries.getAllTransactions,
-    {},
+    {}
   );
 
   const existingIds = useMemo(() => {
@@ -51,10 +51,15 @@ export function ImportTransactionsSheet({
       .filter(Boolean) as string[];
   }, [allTransactions]);
   const addTransaction = useMutation(
-    api.transactions.functions.createImportedTransaction,
+    api.transactions.functions.createImportedTransaction
   );
 
   const handleFile = (file: File) => {
+    if (!(file.type === "text/csv" || file.type === "application/csv")) {
+      toast.error("Ungültiger Dateityp. Bitte laden Sie eine CSV-Datei hoch.");
+      return;
+    }
+
     Papa.parse(file, {
       header: true,
       skipEmptyLines: true,
@@ -87,7 +92,7 @@ export function ImportTransactionsSheet({
 
     const skipped = csvData.length - newTransactions.length;
     const toastId = toast.loading(
-      `Importiere 0/${newTransactions.length} Transaktionen...`,
+      `Importiere 0/${newTransactions.length} Transaktionen...`
     );
 
     try {
@@ -112,7 +117,7 @@ export function ImportTransactionsSheet({
           `Importiere ${processed}/${newTransactions.length} Transaktionen...`,
           {
             id: toastId,
-          },
+          }
         );
       }
 
@@ -126,7 +131,7 @@ export function ImportTransactionsSheet({
 
       toast.success(
         `${inserted} neue Transaktionen importiert, ${skipped} Duplikate übersprungen`,
-        { id: toastId },
+        { id: toastId }
       );
       setCsvData([]);
       setImportSource("");
