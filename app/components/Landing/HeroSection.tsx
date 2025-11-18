@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, Coins, Sparkles } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "../ui/button";
@@ -16,25 +16,7 @@ export function HeroSection() {
           transition={{ duration: 0.5 }}
           className="text-center"
         >
-          <div className="relative inline-block">
-            <motion.div
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="absolute -left-16  top-46 hidden lg:block"
-            >
-              <Sparkles className="h-6 w-6 text-primary/60" />
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              className="absolute -right-12 -top-8  hidden lg:block"
-            >
-              <Coins className="h-7 w-7 text-amber-500/60" />
-            </motion.div>
-
+          <div>
             <h1 className="text-5xl font-bold tracking-tight text-slate-900 sm:text-6xl lg:text-7xl">
               Budgetverwaltung für
               <br />
@@ -60,12 +42,6 @@ export function HeroSection() {
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Link>
             </Button>
-            <Button
-              asChild
-              size="lg"
-              variant="outline"
-              className="h-12 px-8 text-base font-semibold"
-            ></Button>
           </div>
         </motion.div>
 
