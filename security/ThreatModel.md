@@ -58,7 +58,7 @@ For this analysis, I used the **STRIDE** framework (Spoofing, Tampering, Repudia
 | **Spoofing**                 | JWT tokens via Convex Auth |                | JWT validation automatic                      |                                                                   |
 | **Tampering**                |                            |                | Convex validators on all inputs               |                                                                   |
 | **Repudiation**              |                            | No request IDs |                                               | No comprehensive audit logging, only general logging of functions |
-| **Information Disclosure**   | HTTPS/TLS enforced         |                | Encrypted responses                           | Error details in logs (`console.error`)                           |
+| **Information Disclosure**   | HTTPS/TLS enforced         |                | Encrypted responses                           | 
 | **Denial of Service**        |                            |                | Rate limiting of queries/ mutations built-in  |                                                                   |
 | **Escalation of Privileges** | Token-based auth           |                | Role based access control via `requireRole()` | Permissions re-checked on every request (no caching)              |
 
