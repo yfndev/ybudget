@@ -43,7 +43,7 @@ npx convex dev
 # Configure environment variables
 cp env.example .env.local
 # Edit .env.local with your Convex URLs
-# Set auth/stripe variables in Convex Dashboard → Settings → Environment Variables
+# Set google auth & stripe variables in Convex Dashboard → Settings → Environment Variables
 
 # Run locally
 pnpm dev
@@ -64,17 +64,19 @@ npx convex deploy   # Deploy Convex functions
 
 ## Contributing
 
-We're building the next generation of software for NGOs and we'd love your help on our mission to make budgeting as easy as possible 🙌
+We're building a tool to support NGOs on their mission to make budgeting as easy as possible. Would be awesome to have you on board 🙌
 
 **How to contribute:**
 
 1. Fork the repo
-2. Create a feature branch (`git checkout -b feat/amazing-feature`)
-3. Commit your changes
-4. Open a Pull Request
+2. Clone your fork locally (`git clone https://github.com/YOUR-USERNAME/ybudget.git`)
+3. Create a feature branch (`git checkout -b feat/amazing-feature`)
+4. Make and commit your changes
+5. Push to your fork (`git push origin feat/amazing-feature`)
+6. Open a Pull Request
 
 **Ideas, feedback, or questions?**  
-📧 [team@ybudget.de](mailto:team@ybudget.de) | 🐛 [Open an issue](https://github.com/yourusername/ybudget/issues)
+📧 [team@ybudget.de](mailto:team@ybudget.de) | 🐛 [Open an issue](https://github.com/joelheile/ybudget/issues)
 
 ## Security
 
@@ -86,7 +88,7 @@ We take security seriously at YBudget. Here's how we protect your financial data
 
 **1. OAuth instead of Password**
 
-- We use OAuth 2.0 with Google instead of instead of traditional username/password authentication
+- We use OAuth 2.0 with Google instead of traditional username/password authentication
 - Eliminates frequent password vulnerabilities (weak passwords or password reuse)
 - Implemented with [Convex Auth](https://labs.convex.dev/auth) → Google Provider in `convex/auth.ts`
 
@@ -138,7 +140,7 @@ We take security seriously at YBudget. Here's how we protect your financial data
 - We separate sensitive operations (like payment fulfillment, user management) into internal functions
 - These internal functions can only be called from our backend, never from client code
 
-#### Third-Party Integration Security
+#### Third Party Integration Security
 
 **10. Stripe Webhook Verification**
 
@@ -160,7 +162,8 @@ We take security seriously at YBudget. Here's how we protect your financial data
 
 ---
 
-**Security Disclosure:** Found a security issue? Please email security@ybudget.de with details. We take security seriously and will respond within 48 hours.
+**Found a security issue?**
+Please email team@ybudget.de with details. We take security seriously and will respond asap.
 
 ---
 
