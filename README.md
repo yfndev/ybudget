@@ -1,18 +1,20 @@
 # YBudget 💰
 
-> Open-source budget management built for NGOs, by NGOs.
+> Open-source budget management for german associations.
 
-YBudget helps german non profit associations manage their budgets when Excel isn't enough anymore. Built as a capstone project at [CODE University](https://code.berlin/) for the [Young Founders Network e.V.](https://youngfounders.network) by [Joël Heil Escobar](https://www.linkedin.com/in/joel-heil-escobar)
+YBudget helps german (non profit) associations manage their budgets when managing them in Excel gets too complicated. It was built by [Joël Heil Escobar](https://www.linkedin.com/in/joel-heil-escobar) as a capstone project at [CODE University](https://code.berlin/) as his co-founded organization, the [Young Founders Network e.V.](https://youngfounders.network) was in desperate need for such a solution.
 
-**The problem?** Most budget tools are too expensive, too complex, or don't provide the transparency non-profits need.
+**The problem?**
+Most budget tools are too expensive or too complex for associations to use.
 
-**Our solution?** Simple, affordable, and open-source.
+**Our solution?**
+Simple, affordable, and open-source.
 
 ## Features
 
-- 📊 **Budget Planning** - Organize projects by donors, track expenses in real-time, get warnings when approaching limits
-- 💳 **Transaction Import** - Import CSV from all German banks (Sparkasse, Volksbank, & Moss) with smart matching
-- 🎯 **Project Organization** - Assign expenses to projects, see remaining budgets at a glance
+- 📊 **Budget Planning:** Organize projects by donors and already mark expected income and expenses
+- 💳 **Transaction Import:** Import CSV from Sparkasse, Volksbank, & Moss and use smart matching to match expected expenses with the actual bank ones
+- 🎯 **Project Organization:** Assign expenses to projects, see remaining budgets at a glance
 
 ## Tech Stack
 
@@ -82,45 +84,43 @@ We're building a tool to support NGOs on their mission to make budgeting as easy
 
 We take security seriously at YBudget. Here's how we protect your financial data and keep operations safe for NGOs.
 
-**📋 Threat Model:** For a comprehensive threat analysis including risk assessment and security controls, see [Threatmodel](security/Threatmodel.md)
-
 #### Authentication & Authorization
 
 **1. OAuth instead of Password**
 
 - We use OAuth 2.0 with Google instead of traditional username/password authentication
-- Eliminates frequent password vulnerabilities (weak passwords or password reuse)
+- Eliminates frequent password vulnerabilities (weak passwords or password reuse by user)
 - Implemented with [Convex Auth](https://labs.convex.dev/auth) → Google Provider in `convex/auth.ts`
 
-**2. OrganizationId Isolation**
+**2. Organizational Isolation**
 
-- Every database query is filtered by `organizationId` to make sure that data is seperated between NGOs
+- Every database query is filtered by `organizationId` to make sure that data is seperated between organizations
 - Organizations can only access their own transactions, projects, donors, and financial data
-- All queries use indexed filters like `.withIndex("by_organization", (q) => q.eq("organizationId", user.organizationId))`
+- All queries use indexed filters similar to `.withIndex("by_organization", (q) => q.eq("organizationId", user.organizationId))`
 
 **3. Role-Based Access Control**
 
 - Implemented permission levels, after talking to first potential customers
 - `viewer` (read-only) → `editor` (can edit) → `finance` (can edit and match transactions) → `admin` (full control over users, projects, etc.)
 - Functions check minimum required roles before executing sensitive operations
-- `requireRole(ctx, "admin")` validates permissions in `convex/users/permissions.ts`
+- `requireRole(ctx, "admin")` validates permissions through `convex/users/permissions.ts`
 
 **4. Team-Based Permissions**
 
-- Project-level access control to limit visibility on projects
-- Only Admins and finance roles have organization-wide access, everyone else is restricted to team projects
+- Project level access control to limit visibility on projects
+- Only Admins and finance roles have organization wide access, everyone else is restricted to team projects
 - Functions can be found in `convex/teams/permissions.ts`
 
 #### Data Protection
 
 **5. Environment Variable Security**
 
-- All credentials (OAuth secrets, Stripe keys, JWT keys, etc.) are stored server-side in Convex Dashboard
-- Client never receives API keys or secrets, so that only public keys (e.g. tracking) are exposed to browsers
+- All credentials (OAuth secrets, Stripe keys, JWT keys, etc.) are stored server side in Convex Dashboard
+- Client never receives API keys or secrets, so that only public keys are exposed to browsers
 
 **6. HTTPS Enforcement**
 
-- All production traffic is encrypted using TLS 1.3, enforced by Convex Hosting and Next.js middleware
+- All production traffic is encrypted using TLS, enforced by Convex Hosting and Next.js
 - This protects against man-in-the-middle attacks and stops people from eavesdropping on financial data
 
 **7. Preventing NoSQL injections**
@@ -138,13 +138,13 @@ We take security seriously at YBudget. Here's how we protect your financial data
 **9. Internal vs Public Functions**
 
 - We separate sensitive operations (like payment fulfillment, user management) into internal functions
-- These internal functions can only be called from our backend, never from client code
+- These internal functions can only be called from our backend (not from client code)
 
 #### Third Party Integration Security
 
 **10. Stripe Webhook Verification**
 
-- Every Stripe webhook is verified before we process it using our `STRIPE_WEBHOOKS_SECRET`
+- Every Stripe webhook is verified before we process it using `STRIPE_WEBHOOKS_SECRET`
 - This way, attackers can't fake payment confirmations
 
 **11. Secure Payment Processing**
@@ -159,6 +159,9 @@ We take security seriously at YBudget. Here's how we protect your financial data
 - We use Convex Auth to manage sessions with JWT tokens and automatic token rotation
 - Sessions expire automatically and users need to re-authenticate after some time
 - Tokens are stored using httpOnly cookies, so JavaScript can't access them
+
+**📋 Threat Model:**
+For a comprehensive threat analysis including STRIDE analysis and our data flow chart have a look at our [Threat model](security/Threatmodel.md)
 
 ---
 
