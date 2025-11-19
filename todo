@@ -1,5 +1,7 @@
-- [ ] check how to show expected transactions in table (also if they are already matched)
 - [ ] refactor every component into UX and UI component
+- [ ] check all functions & mutations for unnecessary functions or doubling ones
+
+- [ ] check how to show expected transactions in table (also if they are already matched)
 
 archive (latest on top):
 

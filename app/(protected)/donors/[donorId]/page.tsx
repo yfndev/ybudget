@@ -1,22 +1,18 @@
 "use client";
 
-import BudgetCard from "@/components/Dashboard/BudgetCard";
-import DonorCSVExport from "@/components/Donors/DonorCSVExport";
-import { PageHeader } from "@/components/Layout/PageHeader";
-import { EditableDataTable } from "@/components/Tables/EditableDataTable";
-import { editableColumns } from "@/components/Tables/editableColumns";
-import { SidebarInset } from "@/components/ui/sidebar";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { useQuery } from "convex-helpers/react/cache";
 import { useMutation, usePaginatedQuery } from "convex/react";
 import { useParams } from "next/navigation";
+import DonorIdUI from "./DonorDetailUI";
+import DonorIdUISkeleton from "./DonorDetailSkeleton";
 
 export default function DonorDetail() {
   const params = useParams();
   const donorId = params.donorId as Id<"donors">;
 
-  const donor = useQuery(api.donors.queries.getEligibleDonorsForCategory, {
+  const donor = useQuery(api.donors.queries.getDonorById, {
     donorId,
   });
 
@@ -27,11 +23,11 @@ export default function DonorDetail() {
   } = usePaginatedQuery(
     api.transactions.queries.getPaginatedTransactions,
     { donorId },
-    { initialNumItems: 50 },
+    { initialNumItems: 50 }
   );
 
   const updateTransaction = useMutation(
-    api.transactions.functions.updateTransaction,
+    api.transactions.functions.updateTransaction
   );
 
   const handleUpdate = async (rowId: string, field: string, value: any) => {
@@ -42,50 +38,15 @@ export default function DonorDetail() {
   };
 
   if (!donor || !transactions) {
-    return (
-      <SidebarInset>
-        <div className="p-6">
-          <p>Lade Förderer...</p>
-        </div>
-      </SidebarInset>
-    );
+    return <DonorIdUISkeleton />;
   }
 
   return (
-    <div>
-      <PageHeader
-        title={donor.donor.name}
-        subtitle={donor.donor.type}
-        showBackButton={true}
-        backUrl="/donors"
-      />
-
-      <div
-        className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6"
-        id="tour-donor-budget"
-      >
-        <BudgetCard title="Zugesagt" amount={donor.committedIncome} />
-        <BudgetCard title="Bezahlt" amount={donor.paidIncome} />
-        <BudgetCard title="Offen" amount={donor.openIncome} />
-        <BudgetCard title="Ausgaben" amount={-donor.totalExpenses} />
-      </div>
-
-      <div className="mt-6" id="tour-donor-transactions">
-        <div className="flex flex-row justify-between">
-          <h2 className="text-xl font-semibold mb-4">Transaktionen</h2>
-
-          <DonorCSVExport
-            donorId={donorId as Id<"donors">}
-            donorName={donor.donor.name}
-          />
-        </div>
-        <EditableDataTable
-          columns={editableColumns}
-          data={transactions}
-          onUpdate={handleUpdate}
-          paginationStatus={status}
-        />
-      </div>
-    </div>
+    <DonorIdUI
+      donor={donor}
+      transactions={transactions}
+      handleUpdate={handleUpdate}
+      status={status}
+    />
   );
 }

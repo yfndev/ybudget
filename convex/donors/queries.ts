@@ -14,7 +14,7 @@ export const getAllDonors = query({
   },
 });
 
-export const getEligibleDonorsForCategory = query({
+export const getDonorById = query({
   args: {
     donorId: v.id("donors"),
   },
@@ -56,7 +56,7 @@ export const getEligibleDonorsForCategory = query({
     });
 
     return {
-      donor: { _id: donor._id, name: donor.name, type: donor.type },
+      ...donor,
       committedIncome,
       paidIncome,
       openIncome: committedIncome - paidIncome,
