@@ -39,7 +39,7 @@ export default function UsersPage() {
     } catch (error) {
       posthog.captureException(error as Error);
       toast.error(
-        "Fehler beim Aktualisieren der Rolle. Mindestens ein Admin ist erforderlich."
+        "Fehler beim Aktualisieren der Rolle. Mindestens ein Admin ist erforderlich.",
       );
     }
   };

@@ -21,7 +21,8 @@ export const getDonorById = query({
 
     const donor = await ctx.db.get(args.donorId);
     if (!donor) throw new Error("Donor not found");
-    if (donor.organizationId !== user.organizationId) throw new Error("Unauthorized");
+    if (donor.organizationId !== user.organizationId)
+      throw new Error("Unauthorized");
 
     const transactions = await ctx.db
       .query("transactions")
@@ -36,8 +37,10 @@ export const getDonorById = query({
 
     for (const transaction of transactions) {
       if (transaction.amount > 0) {
-        if (transaction.status === "expected") committedIncome += transaction.amount;
-        if (transaction.status === "processed") paidIncome += transaction.amount;
+        if (transaction.status === "expected")
+          committedIncome += transaction.amount;
+        if (transaction.status === "processed")
+          paidIncome += transaction.amount;
       } else {
         totalExpenses += Math.abs(transaction.amount);
       }

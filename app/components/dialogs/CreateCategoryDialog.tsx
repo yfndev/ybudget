@@ -67,7 +67,6 @@ export function CreateCategoryDialog({
       setParentId(undefined);
       toast.success("Kategorie erstellt!");
     } catch (error) {
-
       toast.error("Fehler beim Erstellen der Kategorie");
     }
   };

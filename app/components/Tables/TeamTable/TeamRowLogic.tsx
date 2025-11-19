@@ -20,12 +20,12 @@ export default function TeamRow({ team }: { team: Doc<"teams"> }) {
   });
   const assignProject = useMutation(api.teams.functions.assignProjectToTeam);
   const removeProjectFromTeam = useMutation(
-    api.teams.functions.removeProjectFromTeam
+    api.teams.functions.removeProjectFromTeam,
   );
   const renameTeam = useMutation(api.teams.functions.renameTeam);
 
   const projectAssignmentMap = new Map(
-    teamProjects?.map((p: any) => [p._id, p.assignmentId]) || []
+    teamProjects?.map((p: any) => [p._id, p.assignmentId]) || [],
   );
 
   const handleToggleProject = async (projectId: Id<"projects">) => {
@@ -64,7 +64,7 @@ export default function TeamRow({ team }: { team: Doc<"teams"> }) {
       setIsEditing(false);
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Fehler beim Umbenennen"
+        error instanceof Error ? error.message : "Fehler beim Umbenennen",
       );
       setEditedName(team.name);
       setIsEditing(false);

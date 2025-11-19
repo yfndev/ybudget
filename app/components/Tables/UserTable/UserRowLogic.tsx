@@ -22,16 +22,16 @@ export default function UserRow({ user, onRoleChange, isAdmin }: UserRowProps) {
   const allTeams = useQuery(api.teams.queries.getAllTeams);
   const userTeamMemberships = useQuery(
     api.teams.queries.getUserTeamMemberships,
-    { userId: user._id }
+    { userId: user._id },
   );
   const addTeamMember = useMutation(api.teams.functions.addTeamMember);
   const removeTeamMember = useMutation(api.teams.functions.removeTeamMember);
 
   const assignedTeamIds = new Set(
-    userTeamMemberships?.map((m) => m.teamId) || []
+    userTeamMemberships?.map((m) => m.teamId) || [],
   );
   const teamMembershipMap = new Map(
-    userTeamMemberships?.map((m) => [m.teamId, m._id]) || []
+    userTeamMemberships?.map((m) => [m.teamId, m._id]) || [],
   );
 
   const handleToggleTeam = async (teamId: Id<"teams">) => {

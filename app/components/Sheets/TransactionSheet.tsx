@@ -101,7 +101,9 @@ export function TransactionSheet({
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "";
       if (errorMessage.includes("cannot be used for category")) {
-        toast.error("Der Förderer kann nicht für diese Kategorie verwendet werden. Wähle bitte einen anderen Förderer aus");
+        toast.error(
+          "Der Förderer kann nicht für diese Kategorie verwendet werden. Wähle bitte einen anderen Förderer aus",
+        );
       } else {
         toast.error("Oh nein! Es gab einen Fehler beim Speichern :(");
       }

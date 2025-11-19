@@ -6,8 +6,6 @@ import { getCurrentUser } from "../users/getCurrentUser";
 import { requireRole } from "../users/permissions";
 import { validateDonorCategory } from "./validateDonorCategory";
 
-
-
 export const createExpectedTransaction = mutation({
   args: {
     projectId: v.id("projects"),
@@ -27,7 +25,12 @@ export const createExpectedTransaction = mutation({
       throw new Error("No access to this project");
     }
 
-    await validateDonorCategory(ctx, args.donorId, args.categoryId, user.organizationId);
+    await validateDonorCategory(
+      ctx,
+      args.donorId,
+      args.categoryId,
+      user.organizationId,
+    );
 
     return ctx.db.insert("transactions", {
       ...args,
@@ -58,7 +61,9 @@ export const createImportedTransaction = mutation({
     const existing = await ctx.db
       .query("transactions")
       .withIndex("by_importedTransactionId", (q) =>
-        q.eq("organizationId", user.organizationId).eq("importedTransactionId", args.importedTransactionId),
+        q
+          .eq("organizationId", user.organizationId)
+          .eq("importedTransactionId", args.importedTransactionId),
       )
       .first();
 
@@ -96,13 +101,20 @@ export const updateTransaction = mutation({
 
     const transaction = await ctx.db.get(transactionId);
     if (!transaction) throw new Error("Transaction not found");
-    if (transaction.organizationId !== user.organizationId) throw new Error("Access denied");
+    if (transaction.organizationId !== user.organizationId)
+      throw new Error("Access denied");
 
-    if (transaction.projectId && !(await canAccessProject(ctx, user._id, transaction.projectId, "editor"))) {
+    if (
+      transaction.projectId &&
+      !(await canAccessProject(ctx, user._id, transaction.projectId, "editor"))
+    ) {
       throw new Error("No access to this project");
     }
 
-    if (updates.projectId && !(await canAccessProject(ctx, user._id, updates.projectId, "editor"))) {
+    if (
+      updates.projectId &&
+      !(await canAccessProject(ctx, user._id, updates.projectId, "editor"))
+    ) {
       throw new Error("No access to the new project");
     }
 

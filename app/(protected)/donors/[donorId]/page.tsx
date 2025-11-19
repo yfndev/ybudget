@@ -23,11 +23,11 @@ export default function DonorDetail() {
   } = usePaginatedQuery(
     api.transactions.queries.getPaginatedTransactions,
     { donorId },
-    { initialNumItems: 50 }
+    { initialNumItems: 50 },
   );
 
   const updateTransaction = useMutation(
-    api.transactions.functions.updateTransaction
+    api.transactions.functions.updateTransaction,
   );
 
   const handleUpdate = async (rowId: string, field: string, value: any) => {
