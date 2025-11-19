@@ -1,7 +1,7 @@
-import { SelectCategory } from "@/components/Sheets/SelectCategory";
-import { SelectDonation } from "@/components/Sheets/SelectDonation";
-import { SelectDonor } from "@/components/Sheets/SelectDonor";
-import { SelectProject } from "@/components/Sheets/SelectProject";
+import { SelectCategory } from "@/components/Selectors/SelectCategory";
+import { SelectDonation } from "@/components/Selectors/SelectDonation";
+import { SelectDonor } from "@/components/Selectors/SelectDonor";
+import { SelectProject } from "@/components/Selectors/SelectProject";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import type { Id } from "@/convex/_generated/dataModel";

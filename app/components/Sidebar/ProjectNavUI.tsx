@@ -2,8 +2,8 @@ import type { Id } from "@/convex/_generated/dataModel";
 import { ChevronRight, Plus } from "lucide-react";
 import Link from "next/link";
 
+import { CreateProjectDialog } from "@/components/Dialogs/CreateProjectDialog";
 import { Paywall } from "@/components/Payment/Paywall";
-import { CreateProjectDialog } from "@/components/Sheets/CreateProjectDialog";
 import {
   Collapsible,
   CollapsibleContent,

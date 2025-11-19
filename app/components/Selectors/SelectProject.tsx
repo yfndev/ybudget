@@ -1,6 +1,6 @@
 "use client";
 
-import { CreateProjectDialog } from "@/components/Sheets/CreateProjectDialog";
+import { CreateProjectDialog } from "@/components/Dialogs/CreateProjectDialog";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -76,12 +76,12 @@ export function SelectProject({
     } else if (e.key === "ArrowDown" && open) {
       e.preventDefault();
       setHighlightedIndex((prev) =>
-        prev < (projects?.length ?? 0) ? prev + 1 : 0,
+        prev < (projects?.length ?? 0) ? prev + 1 : 0
       );
     } else if (e.key === "ArrowUp" && open) {
       e.preventDefault();
       setHighlightedIndex((prev) =>
-        prev > 0 ? prev - 1 : (projects?.length ?? 0) - 1,
+        prev > 0 ? prev - 1 : (projects?.length ?? 0) - 1
       );
     } else if (e.key === "Escape") {
       e.preventDefault();
@@ -111,7 +111,7 @@ export function SelectProject({
             <span
               className={cn(
                 "font-medium",
-                value ? "text-foreground" : "text-muted-foreground",
+                value ? "text-foreground" : "text-muted-foreground"
               )}
             >
               {displayText}
@@ -140,7 +140,7 @@ export function SelectProject({
                     <Check
                       className={cn(
                         "ml-auto",
-                        value === project._id ? "opacity-100" : "opacity-0",
+                        value === project._id ? "opacity-100" : "opacity-0"
                       )}
                     />
                   </CommandItem>

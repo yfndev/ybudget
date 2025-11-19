@@ -1,7 +1,7 @@
-import { AmountInput } from "@/components/Sheets/AmountInput";
-import { SelectCategory } from "@/components/Sheets/SelectCategory";
-import { SelectDonor } from "@/components/Sheets/SelectDonor";
-import { SelectProject } from "@/components/Sheets/SelectProject";
+import { AmountInput } from "@/components/Selectors/AmountInput";
+import { SelectCategory } from "@/components/Selectors/SelectCategory";
+import { SelectDonor } from "@/components/Selectors/SelectDonor";
+import { SelectProject } from "@/components/Selectors/SelectProject";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
@@ -57,7 +57,7 @@ export function TransactionSheet({
   const donorButtonRef = useRef<HTMLButtonElement>(null);
 
   const addTransaction = useMutation(
-    api.transactions.functions.createExpectedTransaction,
+    api.transactions.functions.createExpectedTransaction
   );
 
   const dateColor = date ? "text-foreground" : "text-muted-foreground";
@@ -68,7 +68,7 @@ export function TransactionSheet({
 
   const handleKeyPress = (
     e: React.KeyboardEvent,
-    nextRef: React.RefObject<HTMLElement | null>,
+    nextRef: React.RefObject<HTMLElement | null>
   ) => {
     if (e.key === "Enter" || e.key === "Tab") {
       e.preventDefault();
@@ -95,14 +95,14 @@ export function TransactionSheet({
         donorId: donor ? (donor as Id<"donors">) : undefined,
       });
       toast.success(
-        type === "expense" ? "Ausgabe gespeichert!" : "Einnahme gespeichert!",
+        type === "expense" ? "Ausgabe gespeichert!" : "Einnahme gespeichert!"
       );
       onOpenChange(false);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "";
       if (errorMessage.includes("cannot be used for category")) {
         toast.error(
-          "Der Förderer kann nicht für diese Kategorie verwendet werden. Wähle bitte einen anderen Förderer aus",
+          "Der Förderer kann nicht für diese Kategorie verwendet werden. Wähle bitte einen anderen Förderer aus"
         );
       } else {
         toast.error("Oh nein! Es gab einen Fehler beim Speichern :(");

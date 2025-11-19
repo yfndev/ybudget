@@ -1,6 +1,6 @@
 "use client";
 
-import { SelectProject } from "@/components/Sheets/SelectProject";
+import { SelectProject } from "@/components/Selectors/SelectProject";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,

@@ -1,6 +1,6 @@
 "use client";
 
-import { AddDonorDialog } from "@/components/Sheets/AddDonorDialog";
+import { AddDonorDialog } from "@/components/Dialogs/AddDonorDialog";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -32,7 +32,7 @@ interface SelectDonorProps {
 export const SelectDonor = forwardRef<HTMLButtonElement, SelectDonorProps>(
   function SelectDonor(
     { value, onValueChange, onTabPressed, categoryId },
-    buttonRef,
+    buttonRef
   ) {
     const [open, setOpen] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -77,12 +77,12 @@ export const SelectDonor = forwardRef<HTMLButtonElement, SelectDonorProps>(
       } else if (e.key === "ArrowDown" && open) {
         e.preventDefault();
         setHighlightedIndex((prev) =>
-          prev < (donors?.length ?? 0) ? prev + 1 : 0,
+          prev < (donors?.length ?? 0) ? prev + 1 : 0
         );
       } else if (e.key === "ArrowUp" && open) {
         e.preventDefault();
         setHighlightedIndex((prev) =>
-          prev > 0 ? prev - 1 : (donors?.length ?? 0) - 1,
+          prev > 0 ? prev - 1 : (donors?.length ?? 0) - 1
         );
       } else if (e.key === "Escape") {
         e.preventDefault();
@@ -112,7 +112,7 @@ export const SelectDonor = forwardRef<HTMLButtonElement, SelectDonorProps>(
               <span
                 className={cn(
                   "font-medium",
-                  value ? "text-foreground" : "text-muted-foreground",
+                  value ? "text-foreground" : "text-muted-foreground"
                 )}
               >
                 {displayText}
@@ -148,7 +148,7 @@ export const SelectDonor = forwardRef<HTMLButtonElement, SelectDonorProps>(
                           "ml-auto",
                           value === donor._id.toString()
                             ? "opacity-100"
-                            : "opacity-0",
+                            : "opacity-0"
                         )}
                       />
                     </CommandItem>
@@ -175,5 +175,5 @@ export const SelectDonor = forwardRef<HTMLButtonElement, SelectDonorProps>(
         />
       </>
     );
-  },
+  }
 );

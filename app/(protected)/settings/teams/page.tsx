@@ -1,9 +1,9 @@
 "use client";
 
+import { CreateProjectDialog } from "@/components/Dialogs/CreateProjectDialog";
 import { CreateTeamDialog } from "@/components/Dialogs/CreateTeamDialog";
 import { PageHeader } from "@/components/Layout/PageHeader";
 import { AccessDenied } from "@/components/Settings/AccessDenied";
-import { CreateProjectDialog } from "@/components/Sheets/CreateProjectDialog";
 import TeamRow from "@/components/Tables/TeamTable/TeamRowLogic";
 import { Button } from "@/components/ui/button";
 import {
