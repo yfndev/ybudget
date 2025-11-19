@@ -3,21 +3,12 @@ import { getCurrentUser } from "./getCurrentUser";
 
 export type UserRole = "admin" | "finance" | "editor" | "viewer";
 
-export async function requireRole(
-  ctx: QueryCtx | MutationCtx,
-  minRole: UserRole,
-): Promise<void> {
+const roleHierarchy = { viewer: 0, editor: 1, finance: 2, admin: 3 };
+
+export async function requireRole(ctx: QueryCtx | MutationCtx, minRole: UserRole) {
   const user = await getCurrentUser(ctx);
-  const userRole: UserRole = user.role ?? "viewer";
-
-  const roleLevel: Record<UserRole, number> = {
-    viewer: 0,
-    editor: 1,
-    finance: 2,
-    admin: 3,
-  };
-
-  if (roleLevel[userRole] < roleLevel[minRole]) {
+  const userRole = user.role ?? "viewer";
+  if (roleHierarchy[userRole] < roleHierarchy[minRole]) {
     throw new Error(`Insufficient permissions. Required role: ${minRole}`);
   }
 }
