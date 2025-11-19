@@ -1,7 +1,5 @@
 - [ ] implement budgeting for departments
 - [ ] jump into /import after uploading csv
-- [ ] call projects deparments and make clear that there are departments and subprojects -> departments are projects without parent id
-- [ ] change projects to have 10 free projects (with departments etc)
 - [ ] implement upload of expense reimbursements (Auslagenerstattungen)
 - [ ] categories that are not non-profit should be highlighted in other color
 
@@ -9,6 +7,8 @@
 
 archive (latest on top):
 
+- [x] change projects to have 10 free projects (with departments etc)
+- [x] call projects deparments and make clear that there are departments and subprojects -> departments are projects without parent id
 - [x] check all functions & mutations for unnecessary functions or doubling ones
 - [x] refactor every component into UX and UI component
 - [x] add analytics (posthog)
