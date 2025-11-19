@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { CATEGORY_GROUPS } from "../../app/components/data/mockCategories";
+import { CATEGORY_GROUPS } from "../../app/lib/mockData/mockCategories";
 import { Id } from "../_generated/dataModel";
 import { internalMutation } from "../_generated/server";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { CreateTeamDialog } from "@/components/dialogs/CreateTeamDialog";
+import { CreateTeamDialog } from "@/components/Dialogs/CreateTeamDialog";
 import { PageHeader } from "@/components/Layout/PageHeader";
 import { AccessDenied } from "@/components/Settings/AccessDenied";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -53,7 +53,7 @@ export default function UsersPage() {
     } catch (error) {
       posthog.captureException(error as Error);
       toast.error(
-        "Fehler beim Aktualisieren der Rolle. Mindestens ein Admin ist erforderlich.",
+        "Fehler beim Aktualisieren der Rolle. Mindestens ein Admin ist erforderlich."
       );
     }
   };
@@ -139,16 +139,16 @@ function UserRow({
   const allTeams = useQuery(api.teams.queries.getAllTeams);
   const userTeamMemberships = useQuery(
     api.teams.queries.getUserTeamMemberships,
-    { userId: user._id },
+    { userId: user._id }
   );
   const addTeamMember = useMutation(api.teams.functions.addTeamMember);
   const removeTeamMember = useMutation(api.teams.functions.removeTeamMember);
 
   const assignedTeamIds = new Set(
-    userTeamMemberships?.map((m: any) => m.teamId) || [],
+    userTeamMemberships?.map((m: any) => m.teamId) || []
   );
   const teamMembershipMap = new Map(
-    userTeamMemberships?.map((m: any) => [m.teamId, m._id]) || [],
+    userTeamMemberships?.map((m: any) => [m.teamId, m._id]) || []
   );
 
   const handleToggleTeam = async (teamId: Id<"teams">) => {
