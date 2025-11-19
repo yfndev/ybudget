@@ -10,8 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { api } from "@/convex/_generated/api";
-import { useAction } from "convex/react";
-import { Sparkles } from "lucide-react";
+import { useAction, useQuery } from "convex/react";
 import { useState } from "react";
 
 interface PaywallProps {
@@ -32,20 +31,27 @@ export function Paywall({ open, onOpenChange }: PaywallProps) {
     setIsLoading(false);
   }
 
+  const user = useQuery(api.users.queries.getCurrentUserProfile);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <div className="flex items-center gap-2 mb-2">
-            <Sparkles className="w-5 h-5 text-primary" />
-            <DialogTitle className="text-2xl">
-              Hey! Es freut uns, dass dir yBudget gefällt!
+            <DialogTitle className="text-2xl flex flex-col">
+              Hey {user?.firstName} :)
+              <span className="text-xl">
+                Es freut uns, dass dir YBudget gefällt!
+              </span>
             </DialogTitle>
           </div>
           <DialogDescription className="text-base pt-2">
-            Du hast bereits 3 Projekte erstellt. Um unbegrenzt viele Projekte zu
-            erstellen und alle Premium-Features zu nutzen, upgrade bitte auf
-            unseren Premium Plan.
+            Da du bereits 3 Projekte erstellt hast, sind deine kostenlosen
+            Projekte aufgebraucht. <br />
+            <br /> Falls dir YBudget gefällt und dir Zeit beim Budgeting spart,
+            würde es mich freuen, wenn du auf unseren Premium Plan wechseln
+            würdest. Dort kannst du unbegrenzt viele Projekte anlegen und sparst
+            somit noch mehr Zeit und Nerven beim Planen eurer Budgets.
           </DialogDescription>
         </DialogHeader>
 
@@ -54,7 +60,8 @@ export function Paywall({ open, onOpenChange }: PaywallProps) {
             <p className="font-semibold text-sm">Mit Premium erhältst du:</p>
             <ul className="space-y-1 text-sm text-muted-foreground">
               <li>✨ Unbegrenzt Projekte</li>
-              <li>📊 Erweiterte Berichte</li>
+              <li>📊 Unbegrenzte Teams</li>
+              <li>🧑‍🧒‍🧒 Unbegrenzte Nutzer</li>
               <li>⚡ Prioritäts-Support</li>
               <li>🎯 Alle zukünftigen Features</li>
             </ul>
@@ -68,14 +75,16 @@ export function Paywall({ open, onOpenChange }: PaywallProps) {
             className="w-full"
             size="lg"
           >
-            {isLoading ? "Wird geladen..." : "Jetzt upgraden"}
+            {isLoading
+              ? "Wird geladen..."
+              : "Auf unbegrenzte Projekte upgraden"}
           </Button>
           <Button
             variant="ghost"
             onClick={() => onOpenChange(false)}
             className="w-full"
           >
-            Vielleicht später
+            3 Projekte reichen mir
           </Button>
         </DialogFooter>
       </DialogContent>
