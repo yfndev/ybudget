@@ -22,7 +22,7 @@ const nextConfig: NextConfig = {
               "style-src 'self' 'unsafe-inline' https://accounts.google.com",
               "img-src 'self' data: https: blob:",
               "font-src 'self' data:",
-              "connect-src 'self' https://*.convex.cloud https://*.convex.site https://eu.i.posthog.com https://accounts.google.com",
+              "connect-src 'self' https://*.convex.cloud https://*.convex.site wss://*.convex.cloud wss://*.convex.site https://eu.i.posthog.com https://accounts.google.com",
               "frame-src https://accounts.google.com https://js.stripe.com",
               "object-src 'none'",
               "base-uri 'self'",
