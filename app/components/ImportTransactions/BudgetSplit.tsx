@@ -56,6 +56,8 @@ export default function BudgetSplit({
     );
   }
 
+  
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between pb-3 border-b">

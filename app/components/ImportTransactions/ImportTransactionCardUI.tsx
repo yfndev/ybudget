@@ -120,17 +120,19 @@ export const ImportTransactionCardUI = ({
           />
         </div>
       )}
+      {isIncome && (
+        <div className="flex items-center gap-3">
+          <Checkbox
+            id="splitIncome"
+            checked={splitIncome}
+            onCheckedChange={(checked) => onSplitIncomeChange(checked === true)}
+          />
+          <Label htmlFor="splitIncome">
+            Einnahme auf Departments aufteilen
+          </Label>
+        </div>
+      )}
     </div>
-    {isIncome && (
-      <div className="flex items-center gap-3">
-        <Checkbox
-          id="splitIncome"
-          checked={splitIncome}
-          onCheckedChange={(checked) => onSplitIncomeChange(checked === true)}
-        />
-        <Label htmlFor="splitIncome">Einnahme auf Departments aufteilen</Label>
-      </div>
-    )}
 
     <div className="flex justify-center gap-3 mt-auto pt-6 text-xs text-muted-foreground">
       <span className="font-medium">⌘↩ Speichern</span>
