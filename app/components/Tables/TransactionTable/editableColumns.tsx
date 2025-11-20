@@ -8,6 +8,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { formatCurrency } from "@/lib/formatCurrency";
+import { formatDate } from "@/lib/formatDate";
 import { ArrowUpDown, Check, MoreHorizontal, X } from "lucide-react";
 import {
   EditableAmountCell,
@@ -38,7 +40,7 @@ const renderEditableCell = (
   handlers: any,
   value: any,
   displayValue: any,
-  fieldId: string,
+  fieldId: string
 ) => (
   <CellComponent
     value={value}
@@ -50,16 +52,8 @@ const renderEditableCell = (
   />
 );
 
-const renderAmount = (amount: number) => {
-  const formatted = new Intl.NumberFormat("de-DE", {
-    style: "currency",
-    currency: "EUR",
-  }).format(Math.abs(amount));
-  return amount < 0 ? `- ${formatted}` : `+ ${formatted}`;
-};
 
-const renderDate = (date: any) =>
-  date ? new Date(date).toLocaleDateString("de-DE") : "";
+
 
 export const editableColumns = [
   {
@@ -98,13 +92,13 @@ export const editableColumns = [
               handlers,
               row.getValue("date"),
               undefined,
-              "date",
+              "date"
             )}
           </div>
         );
       }
 
-      return <div className="pl-2">{renderDate(row.getValue("date"))}</div>;
+      return <div className="pl-2">{formatDate(row.getValue("date"))}</div>;
     },
   },
   {
@@ -120,7 +114,7 @@ export const editableColumns = [
           handlers,
           row.original.projectId,
           row.original.projectName,
-          "projectId",
+          "projectId"
         );
       }
 
@@ -146,7 +140,7 @@ export const editableColumns = [
           handlers,
           description,
           undefined,
-          "description",
+          "description"
         );
       }
 
@@ -172,7 +166,7 @@ export const editableColumns = [
           handlers,
           row.original.categoryId,
           row.original.categoryName,
-          "categoryId",
+          "categoryId"
         );
       }
 
@@ -204,7 +198,7 @@ export const editableColumns = [
               handlers,
               amount,
               undefined,
-              "amount",
+              "amount"
             )}
           </div>
         );
@@ -212,7 +206,7 @@ export const editableColumns = [
 
       return (
         <div className="text-right font-medium pr-2">
-          {renderAmount(amount)}
+          {formatCurrency(amount)}
         </div>
       );
     },

@@ -4,6 +4,7 @@ import { SelectProject } from "@/components/Selectors/SelectProject";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import type { Id } from "@/convex/_generated/dataModel";
+import { formatCurrency } from "@/lib/formatCurrency";
 
 interface ImportTransactionCardUIProps {
   title: string;
@@ -60,10 +61,7 @@ export const ImportTransactionCardUI = ({
             Betrag
           </div>
           <div className="text-base font-semibold tabular-nums">
-            {new Intl.NumberFormat("de-DE", {
-              style: "currency",
-              currency: "EUR",
-            }).format(amount)}
+            {formatCurrency(amount)}
           </div>
         </div>
         <div>

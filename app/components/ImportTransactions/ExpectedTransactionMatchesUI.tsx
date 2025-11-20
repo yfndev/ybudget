@@ -1,3 +1,4 @@
+import { formatCurrency } from "@/lib/formatCurrency";
 import { formatDate } from "@/lib/formatDate";
 
 interface ExpectedTransaction {
@@ -14,12 +15,6 @@ interface ExpectedTransactionMatchesUIProps {
   containerRef: React.RefObject<HTMLDivElement | null>;
   onSelect: (id: string) => void;
 }
-
-const formatAmount = (amount: number) =>
-  new Intl.NumberFormat("de-DE", {
-    style: "currency",
-    currency: "EUR",
-  }).format(Math.abs(amount));
 
 export const ExpectedTransactionMatchesUI = ({
   expectedTransactions,
@@ -65,7 +60,7 @@ export const ExpectedTransactionMatchesUI = ({
 
                 <div className="flex flex-col items-end gap-1 ml-4">
                   <span className="font-semibold whitespace-nowrap">
-                    {formatAmount(transaction.amount)}
+                    {formatCurrency(transaction.amount)}
                   </span>
                   <span className="text-sm text-muted-foreground whitespace-nowrap">
                     {formatDate(transaction.date)}

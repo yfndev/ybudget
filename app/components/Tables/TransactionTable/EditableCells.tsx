@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { formatCurrency } from "@/lib/formatCurrency";
 import { format } from "date-fns";
 import { Check, X } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -31,14 +32,6 @@ interface EditableCellProps {
   pendingValue?: any;
   displayValue?: string;
 }
-
-const formatAmount = (amount: number) => {
-  const formatted = new Intl.NumberFormat("de-DE", {
-    style: "currency",
-    currency: "EUR",
-  }).format(Math.abs(amount || 0));
-  return amount < 0 ? `- ${formatted}` : `+ ${formatted}`;
-};
 
 const convertToDate = (value: any): Date | null => {
   if (!value) return null;
@@ -159,7 +152,7 @@ export function EditableAmountCell({
       className="cursor-pointer hover:bg-muted p-1 rounded text-right font-medium"
       onDoubleClick={onEdit}
     >
-      {formatAmount(currentValue)}
+      {formatCurrency(currentValue)}
     </div>
   );
 }

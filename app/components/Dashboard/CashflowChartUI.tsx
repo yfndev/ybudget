@@ -3,7 +3,6 @@
 import {
   calculateAxisConfig,
   calculateStartBalance,
-  formatCurrency,
   generateCashflowData,
   type CashflowDataPoint,
 } from "@/components/Dashboard/cashflowChartLogic";
@@ -25,6 +24,7 @@ import {
 import { useDateRange } from "@/contexts/DateRangeContext";
 import { api } from "@/convex/_generated/api";
 import type { Doc } from "@/convex/_generated/dataModel";
+import { formatCurrency } from "@/lib/formatCurrency";
 import {
   filterTransactionsBeforeDate,
   filterTransactionsByDateRange,
@@ -78,7 +78,7 @@ export function CashflowChartUI({
   // Only fetch all transactions if not provided (for standalone usage)
   const allTransactionsQuery = useQuery(
     api.transactions.queries.getAllTransactions,
-    providedTransactions ? "skip" : {},
+    providedTransactions ? "skip" : {}
   );
 
   const transactions = useMemo(() => {
@@ -88,7 +88,7 @@ export function CashflowChartUI({
     }
     return filterTransactionsByDateRange(
       allTransactionsQuery,
-      selectedDateRange,
+      selectedDateRange
     );
   }, [providedTransactions, allTransactionsQuery, selectedDateRange]);
 
@@ -103,7 +103,7 @@ export function CashflowChartUI({
     return filterTransactionsBeforeDate(
       sourceTransactions,
       pastEndDate,
-      (t) => t.status === "processed",
+      (t) => t.status === "processed"
     );
   }, [providedTransactions, allTransactionsQuery, selectedDateRange]);
 
@@ -115,14 +115,14 @@ export function CashflowChartUI({
           transactions,
           startBalance,
           selectedDateRange.from,
-          selectedDateRange.to,
+          selectedDateRange.to
         )
       : [];
 
   const axisConfig = calculateAxisConfig(
     dataPoints,
     selectedDateRange.from,
-    selectedDateRange.to,
+    selectedDateRange.to
   );
 
   const dateRangeText = `${format(selectedDateRange.from, "d. MMM yyyy", {
@@ -255,7 +255,6 @@ export function CashflowChartUI({
                 dataKey="actualIncome"
                 stackId="stack"
                 fill="#10b981"
-                radius={[0, 0, 0, 0]}
                 isAnimationActive={false}
               />
               <Bar
@@ -263,14 +262,12 @@ export function CashflowChartUI({
                 stackId="stack"
                 fill="#86efac"
                 fillOpacity={0.7}
-                radius={[4, 4, 0, 0]}
                 isAnimationActive={false}
               />
               <Bar
                 dataKey="actualExpenses"
                 stackId="stack"
                 fill="#ef4444"
-                radius={[0, 0, 0, 0]}
                 isAnimationActive={false}
               />
               <Bar
@@ -278,7 +275,6 @@ export function CashflowChartUI({
                 stackId="stack"
                 fill="#fb923c"
                 fillOpacity={0.7}
-                radius={[0, 0, 4, 4]}
                 isAnimationActive={false}
               />
               <Line
