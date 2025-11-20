@@ -1,6 +1,6 @@
 export const CATEGORY_GROUPS = [
   {
-    group: "Mitgliedsbeiträge & Gebühren",
+    group: "Einnahmen",
     type: "income" as const,
     items: [
       {
@@ -9,24 +9,7 @@ export const CATEGORY_GROUPS = [
         description: "Regelmäßige Beiträge der Vereinsmitglieder",
         taxsphere: "non-profit" as const,
       },
-      {
-        value: "admission-fees",
-        label: "Aufnahmegebühren",
-        description: "Einmalige Gebühren bei Vereinseintritt",
-        taxsphere: "non-profit" as const,
-      },
-      {
-        value: "participation-fees",
-        label: "Teilnahmegebühren",
-        description: "Gebühren für Workshops, Kurse, Seminare",
-        taxsphere: "purpose-operations" as const,
-      },
-    ],
-  },
-  {
-    group: "Veranstaltungseinnahmen & Sponsoring",
-    type: "income" as const,
-    items: [
+    
       {
         value: "ticket-sales",
         label: "Ticketverkäufe/Eintrittsgelder",
@@ -57,94 +40,12 @@ export const CATEGORY_GROUPS = [
         description: "Finanzielle Unterstützung durch Sponsoren",
         taxsphere: "commercial-operations" as const,
       },
-      {
-        value: "sponsorship-in-kind",
-        label: "Sponsoring (Sachleistung)",
-        description: "Material- und Dienstleistungssponsoring",
-        taxsphere: "commercial-operations" as const,
-      },
-      {
-        value: "advertising-income",
-        label: "Werbeeinnahmen",
-        description: "Einnahmen aus Werbeflächen und -anzeigen",
-        taxsphere: "commercial-operations" as const,
-      },
-    ],
-  },
-  {
-    group: "Spenden & Förderungen",
-    type: "income" as const,
-    items: [
+   
+    
       {
         value: "monetary-donations",
         label: "Geldspenden",
         description: "Finanzielle Zuwendungen ohne Gegenleistung",
-        taxsphere: "non-profit" as const,
-      },
-      {
-        value: "donated-goods",
-        label: "Sachspenden",
-        description: "Gespendete Gegenstände und Materialien",
-        taxsphere: "non-profit" as const,
-      },
-      {
-        value: "crowdfunding",
-        label: "Crowdfunding",
-        description: "Einnahmen aus Crowdfunding-Kampagnen",
-        taxsphere: "non-profit" as const,
-      },
-      {
-        value: "public-funding",
-        label: "Öffentliche Förderung",
-        description: "Zuschüsse von Bund, Land, Kommune",
-        taxsphere: "non-profit" as const,
-      },
-      {
-        value: "university-funding",
-        label: "Hochschulförderung",
-        description: "Förderung durch Studierendenparlament/AStA",
-        taxsphere: "non-profit" as const,
-      },
-      {
-        value: "foundation-funding",
-        label: "Stiftungsförderung",
-        description: "Zuwendungen von Stiftungen",
-        taxsphere: "non-profit" as const,
-      },
-      {
-        value: "association-subsidy",
-        label: "Verbandszuschuss",
-        description: "Zuschüsse von Dach- und Fachverbänden",
-        taxsphere: "non-profit" as const,
-      },
-    ],
-  },
-  {
-    group: "Vermögensverwaltung",
-    type: "income" as const,
-    items: [
-      {
-        value: "interest-income",
-        label: "Zinseinnahmen",
-        description: "Zinsen auf Sparguthaben und Anlagen",
-        taxsphere: "asset-management" as const,
-      },
-      {
-        value: "rental-income",
-        label: "Mieteinnahmen",
-        description: "Vermietung von Vereinsräumen oder -gegenständen",
-        taxsphere: "asset-management" as const,
-      },
-      {
-        value: "capital-gains",
-        label: "Veräußerungsgewinne",
-        description: "Erlöse aus Verkauf von Vermögensgegenständen",
-        taxsphere: "asset-management" as const,
-      },
-      {
-        value: "emergency-buffer",
-        label: "Notfall-Puffer",
-        description: "Reserve für unvorhergesehene Ausgaben",
         taxsphere: "non-profit" as const,
       },
     ],
