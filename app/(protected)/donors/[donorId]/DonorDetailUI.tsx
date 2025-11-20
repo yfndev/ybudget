@@ -15,12 +15,14 @@ interface DonorDetailUIProps {
   };
   transactions: Doc<"transactions">[];
   handleUpdate: (rowId: string, field: string, value: any) => Promise<void>;
+  handleDelete: (rowId: string) => Promise<void>;
   status: PaginationStatus;
 }
 export default function DonorDetailUI({
   donor,
   transactions,
   handleUpdate,
+  handleDelete,
   status,
 }: DonorDetailUIProps) {
   return (
@@ -52,6 +54,7 @@ export default function DonorDetailUI({
           columns={editableColumns}
           data={transactions}
           onUpdate={handleUpdate}
+          onDelete={handleDelete}
           paginationStatus={status}
         />
       </div>

@@ -17,6 +17,7 @@ interface ProjectDashboardUIProps {
   status: PaginationStatus;
   loadMore: (numItems: number) => void;
   onUpdate: (transactionId: string, field: string, value: any) => Promise<void>;
+  onDelete: (transactionId: string) => Promise<void>;
 }
 
 export default function ProjectDashboardUI({
@@ -26,6 +27,7 @@ export default function ProjectDashboardUI({
   status,
   loadMore,
   onUpdate,
+  onDelete,
 }: ProjectDashboardUIProps) {
   return (
     <div>
@@ -60,6 +62,7 @@ export default function ProjectDashboardUI({
           columns={editableColumns}
           data={transactions}
           onUpdate={onUpdate}
+          onDelete={onDelete}
           paginationStatus={status}
           loadMore={() => loadMore(50)}
         />

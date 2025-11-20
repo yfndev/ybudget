@@ -255,6 +255,11 @@ export const editableColumns = [
         }
       };
 
+      const handleDelete = async (e: React.MouseEvent) => {
+        e.preventDefault();
+        await table.options.meta?.onDelete(rowId);
+      };
+
       if (isRowEditing) {
         return (
           <div className="flex items-center gap-2">
@@ -289,7 +294,14 @@ export const editableColumns = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={handleEdit}>Bearbeiten</DropdownMenuItem>
-            <DropdownMenuItem onClick={onDelete}>Löschen</DropdownMenuItem>
+            {isPlanned && (
+              <DropdownMenuItem
+                onClick={handleDelete}
+                onSelect={(e) => e.preventDefault()}
+              >
+                Löschen
+              </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       );

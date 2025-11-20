@@ -18,11 +18,13 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useEffect, useRef, useState } from "react";
+import { toast } from "react-hot-toast";
 
 interface EditableDataTableProps<T> {
   columns: ColumnDef<T>[];
   data: T[];
   onUpdate?: (rowId: string, field: string, value: any) => Promise<void>;
+  onDelete?: (rowId: string) => Promise<void>;
   paginationStatus?:
     | "Loading"
     | "LoadingMore"
@@ -36,6 +38,7 @@ export function EditableDataTable<T extends { _id: string }>({
   columns,
   data,
   onUpdate,
+  onDelete,
   paginationStatus,
   loadMore,
 }: EditableDataTableProps<T>) {
@@ -104,6 +107,32 @@ export function EditableDataTable<T extends { _id: string }>({
     });
   };
 
+  const deleteRow = async (rowId: string) => {
+    if (!onDelete) return;
+
+    setIsUpdating(true);
+    try {
+      await onDelete(rowId);
+
+      setPendingChanges((prev) => {
+        const updated = { ...prev };
+        delete updated[rowId];
+        return updated;
+      });
+      setEditingRows((prev) => {
+        const updated = new Set(prev);
+        updated.delete(rowId);
+        return updated;
+      });
+      toast.success("Transaktion erfolgreich gelöscht");
+    } catch (error) {
+
+      toast.error("Fehler beim Löschen der Transaktion");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
   const table = useReactTable({
     data,
     columns,
@@ -121,6 +150,7 @@ export function EditableDataTable<T extends { _id: string }>({
       onUpdate: updatePendingChanges,
       onSaveRow: saveRow,
       onCancelRow: cancelRow,
+      onDelete: deleteRow,
       isUpdating,
     },
   });
@@ -168,7 +198,7 @@ export function EditableDataTable<T extends { _id: string }>({
                 <TableHead key={header.id}>
                   {flexRender(
                     header.column.columnDef.header,
-                    header.getContext(),
+                    header.getContext()
                   )}
                 </TableHead>
               ))}
@@ -184,7 +214,7 @@ export function EditableDataTable<T extends { _id: string }>({
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext(),
+                        cell.getContext()
                       )}
                     </TableCell>
                   ))}

@@ -29,27 +29,30 @@ export default function ProjectDetail() {
   } = usePaginatedQuery(
     api.transactions.queries.getPaginatedTransactions,
     { projectId: projectId as Id<"projects"> },
-    { initialNumItems: 50 },
+    { initialNumItems: 50 }
   );
 
   const filteredTransactions = useMemo(
     () => filterTransactionsByDateRange(allTransactions, selectedDateRange),
-    [allTransactions, selectedDateRange],
+    [allTransactions, selectedDateRange]
   );
 
   const budgets = useMemo(
     () => calculateBudget(allTransactions ?? []),
-    [allTransactions],
+    [allTransactions]
   );
 
   const updateTransaction = useMutation(
-    api.transactions.functions.updateTransaction,
+    api.transactions.functions.updateTransaction
+  );
+  const deleteTransaction = useMutation(
+    api.transactions.functions.deleteExpectedTransaction
   );
 
   const handleUpdateTransaction = async (
     transactionId: string,
     field: string,
-    value: any,
+    value: any
   ) => {
     try {
       await updateTransaction({
@@ -71,6 +74,16 @@ export default function ProjectDetail() {
     }
   };
 
+  const handleDeleteTransaction = async (transactionId: string) => {
+    try {
+      await deleteTransaction({
+        transactionId: transactionId as Id<"transactions">,
+      });
+    } catch (error) {
+      throw error;
+    }
+  };
+
   if (!project) {
     return <ProjectDashboardSkeleton />;
   }
@@ -83,6 +96,7 @@ export default function ProjectDetail() {
       status={status}
       loadMore={loadMore}
       onUpdate={handleUpdateTransaction}
+      onDelete={handleDeleteTransaction}
     />
   );
 }

@@ -248,3 +248,21 @@ export const splitTransaction = mutation({
     };
   }
 });
+
+export const deleteExpectedTransaction = mutation({
+  args: {
+    transactionId: v.id("transactions"),
+  },
+  handler: async (ctx, args) => {
+    await requireRole(ctx, "lead");
+    const user = await getCurrentUser(ctx);
+
+    const transaction = await ctx.db.get(args.transactionId);
+    if (!transaction || transaction.organizationId !== user.organizationId) throw new Error("Transaction not found or access denied");
+    if (transaction.status !== "expected") {
+      throw new Error("Can only delete expected transactions");
+    }
+
+    await ctx.db.delete(args.transactionId);
+  },
+});
