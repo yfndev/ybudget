@@ -1,7 +1,7 @@
 import { api } from "@/convex/_generated/api";
 import { formatCurrency } from "@/lib/formatCurrency";
 import { useQuery } from "convex/react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { AmountInput } from "../Selectors/AmountInput";
 import { Label } from "../ui/label";
 
@@ -21,16 +21,12 @@ export default function BudgetSplit({
   );
   const departments = useQuery(api.budgets.queries.getDepartmentProjects);
 
-  const { remaining, isValid } = useMemo(() => {
-    const total = Array.from(allocations.values()).reduce(
-      (sum, value) => sum + (parseFloat(value) || 0),
-      0
-    );
-    return {
-      remaining: totalAmount - total,
-      isValid: total > 0 && totalAmount - total >= 0,
-    };
-  }, [allocations, totalAmount]);
+  const total = Array.from(allocations.values()).reduce(
+    (sum, value) => sum + (parseFloat(value) || 0),
+    0
+  );
+  const remaining = totalAmount - total;
+  const isValid = total > 0 && remaining >= 0;
 
   const handleAmountChange = (projectId: string, value: string) => {
     const newAllocations = new Map(allocations);
