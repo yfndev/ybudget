@@ -65,11 +65,21 @@ export const getTransactionRecommendations = query({
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
 
-    const allTransactions = await ctx.db
-      .query("transactions")
-      .withIndex("by_organization_project", (q) =>
-        q.eq("organizationId", user.organizationId),
-      )
+    const query = args.projectId
+      ? ctx.db
+          .query("transactions")
+          .withIndex("by_organization_project", (q) =>
+            q
+              .eq("organizationId", user.organizationId)
+              .eq("projectId", args.projectId),
+          )
+      : ctx.db
+          .query("transactions")
+          .withIndex("by_organization", (q) =>
+            q.eq("organizationId", user.organizationId),
+          );
+
+    const allTransactions = await query
       .filter((q) =>
         q.and(
           q.eq(q.field("status"), "expected"),

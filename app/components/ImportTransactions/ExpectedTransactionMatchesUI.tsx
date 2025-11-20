@@ -31,10 +31,11 @@ export const ExpectedTransactionMatchesUI = ({
 
   return (
     <div ref={containerRef as React.RefObject<HTMLDivElement>}>
-      {hasTransactions && (
-        <h3 className="text-xl font-semibold mb-6">
-          Geplante Ausgabe matchen:
-        </h3>
+      <h3 className="text-xl font-semibold mb-6">Geplante Ausgabe matchen:</h3>
+      {!hasTransactions && (
+        <p className="text-sm text-muted-foreground">
+          Keine möglichen Matches gefunden :)
+        </p>
       )}
 
       {hasTransactions &&
