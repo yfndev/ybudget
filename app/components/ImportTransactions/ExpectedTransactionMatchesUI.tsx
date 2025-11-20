@@ -1,4 +1,4 @@
-import { Card, CardContent } from "@/components/ui/card";
+import { formatDate } from "@/lib/formatDate";
 
 interface ExpectedTransaction {
   _id: string;
@@ -15,63 +15,65 @@ interface ExpectedTransactionMatchesUIProps {
   onSelect: (id: string) => void;
 }
 
+const formatAmount = (amount: number) =>
+  new Intl.NumberFormat("de-DE", {
+    style: "currency",
+    currency: "EUR",
+  }).format(Math.abs(amount));
+
 export const ExpectedTransactionMatchesUI = ({
   expectedTransactions,
   selectedMatch,
   containerRef,
   onSelect,
 }: ExpectedTransactionMatchesUIProps) => {
-  return (
-    <div
-      ref={containerRef as React.RefObject<HTMLDivElement>}
-      className="flex flex-col"
-    >
-      <h3 className="text-2xl font-semibold mb-6">Matche geplante Ausgaben:</h3>
+  const hasTransactions = expectedTransactions.length > 0;
 
-      {expectedTransactions.length > 0 ? (
-        <div className="flex flex-col gap-4">
-          {expectedTransactions.map((transaction) => (
-            <Card
+  return (
+    <div ref={containerRef as React.RefObject<HTMLDivElement>}>
+      {hasTransactions && (
+        <h3 className="text-xl font-semibold mb-6">
+          Geplante Ausgabe matchen:
+        </h3>
+      )}
+
+      {hasTransactions &&
+        expectedTransactions.map((transaction) => {
+          const isSelected = selectedMatch === transaction._id;
+          const baseClasses =
+            "cursor-pointer transition-all my-2 px-4 py-3 border rounded-sm";
+          const stateClasses = isSelected
+            ? "bg-primary/5 border-l-4 border-l-primary"
+            : "hover:bg-accent";
+
+          return (
+            <div
               key={transaction._id}
-              className={`cursor-pointer transition-all ${
-                selectedMatch === transaction._id
-                  ? "border-primary bg-primary/5"
-                  : "hover:border-primary/50"
-              }`}
+              className={`${baseClasses} ${stateClasses}`}
               onClick={() => onSelect(transaction._id)}
             >
-              <CardContent className="p-4">
-                <div className="flex items-start justify-between w-full ">
-                  <div className="flex-1">
-                    <p className="font-semibold text-base mb-1">
-                      {transaction.counterparty}
-                    </p>
-                    <p className="text-sm text-muted-foreground line-clamp-2">
-                      {transaction.description}
-                    </p>
-                  </div>
-
-                  <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                    <span className="text-sm text-muted-foreground whitespace-nowrap">
-                      {new Date(transaction.date).toLocaleDateString("de-DE")}
-                    </span>
-                    <span className="font-semibold text-base whitespace-nowrap">
-                      {new Intl.NumberFormat("de-DE", {
-                        style: "currency",
-                        currency: "EUR",
-                      }).format(Math.abs(transaction.amount))}
-                    </span>
-                  </div>
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <p className="font-semibold mb-1">
+                    {transaction.counterparty}
+                  </p>
+                  <p className="text-sm text-muted-foreground line-clamp-2">
+                    {transaction.description}
+                  </p>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      ) : (
-        <p className="text-sm text-muted-foreground">
-          Keine möglichen Matches vorhanden
-        </p>
-      )}
+
+                <div className="flex flex-col items-end gap-1 ml-4">
+                  <span className="font-semibold whitespace-nowrap">
+                    {formatAmount(transaction.amount)}
+                  </span>
+                  <span className="text-sm text-muted-foreground whitespace-nowrap">
+                    {formatDate(transaction.date)}
+                  </span>
+                </div>
+              </div>
+            </div>
+          );
+        })}
     </div>
   );
 };

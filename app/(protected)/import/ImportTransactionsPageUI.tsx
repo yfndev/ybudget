@@ -32,7 +32,7 @@ export default function ImportTransactionsPageUI({
       <PageHeader title="Transaktionen zuordnen" />
 
       {!current || totalCount === 0 ? (
-        <div className="flex-1 flex items-center justify-center">
+        <div className=" flex items-center justify-center">
           <div className="text-center">
             <p className="text-lg text-muted-foreground">
               Es gibt keine Transaktionen zum Zuordnen
@@ -41,14 +41,20 @@ export default function ImportTransactionsPageUI({
         </div>
       ) : (
         <>
-          <div className="flex-1 flex mt-16 gap-16">
+          <div className="flex mt-8 justify-center" id="tour-import-progress">
+            <Progress
+              className="w-3/4"
+              value={totalCount > 0 ? ((index + 1) / totalCount) * 100 : 0}
+            />
+          </div>
+          <div className="flex mt-24 gap-16 h-full">
             <div id="tour-expected-matches">
               <ExpectedTransactionMatches
                 expectedTransactions={expectedTransactions}
                 onSelect={onExpectedTransactionSelect}
               />
             </div>
-            <div className="mt-16 flex-shrink-0" id="tour-import-card">
+            <div className="" id="tour-import-card">
               <ImportTransactionCard
                 title={current.counterparty || ""}
                 description={current.description}
@@ -66,15 +72,6 @@ export default function ImportTransactionsPageUI({
                 onDonationIdsChange={form.setSelectedDonationIds}
               />
             </div>
-          </div>
-          <div
-            className="fixed bottom-0 left-0 right-0 pb-6 pt-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex justify-center"
-            id="tour-import-progress"
-          >
-            <Progress
-              className="w-1/2"
-              value={totalCount > 0 ? ((index + 1) / totalCount) * 100 : 0}
-            />
           </div>
         </>
       )}
