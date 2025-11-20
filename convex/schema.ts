@@ -72,6 +72,11 @@ export default defineSchema({
     .index("by_date", ["date"])
     .index("by_organization", ["organizationId"])
     .index("by_organization_donor", ["organizationId", "donorId"])
+    .index("by_organization_project_donor", [
+      "organizationId",
+      "projectId",
+      "donorId",
+    ])
     .index("by_importedTransactionId", [
       "organizationId",
       "importedTransactionId",

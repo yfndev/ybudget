@@ -27,17 +27,28 @@ interface SelectDonorProps {
   onValueChange: (value: string) => void;
   onTabPressed?: () => void;
   categoryId?: Id<"categories">;
+  projectId?: Id<"projects">;
 }
 
 export const SelectDonor = forwardRef<HTMLButtonElement, SelectDonorProps>(
   function SelectDonor(
-    { value, onValueChange, onTabPressed, categoryId },
+    { value, onValueChange, onTabPressed, categoryId, projectId },
     buttonRef
   ) {
     const [open, setOpen] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [highlightedIndex, setHighlightedIndex] = useState(0);
-    const donors = useQuery(api.donors.queries.getAllDonors);
+    
+    const allDonors = useQuery(
+      api.donors.queries.getAllDonors,
+      projectId ? "skip" : {}
+    );
+    const projectDonors = useQuery(
+      api.donors.queries.getDonorsByProject,
+      projectId ? { projectId } : "skip"
+    );
+    
+    const donors = projectId ? projectDonors : allDonors;
 
     const selectedDonor = donors?.find((d) => d._id.toString() === value);
     const displayText = selectedDonor?.name || "Förderer suchen...";

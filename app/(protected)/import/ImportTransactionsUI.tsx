@@ -2,7 +2,7 @@ import { ExpectedTransactionMatchesUI } from "@/components/ImportTransactions/Ex
 import { ImportTransactionCard } from "@/components/ImportTransactions/ImportTransactionCard";
 import { PageHeader } from "@/components/Layout/PageHeader";
 import { Progress } from "@/components/ui/progress";
-import type { Doc, Id } from "@/convex/_generated/dataModel";
+import type { Doc } from "@/convex/_generated/dataModel";
 
 interface ImportTransactionsUIProps {
   current: Doc<"transactions"> | null;
@@ -12,13 +12,11 @@ interface ImportTransactionsUIProps {
   categoryId: string;
   donorId: string;
   selectedMatch: string | null;
-  selectedDonationIds: Id<"transactions">[];
   expectedTransactions: Doc<"transactions">[];
   containerRef: React.RefObject<HTMLDivElement | null>;
   setProjectId: (value: string) => void;
   setCategoryId: (value: string) => void;
   setDonorId: (value: string) => void;
-  setSelectedDonationIds: (ids: Id<"transactions">[]) => void;
   handleExpectedTransactionSelect: (id: string) => void;
 }
 
@@ -30,13 +28,11 @@ export const ImportTransactionsUI = ({
   categoryId,
   donorId,
   selectedMatch,
-  selectedDonationIds,
   expectedTransactions,
   containerRef,
   setProjectId,
   setCategoryId,
   setDonorId,
-  setSelectedDonationIds,
   handleExpectedTransactionSelect,
 }: ImportTransactionsUIProps) => {
   if (totalCount === 0) {
@@ -79,11 +75,9 @@ export const ImportTransactionsUI = ({
               projectId={projectId}
               categoryId={categoryId}
               donorId={donorId}
-              selectedDonationIds={selectedDonationIds}
               onProjectChange={setProjectId}
               onCategoryChange={setCategoryId}
               onDonorChange={setDonorId}
-              onDonationIdsChange={setSelectedDonationIds}
             />
           )}
         </div>

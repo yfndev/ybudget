@@ -1,5 +1,4 @@
 import { SelectCategory } from "@/components/Selectors/SelectCategory";
-import { SelectDonation } from "@/components/Selectors/SelectDonation";
 import { SelectDonor } from "@/components/Selectors/SelectDonor";
 import { SelectProject } from "@/components/Selectors/SelectProject";
 import { Card } from "@/components/ui/card";
@@ -16,14 +15,12 @@ interface ImportTransactionCardUIProps {
   projectId: string;
   categoryId: string;
   donorId: string;
-  selectedDonationIds: Id<"transactions">[];
   isExpense: boolean;
   isIncome: boolean;
-  hasDonations: boolean;
+
   onProjectChange: (projectId: string) => void;
   onCategoryChange: (categoryId: string) => void;
   onDonorChange: (donorId: string) => void;
-  onDonationIdsChange: (donationIds: Id<"transactions">[]) => void;
 }
 
 export const ImportTransactionCardUI = ({
@@ -36,16 +33,14 @@ export const ImportTransactionCardUI = ({
   projectId,
   categoryId,
   donorId,
-  selectedDonationIds,
   isExpense,
   isIncome,
-  hasDonations,
+
   onProjectChange,
   onCategoryChange,
   onDonorChange,
-  onDonationIdsChange,
 }: ImportTransactionCardUIProps) => (
-  <Card className="w-[600px] h-auto p-8 border shadow-sm flex flex-col flex-shrink-0 flex-grow-0">
+  <Card className="w-[600px] h-auto p-8 border shadow-sm flex flex-col ">
     <div className="mb-8">
       <div className="flex items-start justify-between mb-6">
         <div className="flex-1">
@@ -103,13 +98,24 @@ export const ImportTransactionCardUI = ({
           />
         </div>
       )}
-      {isExpense && projectId && hasDonations && (
+      {isExpense && (
         <div className="flex flex-col gap-2">
-          <Label className="text-sm font-semibold">Spende zuordnen</Label>
-          <SelectDonation
-            projectId={projectId}
-            value={selectedDonationIds}
-            onValueChange={onDonationIdsChange}
+          <Label className="flex flex-col">
+            <span className="text-sm font-semibold">
+              Projektförderer wählen
+            </span>
+            <span className="text-muted-foreground    font-normal">
+              (nur wenn Mittelverwendungsnachweis (CSV) erforderlich)
+            </span>
+          </Label>
+
+          <SelectDonor
+            value={donorId}
+            onValueChange={onDonorChange}
+            categoryId={
+              categoryId ? (categoryId as Id<"categories">) : undefined
+            }
+            projectId={projectId ? (projectId as Id<"projects">) : undefined}
           />
         </div>
       )}

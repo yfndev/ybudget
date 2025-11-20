@@ -14,9 +14,6 @@ export const ImportTransactionsLogic = () => {
   const [categoryId, setCategoryId] = useState("");
   const [donorId, setDonorId] = useState("");
   const [selectedMatch, setSelectedMatch] = useState<string | null>(null);
-  const [selectedDonationIds, setSelectedDonationIds] = useState<
-    Id<"transactions">[]
-  >([]);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   const transactions = useQuery(
@@ -46,14 +43,12 @@ export const ImportTransactionsLogic = () => {
       setCategoryId("");
       setDonorId("");
       setSelectedMatch(null);
-      setSelectedDonationIds([]);
       return;
     }
     setProjectId(current.projectId || "");
     setCategoryId(current.categoryId || "");
     setDonorId(current.donorId || "");
     setSelectedMatch(current.matchedTransactionId || null);
-    setSelectedDonationIds([]);
   }, [current]);
 
   useEffect(() => {
@@ -161,13 +156,11 @@ export const ImportTransactionsLogic = () => {
       categoryId={categoryId}
       donorId={donorId}
       selectedMatch={selectedMatch}
-      selectedDonationIds={selectedDonationIds}
       expectedTransactions={expectedTransactions}
       containerRef={containerRef}
       setProjectId={setProjectId}
       setCategoryId={setCategoryId}
       setDonorId={setDonorId}
-      setSelectedDonationIds={setSelectedDonationIds}
       handleExpectedTransactionSelect={handleExpectedTransactionSelect}
     />
   );
