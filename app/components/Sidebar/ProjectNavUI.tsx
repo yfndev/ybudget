@@ -110,7 +110,7 @@ export function ProjectNavUI({
       )}
       <SidebarMenu>
         {items.map((item) => (
-          <Collapsible key={item.id} asChild defaultOpen={item.isActive}>
+          <Collapsible key={item.id} asChild defaultOpen={true}>
             <SidebarMenuItem>
               {editingId === item.id ? (
                 <div className="px-2 py-1.5">

@@ -1,7 +1,8 @@
 - [ ] implement upload of expense reimbursements (Auslagenerstattungen)
-- [ ] categories that are not non-profit should be highlighted in other color
-
+- [ ] archive projects
 - [ ] check how to show expected transactions in table (also if they are already matched)
+
+- [ ] categories that are not non-profit should be highlighted in other color
 
 archive (latest on top):
 
