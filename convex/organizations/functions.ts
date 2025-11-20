@@ -39,13 +39,22 @@ export const createOrganization = mutation({
     domain: v.string(),
     userId: v.id("users"),
   },
-  returns: v.id("organizations"),
   handler: async (ctx, args) => {
-    return await ctx.db.insert("organizations", {
+    const organizationId = await ctx.db.insert("organizations", {
       name: args.name,
       domain: args.domain,
       createdBy: args.userId,
     });
+
+    await ctx.db.insert("projects", {
+      name: "Rücklagen",
+      parentId: undefined,
+      organizationId,
+      isActive: true,
+      createdBy: args.userId,
+    });
+
+    return organizationId;
   },
 });
 
@@ -53,13 +62,6 @@ export const setupUserOrganization = mutation({
   args: {
     organizationName: v.optional(v.string()),
   },
-  returns: v.union(
-    v.object({
-      organizationId: v.id("organizations"),
-      isNew: v.boolean(),
-    }),
-    v.null(),
-  ),
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
 

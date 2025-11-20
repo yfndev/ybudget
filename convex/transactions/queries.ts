@@ -6,7 +6,10 @@ import { getCurrentUser } from "../users/getCurrentUser";
 import { addProjectAndCategoryNames } from "../utils/addProjectNames";
 
 export const getAllTransactions = query({
-  args: { projectId: v.optional(v.id("projects")) },
+  args: { 
+    projectId: v.optional(v.id("projects")),
+    includeArchived: v.optional(v.boolean()),
+  },
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
 
@@ -22,16 +25,13 @@ export const getAllTransactions = query({
       : ctx.db
           .query("transactions")
           .withIndex("by_organization", (q) =>
-            q.eq("organizationId", user.organizationId),
+            q.eq("organizationId", user.organizationId)
           );
-
-    const transactions = await query.collect();
-    const filtered = await filterByProjectAccess(
-      ctx,
-      user._id,
-      user.organizationId,
-      transactions,
-    );
+    let transactions = await query.collect();
+    if (!args.includeArchived) {
+      transactions = transactions.filter(t => !t.isArchived);
+    }
+    const filtered = await filterByProjectAccess(ctx, user._id, user.organizationId, transactions);
     return addProjectAndCategoryNames(ctx, filtered);
   },
 });
@@ -49,11 +49,8 @@ export const getUnassignedProcessedTransactions = query({
       .collect();
 
     const unassigned = allTransactions.filter((t) => {
-      if (t.status !== "processed") return false;
-      if (!t.projectId) return true;
-      if (!t.categoryId) return true;
-      if (t.amount > 0 && !t.donorId) return true;
-      return false;
+      if (t.isArchived || t.status !== "processed") return false;
+      return !t.projectId || !t.categoryId || (t.amount > 0 && !t.donorId);
     });
 
     return unassigned.sort((a, b) => b.date - a.date);
@@ -104,6 +101,7 @@ export const getPaginatedTransactions = query({
   args: {
     projectId: v.optional(v.id("projects")),
     donorId: v.optional(v.id("donors")),
+    includeArchived: v.optional(v.boolean()),
     paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
@@ -137,15 +135,13 @@ export const getPaginatedTransactions = query({
         ? query.filter((q) => q.eq(q.field("donorId"), args.donorId))
         : query;
 
-    const result = await filteredQuery
-      .order("desc")
-      .paginate(args.paginationOpts);
-    const filtered = await filterByProjectAccess(
-      ctx,
-      user._id,
-      user.organizationId,
-      result.page,
-    );
+    const result = await filteredQuery.order("desc").paginate(args.paginationOpts);
+
+    let pageTransactions = result.page;
+    if (!args.includeArchived) {
+      pageTransactions = pageTransactions.filter(t => !t.isArchived);
+    }
+    const filtered = await filterByProjectAccess(ctx, user._id, user.organizationId, pageTransactions);
     const page = await addProjectAndCategoryNames(ctx, filtered);
 
     return {
@@ -154,4 +150,46 @@ export const getPaginatedTransactions = query({
       page,
     };
   },
+});
+
+export const getTransactionWithSplits = query({
+  args: { 
+    transactionId: v.id("transactions") 
+  },
+  handler: async (ctx, args) => {
+    const user = await getCurrentUser(ctx);
+    
+    const transaction = await ctx.db.get(args.transactionId);
+    
+    if (!transaction) {
+      return null;
+    }
+
+    if (transaction.organizationId !== user.organizationId) {
+      throw new Error("Access denied");
+    }
+    
+    let splitTransactions = null;
+    if (transaction.isArchived) {
+      splitTransactions = await ctx.db
+        .query("transactions")
+        .withIndex("by_splitFrom", (q) => 
+          q.eq("splitFromTransactionId", args.transactionId)
+        )
+        .collect();
+    }
+    
+    let originalTransaction = null;
+    if (transaction.splitFromTransactionId) {
+      originalTransaction = await ctx.db.get(transaction.splitFromTransactionId);
+    }
+    
+    return {
+      transaction,
+      splitTransactions,
+      originalTransaction,
+      isSplit: transaction.isArchived === true,
+      isPartOfSplit: !!transaction.splitFromTransactionId,
+    };
+  }
 });

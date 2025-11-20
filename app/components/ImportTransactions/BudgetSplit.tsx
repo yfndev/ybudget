@@ -28,7 +28,7 @@ export default function BudgetSplit({
     );
     return {
       remaining: totalAmount - total,
-      isValid: totalAmount - total >= 0,
+      isValid: total > 0 && totalAmount - total >= 0,
     };
   }, [allocations, totalAmount]);
 
@@ -55,8 +55,6 @@ export default function BudgetSplit({
       </div>
     );
   }
-
-  
 
   return (
     <div className="space-y-4">

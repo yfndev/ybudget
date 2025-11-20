@@ -1,10 +1,36 @@
 import { v } from "convex/values";
-import { type Id } from "../_generated/dataModel";
+import { Id } from "../_generated/dataModel";
 import { type MutationCtx, mutation } from "../_generated/server";
 import { canAccessProject } from "../teams/permissions";
 import { getCurrentUser } from "../users/getCurrentUser";
 import { requireRole } from "../users/permissions";
 import { validateDonorCategory } from "./validateDonorCategory";
+
+async function ensureReservesDepartment(
+  ctx: MutationCtx,
+  organizationId: Id<"organizations">
+) {
+  const existing = await ctx.db
+    .query("projects")
+    .withIndex("by_organization", (q) => q.eq("organizationId", organizationId))
+    .filter((q) => q.and(
+      q.eq(q.field("name"), "Reserves"),
+      q.eq(q.field("parentId"), undefined)
+    ))
+    .first();
+
+  if (existing) return existing._id;
+
+  const currentUser = await getCurrentUser(ctx);
+  
+  return await ctx.db.insert("projects", {
+    name: "Reserves",
+    parentId: undefined,
+    organizationId,
+    isActive: true,
+    createdBy: currentUser._id,
+  });
+}
 
 export const createExpectedTransaction = mutation({
   args: {
@@ -131,4 +157,94 @@ export const updateTransaction = mutation({
 
     return ctx.db.patch(transactionId, validUpdates);
   },
+});
+
+export const splitTransaction = mutation({
+  args: {
+    transactionId: v.id("transactions"),
+    splits: v.array(v.object({
+      projectId: v.id("projects"),
+      amount: v.number(),
+    })),
+  },
+  handler: async (ctx, args) => {
+    await requireRole(ctx, "editor");
+    const user = await getCurrentUser(ctx);
+
+    const original = await ctx.db.get(args.transactionId);
+    if (!original) throw new Error("Transaction not found");
+    if (original.organizationId !== user.organizationId) throw new Error("Access denied");
+    if (original.status !== "processed") throw new Error("Can only split processed transactions");
+    if (original.isArchived) throw new Error("Transaction is already split");
+    if (args.splits.length === 0) throw new Error("Must provide at least one split");
+    if (args.splits.some(s => s.amount <= 0)) throw new Error("All split amounts must be positive");
+
+    const total = args.splits.reduce((sum, split) => sum + split.amount, 0);
+    if (total > original.amount) {
+      throw new Error(`Cannot split more than available. Available: ${original.amount}, Requested: ${total}`);
+    }
+
+    for (const split of args.splits) {
+      if (!(await canAccessProject(ctx, user._id, split.projectId, "editor"))) {
+        throw new Error(`No access to project ${split.projectId}`);
+      }
+    }
+
+    const remainder = original.amount - total;
+    const reservesId = await ensureReservesDepartment(ctx, original.organizationId);
+
+    await ctx.db.patch(args.transactionId, { isArchived: true });
+
+    const createdIds: Id<"transactions">[] = [];
+
+    for (const split of args.splits) {
+      const newId = await ctx.db.insert("transactions", {
+        organizationId: original.organizationId,
+        date: original.date,
+        description: `${original.description} (Split)`,
+        counterparty: original.counterparty,
+        status: "processed" as const,
+        importedBy: original.importedBy,
+        categoryId: original.categoryId,
+        donorId: original.donorId,
+        accountName: original.accountName,
+        importedTransactionId: original.importedTransactionId,
+        importSource: original.importSource,
+        amount: split.amount,
+        projectId: split.projectId,
+        splitFromTransactionId: args.transactionId,
+        isArchived: false,
+      });
+      createdIds.push(newId);
+    }
+
+    if (remainder > 0) {
+      const reservesTransactionId = await ctx.db.insert("transactions", {
+        organizationId: original.organizationId,
+        date: original.date,
+        description: `${original.description} (Remainder → Reserves)`,
+        counterparty: original.counterparty,
+        status: "processed" as const,
+        importedBy: original.importedBy,
+        categoryId: original.categoryId,
+        donorId: original.donorId,
+        accountName: original.accountName,
+        importedTransactionId: original.importedTransactionId,
+        importSource: original.importSource,
+        amount: remainder,
+        projectId: reservesId,
+        splitFromTransactionId: args.transactionId,
+        isArchived: false,
+      });
+      createdIds.push(reservesTransactionId);
+    }
+
+    return {
+      originalId: args.transactionId,
+      splitIds: createdIds,
+      remainder,
+      totalSplits: args.splits.length,
+      hasRemainder: remainder > 0,
+    };
+  }
 });

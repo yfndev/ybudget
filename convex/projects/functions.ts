@@ -63,3 +63,5 @@ export const renameProject = mutation({
     return await ctx.db.patch(args.projectId, { name: args.name });
   },
 });
+
+

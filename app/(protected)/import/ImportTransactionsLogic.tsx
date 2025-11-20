@@ -27,7 +27,9 @@ export const ImportTransactionsLogic = () => {
   const updateTransaction = useMutation(
     api.transactions.functions.updateTransaction
   );
-  const allocateBudget = useMutation(api.budgets.functions.allocateBudget);
+  const splitTransaction = useMutation(
+    api.transactions.functions.splitTransaction
+  );
 
   const current = transactions?.[index] || null;
 
@@ -98,16 +100,34 @@ export const ImportTransactionsLogic = () => {
     }
 
     try {
-      await updateTransaction({
-        transactionId: current._id,
-        projectId: splitIncome ? undefined : (projectId as Id<"projects">),
-        categoryId: categoryId as Id<"categories">,
-        donorId: donorId ? (donorId as Id<"donors">) : undefined,
-        matchedTransactionId: selectedMatch
-          ? (selectedMatch as Id<"transactions">)
-          : undefined,
-        isSplitIncome: splitIncome || undefined,
-      });
+      if (splitIncome && budgetAllocations.length > 0) {
+        await updateTransaction({
+          transactionId: current._id,
+          categoryId: categoryId as Id<"categories">,
+          donorId: donorId ? (donorId as Id<"donors">) : undefined,
+          matchedTransactionId: selectedMatch
+            ? (selectedMatch as Id<"transactions">)
+            : undefined,
+        });
+
+        await splitTransaction({
+          transactionId: current._id,
+          splits: budgetAllocations.map((a) => ({
+            projectId: a.projectId as Id<"projects">,
+            amount: a.amount,
+          })),
+        });
+      } else {
+        await updateTransaction({
+          transactionId: current._id,
+          projectId: projectId as Id<"projects">,
+          categoryId: categoryId as Id<"categories">,
+          donorId: donorId ? (donorId as Id<"donors">) : undefined,
+          matchedTransactionId: selectedMatch
+            ? (selectedMatch as Id<"transactions">)
+            : undefined,
+        });
+      }
 
       if (selectedMatch) {
         await updateTransaction({
@@ -116,20 +136,12 @@ export const ImportTransactionsLogic = () => {
         });
       }
 
-      if (splitIncome && budgetAllocations.length > 0) {
-        await allocateBudget({
-          transactionId: current._id,
-          allocations: budgetAllocations.map((a) => ({
-            projectId: a.projectId as Id<"projects">,
-            amount: a.amount,
-          })),
-        });
-      }
-
       toast.success("Transaktion gespeichert");
       handleNext();
-    } catch {
-      toast.error("Fehler beim Speichern");
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Fehler beim Speichern";
+      toast.error(errorMessage);
     }
   };
 

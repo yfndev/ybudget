@@ -67,6 +67,9 @@ export default defineSchema({
     matchedTransactionId: v.optional(v.string()),
     accountName: v.optional(v.string()),
     isSplitIncome: v.optional(v.boolean()),
+    isArchived: v.optional(v.boolean()),
+    splitFromTransactionId: v.optional(v.id("transactions")),
+    transferId: v.optional(v.string()),
   })
     .index("by_organization_project", ["organizationId", "projectId"])
     .index("by_date", ["date"])
@@ -80,7 +83,10 @@ export default defineSchema({
     .index("by_importedTransactionId", [
       "organizationId",
       "importedTransactionId",
-    ]),
+    ])
+    .index("by_splitFrom", ["splitFromTransactionId"])
+    .index("by_archived", ["isArchived"])
+    .index("by_transferId", ["transferId"]),
 
   budgets: defineTable({
     projectId: v.id("projects"),
