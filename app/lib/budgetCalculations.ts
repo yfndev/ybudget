@@ -25,7 +25,10 @@ export const calculateBudget = (
   );
   currentBalance += allocatedBudget;
 
-  const availableBudget = currentBalance + expectedIncome + expectedExpenses;
+  const availableBudget =
+    currentBalance + expectedIncome + expectedExpenses > 0
+      ? currentBalance + expectedIncome + expectedExpenses
+      : 0;
 
   return {
     currentBalance,

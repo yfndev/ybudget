@@ -33,14 +33,14 @@ export default function ProjectDashboardUI({
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
         <BudgetCard
-          title="Kontostand"
+          title="Projekt Kontostand"
           amount={budgets.currentBalance}
-          description="Verfügbarer Betrag auf dem Konto"
+          description="Verfügbarer Betrag des Projekts"
         />
         <BudgetCard
-          title="Kommt noch rein"
-          amount={budgets.expectedIncome}
-          description="Zugesagtes Geld das noch nicht überwiesen wurde"
+          title="Budget für Ausgaben"
+          amount={budgets.availableBudget}
+          description="Auf dem Konto + kommt rein - muss bezahlt werden"
         />
         <BudgetCard
           title="Muss noch bezahlt werden"
@@ -48,9 +48,9 @@ export default function ProjectDashboardUI({
           description="Rechnungen und Zusagen die noch von uns bezahlt werden müssen"
         />
         <BudgetCard
-          title="Kann ausgegeben werden"
-          amount={budgets.availableBudget}
-          description="Auf dem Konto + kommt rein - muss bezahlt werden"
+          title="Kommt noch rein"
+          amount={budgets.expectedIncome}
+          description="Zugesagtes Geld das noch nicht überwiesen wurde"
         />
       </div>
 

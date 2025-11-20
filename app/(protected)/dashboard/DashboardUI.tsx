@@ -35,9 +35,9 @@ export default function DashboardUI({
           description="Verfügbarer Betrag auf dem Konto"
         />
         <BudgetCard
-          title="Kommt noch rein"
-          amount={budgets.expectedIncome}
-          description="Geplante Einnahmen die noch nicht überwiesen wurden"
+          title="Budget für Ausgaben"
+          amount={budgets.availableBudget}
+          description="Kontostand + geplante Einnahmen - geplante Ausgaben"
         />
         <BudgetCard
           title="Muss noch bezahlt werden"
@@ -45,9 +45,9 @@ export default function DashboardUI({
           description="Geplante Ausgaben (müssen noch nicht bezahlt werden)"
         />
         <BudgetCard
-          title="Kann ausgegeben werden"
-          amount={budgets.availableBudget}
-          description="Kontostand + geplante Einnahmen - geplante Ausgaben"
+          title="Kommt noch rein"
+          amount={budgets.expectedIncome}
+          description="Geplante Einnahmen die noch nicht überwiesen wurden"
         />
       </div>
       <div
