@@ -3,7 +3,7 @@
 I've mapped out YBudget's security architecture using a Level 1 Data Flow Diagram to visualize how data moves through the system and where the critical trust boundaries are between services.
 
 **What are trust boundaries?**
-Trust boundaries mark the points where data crosses between zones with different security levels. When data moves across these boundaries, it needs protection in form of validating and authenticating data before it enters zones with a higher trust, and encrypting before going out to less trusted areas.
+Trust boundaries highlight the points where data crosses between zones with different security levels. When data moves across these boundaries, it needs protection in form of validating and authenticating the data before it enters zones with a higher trust, and encrypting before going out to less trusted areas.
 
 ### Our Trust Zones
 
@@ -11,9 +11,9 @@ I've organized YBudget into five security zones, each with different trust level
 
 **Public Zone (Untrusted)**
 
-User browsers and devices are here, which I can't control. Since any device could be compromised, I treat all input as potentially hostile and validate everything before it enters the system.
+User browsers and devices are here as I can't control if the device is compromised. I therefore treat all input as potentially hostile and validate everything before it enters the system.
 
-**External Services (Untrusted)**
+**External/Third party Services (Untrusted)**
 
 Google OAuth, Stripe, Resend, and Posthog are trusted partners, but I can't control their closed source code. I protect these integrations with API key protection, webhook signature verification, and TLS encryption.
 
@@ -23,30 +23,30 @@ My Next.js application runs on Vercel (Deployment infrastructure) and in user br
 
 **Backend Zone (Trusted)**
 
-The Convex backend is where our business logic (queries & mutations) lives in a fully controlled environment. Every request goes through authentication and authorization checks (role & team based and organization scoped).
+The Convex backend is where our business logic (queries & mutations) lives in a fully controlled environment. Every request goes through authentication and authorization checks (role based and organization scoped).
 
 **Data Zone (Most Trusted)**
 
-The database is the single source of truth and gets the highest level of protection. Organization scoped queries, type-safe operations, and logging in Convex keep it secure.
+The database is the single source of truth and gets the highest level of protection. Organization scoped queries, type-safe operations and logging in Convex keep it secure.
 
 ![Data Flow Diagram](/security/Data%20Flow%20Diagram.png)
 _(Diagram was created in FigJam)_
 
 ## Trust Boundary Analysis using STRIDE
 
-I analyzed each trust boundary using the **STRIDE** framework (Spoofing, Tampering, Repudiation, Information Disclosure, Denial of Service, Escalation of Privileges) to identify YBudget's security strengths and weaknesses:
+I analyzed each trust boundary using the **STRIDE** framework (Spoofing, Tampering, Repudiation, Information Disclosure, Denial of Service, Escalation of Privileges) which was developed by Microsoft to identify YBudget's security strengths and weaknesses:
 
 #### User <-> Frontend (NextJS)
 
-| **Category**                 | **User**                          |                | **Frontend (NextJS)**                                                                   |                            |
-| ---------------------------- | --------------------------------- | -------------- | --------------------------------------------------------------------------------------- | -------------------------- |
-|                              | **Strengths**                     | **Weaknesses** | **Strengths**                                                                           | **Weaknesses**             |
-| **Spoofing**                 | OAuth using Google (no passwords) |                | HTTPS/TLS enforced, Auth check with redirect to login or dashboard in protected layout  |                            |
-| **Tampering**                |                                   |                | CSP headers configured (to tell browser which resources to load to prevent XSS attacks) |                            |
-| **Repudiation**              |                                   |                | PostHog tracking (login, role updates, transactions, etc.)                              |                            |
-| **Information Disclosure**   |                                   |                | HTTPOnly cookies for sessions                                                           |                            |
-| **Denial of Service**        |                                   |                |                                                                                         | No bot protection on login |
-| **Escalation of Privileges** |                                   |                | Role-based UI rendering using `useIsAdmin()`, AccessDenied UI                           |                            |
+| **Category**                 | **User**                          |                | **Frontend (NextJS)**                                                                   |                              |
+| ---------------------------- | --------------------------------- | -------------- | --------------------------------------------------------------------------------------- | ---------------------------- |
+|                              | **Strengths**                     | **Weaknesses** | **Strengths**                                                                           | **Weaknesses**               |
+| **Spoofing**                 | OAuth using Google (no passwords) |                | HTTPS/TLS enforced, Auth check with redirect to login or dashboard in protected layout  |                              |
+| **Tampering**                |                                   |                | CSP headers configured (to tell browser which resources to load to prevent XSS attacks) |                              |
+| **Repudiation**              |                                   |                | Convex function logs track all backend operations                                       | No comprehensive audit trail |
+| **Information Disclosure**   |                                   |                | HTTPOnly cookies for sessions                                                           |                              |
+| **Denial of Service**        |                                   |                |                                                                                         | No bot protection on login   |
+| **Escalation of Privileges** |                                   |                | Role-based UI rendering using `useIsAdmin()`, AccessDenied UI                           |                              |
 
 #### Frontend (NextJS) <-> Backend (Convex)
 
@@ -58,7 +58,7 @@ I analyzed each trust boundary using the **STRIDE** framework (Spoofing, Tamperi
 | **Repudiation**              |                              | No request IDs |                                                 | No comprehensive audit logging, only general logging of functions |
 | **Information Disclosure**   | HTTPS/TLS enforced           |                | Encrypted responses                             |
 | **Denial of Service**        |                              |                | Rate limiting of queries/ mutations built-in    |                                                                   |
-| **Escalation of Privileges** | Token-based auth             |                | Role based access control using `requireRole()` | Permissions re-checked on every request (no caching)              |
+| **Escalation of Privileges** | JWT based auth               |                | Role based access control using `requireRole()` | Permissions re-checked on every request (no caching)              |
 
 #### Backend (Convex) <-> Database
 
@@ -90,17 +90,18 @@ I analyzed each trust boundary using the **STRIDE** framework (Spoofing, Tamperi
 | ---------------------------- | ------------------------------------- | ------------------------------------- | ---------------------------- | -------------- |
 |                              | **Strengths**                         | **Weaknesses**                        | **Strengths**                | **Weaknesses** |
 | **Spoofing**                 | OAuth 2.0 handled through Convex Auth | No visible state parameter validation | Google identity verification |                |
-| **Tampering**                | Token validation automatic            |                                       | Signed tokens                |                |
+| **Tampering**                | Automatic token validation            |                                       | Signed tokens                |                |
 | **Repudiation**              |                                       | No failed attempt tracking            |                              |                |
 | **Information Disclosure**   | HTTPS/TLS                             |                                       | Minimal user data exposure   |                |
 | **Denial of Service**        |                                       |                                       | Google rate limits           |                |
 | **Escalation of Privileges** |                                       |                                       | Token expiration managed     |                |
 
-**Security issues I fixed while doing the STRIDE Analysis** (and therefore aren't in weaknesses column anymore):
+**Security issues I fixed while doing the STRIDE Analysis**
+(and therefore aren't in weaknesses column anymore):
 
 - implemented CSP header to prevent cross site scripting attacks
 - limited CSV upload to only upload CSV files (confirmed that React & Papa Parse Library limit scripting )
-- implemented organization based access control to donor and team functions
+- implemented organization based access control
 
 ## Architecture & Dependencies
 
@@ -113,7 +114,7 @@ I analyzed each trust boundary using the **STRIDE** framework (Spoofing, Tamperi
 
 This analysis focuses on what I can control at the application level. I'm explicitly not covering:
 
-- **Physical security:** Data center security is handled by cloud providers
+- **Physical security:** As data center security is handled by cloud providers
 - **Cloud provider internals:** I trust Convex, Vercel, and Stripe to secure their infrastructure
 - **End-user devices:** I can't control if someone's laptop has malware or their browser is outdated
 - **Network infrastructure:** ISP security, routing, and network-level DDoS are outside my control

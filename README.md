@@ -2,13 +2,13 @@
 
 > Open-source budget management for german associations.
 
-YBudget helps german (non profit) associations manage their budgets when managing them in Excel gets too complicated. It was built by [Joël Heil Escobar](https://www.linkedin.com/in/joel-heil-escobar) as a capstone project at [CODE University](https://code.berlin/) as his co-founded organization, the [Young Founders Network e.V.](https://youngfounders.network) was in desperate need for such a solution.
+YBudget helps german (non profit) associations manage their budgets when Excel gets too complicated. It is built by [Joël Heil Escobar](https://www.linkedin.com/in/joel-heil-escobar) as a [CODE University](https://code.berlin/) Capstone project. The initial idea came when the [Young Founders Network e.V.](https://youngfounders.network) got into desperate need of such a solution.
 
 **The problem?**
-Most budget tools are too expensive or too complex for associations to use.
+Most budget tools are too expensive or too complex for associations to use. While Excel is flexible, it is also plenty of work keeping track of all the expenses that go in and out.
 
 **Our solution?**
-Simple, affordable, and open-source.
+Simple, affordable, intuitive and open-source.
 
 ## Features
 
@@ -27,7 +27,7 @@ Simple, affordable, and open-source.
 
 ## Self-Hosting
 
-YBudget is fully self-hostable. Connect it to your own Convex backend and deploy it on your favorite platform (I used Vercel).
+YBudget is fully self-hostable. Connect it to your own Convex backend and deploy it on your favorite platform (We use Vercel).
 
 **Prerequisites:** Node.js 20+, pnpm, [Convex account](https://www.convex.dev/) (free tier available)
 
@@ -49,26 +49,17 @@ cp env.example .env.local
 
 # Run locally
 pnpm dev
-```
 
-**Environment Variables:**
 
-- See `env.example` for required variables
-- Set `CONVEX_DEPLOYMENT` and `NEXT_PUBLIC_CONVEX_URL` in `.env.local`
-- Set `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`, `SITE_URL`, and optional Stripe keys in Convex Dashboard
-
-**Deploy:**
-
-```bash
 npx vercel          # Deploy Next.js
 npx convex deploy   # Deploy Convex functions
 ```
 
 ## Contributing
 
-We're building a tool to support NGOs on their mission to make budgeting as easy as possible. Would be awesome to have you on board 🙌
+We're building a tool to support NGOs on their mission by making budgeting as easy as possible. Would be awesome to have you on board and ship ideas with us 🙌
 
-**How to contribute:**
+**This is how you contribute:**
 
 1. Fork the repo
 2. Clone your fork locally (`git clone https://github.com/YOUR-USERNAME/ybudget.git`)
@@ -89,8 +80,8 @@ We take security seriously at YBudget. Here's how we protect your financial data
 **1. OAuth instead of Password**
 
 - We use OAuth 2.0 with Google instead of traditional username/password authentication
-- Eliminates frequent password vulnerabilities (weak passwords or password reuse by user)
-- Implemented with [Convex Auth](https://labs.convex.dev/auth) → Google Provider in `convex/auth.ts`
+- This eliminates frequent password vulnerabilities (weak passwords or password reuse by user)
+- It's implemented with [Convex Auth](https://labs.convex.dev/auth) → Google Provider in `convex/auth.ts`
 
 **2. Organizational Isolation**
 
@@ -101,7 +92,7 @@ We take security seriously at YBudget. Here's how we protect your financial data
 **3. Role-Based Access Control**
 
 - Implemented permission levels, after talking to first potential customers
-- `member` (read-only) → `lead` (can edit) → `admin` (full control over users, projects, etc.)
+- `member` (read-only) → `lead` (can edit and manage teams) → `admin` (full control over users, projects, etc.)
 - Functions check minimum required roles before executing sensitive operations
 - `requireRole(ctx, "admin")` validates permissions through `convex/users/permissions.ts`
 
@@ -124,7 +115,7 @@ We take security seriously at YBudget. Here's how we protect your financial data
 
 **7. Auth JWT token security**
 
-- Convex Auth signs JWT tokens with private keys only our backend can access
+- Convex Auth signs JWT tokens with private keys so that only our backend can access
 - Sessions expire automatically and users need to re-authenticate after some time
 - Tokens are stored using httpOnly cookies with SameSite=Strict
 
@@ -132,8 +123,8 @@ We take security seriously at YBudget. Here's how we protect your financial data
 
 **8. Input Validation**
 
-- Every function argument is validated at runtime using Convex validators, so that we can make sure that the data is correct
-- This prevents malformed data from entering the system
+- Every function argument is validated at runtime using Convex validators
+- This prevents malformed data from entering the system and makes sure that the data is correct
 
 **9. Type-Safe Database Operations**
 
@@ -145,12 +136,12 @@ We take security seriously at YBudget. Here's how we protect your financial data
 - We separate sensitive operations (like payment fulfillment, user management) into internal functions
 - These internal functions can only be called from our backend (not from client code)
 
-#### Third Party Integration Security
+#### Third Party Integrations
 
 **11. Stripe Webhook Verification**
 
 - Every Stripe webhook is verified before we process it using `STRIPE_WEBHOOKS_SECRET`
-- Webhooks are signed with HMAC-SHA256 using a shared secret
+- Webhooks are signed using a shared secret
 
 **12. Secure Payment Processing**
 
@@ -161,22 +152,19 @@ We take security seriously at YBudget. Here's how we protect your financial data
 
 **13. Cross-Site Scripting (XSS)**
 
-- Content Security Policy headers restrict which resources can be loaded
+- Content Security Policy (CSP) headers restrict which resources can be loaded
 - React automatically escapes user input when rendering
 - We don't use `dangerouslySetInnerHTML` or eval anywhere in the codebase
 
 **14. Rate Limiting**
 
-- Convex provides built-in rate limiting on queries and mutations
+- Convex provides built in rate limiting on queries and mutations
 - Prevents brute force attacks on login and API endpoints
-
-### Production Deployment
 
 **15. Secure Deployment Architecture**
 
 - Frontend deployed on Vercel: automatic HTTPS, DDoS protection, CDN caching
 - Backend functions run on Convex Cloud: managed security patches, automated encrypted backups
-- Organization data isolated by `organizationId` at query level - even Convex support can't access customer data
 
 **📋 Threat Model:**
 For a comprehensive threat analysis including STRIDE analysis and our data flow chart have a look at our [Threat model](security/ThreatModel.md)
