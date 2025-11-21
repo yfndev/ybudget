@@ -2,9 +2,7 @@ import BudgetCard from "@/components/Dashboard/BudgetCard";
 import { PageHeader } from "@/components/Layout/PageHeader";
 
 import { CashflowChartUI } from "@/components/Dashboard/CashflowChartUI";
-import ProjectCard from "@/components/Dashboard/ProjectCard";
 import type { Doc } from "@/convex/_generated/dataModel";
-import { calculateProgressPercentage } from "@/lib/budgetCalculations";
 
 interface DashboardUIProps {
   projects: Doc<"projects">[];
@@ -57,7 +55,7 @@ export default function DashboardUI({
         <CashflowChartUI />
       </div>
 
-      <h2
+      {/* <h2
         className="text-xl font-semibold mb-4 mt-4 lg:mt-6"
         id="tour-projects-section"
       >
@@ -80,7 +78,7 @@ export default function DashboardUI({
             />
           );
         })}
-      </div>
+      </div> */}
     </div>
   );
 }

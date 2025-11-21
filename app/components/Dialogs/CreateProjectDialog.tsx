@@ -64,7 +64,7 @@ export function CreateProjectDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Neues Projekt erstellen</DialogTitle>
+          <DialogTitle>Neues Projekt/Department erstellen</DialogTitle>
           <DialogDescription>
             Erstelle ein neues Projekt für deine Organisation.
           </DialogDescription>
@@ -72,10 +72,10 @@ export function CreateProjectDialog({
 
         <div className="space-y-4">
           <div className="flex flex-col gap-2">
-            <Label htmlFor="project-name">Projektname</Label>
+            <Label htmlFor="project-name">Projektname*</Label>
             <Input
               id="project-name"
-              placeholder="z.B. YFN 9.0"
+              placeholder="Wie soll es heißen?"
               value={name}
               onChange={(e) => setName(e.target.value)}
               autoFocus
@@ -83,10 +83,10 @@ export function CreateProjectDialog({
           </div>
 
           <div className="flex flex-col gap-2">
-            <Label htmlFor="project-description">Beschreibung (optional)</Label>
+            <Label htmlFor="project-description">Beschreibung</Label>
             <Textarea
               id="project-description"
-              placeholder="Beschreibe dein Projekt..."
+              placeholder="Beschreibe es..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
@@ -95,7 +95,7 @@ export function CreateProjectDialog({
           </div>
 
           <div className="flex flex-col gap-2">
-            <Label>Übergeordnetes Projekt (optional)</Label>
+            <Label>Übergeordnetes Projekt/Department wählen</Label>
             <SelectProject value={parentId} onValueChange={setParentId} />
           </div>
         </div>
