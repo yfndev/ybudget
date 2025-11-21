@@ -3,10 +3,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export const ImportTransactionsSkeleton = () => {
   return (
-    <div>
+    <div id="tour-import-page">
       <PageHeader title="Transaktionen zuordnen" />
-      <div className="flex-1 flex mt-16 gap-16">
-        <div className="w-1/4 flex flex-col h-full flex-shrink-0">
+      <div className="flex mt-8 justify-center" id="tour-import-progress">
+        <Skeleton className="w-3/4 h-2" />
+      </div>
+      <div className="flex mt-24 h-full justify-between">
+        <div id="tour-expected-matches" className="w-1/4 flex flex-col h-full flex-shrink-0">
           <div className="mb-4">
             <Skeleton className="h-7 w-32 mb-2" />
             <Skeleton className="h-4 w-48" />
@@ -18,7 +21,7 @@ export const ImportTransactionsSkeleton = () => {
           </div>
         </div>
 
-        <div className="mt-16 flex-shrink-0">
+        <div id="tour-import-card" className="flex-shrink-0">
           <div className="w-[600px] h-auto p-8 border shadow-sm rounded-lg flex flex-col flex-shrink-0 flex-grow-0">
             <div className="mb-8">
               <div className="flex items-start justify-between mb-6">
@@ -54,9 +57,12 @@ export const ImportTransactionsSkeleton = () => {
             </div>
           </div>
         </div>
-      </div>
-      <div className="mt-auto pt-6">
-        <Skeleton className="h-2 w-3/4 mx-auto" />
+
+        <div className="flex p-6 rounded-lg w-1/4">
+          <div className="w-full">
+            <Skeleton className="h-48 w-full rounded-lg" />
+          </div>
+        </div>
       </div>
     </div>
   );
