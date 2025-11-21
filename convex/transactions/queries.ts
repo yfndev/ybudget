@@ -8,12 +8,10 @@ import { addProjectAndCategoryNames } from "../utils/addProjectNames";
 export const getAllTransactions = query({
   args: {
     projectId: v.optional(v.id("projects")),
-    includeArchived: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
 
-    // if no projectId is set, it returns all transactions within the org
     const query = args.projectId
       ? ctx.db
           .query("transactions")
@@ -27,16 +25,18 @@ export const getAllTransactions = query({
           .withIndex("by_organization", (q) =>
             q.eq("organizationId", user.organizationId),
           );
-    let transactions = await query.collect();
-    if (!args.includeArchived) {
-      transactions = transactions.filter((t) => !t.isArchived);
-    }
+
+    const transactions = await query
+      .filter((q) => q.neq(q.field("isArchived"), true))
+      .collect();
+
     const filtered = await filterByProjectAccess(
       ctx,
       user._id,
       user.organizationId,
       transactions,
     );
+
     return addProjectAndCategoryNames(ctx, filtered);
   },
 });
@@ -59,6 +59,24 @@ export const getUnassignedProcessedTransactions = query({
     });
 
     return unassigned.sort((a, b) => b.date - a.date);
+  },
+});
+
+export const getOldestTransactionDate = query({
+  args: {},
+  handler: async (ctx) => {
+    const user = await getCurrentUser(ctx);
+
+    const oldest = await ctx.db
+      .query("transactions")
+      .withIndex("by_organization", (q) =>
+        q.eq("organizationId", user.organizationId),
+      )
+      .filter((q) => q.neq(q.field("isArchived"), true))
+      .order("asc")
+      .first();
+
+    return oldest?.date ?? Date.now();
   },
 });
 
@@ -106,60 +124,71 @@ export const getPaginatedTransactions = query({
   args: {
     projectId: v.optional(v.id("projects")),
     donorId: v.optional(v.id("donors")),
-    includeArchived: v.optional(v.boolean()),
+    startDate: v.optional(v.number()),
+    endDate: v.optional(v.number()),
     paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
+    const hasDateRange = args.startDate !== undefined && args.endDate !== undefined;
 
-    // different queries for different indexes to maximize performance and minimize data transfer
-    const query = args.projectId
+    const query = hasDateRange
       ? ctx.db
           .query("transactions")
-          .withIndex("by_organization_project", (q) =>
-            q
-              .eq("organizationId", user.organizationId)
-              .eq("projectId", args.projectId),
+          .withIndex("by_date", (q) =>
+            q.gte("date", args.startDate!).lte("date", args.endDate!),
           )
-      : args.donorId
+          .filter((q) => q.eq(q.field("organizationId"), user.organizationId))
+      : args.projectId
         ? ctx.db
             .query("transactions")
-            .withIndex("by_organization_donor", (q) =>
+            .withIndex("by_organization_project", (q) =>
               q
                 .eq("organizationId", user.organizationId)
-                .eq("donorId", args.donorId),
+                .eq("projectId", args.projectId),
             )
-        : ctx.db
-            .query("transactions")
-            .withIndex("by_organization", (q) =>
-              q.eq("organizationId", user.organizationId),
-            );
+        : args.donorId
+          ? ctx.db
+              .query("transactions")
+              .withIndex("by_organization_donor", (q) =>
+                q
+                  .eq("organizationId", user.organizationId)
+                  .eq("donorId", args.donorId),
+              )
+          : ctx.db
+              .query("transactions")
+              .withIndex("by_organization", (q) =>
+                q.eq("organizationId", user.organizationId),
+              );
 
-    const filteredQuery =
-      args.projectId && args.donorId
-        ? query.filter((q) => q.eq(q.field("donorId"), args.donorId))
-        : query;
+    const filteredQuery = query.filter((q) => {
+      const notArchived = q.neq(q.field("isArchived"), true);
+
+      if (args.projectId && hasDateRange) {
+        return q.and(notArchived, q.eq(q.field("projectId"), args.projectId));
+      }
+
+      if (args.donorId && (hasDateRange || args.projectId)) {
+        return q.and(notArchived, q.eq(q.field("donorId"), args.donorId));
+      }
+
+      return notArchived;
+    });
 
     const result = await filteredQuery
       .order("desc")
       .paginate(args.paginationOpts);
 
-    let pageTransactions = result.page;
-    if (!args.includeArchived) {
-      pageTransactions = pageTransactions.filter((t) => !t.isArchived);
-    }
     const filtered = await filterByProjectAccess(
       ctx,
       user._id,
       user.organizationId,
-      pageTransactions,
+      result.page,
     );
-    const page = await addProjectAndCategoryNames(ctx, filtered);
 
     return {
-      isDone: result.isDone,
-      continueCursor: result.continueCursor,
-      page,
+      ...result,
+      page: await addProjectAndCategoryNames(ctx, filtered),
     };
   },
 });

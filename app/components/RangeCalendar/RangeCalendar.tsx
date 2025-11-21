@@ -17,6 +17,8 @@ import type { DateRange as ReactDayPickerDateRange } from "react-day-picker";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { api } from "@/convex/_generated/api";
+import { useQuery } from "convex/react";
 
 interface DateRange {
   from: Date;
@@ -34,6 +36,10 @@ const RangeCalendar = ({
 }: RangeCalendarProps) => {
   const today = new Date();
   const [month, setMonth] = useState(today);
+  const oldestDate = useQuery(
+    api.transactions.queries.getOldestTransactionDate,
+    {}
+  );
 
   const presetRanges: Record<string, DateRange> = {
     month: { from: startOfMonth(today), to: endOfMonth(today) },
@@ -74,7 +80,7 @@ const RangeCalendar = ({
           className="w-full bg-transparent p-0"
         />
       </CardContent>
-      <CardFooter className="flex flex-wrap gap-2 border-t px-4 !pt-4">
+      <CardFooter className="flex flex-wrap gap-2 border-t px-4 pt-4!">
         <Button
           variant="outline"
           size="sm"
@@ -121,7 +127,10 @@ const RangeCalendar = ({
           variant="outline"
           size="sm"
           onClick={() =>
-            handlePresetClick({ from: new Date(0), to: new Date() })
+            handlePresetClick({
+              from: new Date(oldestDate ?? 0),
+              to: new Date(),
+            })
           }
         >
           All
