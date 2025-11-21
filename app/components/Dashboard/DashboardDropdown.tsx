@@ -27,6 +27,11 @@ export function DashboardDropdown({
 }) {
   const canEdit = useCanEdit();
   const isAdmin = useIsAdmin();
+
+  if (!canEdit && !isAdmin) {
+    return null;
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -34,7 +39,7 @@ export function DashboardDropdown({
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-auto mr-4" align="start">
         <DropdownMenuGroup>
-          {canEdit && (
+          {isAdmin && (
             <>
               <DropdownMenuItem onSelect={onOpenExpense}>
                 <span className="font-semibold"> Ausgabe planen</span>
@@ -53,31 +58,24 @@ export function DashboardDropdown({
                 <span> Förderer hinzufügen</span>
                 <DropdownMenuShortcut>⇧⌘F</DropdownMenuShortcut>
               </DropdownMenuItem>
+              <DropdownMenuItem onSelect={onOpenCategory}>
+                <span> Kategorie hinzufügen</span>
+                <DropdownMenuShortcut>⇧⌘K</DropdownMenuShortcut>
+              </DropdownMenuItem>
               <DropdownMenuItem onSelect={onOpenImport}>
                 CSV importieren
                 {/* <DropdownMenuShortcut>⇧⌘B</DropdownMenuShortcut> */}
               </DropdownMenuItem>
             </>
           )}
-          {isAdmin && (
-            <DropdownMenuItem onSelect={onOpenCategory}>
-              <span> Kategorie hinzufügen</span>
-              <DropdownMenuShortcut>⇧⌘K</DropdownMenuShortcut>
-            </DropdownMenuItem>
-          )}
-          {!canEdit && (
+
+          {!canEdit && !isAdmin && (
             <DropdownMenuItem disabled>
               <span className="text-muted-foreground">
                 Nur Ansichtsberechtigung
               </span>
             </DropdownMenuItem>
           )}
-          <DropdownMenuSeparator />
-          <DropdownMenuItem>
-            <span className="text-muted-foreground"> Shortcuts</span>
-
-            {/* <DropdownMenuShortcut>⌘K</DropdownMenuShortcut> */}
-          </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
