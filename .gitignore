@@ -42,7 +42,11 @@ yarn-error.log*
 next-env.d.ts
 .gitignore
 CLAUDE.md
+.claude/
+
 .cursor/rules/convex_rules.mdc
 .claude/settings.local.json
 
 .env.local
+
+.pnpm-store/
