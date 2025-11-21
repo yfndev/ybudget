@@ -149,26 +149,8 @@ export default defineSchema({
   teams: defineTable({
     name: v.string(),
     organizationId: v.id("organizations"),
-    createdAt: v.number(),
+    projectIds: v.array(v.id("projects")),
+    memberIds: v.array(v.id("users")),
     createdBy: v.id("users"),
   }).index("by_organization", ["organizationId"]),
-
-  teamMemberships: defineTable({
-    userId: v.id("users"),
-    teamId: v.id("teams"),
-    role: v.union(v.literal("member"), v.literal("lead"), v.literal("admin")),
-    createdAt: v.number(),
-  })
-    .index("by_user", ["userId"])
-    .index("by_team", ["teamId"])
-    .index("by_user_team", ["userId", "teamId"]),
-
-  teamProjects: defineTable({
-    teamId: v.id("teams"),
-    projectId: v.id("projects"),
-    createdAt: v.number(),
-  })
-    .index("by_team", ["teamId"])
-    .index("by_project", ["projectId"])
-    .index("by_team_project", ["teamId", "projectId"]),
 });

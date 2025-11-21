@@ -47,7 +47,7 @@ export const createExpectedTransaction = mutation({
     await requireRole(ctx, "lead");
     const user = await getCurrentUser(ctx);
 
-    if (!(await canAccessProject(ctx, user._id, args.projectId, "lead"))) {
+    if (!(await canAccessProject(ctx, user._id, args.projectId))) {
       throw new Error("No access to this project");
     }
 
@@ -132,14 +132,14 @@ export const updateTransaction = mutation({
 
     if (
       transaction.projectId &&
-      !(await canAccessProject(ctx, user._id, transaction.projectId, "lead"))
+      !(await canAccessProject(ctx, user._id, transaction.projectId))
     ) {
       throw new Error("No access to this project");
     }
 
     if (
       updates.projectId &&
-      !(await canAccessProject(ctx, user._id, updates.projectId, "lead"))
+      !(await canAccessProject(ctx, user._id, updates.projectId))
     ) {
       throw new Error("No access to the new project");
     }
@@ -185,7 +185,7 @@ export const splitTransaction = mutation({
     }
 
     for (const split of args.splits) {
-      if (!(await canAccessProject(ctx, user._id, split.projectId, "lead"))) {
+      if (!(await canAccessProject(ctx, user._id, split.projectId))) {
         throw new Error(`No access to project ${split.projectId}`);
       }
     }

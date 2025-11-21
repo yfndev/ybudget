@@ -10,16 +10,7 @@ interface TeamRowUIProps {
   startEditing: () => void;
   handleSave: () => void;
   handleKeyDown: (e: React.KeyboardEvent) => void;
-  teamMembers: {
-    membershipId: Id<"teamMemberships">;
-    userId: Id<"users">;
-    role: "admin" | "lead" | "member";
-    name?: string;
-    email?: string;
-    image?: string;
-  }[];
   allProjects: Doc<"projects">[];
-  assignedProjectIds: Map<Id<"projects">, Id<"teamProjects">>;
   handleToggleProject: (projectId: Id<"projects">) => void;
 }
 
@@ -31,9 +22,7 @@ export default function TeamRowUI({
   startEditing,
   handleSave,
   handleKeyDown,
-  teamMembers,
   allProjects,
-  assignedProjectIds,
   handleToggleProject,
 }: TeamRowUIProps) {
   return (
@@ -56,7 +45,9 @@ export default function TeamRowUI({
         )}
       </TableCell>
       <TableCell>
-        <Badge variant="secondary">{teamMembers.length} Mitglieder</Badge>
+        <Badge variant="secondary">
+          {team.memberIds?.length || 0} Mitglieder
+        </Badge>
       </TableCell>
       <TableCell className="pr-6">
         <div className="flex flex-wrap gap-2">
@@ -65,7 +56,7 @@ export default function TeamRowUI({
               <Badge
                 key={project._id}
                 variant={
-                  assignedProjectIds.has(project._id) ? "default" : "outline"
+                  team.projectIds?.includes(project._id) ? "default" : "outline"
                 }
                 className="cursor-pointer hover:opacity-80 transition-opacity"
                 onClick={() => handleToggleProject(project._id)}

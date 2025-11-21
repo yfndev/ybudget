@@ -1,10 +1,6 @@
 import type { Id } from "../_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "../_generated/server";
 
-type TeamRole = "member" | "lead" | "admin";
-
-const roleHierarchy = { member: 1, lead: 2, admin: 3 } as const;
-
 async function isOrgAdmin(ctx: QueryCtx | MutationCtx, userId: Id<"users">) {
   const user = await ctx.db.get(userId);
   return user?.role === "admin";
@@ -27,18 +23,16 @@ export async function getUserAccessibleProjectIds(
     return projects.map((p) => p._id);
   }
 
-  const memberships = await ctx.db
-    .query("teamMemberships")
-    .withIndex("by_user", (q) => q.eq("userId", userId))
+  const teams = await ctx.db
+    .query("teams")
+    .withIndex("by_organization", (q) => q.eq("organizationId", organizationId))
     .collect();
 
   const projectIds = new Set<Id<"projects">>();
-  for (const { teamId } of memberships) {
-    const teamProjects = await ctx.db
-      .query("teamProjects")
-      .withIndex("by_team", (q) => q.eq("teamId", teamId))
-      .collect();
-    teamProjects.forEach((tp) => projectIds.add(tp.projectId));
+  for (const team of teams) {
+    if (team.memberIds.includes(userId)) {
+      team.projectIds.forEach((pid) => projectIds.add(pid));
+    }
   }
 
   return Array.from(projectIds);
@@ -48,50 +42,22 @@ export async function canAccessProject(
   ctx: QueryCtx | MutationCtx,
   userId: Id<"users">,
   projectId: Id<"projects">,
-  requiredRole: TeamRole = "member",
 ): Promise<boolean> {
   if (await isOrgAdmin(ctx, userId)) return true;
 
-  const userTeams = await ctx.db
-    .query("teamMemberships")
-    .withIndex("by_user", (q) => q.eq("userId", userId))
+  const project = await ctx.db.get(projectId);
+  if (!project) return false;
+
+  const teams = await ctx.db
+    .query("teams")
+    .withIndex("by_organization", (q) => q.eq("organizationId", project.organizationId))
     .collect();
 
-  const projectTeams = await ctx.db
-    .query("teamProjects")
-    .withIndex("by_project", (q) => q.eq("projectId", projectId))
-    .collect();
-
-  const projectTeamIds = new Set(projectTeams.map((pt) => pt.teamId));
-  const relevantMemberships = userTeams.filter((m) =>
-    projectTeamIds.has(m.teamId),
+  return teams.some(
+    (team) => team.memberIds.includes(userId) && team.projectIds.includes(projectId)
   );
-
-  if (relevantMemberships.length === 0) return false;
-
-  const highestRole = Math.max(
-    ...relevantMemberships.map((m) => roleHierarchy[m.role]),
-  );
-
-  return highestRole >= roleHierarchy[requiredRole];
 }
 
-export async function isTeamAdmin(
-  ctx: QueryCtx | MutationCtx,
-  userId: Id<"users">,
-  teamId: Id<"teams">,
-): Promise<boolean> {
-  if (await isOrgAdmin(ctx, userId)) return true;
-
-  const membership = await ctx.db
-    .query("teamMemberships")
-    .withIndex("by_user_team", (q) =>
-      q.eq("userId", userId).eq("teamId", teamId),
-    )
-    .first();
-
-  return membership?.role === "admin";
-}
 
 export async function filterByProjectAccess<
   T extends { projectId?: Id<"projects"> },

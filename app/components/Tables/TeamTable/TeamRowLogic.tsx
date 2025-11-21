@@ -4,35 +4,22 @@ import { useQuery } from "convex-helpers/react/cache";
 import { useMutation } from "convex/react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
-import TeamTableUI from "./TeamRowUI";
 import TeamRowUI from "./TeamRowUI";
 
 export default function TeamRow({ team }: { team: Doc<"teams"> }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedName, setEditedName] = useState(team.name);
 
-  const teamMembers = useQuery(api.teams.queries.getTeamMembers, {
-    teamId: team._id,
-  });
   const allProjects = useQuery(api.projects.queries.getAllOrganizationProjects);
-  const teamProjects = useQuery(api.teams.queries.getTeamProjects, {
-    teamId: team._id,
-  });
   const assignProject = useMutation(api.teams.functions.assignProjectToTeam);
-  const removeProjectFromTeam = useMutation(
-    api.teams.functions.removeProjectFromTeam,
-  );
+  const removeProject = useMutation(api.teams.functions.removeProjectFromTeam);
   const renameTeam = useMutation(api.teams.functions.renameTeam);
 
-  const projectAssignmentMap = new Map(
-    teamProjects?.map((p: any) => [p._id, p.assignmentId]) || [],
-  );
-
   const handleToggleProject = async (projectId: Id<"projects">) => {
-    const assignmentId = projectAssignmentMap.get(projectId);
+    const isAssigned = team.projectIds?.includes(projectId) || false;
     try {
-      if (assignmentId) {
-        await removeProjectFromTeam({ teamProjectId: assignmentId });
+      if (isAssigned) {
+        await removeProject({ teamId: team._id, projectId });
         toast.success("Projekt entfernt");
       } else {
         await assignProject({ teamId: team._id, projectId });
@@ -64,7 +51,7 @@ export default function TeamRow({ team }: { team: Doc<"teams"> }) {
       setIsEditing(false);
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Fehler beim Umbenennen",
+        error instanceof Error ? error.message : "Fehler beim Umbenennen"
       );
       setEditedName(team.name);
       setIsEditing(false);
@@ -89,9 +76,7 @@ export default function TeamRow({ team }: { team: Doc<"teams"> }) {
       startEditing={() => setIsEditing(true)}
       handleSave={handleSave}
       handleKeyDown={handleKeyDown}
-      teamMembers={teamMembers || []}
       allProjects={allProjects || []}
-      assignedProjectIds={projectAssignmentMap}
       handleToggleProject={handleToggleProject}
     />
   );

@@ -52,7 +52,7 @@ export function CreateTeamDialog({
 
       await Promise.all(
         Array.from(selectedUserIds).map((userId) =>
-          addTeamMember({ teamId, userId, role: "member" })
+          addTeamMember({ teamId, userId })
         )
       );
 
