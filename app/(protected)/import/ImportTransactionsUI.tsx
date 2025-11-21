@@ -22,7 +22,7 @@ interface ImportTransactionsUIProps {
   handleExpectedTransactionSelect: (id: string) => void;
   onSplitIncomeChange: (splitIncome: boolean) => void;
   onBudgetAllocationsChange: (
-    allocations: Array<{ projectId: string; amount: number }>
+    allocations: Array<{ projectId: string; amount: number }>,
   ) => void;
 }
 

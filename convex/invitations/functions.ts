@@ -6,8 +6,6 @@ import { getCurrentUser } from "../users/getCurrentUser";
 
 export const resend: Resend = new Resend(components.resend, {});
 
-
-
 export const sendInvitation = mutation({
   args: {
     name: v.string(),

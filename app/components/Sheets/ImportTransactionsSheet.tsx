@@ -185,7 +185,7 @@ export function ImportTransactionsSheet({
           <div className="mt-8 px-5">
             <div className="mb-6">
               <Label className="text-base font-medium">
-                Datenquelle auswählen
+                Von wo möchtest du die CSV importieren?
               </Label>
               <Select
                 value={importSource}

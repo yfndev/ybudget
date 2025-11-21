@@ -16,7 +16,7 @@ interface TransactionsPageUIProps {
   onUpdateTransaction: (
     rowId: string,
     field: string,
-    value: any
+    value: any,
   ) => Promise<void>;
   onDeleteTransaction: (rowId: string) => Promise<void>;
 }

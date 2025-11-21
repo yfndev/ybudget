@@ -31,8 +31,6 @@ export default defineSchema({
     .index("phone", ["phone"])
     .index("by_organization", ["organizationId"]),
 
- 
-
   projects: defineTable({
     name: v.string(),
     parentId: v.optional(v.id("projects")),
