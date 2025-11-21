@@ -53,4 +53,3 @@ export const updateUserRole = mutation({
     await ctx.db.patch(args.userId, { role: args.role });
   },
 });
-

@@ -7,32 +7,30 @@ import { getCurrentUser } from "../users/getCurrentUser";
 export const resend: Resend = new Resend(components.resend, {});
 
 export const createInvitation = mutation({
-    args: {
-        email: v.string(),
-        name: v.string(),
-    },
-    handler: async (ctx, args) => {
+  args: {
+    email: v.string(),
+    name: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const user = await getCurrentUser(ctx);
 
-      const user = await getCurrentUser(ctx)
-      
-        await ctx.db.insert("invitations", {
-            email: args.email,
-            name: args.name,
-            organizationId: user.organizationId,
-            createdBy: user._id,
-        });
-    },
+    await ctx.db.insert("invitations", {
+      email: args.email,
+      name: args.name,
+      organizationId: user.organizationId,
+      createdBy: user._id,
+    });
+  },
 });
 
 export const sendInvitation = mutation({
-    args: {
-        name: v.string(),
-        email: v.string(),
-
-    },
+  args: {
+    name: v.string(),
+    email: v.string(),
+  },
   handler: async (ctx, args) => {
-const user = await getCurrentUser(ctx)
-   
+    const user = await getCurrentUser(ctx);
+
     await resend.sendEmail(ctx, {
       from: "YBudget <team@ybudget.de>",
       to: args.email,

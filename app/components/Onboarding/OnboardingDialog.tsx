@@ -25,11 +25,11 @@ export const OnboardingDialog = ({
   const [name, setName] = useState("");
 
   const orgCheck = useQuery(
-    api.organizations.queries.checkOrganizationExistsByUserDomain
+    api.organizations.queries.checkOrganizationExistsByUserDomain,
   );
 
   const setupUserOrganization = useMutation(
-    api.organizations.functions.setupUserOrganization
+    api.organizations.functions.setupUserOrganization,
   );
 
   const isJoiningExisting = orgCheck?.exists === true;

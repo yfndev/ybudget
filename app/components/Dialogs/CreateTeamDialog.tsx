@@ -27,7 +27,7 @@ export function CreateTeamDialog({
 }: CreateTeamDialogProps) {
   const [name, setName] = useState("");
   const [selectedUserIds, setSelectedUserIds] = useState<Set<Id<"users">>>(
-    new Set()
+    new Set(),
   );
 
   const users = useQuery(api.users.queries.listOrganizationUsers);
@@ -53,8 +53,8 @@ export function CreateTeamDialog({
 
       await Promise.all(
         Array.from(selectedUserIds).map((userId) =>
-          addTeamMember({ teamId, userId })
-        )
+          addTeamMember({ teamId, userId }),
+        ),
       );
 
       toast.success("Team erfolgreich erstellt");

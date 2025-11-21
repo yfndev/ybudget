@@ -27,7 +27,7 @@ export function InviteUserDialog({
   const [name, setName] = useState("");
 
   const createInvitation = useMutation(
-    api.invitations.functions.createInvitation
+    api.invitations.functions.createInvitation,
   );
   const sendInvitation = useMutation(api.invitations.functions.sendInvitation);
 

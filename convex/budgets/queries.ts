@@ -28,7 +28,7 @@ export const getBudgetsBySourceTransaction = query({
     return ctx.db
       .query("budgets")
       .withIndex("by_source_transaction", (q) =>
-        q.eq("sourceTransactionId", args.transactionId)
+        q.eq("sourceTransactionId", args.transactionId),
       )
       .collect();
   },
