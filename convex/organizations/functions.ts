@@ -50,7 +50,7 @@ export const createOrganization = mutation({
       name: "Rücklagen",
       parentId: undefined,
       organizationId,
-      isActive: true,
+      isArchived: false,
       createdBy: args.userId,
     });
 

@@ -40,7 +40,7 @@ export default defineSchema({
     parentId: v.optional(v.id("projects")),
     organizationId: v.id("organizations"),
     description: v.optional(v.string()),
-    isActive: v.boolean(),
+    isArchived: v.boolean(),
     createdBy: v.string(),
   }).index("by_organization", ["organizationId"]),
 

@@ -5,6 +5,7 @@ import { editableColumns } from "@/components/Tables/TransactionTable/editableCo
 import { Button } from "@/components/ui/button";
 import type { Doc } from "@/convex/_generated/dataModel";
 import type { PaginationStatus } from "convex/react";
+import { Archive } from "lucide-react";
 
 interface ProjectDashboardUIProps {
   project: Doc<"projects">;
@@ -20,6 +21,7 @@ interface ProjectDashboardUIProps {
   onUpdate: (transactionId: string, field: string, value: any) => Promise<void>;
   onDelete: (transactionId: string) => Promise<void>;
   openTransfer: () => void;
+  onArchive: () => void;
 }
 
 export default function ProjectDashboardUI({
@@ -30,7 +32,8 @@ export default function ProjectDashboardUI({
   loadMore,
   onUpdate,
   onDelete,
-  openTransfer
+  openTransfer,
+  onArchive,
 }: ProjectDashboardUIProps) {
   return (
     <div>
@@ -62,7 +65,14 @@ export default function ProjectDashboardUI({
       <div className="mt-4 lg:mt-6">
         <div className="flex flex-row justify-between my-4">
           <h2 className="text-xl font-semibold ">Transaktionen</h2>
-          <Button variant="outline" onClick={openTransfer}>Geld übertragen</Button>
+          <div className="flex gap-2 items-center">
+            <Button variant="outline" onClick={openTransfer}>
+              Geld übertragen
+            </Button>
+            <Button variant="outline" onClick={onArchive}>
+              <Archive />
+            </Button>
+          </div>
         </div>
         <EditableDataTable
           columns={editableColumns}

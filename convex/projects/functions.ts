@@ -45,7 +45,7 @@ export const createProject = mutation({
       description: args.description,
       organizationId: user.organizationId,
       parentId: args.parentId,
-      isActive: true,
+      isArchived: false,
       createdBy: user._id,
     });
   },
@@ -60,8 +60,17 @@ export const renameProject = mutation({
     if (!project || project.organizationId !== user.organizationId) {
       throw new Error(!project ? "Project not found" : "Access denied");
     }
-    return await ctx.db.patch(args.projectId, { name: args.name });
+    return  ctx.db.patch(args.projectId, { name: args.name });
   },
 });
 
+
+export const archiveProject = mutation({
+  args: {projectId: v.id("projects")},
+  handler: async (ctx, args)  => {
+    await requireRole (ctx, "admin")
+
+    return ctx.db.patch(args.projectId, {isArchived: true})
+  },
+})
 

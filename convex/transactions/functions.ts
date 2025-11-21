@@ -27,7 +27,7 @@ async function ensureReservesDepartment(
     name: "Reserves",
     parentId: undefined,
     organizationId,
-    isActive: true,
+    isArchived: false,
     createdBy: currentUser._id,
   });
 }
