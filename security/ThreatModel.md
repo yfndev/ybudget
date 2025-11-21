@@ -109,7 +109,7 @@ I analyzed each trust boundary using the **STRIDE** framework (Spoofing, Tamperi
 - **Authentication**: Google OAuth 2.0 user verification implemented with Convex Auth → no passwords stored
   → Convex Auth also handles session management, JWT tokens, HTTPOnly cookies
 - **Payment**: Stripe (handles payment compliance)
-- **Deployment**: Vercel (CDN security, DDoS protection, TLS enforcement) + Convex Cloud
+- **Deployment**: Vercel (CDN security, DDoS protection, TLS 1.3 enforcement ) + Convex Cloud (at rest encryption and managed backups)
 
 This analysis focuses on what I can control at the application level. I'm explicitly not covering:
 

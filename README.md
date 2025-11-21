@@ -101,32 +101,32 @@ We take security seriously at YBudget. Here's how we protect your financial data
 **3. Role-Based Access Control**
 
 - Implemented permission levels, after talking to first potential customers
-- `viewer` (read-only) → `editor` (can edit) → `finance` (can edit and match transactions) → `admin` (full control over users, projects, etc.)
+- `member` (read-only) → `lead` (can edit) → `admin` (full control over users, projects, etc.)
 - Functions check minimum required roles before executing sensitive operations
 - `requireRole(ctx, "admin")` validates permissions through `convex/users/permissions.ts`
 
-**4. Team-Based Permissions**
-
-- Project level access control to limit visibility on projects
-- Only Admins and finance roles have organization wide access, everyone else is restricted to team projects
-- Functions can be found in `convex/teams/permissions.ts`
-
 #### Data Protection
 
-**5. Environment Variable Security**
+**4. Credentials & Secrets**
 
 - All credentials (OAuth secrets, Stripe keys, JWT keys, etc.) are stored server side in Convex Dashboard
 - Client never receives API keys or secrets, so that only public keys are exposed to browsers
 
-**6. HTTPS Enforcement**
+**5. HTTPS Enforcement**
 
 - All production traffic is encrypted using TLS, enforced by Convex Hosting and Next.js
 - This protects against man-in-the-middle attacks and stops people from eavesdropping on financial data
 
-**7. Preventing NoSQL injections**
+**6. Encryption at Rest**
 
-- Convex uses type-safe queries to prevents NoSQL injection attacks
-- All database operations use typed query methods, not string concatenation and are validated when compiling
+- Database is hosted on Convex Cloud which encrypts all data
+- Backups are automatically encrypted and isolated per organization
+
+**7. Auth JWT token security**
+
+- Convex Auth signs JWT tokens with private keys only our backend can access
+- Sessions expire automatically and users need to re-authenticate after some time
+- Tokens are stored using httpOnly cookies with SameSite=Strict
 
 ### API Security
 
@@ -135,33 +135,51 @@ We take security seriously at YBudget. Here's how we protect your financial data
 - Every function argument is validated at runtime using Convex validators, so that we can make sure that the data is correct
 - This prevents malformed data from entering the system
 
-**9. Internal vs Public Functions**
+**9. Type-Safe Database Operations**
+
+- Convex uses type-safe queries to prevent NoSQL injection attacks
+- All database operations use typed query methods, not string concatenation
+
+**10. Internal vs Public Functions**
 
 - We separate sensitive operations (like payment fulfillment, user management) into internal functions
 - These internal functions can only be called from our backend (not from client code)
 
 #### Third Party Integration Security
 
-**10. Stripe Webhook Verification**
+**11. Stripe Webhook Verification**
 
 - Every Stripe webhook is verified before we process it using `STRIPE_WEBHOOKS_SECRET`
-- This way, attackers can't fake payment confirmations
+- Webhooks are signed with HMAC-SHA256 using a shared secret
 
-**11. Secure Payment Processing**
+**12. Secure Payment Processing**
 
 - We don't store any credit card data, as we can rely on Stripe as market leader for that
 - Subscriptions are managed through Stripe's customer portal and only the subscriptionId and customerId is saved in our database
 
-### Session Management
+### Attack Prevention
 
-**12. Secure Session Handling**
+**13. Cross-Site Scripting (XSS)**
 
-- We use Convex Auth to manage sessions with JWT tokens and automatic token rotation
-- Sessions expire automatically and users need to re-authenticate after some time
-- Tokens are stored using httpOnly cookies, so JavaScript can't access them
+- Content Security Policy headers restrict which resources can be loaded
+- React automatically escapes user input when rendering
+- We don't use `dangerouslySetInnerHTML` or eval anywhere in the codebase
+
+**14. Rate Limiting**
+
+- Convex provides built-in rate limiting on queries and mutations
+- Prevents brute force attacks on login and API endpoints
+
+### Production Deployment
+
+**15. Secure Deployment Architecture**
+
+- Frontend deployed on Vercel: automatic HTTPS, DDoS protection, CDN caching
+- Backend functions run on Convex Cloud: managed security patches, automated encrypted backups
+- Organization data isolated by `organizationId` at query level - even Convex support can't access customer data
 
 **📋 Threat Model:**
-For a comprehensive threat analysis including STRIDE analysis and our data flow chart have a look at our [Threat model](security/Threatmodel.md)
+For a comprehensive threat analysis including STRIDE analysis and our data flow chart have a look at our [Threat model](security/ThreatModel.md)
 
 ---
 
