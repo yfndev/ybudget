@@ -22,7 +22,7 @@ interface ImportTransactionsUIProps {
   handleExpectedTransactionSelect: (id: string) => void;
   onSplitIncomeChange: (splitIncome: boolean) => void;
   onBudgetAllocationsChange: (
-    allocations: Array<{ projectId: string; amount: number }>,
+    allocations: Array<{ projectId: string; amount: number }>
   ) => void;
 }
 
@@ -50,7 +50,8 @@ export const ImportTransactionsUI = ({
         <PageHeader title="Transaktionen zuordnen" />
         <div className="flex items-center justify-center">
           <p className="text-lg text-muted-foreground">
-            Es gibt keine Transaktionen zum Zuordnen
+            Es gibt keine Transaktionen zum Zuordnen. <br />
+            Oben rechts kannst du neue Transaktionen importieren :)
           </p>
         </div>
       </div>
