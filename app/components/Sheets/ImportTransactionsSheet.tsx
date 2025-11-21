@@ -21,6 +21,7 @@ import { mapCSVRow } from "@/lib/bankImportMapping/csvMappers";
 import { useQuery } from "convex-helpers/react/cache";
 import { useMutation } from "convex/react";
 import { Upload } from "lucide-react";
+import { useRouter } from "next/navigation";
 import Papa from "papaparse";
 import posthog from "posthog-js";
 import { useMemo, useState } from "react";
@@ -39,9 +40,11 @@ export function ImportTransactionsSheet({
   const [importSource, setImportSource] = useState<ImportSource | "">("");
   const [isDragging, setIsDragging] = useState(false);
 
+  const router = useRouter();
+
   const allTransactions = useQuery(
     api.transactions.queries.getAllTransactions,
-    {}
+    {},
   );
 
   const existingIds = useMemo(() => {
@@ -51,7 +54,7 @@ export function ImportTransactionsSheet({
       .filter(Boolean) as string[];
   }, [allTransactions]);
   const addTransaction = useMutation(
-    api.transactions.functions.createImportedTransaction
+    api.transactions.functions.createImportedTransaction,
   );
 
   const handleFile = (file: File) => {
@@ -92,7 +95,7 @@ export function ImportTransactionsSheet({
 
     const skipped = csvData.length - newTransactions.length;
     const toastId = toast.loading(
-      `Importiere 0/${newTransactions.length} Transaktionen...`
+      `Importiere 0/${newTransactions.length} Transaktionen...`,
     );
 
     try {
@@ -117,7 +120,7 @@ export function ImportTransactionsSheet({
           `Importiere ${processed}/${newTransactions.length} Transaktionen...`,
           {
             id: toastId,
-          }
+          },
         );
       }
 
@@ -131,8 +134,9 @@ export function ImportTransactionsSheet({
 
       toast.success(
         `${inserted} neue Transaktionen importiert, ${skipped} Duplikate übersprungen`,
-        { id: toastId }
+        { id: toastId },
       );
+      router.push("/import");
       setCsvData([]);
       setImportSource("");
       onOpenChange(false);

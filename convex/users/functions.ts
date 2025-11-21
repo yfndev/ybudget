@@ -8,61 +8,48 @@ export const addUserToOrganization = mutation({
     userId: v.id("users"),
     organizationId: v.id("organizations"),
     role: v.optional(
-      v.union(
-        v.literal("admin"),
-        v.literal("finance"),
-        v.literal("editor"),
-        v.literal("viewer"),
-      ),
+      v.union(v.literal("admin"), v.literal("lead"), v.literal("member")),
     ),
   },
   handler: async (ctx, args) => {
     await ctx.db.patch(args.userId, {
       organizationId: args.organizationId,
-      role: args.role ?? "editor",
+      role: args.role ?? "lead",
     });
-    return null;
   },
 });
 
 export const updateUserRole = mutation({
   args: {
     userId: v.id("users"),
-    role: v.union(
-      v.literal("admin"),
-      v.literal("finance"),
-      v.literal("editor"),
-      v.literal("viewer"),
-    ),
+    role: v.union(v.literal("admin"), v.literal("lead"), v.literal("member")),
   },
   handler: async (ctx, args) => {
     await requireRole(ctx, "admin");
     const currentUser = await getCurrentUser(ctx);
-
     const targetUser = await ctx.db.get(args.userId);
+
     if (!targetUser) throw new Error("User not found");
-    if (targetUser.organizationId !== currentUser.organizationId) {
+    if (targetUser.organizationId !== currentUser.organizationId)
       throw new Error("Access denied");
-    }
 
     if (targetUser.role === "admin" && args.role !== "admin") {
-      const allUsers = await ctx.db
+      let adminCount = 0;
+      const users = ctx.db
         .query("users")
         .withIndex("by_organization", (q) =>
           q.eq("organizationId", currentUser.organizationId),
-        )
-        .collect();
-
-      const adminCount = allUsers.filter((u) => u.role === "admin").length;
-
-      if (adminCount <= 1) {
+        );
+      for await (const user of users) {
+        if (user.role === "admin") adminCount++;
+        if (adminCount > 1) break;
+      }
+      if (adminCount <= 1)
         throw new Error(
           "Der letzte Admin kann nicht entfernt werden. Mindestens ein Admin ist erforderlich.",
         );
-      }
     }
 
     await ctx.db.patch(args.userId, { role: args.role });
-    return null;
   },
 });

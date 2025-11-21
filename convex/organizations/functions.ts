@@ -25,7 +25,7 @@ async function addUserToOrganization(
   ctx: MutationCtx,
   userId: Id<"users">,
   organizationId: Id<"organizations">,
-  role: "admin" | "editor" | "viewer",
+  role: "admin" | "lead" | "member",
 ): Promise<void> {
   await ctx.db.patch(userId, {
     organizationId,
@@ -39,13 +39,22 @@ export const createOrganization = mutation({
     domain: v.string(),
     userId: v.id("users"),
   },
-  returns: v.id("organizations"),
   handler: async (ctx, args) => {
-    return await ctx.db.insert("organizations", {
+    const organizationId = await ctx.db.insert("organizations", {
       name: args.name,
       domain: args.domain,
       createdBy: args.userId,
     });
+
+    await ctx.db.insert("projects", {
+      name: "Rücklagen",
+      parentId: undefined,
+      organizationId,
+      isArchived: false,
+      createdBy: args.userId,
+    });
+
+    return organizationId;
   },
 });
 
@@ -53,13 +62,6 @@ export const setupUserOrganization = mutation({
   args: {
     organizationName: v.optional(v.string()),
   },
-  returns: v.union(
-    v.object({
-      organizationId: v.id("organizations"),
-      isNew: v.boolean(),
-    }),
-    v.null(),
-  ),
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
 
@@ -76,7 +78,7 @@ export const setupUserOrganization = mutation({
     const existingOrgId = await getOrganizationByDomain(ctx, domain);
 
     if (existingOrgId) {
-      await addUserToOrganization(ctx, user._id, existingOrgId, "viewer");
+      await addUserToOrganization(ctx, user._id, existingOrgId, "member");
       return {
         organizationId: existingOrgId,
         isNew: false,

@@ -3,7 +3,6 @@
 import {
   calculateAxisConfig,
   calculateStartBalance,
-  formatCurrency,
   generateCashflowData,
   type CashflowDataPoint,
 } from "@/components/Dashboard/cashflowChartLogic";
@@ -25,6 +24,7 @@ import {
 import { useDateRange } from "@/contexts/DateRangeContext";
 import { api } from "@/convex/_generated/api";
 import type { Doc } from "@/convex/_generated/dataModel";
+import { formatCurrency } from "@/lib/formatCurrency";
 import {
   filterTransactionsBeforeDate,
   filterTransactionsByDateRange,
@@ -255,7 +255,6 @@ export function CashflowChartUI({
                 dataKey="actualIncome"
                 stackId="stack"
                 fill="#10b981"
-                radius={[0, 0, 0, 0]}
                 isAnimationActive={false}
               />
               <Bar
@@ -263,14 +262,12 @@ export function CashflowChartUI({
                 stackId="stack"
                 fill="#86efac"
                 fillOpacity={0.7}
-                radius={[4, 4, 0, 0]}
                 isAnimationActive={false}
               />
               <Bar
                 dataKey="actualExpenses"
                 stackId="stack"
                 fill="#ef4444"
-                radius={[0, 0, 0, 0]}
                 isAnimationActive={false}
               />
               <Bar
@@ -278,7 +275,6 @@ export function CashflowChartUI({
                 stackId="stack"
                 fill="#fb923c"
                 fillOpacity={0.7}
-                radius={[0, 0, 4, 4]}
                 isAnimationActive={false}
               />
               <Line

@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
+import { formatCurrency } from "@/lib/formatCurrency";
 import { useQuery } from "convex-helpers/react/cache";
 import Link from "next/link";
 
@@ -13,13 +14,8 @@ interface DonorCardProps {
   type: "donation" | "sponsoring";
 }
 
-const formatCurrency = (amount: number) =>
-  new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(
-    amount,
-  );
-
 export default function DonorCard({ donorId, name, type }: DonorCardProps) {
-  const donor = useQuery(api.donors.queries.getEligibleDonorsForCategory, {
+  const donor = useQuery(api.donors.queries.getDonorById, {
     donorId,
   });
 
@@ -74,15 +70,6 @@ export default function DonorCard({ donorId, name, type }: DonorCardProps) {
               </div>
             </div>
           </div>
-
-          {donor.totalExpenses > 0 && (
-            <div className="pt-2 border-t flex justify-between text-xs">
-              <span className="text-muted-foreground">Ausgaben:</span>
-              <span className="font-medium text-red-600">
-                -{formatCurrency(donor.totalExpenses)}
-              </span>
-            </div>
-          )}
         </div>
       </Link>
     </Card>

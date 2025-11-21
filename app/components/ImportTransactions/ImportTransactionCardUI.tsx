@@ -1,10 +1,11 @@
-import { SelectCategory } from "@/components/Sheets/SelectCategory";
-import { SelectDonation } from "@/components/Sheets/SelectDonation";
-import { SelectDonor } from "@/components/Sheets/SelectDonor";
-import { SelectProject } from "@/components/Sheets/SelectProject";
+import { SelectCategory } from "@/components/Selectors/SelectCategory";
+import { SelectDonor } from "@/components/Selectors/SelectDonor";
+import { SelectProject } from "@/components/Selectors/SelectProject";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import type { Id } from "@/convex/_generated/dataModel";
+import { formatCurrency } from "@/lib/formatCurrency";
+import { Checkbox } from "../ui/checkbox";
 
 interface ImportTransactionCardUIProps {
   title: string;
@@ -16,14 +17,13 @@ interface ImportTransactionCardUIProps {
   projectId: string;
   categoryId: string;
   donorId: string;
-  selectedDonationIds: Id<"transactions">[];
   isExpense: boolean;
   isIncome: boolean;
-  hasDonations: boolean;
+  splitIncome: boolean;
   onProjectChange: (projectId: string) => void;
   onCategoryChange: (categoryId: string) => void;
   onDonorChange: (donorId: string) => void;
-  onDonationIdsChange: (donationIds: Id<"transactions">[]) => void;
+  onSplitIncomeChange: (splitIncome: boolean) => void;
 }
 
 export const ImportTransactionCardUI = ({
@@ -36,16 +36,15 @@ export const ImportTransactionCardUI = ({
   projectId,
   categoryId,
   donorId,
-  selectedDonationIds,
   isExpense,
   isIncome,
-  hasDonations,
+  splitIncome,
   onProjectChange,
   onCategoryChange,
   onDonorChange,
-  onDonationIdsChange,
+  onSplitIncomeChange,
 }: ImportTransactionCardUIProps) => (
-  <Card className="w-[600px] h-auto p-8 border shadow-sm flex flex-col flex-shrink-0 flex-grow-0">
+  <Card className="w-[600px] h-auto p-8 border shadow-sm flex flex-col ">
     <div className="mb-8">
       <div className="flex items-start justify-between mb-6">
         <div className="flex-1">
@@ -65,10 +64,7 @@ export const ImportTransactionCardUI = ({
             Betrag
           </div>
           <div className="text-base font-semibold tabular-nums">
-            {new Intl.NumberFormat("de-DE", {
-              style: "currency",
-              currency: "EUR",
-            }).format(amount)}
+            {formatCurrency(amount)}
           </div>
         </div>
         <div>
@@ -83,10 +79,20 @@ export const ImportTransactionCardUI = ({
     </div>
 
     <div className="space-y-6 flex-1">
-      <div className="flex flex-col gap-2">
-        <Label className="text-sm font-semibold">Projekt</Label>
-        <SelectProject value={projectId} onValueChange={onProjectChange} />
-      </div>
+      {!splitIncome && (
+        <div className="flex flex-col gap-2">
+          <Label className="text-sm font-semibold">Projekt</Label>
+          <SelectProject value={projectId} onValueChange={onProjectChange} />
+        </div>
+      )}
+      {splitIncome && (
+        <div className="flex flex-col gap-2 p-3 bg-muted/30 rounded-lg border border-muted">
+          <p className="text-sm text-muted-foreground">
+            💡 Projekt wird nicht zugewiesen, da Budget auf Departments
+            aufgeteilt wird
+          </p>
+        </div>
+      )}
       <div className="flex flex-col gap-2">
         <Label className="text-sm font-semibold">Kategorie</Label>
         <SelectCategory value={categoryId} onValueChange={onCategoryChange} />
@@ -103,14 +109,37 @@ export const ImportTransactionCardUI = ({
           />
         </div>
       )}
-      {isExpense && projectId && hasDonations && (
+      {isExpense && (
         <div className="flex flex-col gap-2">
-          <Label className="text-sm font-semibold">Spende zuordnen</Label>
-          <SelectDonation
-            projectId={projectId}
-            value={selectedDonationIds}
-            onValueChange={onDonationIdsChange}
+          <Label className="flex flex-col">
+            <span className="text-sm font-semibold">
+              Projektförderer wählen
+            </span>
+            <span className="text-muted-foreground    font-normal">
+              (nur wenn Mittelverwendungsnachweis (CSV) erforderlich)
+            </span>
+          </Label>
+
+          <SelectDonor
+            value={donorId}
+            onValueChange={onDonorChange}
+            categoryId={
+              categoryId ? (categoryId as Id<"categories">) : undefined
+            }
+            projectId={projectId ? (projectId as Id<"projects">) : undefined}
           />
+        </div>
+      )}
+      {isIncome && (
+        <div className="flex items-center gap-3">
+          <Checkbox
+            id="splitIncome"
+            checked={splitIncome}
+            onCheckedChange={(checked) => onSplitIncomeChange(checked === true)}
+          />
+          <Label htmlFor="splitIncome">
+            Einnahme auf Departments aufteilen
+          </Label>
         </div>
       )}
     </div>

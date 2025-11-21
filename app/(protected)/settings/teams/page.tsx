@@ -1,26 +1,23 @@
 "use client";
 
-import { CreateTeamDialog } from "@/components/dialogs/CreateTeamDialog";
+import { CreateProjectDialog } from "@/components/Dialogs/CreateProjectDialog";
+import { CreateTeamDialog } from "@/components/Dialogs/CreateTeamDialog";
 import { PageHeader } from "@/components/Layout/PageHeader";
 import { AccessDenied } from "@/components/Settings/AccessDenied";
-import { CreateProjectDialog } from "@/components/Sheets/CreateProjectDialog";
-import { Badge } from "@/components/ui/badge";
+import TeamRow from "@/components/Tables/TeamTable/TeamRowLogic";
 import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
-  TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
 import { api } from "@/convex/_generated/api";
-import type { Id } from "@/convex/_generated/dataModel";
 import { useIsAdmin } from "@/hooks/useCurrentUserRole";
-import { useMutation, useQuery } from "convex/react";
+import { useQuery } from "convex/react";
 import { Plus, Users } from "lucide-react";
 import { useState } from "react";
-import { toast } from "react-hot-toast";
 
 export default function TeamsPage() {
   const [createProjectDialogOpen, setCreateProjectDialogOpen] = useState(false);
@@ -101,134 +98,5 @@ export default function TeamsPage() {
         onOpenChange={setCreateTeamDialogOpen}
       />
     </div>
-  );
-}
-
-function TeamRow({ team }: { team: any }) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedName, setEditedName] = useState(team.name);
-  const teamMembers = useQuery(api.teams.queries.getTeamMembers, {
-    teamId: team._id,
-  });
-  const allProjects = useQuery(api.projects.queries.getAllOrganizationProjects);
-  const teamProjects = useQuery(api.teams.queries.getTeamProjects, {
-    teamId: team._id,
-  });
-  const assignProject = useMutation(api.teams.functions.assignProjectToTeam);
-  const removeProjectFromTeam = useMutation(
-    api.teams.functions.removeProjectFromTeam,
-  );
-  const renameTeam = useMutation(api.teams.functions.renameTeam);
-
-  const assignedProjectIds = new Set(
-    teamProjects?.map((p: any) => p._id) || [],
-  );
-  const projectAssignmentMap = new Map(
-    teamProjects?.map((p: any) => [p._id, p.assignmentId]) || [],
-  );
-
-  const handleToggleProject = async (projectId: Id<"projects">) => {
-    try {
-      if (assignedProjectIds.has(projectId)) {
-        const assignmentId = projectAssignmentMap.get(projectId);
-        if (assignmentId) {
-          await removeProjectFromTeam({ teamProjectId: assignmentId });
-          toast.success("Projekt entfernt");
-        }
-      } else {
-        await assignProject({ teamId: team._id, projectId });
-        toast.success("Projekt zugewiesen");
-      }
-    } catch (error) {
-      toast.error("Fehler beim Ändern der Projekt-Zuweisung");
-    }
-  };
-
-  const handleDoubleClick = () => {
-    setIsEditing(true);
-    setEditedName(team.name);
-  };
-
-  const handleSave = async () => {
-    if (!editedName.trim()) {
-      toast.error("Team-Name darf nicht leer sein");
-      setEditedName(team.name);
-      setIsEditing(false);
-      return;
-    }
-
-    if (editedName === team.name) {
-      setIsEditing(false);
-      return;
-    }
-
-    try {
-      await renameTeam({ teamId: team._id, name: editedName });
-      toast.success("Team umbenannt");
-      setIsEditing(false);
-    } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Fehler beim Umbenennen",
-      );
-      setEditedName(team.name);
-      setIsEditing(false);
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      handleSave();
-    } else if (e.key === "Escape") {
-      setEditedName(team.name);
-      setIsEditing(false);
-    }
-  };
-
-  return (
-    <TableRow>
-      <TableCell className="pl-6" onDoubleClick={handleDoubleClick}>
-        {isEditing ? (
-          <input
-            type="text"
-            value={editedName}
-            onChange={(e) => setEditedName(e.target.value)}
-            onBlur={handleSave}
-            onKeyDown={handleKeyDown}
-            autoFocus
-            className="font-medium bg-background border border-input rounded px-2 py-1 w-full"
-          />
-        ) : (
-          <span className="font-medium cursor-pointer hover:text-primary transition-colors">
-            {team.name}
-          </span>
-        )}
-      </TableCell>
-      <TableCell>
-        <Badge variant="secondary">{teamMembers?.length || 0} Mitglieder</Badge>
-      </TableCell>
-      <TableCell className="pr-6">
-        <div className="flex flex-wrap gap-2">
-          {allProjects?.length ? (
-            allProjects.map((project) => {
-              const isAssigned = assignedProjectIds.has(project._id);
-              return (
-                <Badge
-                  key={project._id}
-                  variant={isAssigned ? "default" : "outline"}
-                  className="cursor-pointer hover:opacity-80 transition-opacity"
-                  onClick={() => handleToggleProject(project._id)}
-                >
-                  {project.name}
-                </Badge>
-              );
-            })
-          ) : (
-            <span className="text-sm text-muted-foreground">
-              Keine Projekte
-            </span>
-          )}
-        </div>
-      </TableCell>
-    </TableRow>
   );
 }

@@ -1,10 +1,10 @@
 "use client";
 
 import { DashboardDropdown } from "@/components/Dashboard/DashboardDropdown";
-import { CreateCategoryDialog } from "@/components/dialogs/CreateCategoryDialog";
+import { AddDonorDialog } from "@/components/Dialogs/AddDonorDialog";
+import { CreateCategoryDialog } from "@/components/Dialogs/CreateCategoryDialog";
+import { CreateProjectDialog } from "@/components/Dialogs/CreateProjectDialog";
 import { RangeCalendarToggle } from "@/components/RangeCalendar/RangeCalendarToggle";
-import { AddDonorDialog } from "@/components/Sheets/AddDonorDialog";
-import { CreateProjectDialog } from "@/components/Sheets/CreateProjectDialog";
 import { ImportTransactionsSheet } from "@/components/Sheets/ImportTransactionsSheet";
 import { TransactionSheet } from "@/components/Sheets/TransactionSheet";
 import { Button } from "@/components/ui/button";

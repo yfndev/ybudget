@@ -12,42 +12,48 @@ import { useConvexAuth } from "convex/react";
 import { useRouter } from "next/navigation";
 import { Onborda, OnbordaProvider } from "onborda";
 import posthog from "posthog-js";
-import { memo, useEffect, useState } from "react";
+import { useEffect } from "react";
 
-const StableContent = memo(function StableContent({
+export default function ProtectedLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const needsOrg = useQuery(api.users.queries.getUserOrganizationId, {});
-  const userProfile = useQuery(api.users.queries.getCurrentUserProfile);
-  const [showOnboarding, setShowOnboarding] = useState(false);
+  const { isAuthenticated, isLoading } = useConvexAuth();
+  const router = useRouter();
+  const organizationId = useQuery(api.users.queries.getUserOrganizationId, {});
+  const user = useQuery(api.users.queries.getCurrentUserProfile);
 
   useEffect(() => {
-    if (needsOrg === undefined) return;
-    if (needsOrg === null) {
-      setShowOnboarding(true);
-    } else {
-      setShowOnboarding(false);
+    if (!isLoading && !isAuthenticated) {
+      router.push("/login");
     }
-  }, [needsOrg]);
+  }, [isAuthenticated, isLoading, router]);
 
   useEffect(() => {
-    if (userProfile && userProfile._id) {
-      posthog.identify(userProfile._id, {
-        email: userProfile.email || undefined,
-        name: userProfile.name || undefined,
-        role: userProfile.role || undefined,
-        organizationId: userProfile.organizationId || undefined,
+    if (user?._id) {
+      posthog.identify(user._id, {
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        organizationId: user.organizationId,
       });
     }
-  }, [userProfile]);
+  }, [user]);
 
-  const handleOnboardingChange = (open: boolean) => {
-    if (!open) {
-      setShowOnboarding(false);
-    }
-  };
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null;
+  }
+
+  const showOnboarding = organizationId === null;
 
   return (
     <OnbordaProvider>
@@ -65,10 +71,7 @@ const StableContent = memo(function StableContent({
               <div className="p-4 lg:px-6 pb-6 overflow-x-hidden w-full">
                 {children}
                 {showOnboarding && (
-                  <OnboardingDialog
-                    open={true}
-                    onOpenChange={handleOnboardingChange}
-                  />
+                  <OnboardingDialog open onOpenChange={() => {}} />
                 )}
               </div>
             </div>
@@ -77,34 +80,4 @@ const StableContent = memo(function StableContent({
       </DateRangeProvider>
     </OnbordaProvider>
   );
-});
-
-function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isLoading } = useConvexAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      router.push("/login");
-    }
-  }, [isAuthenticated, isLoading, router]);
-
-  if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return null;
-  }
-
-  return <StableContent>{children}</StableContent>;
 }
-
-export default memo(DashboardLayout);

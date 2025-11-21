@@ -3,7 +3,7 @@
 import { useConvexAuth } from "convex/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { LandingPage } from "./components/Landing/LandingPage";
+import { LandingPage } from "./components/Landingpage/LandingPage";
 
 export default function Home() {
   const { isAuthenticated, isLoading } = useConvexAuth();

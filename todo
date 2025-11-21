@@ -1,8 +1,17 @@
-- [ ] check how to show expected transactions in table (also if they are already matched)
-- [ ] refactor every component into UX and UI component
+- [ ] implement upload of expense reimbursements (Auslagenerstattungen)
 
 archive (latest on top):
 
+- [x] archive projects
+- [x] categories that are not non-profit should be highlighted in other color
+- [x] make transactions transfareable between projects, but processed ones need to be immutable
+- [x] change roles to admin, editor to, and viewer to member
+- [x] implement budgeting for departments
+- [x] jump into /import after uploading csv
+- [x] change projects to have 10 free projects (with departments etc)
+- [x] call projects deparments and make clear that there are departments and subprojects -> departments are projects without parent id
+- [x] check all functions & mutations for unnecessary functions or doubling ones
+- [x] refactor every component into UX and UI component
 - [x] add analytics (posthog)
 - [x] csv export for donors
 - [x] add user groups and view permissions on group/project level & user level
@@ -18,4 +27,6 @@ archive (latest on top):
 - [x] add prediction for expected transactions on dashboard
 
 No:
-! change sheets to dialogs
+
+- [-] check how to show expected transactions in table (also if they are already matched)
+  ! change sheets to dialogs

@@ -17,7 +17,7 @@ export const createDonor = mutation({
     ),
   },
   handler: async (ctx, args) => {
-    await requireRole(ctx, "editor");
+    await requireRole(ctx, "lead");
     const user = await getCurrentUser(ctx);
     return ctx.db.insert("donors", {
       name: args.name,

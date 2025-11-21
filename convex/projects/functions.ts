@@ -3,7 +3,7 @@ import { mutation } from "../_generated/server";
 import { getCurrentUser } from "../users/getCurrentUser";
 import { requireRole } from "../users/permissions";
 
-const FREE_TIER_LIMIT = 3;
+const FREE_TIER_LIMIT = 10;
 
 export const createProject = mutation({
   args: {
@@ -12,7 +12,7 @@ export const createProject = mutation({
     parentId: v.optional(v.id("projects")),
   },
   handler: async (ctx, args) => {
-    await requireRole(ctx, "editor");
+    await requireRole(ctx, "lead");
     const user = await getCurrentUser(ctx);
 
     const activePayment = await ctx.db
@@ -45,8 +45,30 @@ export const createProject = mutation({
       description: args.description,
       organizationId: user.organizationId,
       parentId: args.parentId,
-      isActive: true,
+      isArchived: false,
       createdBy: user._id,
     });
+  },
+});
+
+export const renameProject = mutation({
+  args: { projectId: v.id("projects"), name: v.string() },
+  handler: async (ctx, args) => {
+    await requireRole(ctx, "lead");
+    const user = await getCurrentUser(ctx);
+    const project = await ctx.db.get(args.projectId);
+    if (!project || project.organizationId !== user.organizationId) {
+      throw new Error(!project ? "Project not found" : "Access denied");
+    }
+    return ctx.db.patch(args.projectId, { name: args.name });
+  },
+});
+
+export const archiveProject = mutation({
+  args: { projectId: v.id("projects") },
+  handler: async (ctx, args) => {
+    await requireRole(ctx, "admin");
+
+    return ctx.db.patch(args.projectId, { isArchived: true });
   },
 });

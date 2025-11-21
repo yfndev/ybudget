@@ -16,6 +16,9 @@ export default function Transactions() {
   const updateTransaction = useMutation(
     api.transactions.functions.updateTransaction,
   );
+  const deleteTransaction = useMutation(
+    api.transactions.functions.deleteExpectedTransaction,
+  );
 
   const { results, status, loadMore } = usePaginatedQuery(
     api.transactions.queries.getPaginatedTransactions,
@@ -38,6 +41,11 @@ export default function Transactions() {
         await updateTransaction({
           transactionId: rowId as Id<"transactions">,
           [field]: value,
+        });
+      }}
+      onDeleteTransaction={async (rowId: string) => {
+        await deleteTransaction({
+          transactionId: rowId as Id<"transactions">,
         });
       }}
     />

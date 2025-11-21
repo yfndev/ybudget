@@ -22,6 +22,7 @@ export const getAllProjects = query({
       .withIndex("by_organization", (q) =>
         q.eq("organizationId", user.organizationId),
       )
+      .filter((q) => q.neq(q.field("isArchived"), true))
       .collect();
 
     return allProjects.filter((p) => accessibleIds.includes(p._id));

@@ -3,14 +3,25 @@ import { TransactionData } from "./csvMappers";
 import { parseDate } from "./parseDate";
 import { parseGermanAmount } from "./parseGermanAmount";
 
+const SENSITIVE_DATA_PATTERN = /(?:CRED|IBAN|BIC|MREF):\s*[A-Z0-9]+/gi;
+
+function stripSensitiveData(text: string): string {
+  return text.replace(SENSITIVE_DATA_PATTERN, "").replace(/\s+/g, " ").trim();
+}
+
 export function mapVolksbankCSV(row: Record<string, string>): TransactionData {
   const buchungstag = row["Buchungstag"] || "";
   const verwendungszweck = row["Verwendungszweck"] || "";
+  const buchungstext = row["Buchungstext"] || "";
+
+  const cleanedDescription = stripSensitiveData(
+    verwendungszweck || buchungstext,
+  );
 
   return {
     date: buchungstag ? parseDate(buchungstag) : Date.now(),
     amount: parseGermanAmount(row["Betrag"] || "0"),
-    description: verwendungszweck || row["Buchungstext"] || "",
+    description: cleanedDescription,
     counterparty: row["Name Zahlungsbeteiligter"] || "",
     importedTransactionId: createImportId(
       buchungstag,

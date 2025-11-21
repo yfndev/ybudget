@@ -2,6 +2,7 @@
 
 import ProjectDashboardSkeleton from "@/(protected)/projects/[projectId]/ProjectDashboardSkeleton";
 import ProjectDashboardUI from "@/(protected)/projects/[projectId]/ProjectDashboardUI";
+import TransferDialog from "@/components/Dialogs/TransferDialog";
 import { useDateRange } from "@/contexts/DateRangeContext";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
@@ -10,13 +11,13 @@ import { filterTransactionsByDateRange } from "@/lib/transactionFilters";
 import { useQuery } from "convex-helpers/react/cache";
 import { useMutation, usePaginatedQuery } from "convex/react";
 import { useParams } from "next/navigation";
-import posthog from "posthog-js";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 
 export default function ProjectDetail() {
   const projectId = useParams().projectId as string;
   const { selectedDateRange } = useDateRange();
+  const [isTransferOpen, setIsTransferOpen] = useState(false);
 
   const project = useQuery(api.projects.queries.getProjectById, {
     projectId,
@@ -45,6 +46,11 @@ export default function ProjectDetail() {
   const updateTransaction = useMutation(
     api.transactions.functions.updateTransaction,
   );
+  const deleteTransaction = useMutation(
+    api.transactions.functions.deleteExpectedTransaction,
+  );
+
+  const archiveProject = useMutation(api.projects.functions.archiveProject);
 
   const handleUpdateTransaction = async (
     transactionId: string,
@@ -57,16 +63,33 @@ export default function ProjectDetail() {
         [field]: value,
       });
 
-      posthog.capture("transaction_updated", {
-        field_updated: field,
-        project_id: projectId,
-        timestamp: new Date().toISOString(),
-      });
-
       toast.success("Transaktion aktualisiert");
     } catch (error) {
-      posthog.captureException(error as Error);
       toast.error("Fehler beim Aktualisieren");
+      throw error;
+    }
+  };
+
+  const handleDeleteTransaction = async (transactionId: string) => {
+    try {
+      await deleteTransaction({
+        transactionId: transactionId as Id<"transactions">,
+      });
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const handleOpenTransfer = () => {
+    setIsTransferOpen(true);
+  };
+
+  const handleArchive = () => {
+    try {
+      archiveProject({ projectId: projectId as Id<"projects"> });
+      toast.success("Projekt archiviert");
+    } catch (error) {
+      toast.error("Fehler beim Archivieren des Projekts");
       throw error;
     }
   };
@@ -76,13 +99,19 @@ export default function ProjectDetail() {
   }
 
   return (
-    <ProjectDashboardUI
-      project={project}
-      transactions={filteredTransactions ?? []}
-      budgets={budgets}
-      status={status}
-      loadMore={loadMore}
-      onUpdate={handleUpdateTransaction}
-    />
+    <>
+      <ProjectDashboardUI
+        project={project}
+        transactions={filteredTransactions ?? []}
+        budgets={budgets}
+        status={status}
+        loadMore={loadMore}
+        onUpdate={handleUpdateTransaction}
+        onDelete={handleDeleteTransaction}
+        openTransfer={handleOpenTransfer}
+        onArchive={handleArchive}
+      />
+      <TransferDialog open={isTransferOpen} onOpenChange={setIsTransferOpen} />
+    </>
   );
 }

@@ -1,47 +1,38 @@
-import { v } from "convex/values";
-import { CATEGORY_GROUPS } from "../../app/components/data/mockCategories";
-import { Id } from "../_generated/dataModel";
+import { CATEGORY_GROUPS } from "../../app/lib/mockData/mockCategories";
 import { internalMutation } from "../_generated/server";
 
 export const seedCategories = internalMutation({
   args: {},
-  returns: v.object({
-    seeded: v.boolean(),
-    categoriesCreated: v.number(),
-  }),
-  handler: async (ctx, args) => {
-    const existingCategories = await ctx.db.query("categories").first();
-
-    if (existingCategories) {
+  handler: async (ctx) => {
+    const existing = await ctx.db.query("categories").first();
+    if (existing) {
       return { seeded: false, categoriesCreated: 0 };
     }
 
-    const parentIdMap: Record<string, Id<"categories">> = {};
-    let categoriesCreated = 0;
+    let count = 0;
 
-    for (const categoryGroup of CATEGORY_GROUPS) {
+    for (const group of CATEGORY_GROUPS) {
+      const type = group.type === "income" ? "Einnahmen" : "Ausgaben";
       const parentId = await ctx.db.insert("categories", {
-        name: categoryGroup.group,
-        description: `${categoryGroup.type === "income" ? "Einnahmen" : "Ausgaben"}: ${categoryGroup.group}`,
-        taxsphere: categoryGroup.items[0].taxsphere,
+        name: group.group,
+        description: `${type}: ${group.group}`,
+        taxsphere: group.items[0].taxsphere,
         approved: true,
       });
+      count++;
 
-      parentIdMap[categoryGroup.group] = parentId;
-      categoriesCreated++;
-
-      for (const item of categoryGroup.items) {
+      for (const item of group.items) {
         await ctx.db.insert("categories", {
           name: item.label,
           description: item.description,
           taxsphere: item.taxsphere,
           approved: true,
-          parentId: parentId,
+          parentId,
         });
-        categoriesCreated++;
+        count++;
       }
     }
 
-    return { seeded: true, categoriesCreated };
+    return { seeded: true, categoriesCreated: count };
   },
 });

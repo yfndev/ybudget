@@ -23,8 +23,9 @@ import { useAction } from "convex/react";
 import {
   ChevronsUpDown,
   CreditCard,
-  Folder,
+  Handshake,
   LogOut,
+  SquareStack,
   Users,
 } from "lucide-react";
 import Link from "next/link";
@@ -126,7 +127,7 @@ export function NavUser({ user }: { user: Doc<"users"> | null | undefined }) {
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link href="/settings/teams">
-                    <Folder />
+                    <Handshake />
                     Teams
                   </Link>
                 </DropdownMenuItem>

@@ -1,170 +1,86 @@
 "use client";
 
 import { api } from "@/convex/_generated/api";
-import type { Doc } from "@/convex/_generated/dataModel";
+import type { Id } from "@/convex/_generated/dataModel";
 import { useQuery } from "convex-helpers/react/cache";
-import { ChevronRight, Plus } from "lucide-react";
-import Link from "next/link";
+import { useMutation } from "convex/react";
 import { usePathname } from "next/navigation";
-import { memo, useState } from "react";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
-import { Paywall } from "@/components/Payment/Paywall";
-import { CreateProjectDialog } from "@/components/Sheets/CreateProjectDialog";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import {
-  SidebarGroup,
-  SidebarGroupAction,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuAction,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
-} from "@/components/ui/sidebar";
 import { useCanEdit } from "@/hooks/useCurrentUserRole";
+import { ProjectNavUI, type ProjectItem } from "./ProjectNavUI";
 
-function ProjectNavComponent({ id }: { id?: string }) {
+export function ProjectNav({ id }: { id?: string }) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [paywallOpen, setPaywallOpen] = useState(false);
+  const [editingId, setEditingId] = useState<Id<"projects"> | null>(null);
+  const [editValue, setEditValue] = useState("");
+
   const pathname = usePathname();
   const projects = useQuery(api.projects.queries.getAllProjects);
   const projectLimits = useQuery(api.subscriptions.queries.getProjectLimits);
   const canEdit = useCanEdit();
+  const renameProject = useMutation(api.projects.functions.renameProject);
 
-  if (projects === undefined) {
-    return (
-      <SidebarGroup id={id}>
-        <SidebarGroupLabel>Projekte</SidebarGroupLabel>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <div className="px-2 py-1 text-sm text-muted-foreground">
-              Laden...
-            </div>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarGroup>
-    );
-  }
-
-  const parentProjects = projects.filter((p: Doc<"projects">) => !p.parentId);
-
-  const items = parentProjects.map((project: Doc<"projects">) => {
-    const childProjects = projects.filter(
-      (p: Doc<"projects">) => p.parentId === project._id,
-    );
-
-    return {
-      title: project.name,
-      url: `/projects/${project._id}`,
-      isActive: pathname === `/projects/${project._id}`,
-      items:
-        childProjects.length > 0
-          ? childProjects.map((child: Doc<"projects">) => ({
-              title: child.name,
-              url: `/projects/${child._id}`,
-            }))
-          : undefined,
-    };
-  });
-
-  const handleAddProject = () => {
-    if (projectLimits && !projectLimits.canCreateMore) {
-      setPaywallOpen(true);
-    } else {
-      setDialogOpen(true);
+  const handleSave = async () => {
+    if (!editingId || !editValue.trim()) return;
+    try {
+      await renameProject({ projectId: editingId, name: editValue.trim() });
+      setEditingId(null);
+      toast.success("Projekt umbenannt");
+    } catch {
+      toast.error("Fehler beim Umbenennen");
     }
   };
 
-  const projectCountText =
+  const handleEdit = (projectId: Id<"projects">, name: string) => {
+    if (!canEdit) return;
+    setEditingId(projectId);
+    setEditValue(name);
+  };
+
+  const items: ProjectItem[] = projects
+    ? projects
+        .filter((p) => !p.parentId)
+        .map((project) => ({
+          id: project._id,
+          name: project.name,
+          url: `/projects/${project._id}`,
+          isActive: pathname === `/projects/${project._id}`,
+          children: projects
+            .filter((p) => p.parentId === project._id)
+            .map((child) => ({
+              id: child._id,
+              name: child.name,
+              url: `/projects/${child._id}`,
+            })),
+        }))
+    : [];
+
+  const countText =
     projectLimits && !projectLimits.isPremium
       ? `(${projectLimits.currentProjects}/${projectLimits.maxProjects})`
       : "";
 
   return (
-    <SidebarGroup id={id}>
-      <div className="flex items-center justify-between px-2">
-        <SidebarGroupLabel>Projekte</SidebarGroupLabel>
-        {canEdit && projectCountText && (
-          <span className="text-xs pr-5 text-muted-foreground">
-            {projectCountText}
-          </span>
-        )}
-      </div>
-      {canEdit && (
-        <SidebarGroupAction onClick={handleAddProject}>
-          <Plus />
-          <span className="sr-only">Projekt hinzufügen</span>
-        </SidebarGroupAction>
-      )}
-      <SidebarMenu>
-        {items.map(
-          (item: {
-            title: string;
-            url: string;
-            isActive: boolean;
-            items?: Array<{ title: string; url: string }>;
-          }) => (
-            <Collapsible key={item.title} asChild defaultOpen={item.isActive}>
-              <SidebarMenuItem>
-                {item.items?.length ? (
-                  <CollapsibleTrigger asChild>
-                    <SidebarMenuButton asChild tooltip={item.title}>
-                      <Link href={item.url}>
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </CollapsibleTrigger>
-                ) : (
-                  <SidebarMenuButton asChild tooltip={item.title}>
-                    <Link href={item.url}>
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                )}
-                {item.items?.length ? (
-                  <>
-                    <CollapsibleTrigger asChild>
-                      <SidebarMenuAction className="data-[state=open]:rotate-90">
-                        <ChevronRight />
-                        <span className="sr-only">Toggle</span>
-                      </SidebarMenuAction>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent>
-                      <SidebarMenuSub>
-                        {item.items?.map(
-                          (subItem: { title: string; url: string }) => (
-                            <SidebarMenuSubItem key={subItem.title}>
-                              <SidebarMenuSubButton asChild>
-                                <Link href={subItem.url}>
-                                  <span>{subItem.title}</span>
-                                </Link>
-                              </SidebarMenuSubButton>
-                            </SidebarMenuSubItem>
-                          ),
-                        )}
-                      </SidebarMenuSub>
-                    </CollapsibleContent>
-                  </>
-                ) : null}
-              </SidebarMenuItem>
-            </Collapsible>
-          ),
-        )}
-      </SidebarMenu>
-      {canEdit && (
-        <>
-          <CreateProjectDialog open={dialogOpen} onOpenChange={setDialogOpen} />
-          <Paywall open={paywallOpen} onOpenChange={setPaywallOpen} />
-        </>
-      )}
-    </SidebarGroup>
+    <ProjectNavUI
+      id={id}
+      dialogOpen={dialogOpen}
+      setDialogOpen={setDialogOpen}
+      paywallOpen={paywallOpen}
+      setPaywallOpen={setPaywallOpen}
+      editingId={editingId}
+      setEditingId={setEditingId}
+      editValue={editValue}
+      setEditValue={setEditValue}
+      projectLimits={projectLimits}
+      canEdit={canEdit}
+      items={items}
+      countText={countText}
+      saveEdit={handleSave}
+      startEdit={handleEdit}
+      isLoading={!projects}
+    />
   );
 }
-
-export const ProjectNav = memo(ProjectNavComponent);

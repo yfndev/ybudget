@@ -9,17 +9,15 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
           prompt: "select_account",
         },
       },
-      profile(profile) {
+      profile(user) {
         return {
-          id: profile.sub,
-          name: profile.name,
-          email: profile.email,
-          image: profile.picture,
-          firstName: profile.given_name || profile.name?.split(" ")[0] || "",
+          id: user.sub,
+          name: user.name,
+          email: user.email,
+          image: user.image,
+          firstName: user.given_name || user.name?.split(" ")[0] || "",
           lastName:
-            profile.family_name ||
-            profile.name?.split(" ").slice(1).join(" ") ||
-            "",
+            user.family_name || user.name?.split(" ").slice(1).join(" ") || "",
         };
       },
     }),

@@ -1,6 +1,9 @@
 import type { Doc } from "@/convex/_generated/dataModel";
 
-export const calculateBudget = (transactions: Doc<"transactions">[]) => {
+export const calculateBudget = (
+  transactions: Doc<"transactions">[],
+  budgetAllocations: Doc<"budgets">[] = [],
+) => {
   let currentBalance = 0;
   let expectedIncome = 0;
   let expectedExpenses = 0;
@@ -16,13 +19,23 @@ export const calculateBudget = (transactions: Doc<"transactions">[]) => {
     }
   }
 
-  const availableBudget = currentBalance + expectedIncome + expectedExpenses;
+  const allocatedBudget = budgetAllocations.reduce(
+    (sum, budget) => sum + budget.amount,
+    0,
+  );
+  currentBalance += allocatedBudget;
+
+  const availableBudget =
+    currentBalance + expectedIncome + expectedExpenses > 0
+      ? currentBalance + expectedIncome + expectedExpenses
+      : 0;
 
   return {
     currentBalance,
     expectedIncome,
     expectedExpenses: Math.abs(expectedExpenses),
     availableBudget,
+    allocatedBudget,
   };
 };
 
@@ -40,4 +53,12 @@ export const calculateProgressPercentage = (
   return totalIncome === 0
     ? 0
     : Math.min(100, (totalExpenses / totalIncome) * 100);
+};
+
+export const calculateUnallocated = (
+  transactionAmount: number,
+  allocations: Doc<"budgets">[],
+): number => {
+  const totalAllocated = allocations.reduce((sum, b) => sum + b.amount, 0);
+  return transactionAmount - totalAllocated;
 };

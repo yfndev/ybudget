@@ -11,6 +11,6 @@ export async function getCurrentUser(ctx: QueryCtx | MutationCtx) {
   return {
     ...user,
     organizationId: user.organizationId as Id<"organizations">,
-    role: user.role as "admin" | "editor" | "viewer" | undefined,
+    role: user.role as "admin" | "lead" | "member" | undefined,
   };
 }

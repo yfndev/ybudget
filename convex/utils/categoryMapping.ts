@@ -1,4 +1,4 @@
-import { CATEGORY_GROUPS } from "../../app/components/data/mockCategories";
+import { CATEGORY_GROUPS } from "../../app/lib/mockData/mockCategories";
 
 export function createCategoryMap(): Map<string, string> {
   const categoryMap = new Map();

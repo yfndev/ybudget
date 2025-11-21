@@ -1,8 +1,8 @@
 "use client";
 
 import { PageHeader } from "@/components/Layout/PageHeader";
-import { EditableDataTable } from "@/components/Tables/EditableDataTable";
-import { editableColumns } from "@/components/Tables/editableColumns";
+import { EditableDataTable } from "@/components/Tables/TransactionTable/EditableDataTable";
+import { editableColumns } from "@/components/Tables/TransactionTable/editableColumns";
 import { formatDate } from "@/lib/formatDate";
 import type { EnrichedTransaction } from "@/lib/transactionFilters";
 import type { PaginationStatus } from "convex/react";
@@ -18,6 +18,7 @@ interface TransactionsPageUIProps {
     field: string,
     value: any,
   ) => Promise<void>;
+  onDeleteTransaction: (rowId: string) => Promise<void>;
 }
 
 export default function TransactionsOverviewUI({
@@ -26,6 +27,7 @@ export default function TransactionsOverviewUI({
   status,
   loadMore,
   onUpdateTransaction,
+  onDeleteTransaction,
 }: TransactionsPageUIProps) {
   const fromDate = formatDate(selectedDateRange.from);
   const toDate = formatDate(selectedDateRange.to);
@@ -41,6 +43,7 @@ export default function TransactionsOverviewUI({
           columns={editableColumns}
           data={transactions}
           onUpdate={onUpdateTransaction}
+          onDelete={onDeleteTransaction}
           paginationStatus={status}
           loadMore={loadMore}
         />

@@ -3,7 +3,7 @@ import { v } from "convex/values";
 import { query } from "../_generated/server";
 import { getCurrentUser } from "../users/getCurrentUser";
 
-const FREE_TIER_LIMIT = 3;
+const FREE_TIER_LIMIT = 10;
 
 export const getProjectLimits = query({
   args: {},

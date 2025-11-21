@@ -1,0 +1,119 @@
+"use client";
+
+import { SelectProject } from "@/components/Selectors/SelectProject";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { api } from "@/convex/_generated/api";
+import { useMutation } from "convex/react";
+import posthog from "posthog-js";
+import { useState } from "react";
+import toast from "react-hot-toast";
+
+interface CreateProjectDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onProjectCreated?: (projectId: string) => void;
+}
+
+export function CreateProjectDialog({
+  open,
+  onOpenChange,
+  onProjectCreated,
+}: CreateProjectDialogProps) {
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [parentId, setParentId] = useState("");
+
+  const addProject = useMutation(api.projects.functions.createProject);
+
+  const resetForm = () => {
+    setName("");
+    setDescription("");
+    setParentId("");
+  };
+
+  const handleSubmit = async () => {
+    if (!name.trim()) return;
+
+    try {
+      const projectId = await addProject({
+        name: name.trim(),
+        description: description.trim() || undefined,
+        parentId: parentId ? (parentId as any) : undefined,
+      });
+
+      posthog.capture("project_created", {
+        has_description: !!description.trim(),
+        has_parent: !!parentId,
+        timestamp: new Date().toISOString(),
+      });
+
+      toast.success("Projekt erstellt!");
+      onProjectCreated?.(projectId);
+      onOpenChange(false);
+      resetForm();
+    } catch (error) {
+      posthog.captureException(error as Error);
+      toast.error("Fehler beim Erstellen");
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Neues Projekt erstellen</DialogTitle>
+          <DialogDescription>
+            Erstelle ein neues Projekt für deine Organisation.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-4">
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="project-name">Projektname</Label>
+            <Input
+              id="project-name"
+              placeholder="z.B. YFN 9.0"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              autoFocus
+            />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="project-description">Beschreibung (optional)</Label>
+            <Textarea
+              id="project-description"
+              placeholder="Beschreibe dein Projekt..."
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={3}
+              className="resize-none"
+            />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <Label>Übergeordnetes Projekt (optional)</Label>
+            <SelectProject value={parentId} onValueChange={setParentId} />
+          </div>
+        </div>
+
+        <DialogFooter>
+          <Button onClick={handleSubmit} disabled={!name.trim()}>
+            Projekt erstellen
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}

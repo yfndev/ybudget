@@ -1,4 +1,5 @@
 import { Card } from "@/components/ui/card";
+import { formatCurrency } from "@/lib/formatCurrency";
 
 interface BudgetCardTypes {
   title: string;
@@ -13,14 +14,8 @@ const BudgetCard = ({
   changePercent,
   description,
 }: BudgetCardTypes) => {
-  const safeAmount = typeof amount === "number" && !isNaN(amount) ? amount : 0;
-  const formattedAmount = `${safeAmount.toLocaleString("de-DE", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })} €`;
-
   return (
-    <Card className="w-full p-3">
+    <Card className="w-full p-4">
       <div className="flex justify-between items-start">
         <div className="flex flex-col">
           <h3 className="text-base font-semibold">{title}</h3>
@@ -29,8 +24,8 @@ const BudgetCard = ({
           )}
         </div>
       </div>
-      <div className="mt-2">
-        <span className="text-3xl font-semibold">{formattedAmount}</span>
+      <div className="mt-auto">
+        <span className="text-3xl font-semibold">{formatCurrency(amount)}</span>
       </div>
     </Card>
   );

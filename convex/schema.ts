@@ -24,12 +24,7 @@ export default defineSchema({
 
     organizationId: v.optional(v.id("organizations")),
     role: v.optional(
-      v.union(
-        v.literal("admin"),
-        v.literal("finance"),
-        v.literal("editor"),
-        v.literal("viewer"),
-      ),
+      v.union(v.literal("admin"), v.literal("lead"), v.literal("member")),
     ),
   })
     .index("email", ["email"])
@@ -41,8 +36,7 @@ export default defineSchema({
     parentId: v.optional(v.id("projects")),
     organizationId: v.id("organizations"),
     description: v.optional(v.string()),
-
-    isActive: v.boolean(),
+    isArchived: v.boolean(),
     createdBy: v.string(),
   }).index("by_organization", ["organizationId"]),
 
@@ -67,15 +61,37 @@ export default defineSchema({
     status: v.union(v.literal("expected"), v.literal("processed")),
     matchedTransactionId: v.optional(v.string()),
     accountName: v.optional(v.string()),
+    isSplitIncome: v.optional(v.boolean()),
+    isArchived: v.optional(v.boolean()),
+    splitFromTransactionId: v.optional(v.id("transactions")),
+    transferId: v.optional(v.string()),
   })
     .index("by_organization_project", ["organizationId", "projectId"])
     .index("by_date", ["date"])
     .index("by_organization", ["organizationId"])
     .index("by_organization_donor", ["organizationId", "donorId"])
+    .index("by_organization_project_donor", [
+      "organizationId",
+      "projectId",
+      "donorId",
+    ])
     .index("by_importedTransactionId", [
       "organizationId",
       "importedTransactionId",
-    ]),
+    ])
+    .index("by_splitFrom", ["splitFromTransactionId"])
+    .index("by_archived", ["isArchived"])
+    .index("by_transferId", ["transferId"]),
+
+  budgets: defineTable({
+    projectId: v.id("projects"),
+    amount: v.number(),
+    allocatedBy: v.id("users"),
+    sourceTransactionId: v.optional(v.id("transactions")),
+    note: v.optional(v.string()),
+  })
+    .index("by_project", ["projectId"])
+    .index("by_source_transaction", ["sourceTransactionId"]),
 
   categories: defineTable({
     name: v.string(),
@@ -128,26 +144,8 @@ export default defineSchema({
   teams: defineTable({
     name: v.string(),
     organizationId: v.id("organizations"),
-    createdAt: v.number(),
+    projectIds: v.array(v.id("projects")),
+    memberIds: v.array(v.id("users")),
     createdBy: v.id("users"),
   }).index("by_organization", ["organizationId"]),
-
-  teamMemberships: defineTable({
-    userId: v.id("users"),
-    teamId: v.id("teams"),
-    role: v.union(v.literal("viewer"), v.literal("editor"), v.literal("admin")),
-    createdAt: v.number(),
-  })
-    .index("by_user", ["userId"])
-    .index("by_team", ["teamId"])
-    .index("by_user_team", ["userId", "teamId"]),
-
-  teamProjects: defineTable({
-    teamId: v.id("teams"),
-    projectId: v.id("projects"),
-    createdAt: v.number(),
-  })
-    .index("by_team", ["teamId"])
-    .index("by_project", ["projectId"])
-    .index("by_team_project", ["teamId", "projectId"]),
 });
