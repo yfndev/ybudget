@@ -21,14 +21,14 @@ export const ImportTransactionsLogic = () => {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   const transactions = useQuery(
-    api.transactions.queries.getUnassignedProcessedTransactions,
+    api.transactions.queries.getUnassignedProcessedTransactions
   );
 
   const updateTransaction = useMutation(
-    api.transactions.functions.updateTransaction,
+    api.transactions.functions.updateTransaction
   );
   const splitTransaction = useMutation(
-    api.transactions.functions.splitTransaction,
+    api.transactions.functions.splitTransaction
   );
 
   const current = transactions?.[index] || null;
@@ -41,7 +41,7 @@ export const ImportTransactionsLogic = () => {
             amount: current.amount,
             projectId: projectId ? (projectId as Id<"projects">) : undefined,
           }
-        : "skip",
+        : "skip"
     ) || [];
 
   useEffect(() => {
@@ -148,7 +148,7 @@ export const ImportTransactionsLogic = () => {
   const handleExpectedTransactionSelect = (expectedTransactionId: string) => {
     setSelectedMatch(expectedTransactionId);
     const expected = expectedTransactions.find(
-      (t) => t._id === expectedTransactionId,
+      (t) => t._id === expectedTransactionId
     );
     if (expected) {
       if (expected.projectId) setProjectId(expected.projectId);

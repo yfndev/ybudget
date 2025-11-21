@@ -149,11 +149,7 @@ export const updateTransaction = mutation({
       user.organizationId,
     );
 
-    const validUpdates = Object.fromEntries(
-      Object.entries(updates).filter(([_, value]) => value !== undefined),
-    );
-
-    return ctx.db.patch(transactionId, validUpdates);
+    return ctx.db.patch(transactionId, updates);
   },
 });
 
@@ -197,15 +193,10 @@ export const splitTransaction = mutation({
     }
 
     const remainder = original.amount - total;
-    const reservesId = await ensureReservesDepartment(
-      ctx,
-      original.organizationId,
-    );
+    const reservesId = await ensureReservesDepartment(ctx, original.organizationId);
 
     await ctx.db.patch(args.transactionId, { isArchived: true });
 
-    const createdIds: Id<"transactions">[] = [];
-    
     const baseTransaction = {
       organizationId: original.organizationId,
       date: original.date,
@@ -220,6 +211,8 @@ export const splitTransaction = mutation({
       splitFromTransactionId: args.transactionId,
       isArchived: false,
     };
+
+    const createdIds: Id<"transactions">[] = [];
 
     for (const split of args.splits) {
       const newId = await ctx.db.insert("transactions", {
@@ -241,13 +234,7 @@ export const splitTransaction = mutation({
       createdIds.push(reservesTransactionId);
     }
 
-    return {
-      originalId: args.transactionId,
-      splitIds: createdIds,
-      remainder,
-      totalSplits: args.splits.length,
-      hasRemainder: remainder > 0,
-    };
+    return createdIds;
   },
 });
 

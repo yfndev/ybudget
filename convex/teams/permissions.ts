@@ -26,13 +26,11 @@ export async function getUserAccessibleProjectIds(
     .withIndex("by_organization", (q) => q.eq("organizationId", organizationId))
     .collect();
 
-  const projectIds = new Set<Id<"projects">>();
-  for (const team of teams) {
-    if (team.memberIds.includes(userId)) {
-      team.projectIds.forEach((pid) => projectIds.add(pid));
-    }
-  }
-  return Array.from(projectIds);
+  const projectIds = teams
+    .filter((team) => team.memberIds.includes(userId))
+    .flatMap((team) => team.projectIds);
+  
+  return Array.from(new Set(projectIds));
 }
 
 export async function canAccessProject(

@@ -1,5 +1,4 @@
 import { v } from "convex/values";
-import type { Id } from "../_generated/dataModel";
 import { query } from "../_generated/server";
 import { getCurrentUser } from "../users/getCurrentUser";
 
@@ -33,26 +32,15 @@ export const getDonorsByProject = query({
       .filter((q) => q.neq(q.field("donorId"), undefined))
       .collect();
 
-    const uniqueDonorIds = new Set<Id<"donors">>();
-    const donorMap = new Map<
-      Id<"donors">,
-      (typeof transactionsWithDonors)[0]
-    >();
-
-    for (const transaction of transactionsWithDonors) {
-      if (transaction.donorId && !uniqueDonorIds.has(transaction.donorId)) {
-        uniqueDonorIds.add(transaction.donorId);
-        donorMap.set(transaction.donorId, transaction);
-      }
-    }
+    const uniqueDonorIds = Array.from(
+      new Set(transactionsWithDonors.map((t) => t.donorId).filter(Boolean))
+    );
 
     const donors = await Promise.all(
-      Array.from(uniqueDonorIds).map((donorId) => ctx.db.get(donorId)),
+      uniqueDonorIds.map((donorId) => ctx.db.get(donorId!))
     );
 
-    return donors.filter(
-      (donor): donor is NonNullable<typeof donor> => donor !== null,
-    );
+    return donors.filter((donor) => donor !== null);
   },
 });
 

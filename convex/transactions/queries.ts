@@ -132,34 +132,37 @@ export const getPaginatedTransactions = query({
     const user = await getCurrentUser(ctx);
     const hasDateRange = args.startDate !== undefined && args.endDate !== undefined;
 
-    const query = hasDateRange
-      ? ctx.db
-          .query("transactions")
-          .withIndex("by_date", (q) =>
-            q.gte("date", args.startDate!).lte("date", args.endDate!),
-          )
-          .filter((q) => q.eq(q.field("organizationId"), user.organizationId))
-      : args.projectId
-        ? ctx.db
-            .query("transactions")
-            .withIndex("by_organization_project", (q) =>
-              q
-                .eq("organizationId", user.organizationId)
-                .eq("projectId", args.projectId),
-            )
-        : args.donorId
-          ? ctx.db
-              .query("transactions")
-              .withIndex("by_organization_donor", (q) =>
-                q
-                  .eq("organizationId", user.organizationId)
-                  .eq("donorId", args.donorId),
-              )
-          : ctx.db
-              .query("transactions")
-              .withIndex("by_organization", (q) =>
-                q.eq("organizationId", user.organizationId),
-              );
+    let query;
+    if (hasDateRange) {
+      query = ctx.db
+        .query("transactions")
+        .withIndex("by_date", (q) =>
+          q.gte("date", args.startDate!).lte("date", args.endDate!),
+        )
+        .filter((q) => q.eq(q.field("organizationId"), user.organizationId));
+    } else if (args.projectId) {
+      query = ctx.db
+        .query("transactions")
+        .withIndex("by_organization_project", (q) =>
+          q
+            .eq("organizationId", user.organizationId)
+            .eq("projectId", args.projectId),
+        );
+    } else if (args.donorId) {
+      query = ctx.db
+        .query("transactions")
+        .withIndex("by_organization_donor", (q) =>
+          q
+            .eq("organizationId", user.organizationId)
+            .eq("donorId", args.donorId),
+        );
+    } else {
+      query = ctx.db
+        .query("transactions")
+        .withIndex("by_organization", (q) =>
+          q.eq("organizationId", user.organizationId),
+        );
+    }
 
     const filteredQuery = query.filter((q) => {
       const notArchived = q.neq(q.field("isArchived"), true);
