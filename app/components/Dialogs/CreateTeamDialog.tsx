@@ -14,6 +14,7 @@ import type { Id } from "@/convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
+import { Input } from "../ui/input";
 
 interface CreateTeamDialogProps {
   open: boolean;
@@ -78,12 +79,10 @@ export function CreateTeamDialog({
         <div className="space-y-6 py-4">
           <div className="space-y-2">
             <label className="text-sm font-medium">Team-Name</label>
-            <input
-              type="text"
+            <Input
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="z.B. Marketing, Entwicklung, Finanzen"
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
             />
           </div>
 

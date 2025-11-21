@@ -9,7 +9,10 @@ export const ImportTransactionsSkeleton = () => {
         <Skeleton className="w-3/4 h-2" />
       </div>
       <div className="flex mt-24 h-full justify-between">
-        <div id="tour-expected-matches" className="w-1/4 flex flex-col h-full flex-shrink-0">
+        <div
+          id="tour-expected-matches"
+          className="w-1/4 flex flex-col h-full flex-shrink-0"
+        >
           <div className="mb-4">
             <Skeleton className="h-7 w-32 mb-2" />
             <Skeleton className="h-4 w-48" />

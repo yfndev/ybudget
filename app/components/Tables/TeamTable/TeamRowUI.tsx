@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Doc, Id } from "@/convex/_generated/dataModel";
 
@@ -29,14 +30,12 @@ export default function TeamRowUI({
     <TableRow>
       <TableCell className="pl-6" onDoubleClick={startEditing}>
         {isEditing ? (
-          <input
-            type="text"
+          <Input
             value={editedName}
             onChange={(e) => setEditedName(e.target.value)}
             onBlur={handleSave}
             onKeyDown={handleKeyDown}
             autoFocus
-            className="font-medium bg-background border border-input rounded px-2 py-1 w-full"
           />
         ) : (
           <span className="font-medium cursor-pointer hover:text-primary transition-colors">

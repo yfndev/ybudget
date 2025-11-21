@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { mutation } from "../_generated/server";
+import { action, mutation } from "../_generated/server";
 import { getCurrentUser } from "./getCurrentUser";
 import { requireRole } from "./permissions";
 

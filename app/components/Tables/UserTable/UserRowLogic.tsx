@@ -2,7 +2,6 @@ import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { UserRole } from "@/convex/users/permissions";
 import { useMutation, useQuery } from "convex/react";
-import posthog from "posthog-js";
 import { toast } from "react-hot-toast";
 import UserRowUI from "./UserRowUI";
 
@@ -38,7 +37,6 @@ export default function UserRow({ user, onRoleChange, isAdmin }: UserRowProps) {
         toast.success("Zum Team hinzugefügt");
       }
     } catch (error) {
-      posthog.captureException(error as Error);
       toast.error("Fehler beim Ändern der Team-Zugehörigkeit");
     }
   };

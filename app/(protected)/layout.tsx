@@ -11,7 +11,6 @@ import { useQuery } from "convex-helpers/react/cache";
 import { useConvexAuth } from "convex/react";
 import { useRouter } from "next/navigation";
 import { Onborda, OnbordaProvider } from "onborda";
-import posthog from "posthog-js";
 import { useEffect } from "react";
 
 export default function ProtectedLayout({
@@ -29,17 +28,6 @@ export default function ProtectedLayout({
       router.push("/login");
     }
   }, [isAuthenticated, isLoading, router]);
-
-  useEffect(() => {
-    if (user?._id) {
-      posthog.identify(user._id, {
-        email: user.email,
-        name: user.name,
-        role: user.role,
-        organizationId: user.organizationId,
-      });
-    }
-  }, [user]);
 
   if (isLoading) {
     return (

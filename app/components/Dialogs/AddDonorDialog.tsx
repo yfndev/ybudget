@@ -21,7 +21,6 @@ import {
 } from "@/components/ui/select";
 import { api } from "@/convex/_generated/api";
 import { useMutation } from "convex/react";
-import posthog from "posthog-js";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
@@ -73,19 +72,11 @@ export const AddDonorDialog = ({
         allowedTaxSpheres,
       });
 
-      posthog.capture("donor_created", {
-        donor_type: type,
-        only_non_profit: onlyNonProfit,
-        allowed_tax_spheres_count: allowedTaxSpheres.length,
-        timestamp: new Date().toISOString(),
-      });
-
       toast.success("Förderer erstellt!");
       onDonorCreated?.(donorId);
       onOpenChange(false);
       resetForm();
     } catch (error) {
-      posthog.captureException(error as Error);
       toast.error("Fehler beim Erstellen des Förderers");
     }
   };

@@ -1,6 +1,7 @@
 "use client";
 
 import { CreateTeamDialog } from "@/components/Dialogs/CreateTeamDialog";
+import { InviteUserDialog } from "@/components/Dialogs/InviteUserDialog";
 import { PageHeader } from "@/components/Layout/PageHeader";
 import { AccessDenied } from "@/components/Settings/AccessDenied";
 import UserRow from "@/components/Tables/UserTable/UserRowLogic";
@@ -18,7 +19,6 @@ import { UserRole } from "@/convex/users/permissions";
 import { useIsAdmin } from "@/hooks/useCurrentUserRole";
 import { useMutation, useQuery } from "convex/react";
 import { Plus, Users } from "lucide-react";
-import posthog from "posthog-js";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 
@@ -27,17 +27,14 @@ export default function UsersPage() {
   const isAdmin = useIsAdmin();
   const updateUserRole = useMutation(api.users.functions.updateUserRole);
   const [createTeamDialogOpen, setCreateTeamDialogOpen] = useState(false);
+  const [inviteUserDialogOpen, setInviteUserDialogOpen] = useState(false);
 
   const handleRoleChange = async (userId: Id<"users">, role: UserRole) => {
     try {
       await updateUserRole({ userId, role });
-      posthog.capture("user_role_updated", {
-        new_role: role,
-        timestamp: new Date().toISOString(),
-      });
+
       toast.success("Rolle erfolgreich aktualisiert");
     } catch (error) {
-      posthog.captureException(error as Error);
       toast.error(
         "Fehler beim Aktualisieren der Rolle. Mindestens ein Admin ist erforderlich.",
       );
@@ -50,11 +47,11 @@ export default function UsersPage() {
 
   return (
     <div>
-      <PageHeader title="Benutzer & Teams" />
+      <PageHeader title="Benutzer" />
 
       <div className="space-y-6">
         <p className="text-muted-foreground">
-          Verwalte Benutzer, deren Organisation-Rollen und Team-Zugehörigkeiten
+          Hier kannst du Benutzer und deren Rollen verwalten.
         </p>
 
         {!users || users.length === 0 ? (
@@ -72,7 +69,19 @@ export default function UsersPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="pl-6">Benutzer</TableHead>
+                  <TableHead className="pr-6">
+                    <div className="flex items-center gap-2">
+                      Benutzer
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={() => setInviteUserDialogOpen(true)}
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </TableHead>
                   <TableHead>E-Mail</TableHead>
                   <TableHead>Org-Rolle</TableHead>
                   <TableHead className="pr-6">
@@ -111,6 +120,10 @@ export default function UsersPage() {
       <CreateTeamDialog
         open={createTeamDialogOpen}
         onOpenChange={setCreateTeamDialogOpen}
+      />
+      <InviteUserDialog
+        open={inviteUserDialogOpen}
+        onOpenChange={setInviteUserDialogOpen}
       />
     </div>
   );

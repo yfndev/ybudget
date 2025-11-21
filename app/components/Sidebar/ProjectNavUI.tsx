@@ -21,6 +21,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
+import { Input } from "../ui/input";
 
 export type ProjectItem = {
   id: Id<"projects">;
@@ -114,8 +115,7 @@ export function ProjectNavUI({
             <SidebarMenuItem>
               {editingId === item.id ? (
                 <div className="px-2 py-1.5">
-                  <input
-                    type="text"
+                  <Input
                     value={editValue}
                     onChange={(e) => setEditValue(e.target.value)}
                     onKeyDown={(e) => {
@@ -124,7 +124,6 @@ export function ProjectNavUI({
                     }}
                     onBlur={saveEdit}
                     autoFocus
-                    className="w-full px-1 py-0.5 text-sm bg-background rounded focus:outline-none"
                   />
                 </div>
               ) : (
@@ -158,8 +157,7 @@ export function ProjectNavUI({
                         <SidebarMenuSubItem key={child.id}>
                           {editingId === child.id ? (
                             <div className="px-2 py-1.5">
-                              <input
-                                type="text"
+                              <Input
                                 value={editValue}
                                 onChange={(e) => setEditValue(e.target.value)}
                                 onKeyDown={(e) => {
@@ -168,7 +166,6 @@ export function ProjectNavUI({
                                 }}
                                 onBlur={saveEdit}
                                 autoFocus
-                                className="w-full px-1 py-0.5 text-sm bg-background rounded focus:outline-none"
                               />
                             </div>
                           ) : (

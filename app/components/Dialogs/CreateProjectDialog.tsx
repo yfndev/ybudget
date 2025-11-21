@@ -15,7 +15,6 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/convex/_generated/api";
 import { useMutation } from "convex/react";
-import posthog from "posthog-js";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
@@ -52,18 +51,11 @@ export function CreateProjectDialog({
         parentId: parentId ? (parentId as any) : undefined,
       });
 
-      posthog.capture("project_created", {
-        has_description: !!description.trim(),
-        has_parent: !!parentId,
-        timestamp: new Date().toISOString(),
-      });
-
       toast.success("Projekt erstellt!");
       onProjectCreated?.(projectId);
       onOpenChange(false);
       resetForm();
     } catch (error) {
-      posthog.captureException(error as Error);
       toast.error("Fehler beim Erstellen");
     }
   };
