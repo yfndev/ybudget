@@ -1,7 +1,7 @@
 import BudgetCard from "@/components/Dashboard/BudgetCard";
 import DonorCSVExport from "@/components/Donors/DonorCSVExport";
 import { PageHeader } from "@/components/Layout/PageHeader";
-import { editableColumns } from "@/components/Tables/TransactionTable/editableColumns";
+import { editableColumnsWithoutProject } from "@/components/Tables/TransactionTable/editableColumns";
 import { EditableDataTable } from "@/components/Tables/TransactionTable/EditableDataTable";
 import { Doc } from "@/convex/_generated/dataModel";
 import { PaginationStatus } from "convex/react";
@@ -51,7 +51,7 @@ export default function DonorDetailUI({
           <DonorCSVExport donorId={donor._id} donorName={donor.name} />
         </div>
         <EditableDataTable
-          columns={editableColumns}
+          columns={editableColumnsWithoutProject}
           data={transactions}
           onUpdate={handleUpdate}
           onDelete={handleDelete}

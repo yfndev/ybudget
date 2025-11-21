@@ -1,7 +1,7 @@
 import BudgetCard from "@/components/Dashboard/BudgetCard";
 import { PageHeader } from "@/components/Layout/PageHeader";
 import { EditableDataTable } from "@/components/Tables/TransactionTable/EditableDataTable";
-import { editableColumns } from "@/components/Tables/TransactionTable/editableColumns";
+import { editableColumnsWithoutProject } from "@/components/Tables/TransactionTable/editableColumns";
 import { Button } from "@/components/ui/button";
 import type { Doc } from "@/convex/_generated/dataModel";
 import type { PaginationStatus } from "convex/react";
@@ -75,7 +75,7 @@ export default function ProjectDashboardUI({
           </div>
         </div>
         <EditableDataTable
-          columns={editableColumns}
+          columns={editableColumnsWithoutProject}
           data={transactions}
           onUpdate={onUpdate}
           onDelete={onDelete}
