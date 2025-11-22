@@ -38,7 +38,7 @@ const RangeCalendar = ({
   const [month, setMonth] = useState(today);
   const oldestDate = useQuery(
     api.transactions.queries.getOldestTransactionDate,
-    {},
+    {}
   );
 
   const presetRanges: Record<string, DateRange> = {
@@ -57,6 +57,7 @@ const RangeCalendar = ({
       from: startOfYear(subYears(today, 1)),
       to: endOfYear(subYears(today, 1)),
     },
+    all: { from: new Date(oldestDate ?? 0), to: new Date() },
   };
 
   const handlePresetClick = (range: DateRange) => {
@@ -126,12 +127,7 @@ const RangeCalendar = ({
         <Button
           variant="outline"
           size="sm"
-          onClick={() =>
-            handlePresetClick({
-              from: new Date(oldestDate ?? 0),
-              to: new Date(),
-            })
-          }
+          onClick={() => handlePresetClick(presetRanges.all)}
         >
           All
         </Button>
