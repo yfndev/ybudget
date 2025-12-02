@@ -150,7 +150,6 @@ export const CATEGORY_GROUPS = [
         description: "Pauschale für ehrenamtliche Tätigkeiten (840€/Jahr)",
         taxsphere: "purpose-operations" as const,
       },
-
       {
         value: "minijobs",
         label: "Minijobs",
