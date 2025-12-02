@@ -13,6 +13,7 @@ export default defineSchema({
     .index("by_domain", ["domain"]),
   users: defineTable({
     name: v.optional(v.string()),
+
     image: v.optional(v.string()),
     email: v.optional(v.string()),
     emailVerificationTime: v.optional(v.number()),
@@ -22,10 +23,15 @@ export default defineSchema({
     firstName: v.optional(v.string()),
     lastName: v.optional(v.string()),
 
+   
+
     organizationId: v.optional(v.id("organizations")),
     role: v.optional(
       v.union(v.literal("admin"), v.literal("lead"), v.literal("member")),
     ),
+    iban: v.optional(v.string()),
+    bic: v.optional(v.string()),
+    accountHolder: v.optional(v.string()),
   })
     .index("email", ["email"])
     .index("phone", ["phone"])
@@ -153,9 +159,27 @@ export default defineSchema({
     organizationId: v.id("organizations"),
     transactionId: v.id("transactions"),
     amount: v.number(),
+    status: v.union(v.literal("draft"), v.literal("pending"), v.literal("approved"), v.literal("rejected"), v.literal("paid")),
+    iban: v.string(),
+    bic: v.string(),
+    accountHolder: v.string(),
+    adminNote: v.optional(v.string()),
     createdBy: v.id("users"),
   }).index("by_transaction", ["transactionId"]),
 
+// multiple receipts make one reimbursement
+  receipts: defineTable({
+    reimbursementId: v.id("reimbursements"),
+    receiptNumber: v.string(),
+    receiptDate: v.string(),
+    companyName: v.string(),
+    description: v.string(),
+    netAmount: v.number(),
+    taxRate: v.number(),
+    grossAmount: v.number(),
+    fileStorageId: v.id("_storage"),
+  })
+  .index("by_reimbursement", ["reimbursementId"]),
 });
 
 
