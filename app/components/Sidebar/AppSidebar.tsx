@@ -1,6 +1,6 @@
 "use client";
 
-import { LayoutDashboard, SquareCheckBig, Upload, Users } from "lucide-react";
+import { Coins, LayoutDashboard, SquareCheckBig, Upload, Users } from "lucide-react";
 import { memo, useMemo } from "react";
 
 import {
@@ -27,6 +27,7 @@ const baseMainNav = [
   { name: "Transaktionen", url: "/transactions", icon: SquareCheckBig },
   { name: "Import", url: "/import", icon: Upload, adminOnly: true },
   { name: "Förderer", url: "/donors", icon: Users },
+  { name: "Auslagenerstattung", url: "/reimbursement", icon: Coins },
 ];
 
 function AppSidebarComponent(props: React.ComponentProps<typeof Sidebar>) {

@@ -148,4 +148,14 @@ export default defineSchema({
     memberIds: v.array(v.id("users")),
     createdBy: v.id("users"),
   }).index("by_organization", ["organizationId"]),
+
+  reimbursements: defineTable({
+    organizationId: v.id("organizations"),
+    transactionId: v.id("transactions"),
+    amount: v.number(),
+    createdBy: v.id("users"),
+  }).index("by_transaction", ["transactionId"]),
+
 });
+
+
