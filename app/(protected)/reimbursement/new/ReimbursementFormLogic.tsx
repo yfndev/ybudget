@@ -17,6 +17,7 @@ const emptyReceipt = {
   grossAmount: "",
   taxRate: "19",
   receiptNumber: "",
+  fileStorageId: "" as Id<"_storage"> | "",
 };
 
 export default function ReimbursementFormLogic() {
@@ -39,7 +40,7 @@ export default function ReimbursementFormLogic() {
     : 0;
 
   const handleAddReceipt = () => {
-    if (!currentReceipt.receiptNumber || !currentReceipt.companyName || !currentReceipt.grossAmount) {
+    if (!currentReceipt.receiptNumber || !currentReceipt.companyName || !currentReceipt.grossAmount || !currentReceipt.fileStorageId) {
       toast.error("Bitte Pflichtfelder ausfüllen");
       return;
     }
@@ -47,10 +48,7 @@ export default function ReimbursementFormLogic() {
     const gross = parseFloat(currentReceipt.grossAmount);
     const taxRate = parseFloat(currentReceipt.taxRate);
 
-    setReceipts([...receipts, {
-      _id: Date.now().toString() as Id<"receipts">,
-      _creationTime: Date.now(),
-      reimbursementId: "" as Id<"reimbursements">,
+    const receipt = {
       receiptNumber: currentReceipt.receiptNumber,
       receiptDate: currentReceipt.receiptDate,
       companyName: currentReceipt.companyName,
@@ -58,8 +56,10 @@ export default function ReimbursementFormLogic() {
       netAmount: calculateNet(gross, taxRate),
       taxRate,
       grossAmount: gross,
-      fileStorageId: "" as Id<"_storage">,
-    }]);
+      fileStorageId: currentReceipt.fileStorageId as Id<"_storage">,
+    };
+
+    setReceipts([...receipts, { ...receipt, _id: crypto.randomUUID() as any, _creationTime: Date.now(), reimbursementId: "" as any }]);
 
     setCurrentReceipt(emptyReceipt);
     toast.success(`Beleg ${receipts.length + 1} hinzugefügt`);
@@ -84,9 +84,18 @@ export default function ReimbursementFormLogic() {
     }
 
     await createReimbursement({
-      transactionId: "k57dw7gkcj4xmgpv4q5b63xgvh6zg1j2" as Id<"transactions">,
       amount: receipts.reduce((sum, r) => sum + r.grossAmount, 0),
       ...bankDetails,
+      receipts: receipts.map(r => ({
+        receiptNumber: r.receiptNumber,
+        receiptDate: r.receiptDate,
+        companyName: r.companyName,
+        description: r.description,
+        netAmount: r.netAmount,
+        taxRate: r.taxRate,
+        grossAmount: r.grossAmount,
+        fileStorageId: r.fileStorageId,
+      })),
     });
 
     toast.success("Auslagenerstattung zur Genehmigung eingereicht");

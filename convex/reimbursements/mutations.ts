@@ -5,25 +5,42 @@ import { getCurrentUser } from "../users/getCurrentUser";
 
 export const createReimbursement = mutation({
   args: {
-    transactionId: v.id("transactions"),
     amount: v.number(),
     iban: v.string(),
     bic: v.string(),
     accountHolder: v.string(),
+    receipts: v.array(v.object({
+      receiptNumber: v.string(),
+      receiptDate: v.string(),
+      companyName: v.string(),
+      description: v.string(),
+      netAmount: v.number(),
+      taxRate: v.number(),
+      grossAmount: v.number(),
+      fileStorageId: v.id("_storage"),
+    })),
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
 
-    return await ctx.db.insert("reimbursements", {
+    const reimbursementId = await ctx.db.insert("reimbursements", {
       organizationId: user.organizationId,
-      transactionId: args.transactionId,
       amount: args.amount,
-      status: "draft",
+      status: "pending",
       iban: args.iban,
       bic: args.bic,
       accountHolder: args.accountHolder,
       createdBy: user._id,
     });
+
+    for (const receipt of args.receipts) {
+      await ctx.db.insert("receipts", {
+        reimbursementId,
+        ...receipt,
+      });
+    }
+
+    return reimbursementId;
   },
 });
 
@@ -37,7 +54,7 @@ export const addReceipt = mutation({
     netAmount: v.number(),
     taxRate: v.number(),
     grossAmount: v.number(),
-    fileStorageId: v.optional(v.id("_storage")),
+    fileStorageId: v.id("_storage"),
   },
   handler: async (ctx, args) => {
     await getCurrentUser(ctx);
@@ -51,7 +68,7 @@ export const addReceipt = mutation({
       netAmount: args.netAmount,
       taxRate: args.taxRate,
       grossAmount: args.grossAmount,
-      fileStorageId: args.fileStorageId!,
+      fileStorageId: args.fileStorageId,
     });
   },
 });
@@ -76,5 +93,9 @@ export const submitReimbursement = mutation({
   },
 });
 
-
-
+export const generateUploadUrl = mutation({
+  handler: async (ctx) => {
+    await getCurrentUser(ctx);
+    return await ctx.storage.generateUploadUrl();
+  },
+});

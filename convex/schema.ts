@@ -157,7 +157,6 @@ export default defineSchema({
 
   reimbursements: defineTable({
     organizationId: v.id("organizations"),
-    transactionId: v.id("transactions"),
     amount: v.number(),
     status: v.union(v.literal("draft"), v.literal("pending"), v.literal("approved"), v.literal("rejected"), v.literal("paid")),
     iban: v.string(),
@@ -165,7 +164,7 @@ export default defineSchema({
     accountHolder: v.string(),
     adminNote: v.optional(v.string()),
     createdBy: v.id("users"),
-  }).index("by_transaction", ["transactionId"]),
+  }).index("by_organization", ["organizationId"]),
 
 // multiple receipts make one reimbursement
   receipts: defineTable({

@@ -2,26 +2,17 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import type { Doc, Id } from "@/convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
-import { CalendarIcon, Pencil, Plus, Trash2, Upload } from "lucide-react";
+import { CalendarIcon, Pencil, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { ReceiptUpload } from "./ReceiptUpload";
 
 type Props = {
   bankDetails: { iban: string; bic: string; accountHolder: string };
@@ -39,6 +30,7 @@ type Props = {
     grossAmount: string;
     taxRate: string;
     receiptNumber: string;
+    fileStorageId: Id<"_storage"> | "";
   };
   setCurrentReceipt: (receipt: {
     receiptDate: string;
@@ -47,6 +39,7 @@ type Props = {
     grossAmount: string;
     taxRate: string;
     receiptNumber: string;
+    fileStorageId: Id<"_storage"> | "";
   }) => void;
   calculatedNet: number;
   handleAddReceipt: () => void;
@@ -80,7 +73,7 @@ export function ReimbursementFormUI({
   const totalGross = receipts.reduce((sum, r) => sum + r.grossAmount, 0);
 
   return (
-    <div className="container mx-auto max-w-4xl p-6 space-y-10">
+    <div className="max-w-4xl mx-auto p-6 space-y-10">
       <div>
         <h1 className="text-3xl font-bold">Neue Auslagenerstattung</h1>
         <p className="text-muted-foreground mt-1">
@@ -92,7 +85,7 @@ export function ReimbursementFormUI({
         <h2 className="text-xl font-semibold">Beleg hinzufügen</h2>
 
         <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
+          <div>
             <Label>Name/Firma *</Label>
             <Input
               value={currentReceipt.companyName}
@@ -105,7 +98,7 @@ export function ReimbursementFormUI({
               placeholder="z.B. Amazon, Deutsche Bahn"
             />
           </div>
-          <div className="space-y-2">
+          <div>
             <Label>Beleg-Nr. *</Label>
             <Input
               value={currentReceipt.receiptNumber}
@@ -120,7 +113,7 @@ export function ReimbursementFormUI({
           </div>
         </div>
 
-        <div className="space-y-2">
+        <div>
           <Label>Beschreibung</Label>
           <Textarea
             value={currentReceipt.description}
@@ -137,7 +130,7 @@ export function ReimbursementFormUI({
         </div>
 
         <div className="grid grid-cols-4 gap-4">
-          <div className="space-y-2">
+          <div>
             <Label>Datum *</Label>
             <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
               <PopoverTrigger asChild>
@@ -148,7 +141,7 @@ export function ReimbursementFormUI({
                     !currentReceipt.receiptDate && "text-muted-foreground"
                   )}
                 >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  <CalendarIcon className="mr-2 size-4" />
                   {currentReceipt.receiptDate
                     ? format(
                         new Date(currentReceipt.receiptDate),
@@ -178,7 +171,7 @@ export function ReimbursementFormUI({
               </PopoverContent>
             </Popover>
           </div>
-          <div className="space-y-2">
+          <div>
             <Label>Bruttobetrag (€) *</Label>
             <Input
               type="number"
@@ -193,7 +186,7 @@ export function ReimbursementFormUI({
               placeholder="119,95"
             />
           </div>
-          <div className="space-y-2">
+          <div>
             <Label>Wie viel MwSt.?</Label>
             <Select
               value={currentReceipt.taxRate}
@@ -211,7 +204,7 @@ export function ReimbursementFormUI({
               </SelectContent>
             </Select>
           </div>
-          <div className="space-y-2">
+          <div>
             <Label className="text-muted-foreground">Nettobetrag (€)</Label>
             <Input
               type="number"
@@ -222,24 +215,12 @@ export function ReimbursementFormUI({
           </div>
         </div>
 
-        <div className="space-y-2">
-          <Label>Beleg hochladen (PDF)</Label>
-          <div className="border-2 border-dashed rounded-lg p-8 text-center hover:border-primary/50 hover:bg-primary/5 transition-all cursor-pointer group">
-            <div className="flex flex-col items-center gap-3">
-              <div className="p-4 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                <Upload className="h-8 w-8 text-primary" />
-              </div>
-              <div>
-                <p className="font-medium">
-                  Klicke hier oder ziehe deine PDF-Datei herein
-                </p>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Maximal 10 MB
-                </p>
-              </div>
-            </div>
-            <input type="file" accept=".pdf" className="hidden" />
-          </div>
+        <div>
+          <Label>Beleg hochladen *</Label>
+          <ReceiptUpload
+            onUploadComplete={(storageId) => setCurrentReceipt({ ...currentReceipt, fileStorageId: storageId })}
+            storageId={currentReceipt.fileStorageId || undefined}
+          />
         </div>
 
         <Button
@@ -248,21 +229,21 @@ export function ReimbursementFormUI({
           variant="outline"
           size="lg"
         >
-          <Plus className="h-5 w-5 mr-2" />
+          <Plus className="size-5 mr-2" />
           Beleg hinzufügen
         </Button>
       </div>
 
       {receipts.length > 0 && (
         <div className="space-y-8 mt-24">
-          <h2 className="text-2xl font-bold mb-8">Zusammenfassung</h2>
+          <h2 className="text-2xl font-bold">Zusammenfassung</h2>
 
           <div className="flex items-end gap-4">
             <div
               className="grid gap-4 flex-1"
               style={{ gridTemplateColumns: "1fr 2fr 1fr" }}
             >
-              <div className="space-y-2">
+              <div>
                 <Label className="text-xs text-muted-foreground uppercase">
                   Kontoinhaber
                 </Label>
@@ -277,7 +258,7 @@ export function ReimbursementFormUI({
                   disabled={!editingBank}
                 />
               </div>
-              <div className="space-y-2">
+              <div>
                 <Label className="text-xs text-muted-foreground uppercase">
                   IBAN
                 </Label>
@@ -291,7 +272,7 @@ export function ReimbursementFormUI({
                   className="font-mono"
                 />
               </div>
-              <div className="space-y-2">
+              <div>
                 <Label className="text-xs text-muted-foreground uppercase">
                   BIC
                 </Label>
@@ -315,7 +296,7 @@ export function ReimbursementFormUI({
                 "Speichern"
               ) : (
                 <>
-                  <Pencil className="h-4 w-4 mr-2" />
+                  <Pencil className="size-4 mr-2" />
                 </>
               )}
             </Button>
@@ -325,10 +306,10 @@ export function ReimbursementFormUI({
             {receipts.map((receipt) => (
               <div
                 key={receipt._id}
-                className="flex items-center justify-between px-3 bg-gray-50 border  rounded-md "
+                className="flex items-center justify-between px-3 bg-gray-50 border rounded-md"
               >
                 <div className="flex items-center gap-8 flex-1">
-                  <span className="font-semibold text-base ">
+                  <span className="font-semibold">
                     {receipt.companyName}
                   </span>
                   <span className="text-sm text-muted-foreground">
@@ -336,7 +317,7 @@ export function ReimbursementFormUI({
                   </span>
                 </div>
                 <div className="flex items-center gap-4">
-                  <span className="font-semibold text-base">
+                  <span className="font-semibold">
                     {receipt.grossAmount.toFixed(2)} €
                   </span>
                   <Button
@@ -345,7 +326,7 @@ export function ReimbursementFormUI({
                     onClick={() => handleDeleteReceipt(receipt._id)}
                     className="hover:bg-destructive/10 hover:text-destructive"
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash2 className="size-4" />
                   </Button>
                 </div>
               </div>
