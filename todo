@@ -1,10 +1,10 @@
 - [ ] add reimbursement as expected transaction when marked as paid
 
-- [ ] negative amount in chart should be negative
 - [ ] add tests
 
 archive (latest on top):
 
+- [x] negative amount in chart should be negative
 - [x] implement upload of expense reimbursements (Auslagenerstattungen)
 - [x] archive projects
 - [x] categories that are not non-profit should be highlighted in other color
