@@ -45,6 +45,7 @@
     "next": "15.5.4",
     "onborda": "^1.2.5",
     "papaparse": "^5.5.3",
+    "pdf-lib": "^1.17.1",
     "pnpm": "^10.22.0",
     "posthog-js": "^1.296.1",
     "posthog-node": "^4.18.0",

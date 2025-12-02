@@ -30,23 +30,26 @@ import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { useIsAdmin } from "@/hooks/useCurrentUserRole";
 import { formatDate } from "@/lib/formatDate";
-import { useMutation, useQuery } from "convex/react";
-import { ArrowUpDown, MoreHorizontal, Plus } from "lucide-react";
+import { useMutation, useQuery, useConvex } from "convex/react";
+import { ArrowUpDown, Download, MoreHorizontal, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { generateReimbursementPDF } from "@/lib/generateReimbursementPDF";
 
 export default function ReimbursementPage() {
   const isAdmin = useIsAdmin();
   const router = useRouter();
+  const convex = useConvex();
+  const currentUser = useQuery(api.users.queries.getCurrentUserProfile);
   const reimbursements = useQuery(
     api.reimbursements.queries.getAllReimbursements
   );
-  const markAsPaid = useMutation(api.reimbursements.mutations.markAsPaid);
+  const markAsPaid = useMutation(api.reimbursements.functions.markAsPaid);
   const rejectReimbursement = useMutation(
-    api.reimbursements.mutations.rejectReimbursement
+    api.reimbursements.functions.rejectReimbursement
   );
   const deleteReimbursement = useMutation(
-    api.reimbursements.mutations.deleteReimbursementAdmin
+    api.reimbursements.functions.deleteReimbursementAdmin
   );
 
   const [rejectDialog, setRejectDialog] = useState<{
@@ -90,12 +93,44 @@ export default function ReimbursementPage() {
     }
   };
 
+  const handleDownloadPDF = async (reimbursementId: Id<"reimbursements">) => {
+    try {
+      const reimbursement = await convex.query(api.reimbursements.queries.getReimbursement, { reimbursementId });
+      if (!reimbursement) return;
+
+      const receipts = await convex.query(api.reimbursements.queries.getReceipts, { reimbursementId });
+
+      const receiptsWithUrls = await Promise.all(
+        receipts.map(async receipt => ({
+          ...receipt,
+          fileUrl: await convex.query(api.reimbursements.queries.getFileUrl, {
+            storageId: receipt.fileStorageId
+          })
+        }))
+      );
+
+      const pdfBlob = await generateReimbursementPDF(reimbursement, receiptsWithUrls);
+
+      const url = URL.createObjectURL(pdfBlob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Auslagenerstattung_${reimbursementId}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("PDF generation failed:", error);
+    }
+  };
+
   return (
     <div className="flex flex-col w-full h-screen">
       <PageHeader title="Auslagenerstattung" />
 
       <div className="flex justify-end mb-4">
-        <Button onClick={() => router.push("/reimbursement/new")}>
+        <Button
+          variant="secondary"
+          onClick={() => router.push("/reimbursement/new")}
+        >
           <Plus className="h-4 w-4 mr-2" />
           Neue Erstattung
         </Button>
@@ -135,12 +170,18 @@ export default function ReimbursementPage() {
                   </Button>
                 </TableHead>
                 <TableHead>Status</TableHead>
-                {isAdmin && <TableHead></TableHead>}
+                <TableHead></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {reimbursements.map((reimbursement) => (
-                <TableRow key={reimbursement._id}>
+                <TableRow
+                  key={reimbursement._id}
+                  className="cursor-pointer"
+                  onClick={() =>
+                    router.push(`/reimbursement/${reimbursement._id}`)
+                  }
+                >
                   <TableCell className="px-1">
                     <div className="flex items-center justify-center">
                       <div
@@ -174,8 +215,8 @@ export default function ReimbursementPage() {
                     {reimbursement.amount.toFixed(2)} €
                   </TableCell>
                   <TableCell>{getStatusBadge(reimbursement.status)}</TableCell>
-                  {isAdmin && (
-                    <TableCell>
+                  {isAdmin || reimbursement.createdBy === currentUser?._id ? (
+                    <TableCell onClick={(e) => e.stopPropagation()}>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button
@@ -189,37 +230,58 @@ export default function ReimbursementPage() {
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem
                             onClick={() =>
-                              markAsPaid({ reimbursementId: reimbursement._id })
+                              router.push(`/reimbursement/${reimbursement._id}`)
                             }
-                            disabled={reimbursement.status === "paid"}
                           >
-                            Als bezahlt markieren
+                            Bearbeiten
                           </DropdownMenuItem>
                           <DropdownMenuItem
-                            onClick={() =>
-                              setRejectDialog({
-                                open: true,
-                                reimbursementId: reimbursement._id,
-                                note: "",
-                              })
-                            }
-                            disabled={reimbursement.status === "rejected"}
+                            onClick={() => handleDownloadPDF(reimbursement._id)}
                           >
-                            Ablehnen
+                            <Download className="h-4 w-4 mr-2" />
+                            PDF herunterladen
                           </DropdownMenuItem>
-                          <DropdownMenuItem
-                            className="text-destructive"
-                            onClick={() =>
-                              deleteReimbursement({
-                                reimbursementId: reimbursement._id,
-                              })
-                            }
-                          >
-                            Löschen
-                          </DropdownMenuItem>
+                          {isAdmin && (
+                            <>
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  markAsPaid({
+                                    reimbursementId: reimbursement._id,
+                                  })
+                                }
+                                disabled={reimbursement.status === "paid"}
+                              >
+                                Als bezahlt markieren
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  setRejectDialog({
+                                    open: true,
+                                    reimbursementId: reimbursement._id,
+                                    note: "",
+                                  })
+                                }
+                                disabled={reimbursement.status === "rejected"}
+                              >
+                                Ablehnen
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                className="text-destructive"
+                                onClick={() =>
+                                  deleteReimbursement({
+                                    reimbursementId: reimbursement._id,
+                                  })
+                                }
+                              >
+                                Löschen
+                              </DropdownMenuItem>
+                            </>
+                          )}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
+                  ) : (
+                    <TableCell />
                   )}
                 </TableRow>
               ))}
