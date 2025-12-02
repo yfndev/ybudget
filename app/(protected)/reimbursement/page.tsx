@@ -1,22 +1,9 @@
 "use client";
 
+import { RejectReimbursementDialog } from "@/components/Dialogs/RejectReimbursementDialog";
 import { PageHeader } from "@/components/Layout/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   Table,
   TableBody,
@@ -25,16 +12,23 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { useIsAdmin } from "@/hooks/useCurrentUserRole";
 import { formatDate } from "@/lib/formatDate";
-import { useMutation, useQuery, useConvex } from "convex/react";
-import { ArrowUpDown, Download, MoreHorizontal, Plus } from "lucide-react";
+import { generateReimbursementPDF } from "@/lib/generateReimbursementPDF";
+import { useConvex, useMutation, useQuery } from "convex/react";
+import {
+  ArrowUpDown,
+  Check,
+  Download,
+  Pencil,
+  Plus,
+  Trash2,
+  X,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { generateReimbursementPDF } from "@/lib/generateReimbursementPDF";
 
 export default function ReimbursementPage() {
   const isAdmin = useIsAdmin();
@@ -95,21 +89,30 @@ export default function ReimbursementPage() {
 
   const handleDownloadPDF = async (reimbursementId: Id<"reimbursements">) => {
     try {
-      const reimbursement = await convex.query(api.reimbursements.queries.getReimbursement, { reimbursementId });
+      const reimbursement = await convex.query(
+        api.reimbursements.queries.getReimbursement,
+        { reimbursementId }
+      );
       if (!reimbursement) return;
 
-      const receipts = await convex.query(api.reimbursements.queries.getReceipts, { reimbursementId });
+      const receipts = await convex.query(
+        api.reimbursements.queries.getReceipts,
+        { reimbursementId }
+      );
 
       const receiptsWithUrls = await Promise.all(
-        receipts.map(async receipt => ({
+        receipts.map(async (receipt) => ({
           ...receipt,
           fileUrl: await convex.query(api.reimbursements.queries.getFileUrl, {
-            storageId: receipt.fileStorageId
-          })
+            storageId: receipt.fileStorageId,
+          }),
         }))
       );
 
-      const pdfBlob = await generateReimbursementPDF(reimbursement, receiptsWithUrls);
+      const pdfBlob = await generateReimbursementPDF(
+        reimbursement,
+        receiptsWithUrls
+      );
 
       const url = URL.createObjectURL(pdfBlob);
       const a = document.createElement("a");
@@ -170,14 +173,14 @@ export default function ReimbursementPage() {
                   </Button>
                 </TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead></TableHead>
+                <TableHead className="text-right"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {reimbursements.map((reimbursement) => (
                 <TableRow
                   key={reimbursement._id}
-                  className="cursor-pointer"
+                  className="cursor-pointer px-2"
                   onClick={() =>
                     router.push(`/reimbursement/${reimbursement._id}`)
                   }
@@ -216,69 +219,81 @@ export default function ReimbursementPage() {
                   </TableCell>
                   <TableCell>{getStatusBadge(reimbursement.status)}</TableCell>
                   {isAdmin || reimbursement.createdBy === currentUser?._id ? (
-                    <TableCell onClick={(e) => e.stopPropagation()}>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
+                    <TableCell
+                      onClick={(e) => e.stopPropagation()}
+                      className="w-fit"
+                    >
+                      <div className="flex items-center justify-end gap-0.5">
+                        {isAdmin && (
+                          <>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7 text-green-600 hover:text-green-700 hover:bg-green-50"
+                              onClick={() =>
+                                markAsPaid({
+                                  reimbursementId: reimbursement._id,
+                                })
+                              }
+                              disabled={reimbursement.status === "paid"}
+                              title="Als bezahlt markieren"
+                            >
+                              <Check className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7 text-red-600 hover:text-red-700 hover:bg-red-50"
+                              onClick={() =>
+                                setRejectDialog({
+                                  open: true,
+                                  reimbursementId: reimbursement._id,
+                                  note: "",
+                                })
+                              }
+                              disabled={reimbursement.status === "rejected"}
+                              title="Ablehnen"
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </>
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7"
+                          onClick={() => handleDownloadPDF(reimbursement._id)}
+                          title="PDF herunterladen"
+                        >
+                          <Download className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7"
+                          onClick={() =>
+                            router.push(`/reimbursement/${reimbursement._id}`)
+                          }
+                          title="Bearbeiten"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        {isAdmin && (
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8"
-                          >
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem
+                            className="h-7 w-7"
                             onClick={() =>
-                              router.push(`/reimbursement/${reimbursement._id}`)
+                              deleteReimbursement({
+                                reimbursementId: reimbursement._id,
+                              })
                             }
+                            title="Löschen"
                           >
-                            Bearbeiten
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => handleDownloadPDF(reimbursement._id)}
-                          >
-                            <Download className="h-4 w-4 mr-2" />
-                            PDF herunterladen
-                          </DropdownMenuItem>
-                          {isAdmin && (
-                            <>
-                              <DropdownMenuItem
-                                onClick={() =>
-                                  markAsPaid({
-                                    reimbursementId: reimbursement._id,
-                                  })
-                                }
-                                disabled={reimbursement.status === "paid"}
-                              >
-                                Als bezahlt markieren
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={() =>
-                                  setRejectDialog({
-                                    open: true,
-                                    reimbursementId: reimbursement._id,
-                                    note: "",
-                                  })
-                                }
-                                disabled={reimbursement.status === "rejected"}
-                              >
-                                Ablehnen
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                className="text-destructive"
-                                onClick={() =>
-                                  deleteReimbursement({
-                                    reimbursementId: reimbursement._id,
-                                  })
-                                }
-                              >
-                                Löschen
-                              </DropdownMenuItem>
-                            </>
-                          )}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
                     </TableCell>
                   ) : (
                     <TableCell />
@@ -290,45 +305,17 @@ export default function ReimbursementPage() {
         )}
       </div>
 
-      <Dialog
+      <RejectReimbursementDialog
         open={rejectDialog.open}
-        onOpenChange={(open) => setRejectDialog({ ...rejectDialog, open })}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Erstattung ablehnen</DialogTitle>
-            <DialogDescription>
-              Bitte geben Sie einen Grund für die Ablehnung ein. Diese Nachricht
-              wird dem Nutzer angezeigt.
-            </DialogDescription>
-          </DialogHeader>
-          <Textarea
-            value={rejectDialog.note}
-            onChange={(e) =>
-              setRejectDialog({ ...rejectDialog, note: e.target.value })
-            }
-            placeholder="Grund für die Ablehnung..."
-            rows={4}
-          />
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() =>
-                setRejectDialog({
-                  open: false,
-                  reimbursementId: null,
-                  note: "",
-                })
-              }
-            >
-              Abbrechen
-            </Button>
-            <Button onClick={handleReject} disabled={!rejectDialog.note}>
-              Ablehnen
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        onOpenChange={(open: boolean) =>
+          setRejectDialog({ ...rejectDialog, open })
+        }
+        note={rejectDialog.note}
+        onNoteChange={(note: string) =>
+          setRejectDialog({ ...rejectDialog, note })
+        }
+        onReject={handleReject}
+      />
     </div>
   );
 }
