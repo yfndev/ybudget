@@ -34,7 +34,14 @@ _(Diagram was created in FigJam)_
 
 ## Trust Boundary Analysis using STRIDE
 
-I analyzed each trust boundary using the **STRIDE** framework (Spoofing, Tampering, Repudiation, Information Disclosure, Denial of Service, Escalation of Privileges) which was developed by Microsoft to identify YBudget's security strengths and weaknesses:
+I analyzed each trust boundary using the **STRIDE** framework, which was developed by Microsoft to identify YBudget's security strengths and weaknesses.
+
+- **Spoofing:** Pretending to be someone else → Fake login, forged webhook (mitigated through OAuth, JWT verification, webhook signatures)
+- **Tampering:** Unauthorized data modification → Changing transaction amounts (Input validation, type-safe queries, digital signatures)
+- o**Repudiation:** Denying you did something → "I didn't delete that project" (Audit logs with user ID and timestamps)
+- **Information Disclosure:** Leaking sensitive data → Other org's data exposed, API keys in logs (Encryption, organization scoping, secrets management)
+- **Denial of Service:** Making system unavailable → DDoS attack, resource exhaustion → Rate limiting, CDN protection
+- **Elevation of Privilege:** Gaining unauthorized permissions → Member accessing admin functions (Role checks on every request (requireRole())
 
 #### User <-> Frontend (NextJS)
 
