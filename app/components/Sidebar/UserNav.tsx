@@ -25,6 +25,7 @@ import {
   CreditCard,
   Handshake,
   LogOut,
+  ScrollText,
   Users,
 } from "lucide-react";
 import Link from "next/link";
@@ -139,6 +140,12 @@ export function NavUser({ user }: { user: Doc<"users"> | null | undefined }) {
                     <Link href="/settings/teams">
                       <Handshake />
                       Teams
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/settings/logs">
+                      <ScrollText />
+                      Logs
                     </Link>
                   </DropdownMenuItem>
                   {isCustomer && (
