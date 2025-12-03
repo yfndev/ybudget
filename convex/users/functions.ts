@@ -1,5 +1,6 @@
 import { v } from "convex/values";
-import { action, mutation } from "../_generated/server";
+import { mutation } from "../_generated/server";
+import { addLog } from "../logs/functions";
 import { getCurrentUser } from "./getCurrentUser";
 import { requireRole } from "./permissions";
 
@@ -50,7 +51,9 @@ export const updateUserRole = mutation({
         );
     }
 
+    const oldRole = targetUser.role ?? "member";
     await ctx.db.patch(args.userId, { role: args.role });
+    await addLog(ctx, currentUser.organizationId, currentUser._id, "user.role_change", args.userId, `${targetUser.name ?? targetUser.email}: ${oldRole} → ${args.role}`);
   },
 });
 

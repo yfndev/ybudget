@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { Id } from "../_generated/dataModel";
 import { type MutationCtx, mutation } from "../_generated/server";
+import { addLog } from "../logs/functions";
 import { canAccessProject } from "../teams/permissions";
 import { getCurrentUser } from "../users/getCurrentUser";
 import { requireRole } from "../users/permissions";
@@ -59,11 +60,15 @@ export const createExpectedTransaction = mutation({
       user.organizationId,
     );
 
-    return ctx.db.insert("transactions", {
+    const transactionId = await ctx.db.insert("transactions", {
       ...args,
       importedBy: user._id,
       organizationId: user.organizationId,
     });
+
+    await addLog(ctx, user.organizationId, user._id, "transaction.create", transactionId, `${args.description} (${args.amount}€)`);
+
+    return transactionId;
   },
 });
 
@@ -152,7 +157,8 @@ export const updateTransaction = mutation({
       user.organizationId,
     );
 
-    return ctx.db.patch(transactionId, updates);
+    await ctx.db.patch(transactionId, updates);
+    await addLog(ctx, user.organizationId, user._id, "transaction.update", transactionId, transaction.description);
   },
 });
 
@@ -240,6 +246,8 @@ export const splitTransaction = mutation({
       createdIds.push(reservesTransactionId);
     }
 
+    await addLog(ctx, user.organizationId, user._id, "transaction.split", args.transactionId, `${original.description} → ${args.splits.length} parts`);
+
     return createdIds;
   },
 });
@@ -262,6 +270,7 @@ export const deleteExpectedTransaction = mutation({
     }
 
     await ctx.db.delete(args.transactionId);
+    await addLog(ctx, user.organizationId, user._id, "transaction.delete", args.transactionId, `${transaction.description} (${transaction.amount}€)`);
   },
 });
 
@@ -280,7 +289,7 @@ export const transferMoney = mutation({
 
     const description = `Budgetübertrag von ${sendingProject?.name} zu ${receivingProject?.name}`;
 
-    await ctx.db.insert("transactions", {
+    const debitId = await ctx.db.insert("transactions", {
       date: Date.now(),
       importedBy: user._id,
       organizationId: user.organizationId,
@@ -301,5 +310,7 @@ export const transferMoney = mutation({
       amount: args.amount,
       projectId: args.receivingProjectId,
     });
+
+    await addLog(ctx, user.organizationId, user._id, "transaction.transfer", debitId, `${args.amount}€: ${sendingProject?.name} → ${receivingProject?.name}`);
   },
 });

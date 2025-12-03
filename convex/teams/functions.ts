@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { mutation } from "../_generated/server";
+import { addLog } from "../logs/functions";
 import { getCurrentUser } from "../users/getCurrentUser";
 import { requireRole } from "../users/permissions";
 
@@ -9,13 +10,17 @@ export const createTeam = mutation({
     await requireRole(ctx, "admin");
     const user = await getCurrentUser(ctx);
 
-    return ctx.db.insert("teams", {
+    const teamId = await ctx.db.insert("teams", {
       name: args.name,
       organizationId: user.organizationId,
       memberIds: [],
       projectIds: [],
       createdBy: user._id,
     });
+
+    await addLog(ctx, user.organizationId, user._id, "team.create", teamId, args.name);
+
+    return teamId;
   },
 });
 
@@ -31,6 +36,7 @@ export const renameTeam = mutation({
       throw new Error("Access denied");
 
     await ctx.db.patch(args.teamId, { name: args.name });
+    await addLog(ctx, user.organizationId, user._id, "team.update", args.teamId, `${team.name} → ${args.name}`);
   },
 });
 

@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { mutation } from "../_generated/server";
+import { addLog } from "../logs/functions";
 import { getCurrentUser } from "../users/getCurrentUser";
 
 export const createReimbursement = mutation({
@@ -9,6 +10,7 @@ export const createReimbursement = mutation({
     iban: v.string(),
     bic: v.string(),
     accountHolder: v.string(),
+    type: v.optional(v.union(v.literal("expense"), v.literal("travel"))),
     receipts: v.array(
       v.object({
         receiptNumber: v.string(),
@@ -33,6 +35,7 @@ export const createReimbursement = mutation({
       organizationId: user.organizationId,
       projectId: args.projectId,
       amount: args.amount,
+      type: args.type || "expense",
       status: "pending",
       iban: args.iban,
       bic: args.bic,
@@ -43,6 +46,8 @@ export const createReimbursement = mutation({
     for (const receipt of args.receipts) {
       await ctx.db.insert("receipts", { reimbursementId, ...receipt });
     }
+
+    await addLog(ctx, user.organizationId, user._id, "reimbursement.create", reimbursementId, `${args.amount}€`);
 
     return reimbursementId;
   },
@@ -199,6 +204,8 @@ export const markAsPaid = mutation({
     });
 
     await ctx.db.patch(args.reimbursementId, { status: "paid" });
+
+    await addLog(ctx, user.organizationId, user._id, "reimbursement.pay", args.reimbursementId, `${reimbursement.amount}€ → ${reimbursement.accountHolder}`);
   },
 });
 
@@ -221,6 +228,8 @@ export const rejectReimbursement = mutation({
       status: "rejected",
       adminNote: args.adminNote,
     });
+
+    await addLog(ctx, user.organizationId, user._id, "reimbursement.reject", args.reimbursementId, `${reimbursement.amount}€ - ${args.adminNote}`);
   },
 });
 
@@ -275,5 +284,7 @@ export const deleteReimbursementAdmin = mutation({
       await ctx.db.delete(receipt._id);
     }
     await ctx.db.delete(args.reimbursementId);
+
+    await addLog(ctx, user.organizationId, user._id, "reimbursement.delete", args.reimbursementId, `${reimbursement.amount}€`);
   },
 });

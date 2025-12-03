@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { mutation } from "../_generated/server";
+import { addLog } from "../logs/functions";
 import { getCurrentUser } from "../users/getCurrentUser";
 import { requireRole } from "../users/permissions";
 
@@ -40,7 +41,7 @@ export const createProject = mutation({
       }
     }
 
-    return await ctx.db.insert("projects", {
+    const projectId = await ctx.db.insert("projects", {
       name: args.name,
       description: args.description,
       organizationId: user.organizationId,
@@ -48,6 +49,10 @@ export const createProject = mutation({
       isArchived: false,
       createdBy: user._id,
     });
+
+    await addLog(ctx, user.organizationId, user._id, "project.create", projectId, args.name);
+
+    return projectId;
   },
 });
 
@@ -60,7 +65,9 @@ export const renameProject = mutation({
     if (!project || project.organizationId !== user.organizationId) {
       throw new Error(!project ? "Project not found" : "Access denied");
     }
-    return ctx.db.patch(args.projectId, { name: args.name });
+
+    await ctx.db.patch(args.projectId, { name: args.name });
+    await addLog(ctx, user.organizationId, user._id, "project.rename", args.projectId, `${project.name} → ${args.name}`);
   },
 });
 
@@ -68,7 +75,10 @@ export const archiveProject = mutation({
   args: { projectId: v.id("projects") },
   handler: async (ctx, args) => {
     await requireRole(ctx, "admin");
+    const user = await getCurrentUser(ctx);
+    const project = await ctx.db.get(args.projectId);
 
-    return ctx.db.patch(args.projectId, { isArchived: true });
+    await ctx.db.patch(args.projectId, { isArchived: true });
+    await addLog(ctx, user.organizationId, user._id, "project.archive", args.projectId, project?.name);
   },
 });
