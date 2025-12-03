@@ -3,6 +3,12 @@ import { mutation } from "../_generated/server";
 import { addLog } from "../logs/functions";
 import { getCurrentUser } from "../users/getCurrentUser";
 
+function validateTravelAmounts(amount: number, travelDetails: { transportationAmount: number; accommodationAmount: number; kilometers?: number }) {
+  if (amount < 0 || travelDetails.transportationAmount < 0 || travelDetails.accommodationAmount < 0 || (travelDetails.kilometers !== undefined && travelDetails.kilometers < 0)) {
+    throw new Error("Amounts cannot be negative");
+  }
+}
+
 const transportationModeValidator = v.union(
   v.literal("car"),
   v.literal("train"),
@@ -47,6 +53,8 @@ export const createReimbursement = mutation({
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
 
+    if (args.amount < 0) throw new Error("Amount cannot be negative");
+
     const reimbursementId = await ctx.db.insert("reimbursements", {
       organizationId: user.organizationId,
       projectId: args.projectId,
@@ -86,6 +94,8 @@ export const createTravelReimbursement = mutation({
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
+
+    validateTravelAmounts(args.amount, args.travelDetails);
 
     const reimbursementId = await ctx.db.insert("reimbursements", {
       organizationId: user.organizationId,
@@ -286,6 +296,8 @@ export const updateReimbursement = mutation({
     amount: v.number(),
   },
   handler: async (ctx, args) => {
+    if (args.amount < 0) throw new Error("Amount cannot be negative");
+
     await ctx.db.patch(args.reimbursementId, {
       projectId: args.projectId,
       amount: args.amount,
@@ -302,6 +314,8 @@ export const updateTravelReimbursement = mutation({
     travelDetails: travelDetailsValidator,
   },
   handler: async (ctx, args) => {
+    validateTravelAmounts(args.amount, args.travelDetails);
+
     await ctx.db.patch(args.reimbursementId, {
       projectId: args.projectId,
       amount: args.amount,

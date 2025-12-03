@@ -88,35 +88,31 @@ export function ReimbursementFormUI({
   const totalGross = receipts.reduce((sum, r) => sum + r.grossAmount, 0);
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-10">
-      <div>
-        <h1 className="text-3xl font-bold">Neue Erstattung</h1>
-        <p className="text-muted-foreground mt-1">
-          Wählen Sie den Erstattungstyp und reichen Sie zur Genehmigung ein
-        </p>
+    <div className="max-w-4xl mx-auto p-6 space-y-8">
+      <div className="space-y-4">
+        <h1 className="text-2xl font-semibold">Neue Erstattung</h1>
 
-        <Tabs
-          value={reimbursementType}
-          onValueChange={(value) =>
-            setReimbursementType(value as "expense" | "travel")
-          }
-          className="mt-4"
-        >
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="expense">Auslagenerstattung</TabsTrigger>
-            <TabsTrigger value="travel">Reisekostenerstattung</TabsTrigger>
-          </TabsList>
-        </Tabs>
+        <div className="flex items-center gap-3">
+          <Tabs
+            value={reimbursementType}
+            onValueChange={(value) =>
+              setReimbursementType(value as "expense" | "travel")
+            }
+          >
+            <TabsList>
+              <TabsTrigger value="expense">Auslagenerstattung</TabsTrigger>
+              <TabsTrigger value="travel">Reisekostenerstattung</TabsTrigger>
+            </TabsList>
+          </Tabs>
 
-        <div className="mt-4">
           <Select
             value={selectedProjectId || ""}
             onValueChange={(value) =>
               setSelectedProjectId(value as Id<"projects">)
             }
           >
-            <SelectTrigger>
-              <SelectValue placeholder="Wählen Sie ein Projekt" />
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder="Projekt wählen" />
             </SelectTrigger>
             <SelectContent>
               {projects.map((project) => (
@@ -129,8 +125,8 @@ export function ReimbursementFormUI({
         </div>
       </div>
 
-      <div className="space-y-6">
-        <h2 className="text-xl font-semibold">Beleg hinzufügen</h2>
+      <div className="space-y-4">
+        <h2 className="text-lg font-medium">Beleg hinzufügen</h2>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
@@ -186,7 +182,7 @@ export function ReimbursementFormUI({
                   variant="outline"
                   className={cn(
                     "w-full justify-start text-left font-normal",
-                    !currentReceipt.receiptDate && "text-muted-foreground",
+                    !currentReceipt.receiptDate && "text-muted-foreground"
                   )}
                 >
                   <CalendarIcon className="mr-2 size-4" />
@@ -194,7 +190,7 @@ export function ReimbursementFormUI({
                     ? format(
                         new Date(currentReceipt.receiptDate),
                         "dd.MM.yyyy",
-                        { locale: de },
+                        { locale: de }
                       )
                     : "Datum wählen"}
                 </Button>
