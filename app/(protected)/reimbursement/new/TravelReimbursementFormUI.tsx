@@ -377,10 +377,7 @@ export function TravelReimbursementFormUI({
       {/* Receipt Upload - only show when there are costs */}
       {totalAmount > 0 && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-medium">Belege hochladen</h2>
-            <span className="text-sm text-muted-foreground">Optional</span>
-          </div>
+          <h2 className="text-lg font-medium">Beleg hochladen *</h2>
           <ReceiptUpload
             onUploadComplete={(storageId) =>
               setTravelDetails({ ...travelDetails, fileStorageId: storageId })
@@ -390,8 +387,8 @@ export function TravelReimbursementFormUI({
         </div>
       )}
 
-      {/* Summary - only show when there are costs */}
-      {totalAmount > 0 && (
+      {/* Summary - only show when receipt is uploaded */}
+      {totalAmount > 0 && travelDetails.fileStorageId && (
         <div className="space-y-8 mt-24">
           <h2 className="text-2xl font-bold">Zusammenfassung</h2>
 
