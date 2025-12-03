@@ -26,6 +26,8 @@ import {
   Plus,
   Trash2,
   X,
+  Car,
+  Receipt,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -125,7 +127,7 @@ export default function ReimbursementPage() {
 
   return (
     <div className="flex flex-col w-full h-screen">
-      <PageHeader title="Auslagenerstattung" />
+      <PageHeader title="Erstattungen" />
 
       <div className="flex justify-end mb-4">
         <Button
@@ -184,7 +186,12 @@ export default function ReimbursementPage() {
                   }
                 >
                   <TableCell className="px-1">
-                    <div className="flex items-center justify-center">
+                    <div className="flex items-center justify-center gap-1">
+                      {reimbursement.type === "travel" ? (
+                        <Car className="h-4 w-4 text-blue-600" />
+                      ) : (
+                        <Receipt className="h-4 w-4 text-gray-600" />
+                      )}
                       <StatusDot status={reimbursement.status} />
                     </div>
                   </TableCell>
@@ -193,7 +200,18 @@ export default function ReimbursementPage() {
                   </TableCell>
                   <TableCell>{reimbursement.projectName}</TableCell>
                   <TableCell className="text-muted-foreground">
-                    Auslagenerstattung
+                    {reimbursement.type === "travel" ? (
+                      <div>
+                        <span>Reisekostenerstattung</span>
+                        {reimbursement.travelDetails && (
+                          <span className="block text-xs">
+                            {reimbursement.travelDetails.destination} • {reimbursement.travelDetails.transportationMode === "car" ? "PKW" : reimbursement.travelDetails.transportationMode}
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      "Auslagenerstattung"
+                    )}
                     {reimbursement.adminNote &&
                       reimbursement.status === "rejected" && (
                         <span className="block text-xs text-red-600">

@@ -2,19 +2,10 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import type { Doc, Id } from "@/convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
@@ -24,41 +15,33 @@ import { CalendarIcon, Pencil, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { ReceiptUpload } from "./ReceiptUpload";
 
+type CurrentReceipt = {
+  receiptDate: string;
+  companyName: string;
+  description: string;
+  grossAmount: string;
+  taxRate: string;
+  receiptNumber: string;
+  fileStorageId: Id<"_storage"> | undefined;
+};
+
 type Props = {
   projects: Doc<"projects">[];
   selectedProjectId: Id<"projects"> | null;
   setSelectedProjectId: (id: Id<"projects"> | null) => void;
   bankDetails: { iban: string; bic: string; accountHolder: string };
-  setBankDetails: (details: {
-    iban: string;
-    bic: string;
-    accountHolder: string;
-  }) => void;
+  setBankDetails: (details: { iban: string; bic: string; accountHolder: string }) => void;
   editingBank: boolean;
   setEditingBank: () => void;
-  currentReceipt: {
-    receiptDate: string;
-    companyName: string;
-    description: string;
-    grossAmount: string;
-    taxRate: string;
-    receiptNumber: string;
-    fileStorageId: Id<"_storage"> | "";
-  };
-  setCurrentReceipt: (receipt: {
-    receiptDate: string;
-    companyName: string;
-    description: string;
-    grossAmount: string;
-    taxRate: string;
-    receiptNumber: string;
-    fileStorageId: Id<"_storage"> | "";
-  }) => void;
+  currentReceipt: CurrentReceipt;
+  setCurrentReceipt: (receipt: CurrentReceipt) => void;
   calculatedNet: number;
   handleAddReceipt: () => void;
   receipts: Omit<Doc<"receipts">, "_id" | "_creationTime">[];
   handleDeleteReceipt: (index: number) => void;
   handleSubmit: () => void;
+  reimbursementType: "expense" | "travel";
+  setReimbursementType: (type: "expense" | "travel") => void;
 };
 
 export function ReimbursementFormUI({
@@ -76,6 +59,8 @@ export function ReimbursementFormUI({
   receipts,
   handleDeleteReceipt,
   handleSubmit,
+  reimbursementType,
+  setReimbursementType,
 }: Props) {
   const [calendarOpen, setCalendarOpen] = useState(false);
 
@@ -91,10 +76,17 @@ export function ReimbursementFormUI({
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-10">
       <div>
-        <h1 className="text-3xl font-bold">Neue Auslagenerstattung</h1>
+        <h1 className="text-3xl font-bold">Neue Erstattung</h1>
         <p className="text-muted-foreground mt-1">
-          Füge deine Belege hinzu und reiche sie zur Genehmigung ein
+          Wählen Sie den Erstattungstyp und reichen Sie zur Genehmigung ein
         </p>
+
+        <Tabs value={reimbursementType} onValueChange={(value) => setReimbursementType(value as "expense" | "travel")} className="mt-4">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="expense">Auslagenerstattung</TabsTrigger>
+            <TabsTrigger value="travel">Reisekostenerstattung</TabsTrigger>
+          </TabsList>
+        </Tabs>
 
         <div className="mt-4">
           <Select
