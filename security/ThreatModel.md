@@ -43,7 +43,7 @@ I analyzed each trust boundary using the **STRIDE** framework (Spoofing, Tamperi
 |                              | **Strengths**                     | **Weaknesses** | **Strengths**                                                                           | **Weaknesses**               |
 | **Spoofing**                 | OAuth using Google (no passwords) |                | HTTPS/TLS enforced, Auth check with redirect to login or dashboard in protected layout  |                              |
 | **Tampering**                |                                   |                | CSP headers configured (to tell browser which resources to load to prevent XSS attacks) |                              |
-| **Repudiation**              |                                   |                | Convex function logs track all backend operations                                       | No comprehensive audit trail |
+| **Repudiation**              |                                   |                | Audit logs track user actions per organization (`convex/logs`)                          |                              |
 | **Information Disclosure**   |                                   |                | HTTPOnly cookies for sessions                                                           |                              |
 | **Denial of Service**        |                                   |                |                                                                                         | No bot protection on login   |
 | **Escalation of Privileges** |                                   |                | Role-based UI rendering using `useIsAdmin()`, AccessDenied UI                           |                              |
@@ -55,7 +55,7 @@ I analyzed each trust boundary using the **STRIDE** framework (Spoofing, Tamperi
 |                              | **Strengths**                | **Weaknesses** | **Strengths**                                   | **Weaknesses**                                                    |
 | **Spoofing**                 | JWT tokens using Convex Auth |                | JWT validation automatic                        |                                                                   |
 | **Tampering**                |                              |                | Convex validators on all inputs                 |                                                                   |
-| **Repudiation**              |                              | No request IDs |                                                 | No comprehensive audit logging, only general logging of functions |
+| **Repudiation**              |                              | No request IDs | Audit logs for key actions (reimbursements, etc.)  |                                                                |
 | **Information Disclosure**   | HTTPS/TLS enforced           |                | Encrypted responses                             |
 | **Denial of Service**        |                              |                | Rate limiting of queries/ mutations built-in    |                                                                   |
 | **Escalation of Privileges** | JWT based auth               |                | Role based access control using `requireRole()` | Permissions re-checked on every request (no caching)              |
@@ -67,7 +67,7 @@ I analyzed each trust boundary using the **STRIDE** framework (Spoofing, Tamperi
 |                              | **Strengths**                                                         | **Weaknesses**      | **Strengths**               | **Weaknesses** |
 | **Spoofing**                 |                                                                       |                     | Convex Auth                 |                |
 | **Tampering**                | Type safe queries (to prevent NoSQL injections)                       |                     |                             |                |
-| **Repudiation**              |                                                                       | Limited audit trail |                             |                |
+| **Repudiation**              | Audit logs stored per organization                                    |                     |                             |                |
 | **Information Disclosure**   |                                                                       |                     | Encryption of database      |                |
 | **Denial of Service**        |                                                                       |                     | Convex managed optimization |                |
 | **Escalation of Privileges** | Organization scoped queries by checking for organizationId in queries |                     |                             |                |
@@ -102,6 +102,7 @@ I analyzed each trust boundary using the **STRIDE** framework (Spoofing, Tamperi
 - implemented CSP header to prevent cross site scripting attacks
 - limited CSV upload to only upload CSV files (confirmed that React & Papa Parse Library limit scripting )
 - implemented organization based access control
+- added audit logging for key operations (reimbursements, etc.)
 
 ## Architecture & Dependencies
 
@@ -110,6 +111,7 @@ I analyzed each trust boundary using the **STRIDE** framework (Spoofing, Tamperi
 - **Authentication**: Google OAuth 2.0 user verification implemented with Convex Auth → no passwords stored
   → Convex Auth also handles session management, JWT tokens, HTTPOnly cookies
 - **Payment**: Stripe (handles payment compliance)
+- **Email**: Resend (for user invitations, API keys stored server-side)
 - **Deployment**: Vercel (CDN security, DDoS protection, TLS 1.3 enforcement ) + Convex Cloud (at rest encryption and managed backups)
 
 This analysis focuses on what I can control at the application level. I'm explicitly not covering:

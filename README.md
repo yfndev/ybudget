@@ -15,6 +15,9 @@ Simple, affordable, intuitive and open-source.
 - 📊 **Budget Planning:** Organize projects by donors and already mark expected income and expenses
 - 💳 **Transaction Import:** Import CSV from Sparkasse, Volksbank, & Moss and use smart matching to match expected expenses with the actual bank ones
 - 🎯 **Project Organization:** Assign expenses to projects, see remaining budgets at a glance
+- 🧾 **Reimbursements:** Submit expense and travel reimbursements with receipt uploads
+- 👥 **Team Management:** Organize members into teams with project access control
+- 📝 **Audit Logs:** Track all actions for transparency and compliance
 
 ## Tech Stack
 
@@ -154,7 +157,7 @@ We take security seriously at YBudget. Here's how we protect your financial data
 
 - Content Security Policy (CSP) headers restrict which resources can be loaded
 - React automatically escapes user input when rendering
-- We don't use `dangerouslySetInnerHTML` or eval anywhere in the codebase
+- The only use of `dangerouslySetInnerHTML` is for CSS generation in chart components (no user input)
 
 **14. Rate Limiting**
 
