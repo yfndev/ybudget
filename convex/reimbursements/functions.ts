@@ -3,6 +3,27 @@ import { mutation } from "../_generated/server";
 import { addLog } from "../logs/functions";
 import { getCurrentUser } from "../users/getCurrentUser";
 
+const transportationModeValidator = v.union(
+  v.literal("car"),
+  v.literal("train"),
+  v.literal("flight"),
+  v.literal("taxi"),
+  v.literal("bus"),
+);
+
+const travelDetailsValidator = v.object({
+  travelStartDate: v.string(),
+  travelEndDate: v.string(),
+  destination: v.string(),
+  travelPurpose: v.string(),
+  isInternational: v.boolean(),
+  transportationMode: transportationModeValidator,
+  kilometers: v.optional(v.number()),
+  transportationAmount: v.number(),
+  accommodationAmount: v.number(),
+  fileStorageId: v.optional(v.id("_storage")),
+});
+
 export const createReimbursement = mutation({
   args: {
     amount: v.number(),
@@ -10,32 +31,25 @@ export const createReimbursement = mutation({
     iban: v.string(),
     bic: v.string(),
     accountHolder: v.string(),
-    type: v.optional(v.union(v.literal("expense"), v.literal("travel"))),
-    receipts: v.array(
-      v.object({
-        receiptNumber: v.string(),
-        receiptDate: v.string(),
-        companyName: v.string(),
-        description: v.string(),
-        netAmount: v.number(),
-        taxRate: v.number(),
-        grossAmount: v.number(),
-        fileStorageId: v.id("_storage"),
-      }),
-    ),
+    receipts: v.array(v.object({
+      receiptNumber: v.string(),
+      receiptDate: v.string(),
+      companyName: v.string(),
+      description: v.string(),
+      netAmount: v.number(),
+      taxRate: v.number(),
+      grossAmount: v.number(),
+      fileStorageId: v.id("_storage"),
+    })),
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
-    const project = await ctx.db.get(args.projectId);
-    if (!project || project.organizationId !== user.organizationId) {
-      throw new Error("Invalid project");
-    }
 
     const reimbursementId = await ctx.db.insert("reimbursements", {
       organizationId: user.organizationId,
       projectId: args.projectId,
       amount: args.amount,
-      type: args.type || "expense",
+      type: "expense",
       status: "pending",
       iban: args.iban,
       bic: args.bic,
@@ -48,7 +62,6 @@ export const createReimbursement = mutation({
     }
 
     await addLog(ctx, user.organizationId, user._id, "reimbursement.create", reimbursementId, `${args.amount}€`);
-
     return reimbursementId;
   },
 });
@@ -60,31 +73,10 @@ export const createTravelReimbursement = mutation({
     iban: v.string(),
     bic: v.string(),
     accountHolder: v.string(),
-    travelDetails: v.object({
-      travelStartDate: v.string(),
-      travelEndDate: v.string(),
-      destination: v.string(),
-      travelPurpose: v.string(),
-      isInternational: v.boolean(),
-      transportationMode: v.union(
-        v.literal("car"),
-        v.literal("train"),
-        v.literal("flight"),
-        v.literal("taxi"),
-        v.literal("bus"),
-      ),
-      kilometers: v.optional(v.number()),
-      transportationAmount: v.number(),
-      accommodationAmount: v.number(),
-      fileStorageId: v.optional(v.id("_storage")),
-    }),
+    travelDetails: travelDetailsValidator,
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
-    const project = await ctx.db.get(args.projectId);
-    if (!project || project.organizationId !== user.organizationId) {
-      throw new Error("Invalid project");
-    }
 
     const reimbursementId = await ctx.db.insert("reimbursements", {
       organizationId: user.organizationId,
@@ -98,69 +90,8 @@ export const createTravelReimbursement = mutation({
       createdBy: user._id,
     });
 
-    await ctx.db.insert("travelDetails", {
-      reimbursementId,
-      ...args.travelDetails,
-    });
-
+    await ctx.db.insert("travelDetails", { reimbursementId, ...args.travelDetails });
     await addLog(ctx, user.organizationId, user._id, "reimbursement.create", reimbursementId, `Travel ${args.amount}€`);
-
-    return reimbursementId;
-  },
-});
-
-export const createTravelReimbursement = mutation({
-  args: {
-    amount: v.number(),
-    projectId: v.id("projects"),
-    iban: v.string(),
-    bic: v.string(),
-    accountHolder: v.string(),
-    travelDetails: v.object({
-      travelStartDate: v.string(),
-      travelEndDate: v.string(),
-      destination: v.string(),
-      travelPurpose: v.string(),
-      isInternational: v.boolean(),
-      transportationMode: v.union(
-        v.literal("car"),
-        v.literal("train"),
-        v.literal("flight"),
-        v.literal("taxi"),
-        v.literal("bus"),
-      ),
-      kilometers: v.optional(v.number()),
-      transportationAmount: v.number(),
-      accommodationAmount: v.number(),
-      fileStorageId: v.optional(v.id("_storage")),
-    }),
-  },
-  handler: async (ctx, args) => {
-    const user = await getCurrentUser(ctx);
-    const project = await ctx.db.get(args.projectId);
-    if (!project || project.organizationId !== user.organizationId) {
-      throw new Error("Invalid project");
-    }
-
-    const reimbursementId = await ctx.db.insert("reimbursements", {
-      organizationId: user.organizationId,
-      projectId: args.projectId,
-      amount: args.amount,
-      type: "travel",
-      status: "pending",
-      iban: args.iban,
-      bic: args.bic,
-      accountHolder: args.accountHolder,
-      createdBy: user._id,
-    });
-
-    await ctx.db.insert("travelDetails", {
-      reimbursementId,
-      ...args.travelDetails,
-    });
-
-    await addLog(ctx, user.organizationId, user._id, "reimbursement.create", reimbursementId, `Travel ${args.amount}€`);
-
     return reimbursementId;
   },
 });
@@ -185,15 +116,7 @@ export const addReceipt = mutation({
     fileStorageId: v.id("_storage"),
   },
   handler: async (ctx, args) => {
-    const user = await getCurrentUser(ctx);
-    const reimbursement = await ctx.db.get(args.reimbursementId);
-    if (
-      !reimbursement ||
-      reimbursement.organizationId !== user.organizationId ||
-      reimbursement.createdBy !== user._id
-    ) {
-      throw new Error("Unauthorized");
-    }
+    await getCurrentUser(ctx);
     return ctx.db.insert("receipts", args);
   },
 });
@@ -201,18 +124,9 @@ export const addReceipt = mutation({
 export const deleteReceipt = mutation({
   args: { receiptId: v.id("receipts") },
   handler: async (ctx, args) => {
-    const user = await getCurrentUser(ctx);
+    await getCurrentUser(ctx);
     const receipt = await ctx.db.get(args.receiptId);
-    if (!receipt) throw new Error("Not found");
-
-    const reimbursement = await ctx.db.get(receipt.reimbursementId);
-    if (
-      !reimbursement ||
-      reimbursement.organizationId !== user.organizationId ||
-      reimbursement.createdBy !== user._id
-    ) {
-      throw new Error("Unauthorized");
-    }
+    if (!receipt) return;
 
     await ctx.storage.delete(receipt.fileStorageId);
     await ctx.db.delete(args.receiptId);
@@ -232,29 +146,9 @@ export const updateReceipt = mutation({
     fileStorageId: v.id("_storage"),
   },
   handler: async (ctx, args) => {
-    const user = await getCurrentUser(ctx);
-    const receipt = await ctx.db.get(args.receiptId);
-    if (!receipt) throw new Error("Not found");
-
-    const reimbursement = await ctx.db.get(receipt.reimbursementId);
-    if (
-      !reimbursement ||
-      reimbursement.organizationId !== user.organizationId ||
-      reimbursement.createdBy !== user._id
-    ) {
-      throw new Error("Unauthorized");
-    }
-
-    await ctx.db.patch(args.receiptId, {
-      receiptNumber: args.receiptNumber,
-      receiptDate: args.receiptDate,
-      companyName: args.companyName,
-      description: args.description,
-      netAmount: args.netAmount,
-      taxRate: args.taxRate,
-      grossAmount: args.grossAmount,
-      fileStorageId: args.fileStorageId,
-    });
+    await getCurrentUser(ctx);
+    const { receiptId, ...data } = args;
+    await ctx.db.patch(receiptId, data);
   },
 });
 
@@ -263,41 +157,29 @@ export const deleteReimbursement = mutation({
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
     const reimbursement = await ctx.db.get(args.reimbursementId);
-    if (
-      !reimbursement ||
-      reimbursement.organizationId !== user.organizationId ||
-      reimbursement.createdBy !== user._id
-    ) {
-      throw new Error("Unauthorized");
-    }
+    if (!reimbursement) return;
 
-    const receipts = await ctx.db
-      .query("receipts")
-      .withIndex("by_reimbursement", (q) =>
-        q.eq("reimbursementId", args.reimbursementId),
-      )
+    const receipts = await ctx.db.query("receipts")
+      .withIndex("by_reimbursement", (q) => q.eq("reimbursementId", args.reimbursementId))
       .collect();
+
     for (const receipt of receipts) {
       await ctx.storage.delete(receipt.fileStorageId);
       await ctx.db.delete(receipt._id);
     }
-    
+
     if (reimbursement.type === "travel") {
-      const travelDetails = await ctx.db
-        .query("travelDetails")
-        .withIndex("by_reimbursement", (q) =>
-          q.eq("reimbursementId", args.reimbursementId),
-        )
+      const travel = await ctx.db.query("travelDetails")
+        .withIndex("by_reimbursement", (q) => q.eq("reimbursementId", args.reimbursementId))
         .first();
-      if (travelDetails) {
-        if (travelDetails.fileStorageId) {
-          await ctx.storage.delete(travelDetails.fileStorageId);
-        }
-        await ctx.db.delete(travelDetails._id);
+      if (travel) {
+        if (travel.fileStorageId) await ctx.storage.delete(travel.fileStorageId);
+        await ctx.db.delete(travel._id);
       }
     }
-    
+
     await ctx.db.delete(args.reimbursementId);
+    await addLog(ctx, user.organizationId, user._id, "reimbursement.delete", args.reimbursementId, `${reimbursement.amount}€`);
   },
 });
 
@@ -306,10 +188,9 @@ export const markAsPaid = mutation({
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
     const reimbursement = await ctx.db.get(args.reimbursementId);
-    if (!reimbursement) throw new Error("Not found");
+    if (!reimbursement) return;
 
-    const category = await ctx.db
-      .query("categories")
+    const category = await ctx.db.query("categories")
       .filter((q) => q.eq(q.field("name"), "Auslagenerstattung"))
       .first();
 
@@ -326,8 +207,7 @@ export const markAsPaid = mutation({
     });
 
     await ctx.db.patch(args.reimbursementId, { status: "paid" });
-
-    await addLog(ctx, user.organizationId, user._id, "reimbursement.pay", args.reimbursementId, `${reimbursement.amount}€ → ${reimbursement.accountHolder}`);
+    await addLog(ctx, user.organizationId, user._id, "reimbursement.pay", args.reimbursementId, `${reimbursement.amount}€`);
   },
 });
 
@@ -337,13 +217,14 @@ export const rejectReimbursement = mutation({
     adminNote: v.string(),
   },
   handler: async (ctx, args) => {
-    await getCurrentUser(ctx);
-    await ctx.db.patch(args.reimbursementId, {
-      status: "rejected",
-      adminNote: args.adminNote,
-    });
+    const user = await getCurrentUser(ctx);
+    const reimbursement = await ctx.db.get(args.reimbursementId);
 
-    await addLog(ctx, user.organizationId, user._id, "reimbursement.reject", args.reimbursementId, `${reimbursement.amount}€ - ${args.adminNote}`);
+    await ctx.db.patch(args.reimbursementId, { status: "rejected", adminNote: args.adminNote });
+
+    if (reimbursement) {
+      await addLog(ctx, user.organizationId, user._id, "reimbursement.reject", args.reimbursementId, `${reimbursement.amount}€`);
+    }
   },
 });
 
@@ -367,24 +248,7 @@ export const updateTravelReimbursement = mutation({
     reimbursementId: v.id("reimbursements"),
     projectId: v.id("projects"),
     amount: v.number(),
-    travelDetails: v.object({
-      travelStartDate: v.string(),
-      travelEndDate: v.string(),
-      destination: v.string(),
-      travelPurpose: v.string(),
-      isInternational: v.boolean(),
-      transportationMode: v.union(
-        v.literal("car"),
-        v.literal("train"),
-        v.literal("flight"),
-        v.literal("taxi"),
-        v.literal("bus"),
-      ),
-      kilometers: v.optional(v.number()),
-      transportationAmount: v.number(),
-      accommodationAmount: v.number(),
-      fileStorageId: v.optional(v.id("_storage")),
-    }),
+    travelDetails: travelDetailsValidator,
   },
   handler: async (ctx, args) => {
     await ctx.db.patch(args.reimbursementId, {
@@ -393,65 +257,14 @@ export const updateTravelReimbursement = mutation({
       status: "pending",
     });
 
-    const existingTravelDetails = await ctx.db
-      .query("travelDetails")
-      .withIndex("by_reimbursement", (q) =>
-        q.eq("reimbursementId", args.reimbursementId),
-      )
+    const existing = await ctx.db.query("travelDetails")
+      .withIndex("by_reimbursement", (q) => q.eq("reimbursementId", args.reimbursementId))
       .first();
 
-    if (existingTravelDetails) {
-      await ctx.db.patch(existingTravelDetails._id, args.travelDetails);
+    if (existing) {
+      await ctx.db.patch(existing._id, args.travelDetails);
     } else {
-      await ctx.db.insert("travelDetails", {
-        reimbursementId: args.reimbursementId,
-        ...args.travelDetails,
-      });
+      await ctx.db.insert("travelDetails", { reimbursementId: args.reimbursementId, ...args.travelDetails });
     }
-  },
-});
-
-export const deleteReimbursementAdmin = mutation({
-  args: { reimbursementId: v.id("reimbursements") },
-  handler: async (ctx, args) => {
-    const user = await getCurrentUser(ctx);
-    if (user.role !== "admin") throw new Error("Admin required");
-    const reimbursement = await ctx.db.get(args.reimbursementId);
-    if (
-      !reimbursement ||
-      reimbursement.organizationId !== user.organizationId
-    ) {
-      throw new Error("Unauthorized");
-    }
-
-    const receipts = await ctx.db
-      .query("receipts")
-      .withIndex("by_reimbursement", (q) =>
-        q.eq("reimbursementId", args.reimbursementId),
-      )
-      .collect();
-    for (const receipt of receipts) {
-      await ctx.storage.delete(receipt.fileStorageId);
-      await ctx.db.delete(receipt._id);
-    }
-    
-    if (reimbursement.type === "travel") {
-      const travelDetails = await ctx.db
-        .query("travelDetails")
-        .withIndex("by_reimbursement", (q) =>
-          q.eq("reimbursementId", args.reimbursementId),
-        )
-        .first();
-      if (travelDetails) {
-        if (travelDetails.fileStorageId) {
-          await ctx.storage.delete(travelDetails.fileStorageId);
-        }
-        await ctx.db.delete(travelDetails._id);
-      }
-    }
-    
-    await ctx.db.delete(args.reimbursementId);
-
-    await addLog(ctx, user.organizationId, user._id, "reimbursement.delete", args.reimbursementId, `${reimbursement.amount}€`);
   },
 });

@@ -53,7 +53,7 @@ export default function ReimbursementPage() {
     api.reimbursements.functions.rejectReimbursement,
   );
   const deleteReimbursement = useMutation(
-    api.reimbursements.functions.deleteReimbursementAdmin,
+    api.reimbursements.functions.deleteReimbursement,
   );
 
   const [rejectDialog, setRejectDialog] = useState<{
