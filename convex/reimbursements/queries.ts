@@ -17,10 +17,16 @@ export const getUserBankDetails = query({
 export const getReimbursement = query({
   args: { reimbursementId: v.id("reimbursements") },
   handler: async (ctx, args) => {
-    const user = await getCurrentUser(ctx);
     const reimbursement = await ctx.db.get(args.reimbursementId);
-    if (!reimbursement) return null;
-    if (reimbursement.organizationId !== user.organizationId) return null;
+    if (reimbursement?.type === "travel") {
+      const travelDetails = await ctx.db
+        .query("travelDetails")
+        .withIndex("by_reimbursement", (q) =>
+          q.eq("reimbursementId", args.reimbursementId),
+        )
+        .first();
+      return { ...reimbursement, travelDetails };
+    }
     return reimbursement;
   },
 });
@@ -28,11 +34,6 @@ export const getReimbursement = query({
 export const getReceipts = query({
   args: { reimbursementId: v.id("reimbursements") },
   handler: async (ctx, args) => {
-    const user = await getCurrentUser(ctx);
-    const reimbursement = await ctx.db.get(args.reimbursementId);
-    if (!reimbursement || reimbursement.organizationId !== user.organizationId)
-      return [];
-
     return await ctx.db
       .query("receipts")
       .withIndex("by_reimbursement", (q) =>
@@ -45,8 +46,19 @@ export const getReceipts = query({
 export const getFileUrl = query({
   args: { storageId: v.id("_storage") },
   handler: async (ctx, args) => {
-    await getCurrentUser(ctx);
     return await ctx.storage.getUrl(args.storageId);
+  },
+});
+
+export const getTravelDetails = query({
+  args: { reimbursementId: v.id("reimbursements") },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("travelDetails")
+      .withIndex("by_reimbursement", (q) =>
+        q.eq("reimbursementId", args.reimbursementId),
+      )
+      .first();
   },
 });
 
@@ -74,12 +86,24 @@ export const getAllReimbursements = query({
 
     return await Promise.all(
       reimbursements.map(async (r) => {
-        const creator = await ctx.db.get(r.createdBy);
-        const project = await ctx.db.get(r.projectId);
+        const [creator, project, travelDetails] = await Promise.all([
+          ctx.db.get(r.createdBy),
+          ctx.db.get(r.projectId),
+          r.type === "travel"
+            ? ctx.db
+                .query("travelDetails")
+                .withIndex("by_reimbursement", (q) =>
+                  q.eq("reimbursementId", r._id),
+                )
+                .first()
+            : null,
+        ]);
+
         return {
           ...r,
           creatorName: creator?.name || "Unknown",
           projectName: project?.name || "Unbekanntes Projekt",
+          travelDetails,
         };
       }),
     );

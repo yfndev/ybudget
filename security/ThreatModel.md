@@ -34,43 +34,50 @@ _(Diagram was created in FigJam)_
 
 ## Trust Boundary Analysis using STRIDE
 
-I analyzed each trust boundary using the **STRIDE** framework (Spoofing, Tampering, Repudiation, Information Disclosure, Denial of Service, Escalation of Privileges) which was developed by Microsoft to identify YBudget's security strengths and weaknesses:
+I analyzed each trust boundary using the **STRIDE** framework, which was developed by Microsoft to identify YBudget's security strengths and weaknesses.
+
+- **Spoofing:** Pretending to be someone else → Fake login, forged webhook (mitigated through OAuth, JWT verification, webhook signatures)
+- **Tampering:** Unauthorized data modification → Changing transaction amounts (Input validation, type-safe queries, digital signatures)
+- o**Repudiation:** Denying you did something → "I didn't delete that project" (Audit logs with user ID and timestamps)
+- **Information Disclosure:** Leaking sensitive data → Other org's data exposed, API keys in logs (Encryption, organization scoping, secrets management)
+- **Denial of Service:** Making system unavailable → DDoS attack, resource exhaustion → Rate limiting, CDN protection
+- **Elevation of Privilege:** Gaining unauthorized permissions → Member accessing admin functions (Role checks on every request (requireRole())
 
 #### User <-> Frontend (NextJS)
 
-| **Category**                 | **User**                          |                | **Frontend (NextJS)**                                                                   |                              |
-| ---------------------------- | --------------------------------- | -------------- | --------------------------------------------------------------------------------------- | ---------------------------- |
-|                              | **Strengths**                     | **Weaknesses** | **Strengths**                                                                           | **Weaknesses**               |
-| **Spoofing**                 | OAuth using Google (no passwords) |                | HTTPS/TLS enforced, Auth check with redirect to login or dashboard in protected layout  |                              |
-| **Tampering**                |                                   |                | CSP headers configured (to tell browser which resources to load to prevent XSS attacks) |                              |
-| **Repudiation**              |                                   |                | Convex function logs track all backend operations                                       | No comprehensive audit trail |
-| **Information Disclosure**   |                                   |                | HTTPOnly cookies for sessions                                                           |                              |
-| **Denial of Service**        |                                   |                |                                                                                         | No bot protection on login   |
-| **Escalation of Privileges** |                                   |                | Role-based UI rendering using `useIsAdmin()`, AccessDenied UI                           |                              |
+| **Category**                 | **User**                          |                | **Frontend (NextJS)**                                                                   |                            |
+| ---------------------------- | --------------------------------- | -------------- | --------------------------------------------------------------------------------------- | -------------------------- |
+|                              | **Strengths**                     | **Weaknesses** | **Strengths**                                                                           | **Weaknesses**             |
+| **Spoofing**                 | OAuth using Google (no passwords) |                | HTTPS/TLS enforced, Auth check with redirect to login or dashboard in protected layout  |                            |
+| **Tampering**                |                                   |                | CSP headers configured (to tell browser which resources to load to prevent XSS attacks) |                            |
+| **Repudiation**              |                                   |                | Audit logs track user actions per organization (`convex/logs`)                          |                            |
+| **Information Disclosure**   |                                   |                | HTTPOnly cookies for sessions                                                           |                            |
+| **Denial of Service**        |                                   |                |                                                                                         | No bot protection on login |
+| **Escalation of Privileges** |                                   |                | Role-based UI rendering using `useIsAdmin()`, AccessDenied UI                           |                            |
 
 #### Frontend (NextJS) <-> Backend (Convex)
 
-| **Category**                 | **Frontend (NextJS)**        |                | **Backend (Convex)**                            |                                                                   |
-| ---------------------------- | ---------------------------- | -------------- | ----------------------------------------------- | ----------------------------------------------------------------- |
-|                              | **Strengths**                | **Weaknesses** | **Strengths**                                   | **Weaknesses**                                                    |
-| **Spoofing**                 | JWT tokens using Convex Auth |                | JWT validation automatic                        |                                                                   |
-| **Tampering**                |                              |                | Convex validators on all inputs                 |                                                                   |
-| **Repudiation**              |                              | No request IDs |                                                 | No comprehensive audit logging, only general logging of functions |
-| **Information Disclosure**   | HTTPS/TLS enforced           |                | Encrypted responses                             |
-| **Denial of Service**        |                              |                | Rate limiting of queries/ mutations built-in    |                                                                   |
-| **Escalation of Privileges** | JWT based auth               |                | Role based access control using `requireRole()` | Permissions re-checked on every request (no caching)              |
+| **Category**                 | **Frontend (NextJS)**        |                | **Backend (Convex)**                              |                                                      |
+| ---------------------------- | ---------------------------- | -------------- | ------------------------------------------------- | ---------------------------------------------------- |
+|                              | **Strengths**                | **Weaknesses** | **Strengths**                                     | **Weaknesses**                                       |
+| **Spoofing**                 | JWT tokens using Convex Auth |                | JWT validation automatic                          |                                                      |
+| **Tampering**                |                              |                | Convex validators on all inputs                   |                                                      |
+| **Repudiation**              |                              | No request IDs | Audit logs for key actions (reimbursements, etc.) |                                                      |
+| **Information Disclosure**   | HTTPS/TLS enforced           |                | Encrypted responses                               |
+| **Denial of Service**        |                              |                | Rate limiting of queries/ mutations built-in      |                                                      |
+| **Escalation of Privileges** | JWT based auth               |                | Role based access control using `requireRole()`   | Permissions re-checked on every request (no caching) |
 
 #### Backend (Convex) <-> Database
 
-| **Category**                 | **Backend (Convex)**                                                  |                     | **Database (Convex Cloud)** |                |
-| ---------------------------- | --------------------------------------------------------------------- | ------------------- | --------------------------- | -------------- |
-|                              | **Strengths**                                                         | **Weaknesses**      | **Strengths**               | **Weaknesses** |
-| **Spoofing**                 |                                                                       |                     | Convex Auth                 |                |
-| **Tampering**                | Type safe queries (to prevent NoSQL injections)                       |                     |                             |                |
-| **Repudiation**              |                                                                       | Limited audit trail |                             |                |
-| **Information Disclosure**   |                                                                       |                     | Encryption of database      |                |
-| **Denial of Service**        |                                                                       |                     | Convex managed optimization |                |
-| **Escalation of Privileges** | Organization scoped queries by checking for organizationId in queries |                     |                             |                |
+| **Category**                 | **Backend (Convex)**                                                  |                | **Database (Convex Cloud)** |                |
+| ---------------------------- | --------------------------------------------------------------------- | -------------- | --------------------------- | -------------- |
+|                              | **Strengths**                                                         | **Weaknesses** | **Strengths**               | **Weaknesses** |
+| **Spoofing**                 |                                                                       |                | Convex Auth                 |                |
+| **Tampering**                | Type safe queries (to prevent NoSQL injections)                       |                |                             |                |
+| **Repudiation**              | Audit logs stored per organization                                    |                |                             |                |
+| **Information Disclosure**   |                                                                       |                | Encryption of database      |                |
+| **Denial of Service**        |                                                                       |                | Convex managed optimization |                |
+| **Escalation of Privileges** | Organization scoped queries by checking for organizationId in queries |                |                             |                |
 
 #### Backend (Convex) <-> Stripe
 
@@ -102,6 +109,7 @@ I analyzed each trust boundary using the **STRIDE** framework (Spoofing, Tamperi
 - implemented CSP header to prevent cross site scripting attacks
 - limited CSV upload to only upload CSV files (confirmed that React & Papa Parse Library limit scripting )
 - implemented organization based access control
+- added audit logging for key operations (reimbursements, etc.)
 
 ## Architecture & Dependencies
 
@@ -110,6 +118,7 @@ I analyzed each trust boundary using the **STRIDE** framework (Spoofing, Tamperi
 - **Authentication**: Google OAuth 2.0 user verification implemented with Convex Auth → no passwords stored
   → Convex Auth also handles session management, JWT tokens, HTTPOnly cookies
 - **Payment**: Stripe (handles payment compliance)
+- **Email**: Resend (for user invitations, API keys stored server-side)
 - **Deployment**: Vercel (CDN security, DDoS protection, TLS 1.3 enforcement ) + Convex Cloud (at rest encryption and managed backups)
 
 This analysis focuses on what I can control at the application level. I'm explicitly not covering:

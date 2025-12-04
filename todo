@@ -1,8 +1,8 @@
-
 - [ ] add tests
 
 archive (latest on top):
 
+- [x] add logs
 - [x] add reimbursement as expected transaction when marked as paid
 - [x] negative amount in chart should be negative
 - [x] implement upload of expense reimbursements (Auslagenerstattungen)

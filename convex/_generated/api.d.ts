@@ -17,6 +17,8 @@ import type * as donors_functions from "../donors/functions.js";
 import type * as donors_queries from "../donors/queries.js";
 import type * as http from "../http.js";
 import type * as invitations_functions from "../invitations/functions.js";
+import type * as logs_functions from "../logs/functions.js";
+import type * as logs_queries from "../logs/queries.js";
 import type * as organizations_functions from "../organizations/functions.js";
 import type * as organizations_queries from "../organizations/queries.js";
 import type * as payments_functions from "../payments/functions.js";
@@ -57,6 +59,8 @@ declare const fullApi: ApiFromModules<{
   "donors/queries": typeof donors_queries;
   http: typeof http;
   "invitations/functions": typeof invitations_functions;
+  "logs/functions": typeof logs_functions;
+  "logs/queries": typeof logs_queries;
   "organizations/functions": typeof organizations_functions;
   "organizations/queries": typeof organizations_queries;
   "payments/functions": typeof payments_functions;

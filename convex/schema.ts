@@ -156,6 +156,7 @@ export default defineSchema({
     organizationId: v.id("organizations"),
     projectId: v.id("projects"),
     amount: v.number(),
+    type: v.union(v.literal("expense"), v.literal("travel")),
     status: v.union(
       v.literal("draft"),
       v.literal("pending"),
@@ -184,4 +185,35 @@ export default defineSchema({
     grossAmount: v.number(),
     fileStorageId: v.id("_storage"),
   }).index("by_reimbursement", ["reimbursementId"]),
+
+  // travel-specific details for travel reimbursements
+  travelDetails: defineTable({
+    reimbursementId: v.id("reimbursements"),
+    travelStartDate: v.string(),
+    travelEndDate: v.string(),
+    destination: v.string(),
+    travelPurpose: v.string(),
+    isInternational: v.boolean(),
+    transportationMode: v.union(
+      v.literal("car"),
+      v.literal("train"),
+      v.literal("flight"),
+      v.literal("taxi"),
+      v.literal("bus"),
+      v.literal("other"),
+    ),
+    kilometers: v.optional(v.number()), // for car travel
+    transportationAmount: v.number(),
+    accommodationAmount: v.number(),
+    transportationReceiptId: v.optional(v.id("_storage")),
+    accommodationReceiptId: v.optional(v.id("_storage")),
+  }).index("by_reimbursement", ["reimbursementId"]),
+
+  logs: defineTable({
+    organizationId: v.id("organizations"),
+    userId: v.id("users"),
+    action: v.string(),
+    entityId: v.string(),
+    details: v.optional(v.string()),
+  }).index("by_organization", ["organizationId"]),
 });
