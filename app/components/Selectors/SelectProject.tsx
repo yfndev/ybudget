@@ -102,10 +102,10 @@ export function SelectProject({
         <PopoverTrigger asChild>
           <Button
             ref={buttonRef}
-            variant="outline"
+            variant="ghost"
             role="combobox"
             aria-expanded={open}
-            className="w-full justify-between"
+            className="w-full justify-between bg-muted"
             onKeyDown={handleKeyDown}
           >
             <span
