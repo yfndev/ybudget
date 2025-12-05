@@ -1,16 +1,11 @@
 import { AmountInput } from "@/components/Selectors/AmountInput";
+import { DateInput } from "@/components/Selectors/DateInput";
 import { SelectCategory } from "@/components/Selectors/SelectCategory";
 import { SelectDonor } from "@/components/Selectors/SelectDonor";
 import { SelectProject } from "@/components/Selectors/SelectProject";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import {
   Sheet,
   SheetContent,
@@ -21,10 +16,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
-import { cn } from "@/lib/utils";
 import { useMutation } from "convex/react";
-import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
 import { useRef, useState } from "react";
 import toast from "react-hot-toast";
 
@@ -41,15 +33,14 @@ export function TransactionSheet({
 }) {
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("");
-  const [date, setDate] = useState<Date | undefined>(undefined);
+  const [date, setDate] = useState("");
   const [counterparty, setCounterparty] = useState("");
   const [description, setDescription] = useState("");
   const [project, setProject] = useState("");
   const [donor, setDonor] = useState("");
-  const [dateOpen, setDateOpen] = useState(false);
 
   const amountInputRef = useRef<HTMLInputElement>(null);
-  const dateButtonRef = useRef<HTMLButtonElement>(null);
+  const dateInputRef = useRef<HTMLInputElement>(null);
   const counterpartyInputRef = useRef<HTMLInputElement>(null);
   const descriptionInputRef = useRef<HTMLTextAreaElement>(null);
   const projectButtonRef = useRef<HTMLButtonElement>(null);
@@ -59,8 +50,6 @@ export function TransactionSheet({
   const addTransaction = useMutation(
     api.transactions.functions.createExpectedTransaction,
   );
-
-  const dateColor = date ? "text-foreground" : "text-muted-foreground";
 
   const focusNext = (ref: React.RefObject<HTMLElement | null>) => {
     setTimeout(() => ref.current?.focus(), 0);
@@ -84,9 +73,12 @@ export function TransactionSheet({
 
     try {
       const numAmount = parseFloat(amount.replace(",", "."));
+      const dateTimestamp = date
+        ? new Date(date).getTime()
+        : Date.now();
       await addTransaction({
         projectId: project as Id<"projects">,
-        date: date?.getTime() ?? Date.now(),
+        date: dateTimestamp,
         amount: type === "expense" ? -numAmount : numAmount,
         description,
         counterparty,
@@ -128,12 +120,11 @@ export function TransactionSheet({
     if (isOpen) {
       setAmount("");
       setCategory("");
-      setDate(undefined);
+      setDate("");
       setCounterparty("");
       setDescription("");
       setProject("");
       setDonor("");
-      setDateOpen(false);
       setTimeout(() => {
         amountInputRef.current?.focus();
       }, 0);
@@ -163,11 +154,11 @@ export function TransactionSheet({
               ref={amountInputRef}
               value={amount}
               onChange={setAmount}
-              onTabPressed={() => focusNext(dateButtonRef)}
+              onTabPressed={() => focusNext(dateInputRef)}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   e.preventDefault();
-                  focusNext(dateButtonRef);
+                  focusNext(dateInputRef);
                 }
               }}
               autoFocus
@@ -176,38 +167,11 @@ export function TransactionSheet({
 
           <div className="flex flex-col gap-3">
             <Label className="text-base">Wann?</Label>
-            <Popover open={dateOpen} onOpenChange={setDateOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  ref={dateButtonRef}
-                  variant="outline"
-                  className="w-full justify-start text-left font-normal"
-                  onKeyDown={(e) => {
-                    if (e.key === "Tab") {
-                      e.preventDefault();
-                      focusNext(counterpartyInputRef);
-                    }
-                  }}
-                >
-                  <CalendarIcon className={cn("mr-2 h-4 w-4", dateColor)} />
-                  <span className={cn("font-medium", dateColor)}>
-                    {date ? format(date, "dd.MM.yyyy") : "Datum wählen"}
-                  </span>
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={(newDate) => {
-                    setDate(newDate);
-                    setDateOpen(false);
-                    focusNext(counterpartyInputRef);
-                  }}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
+            <DateInput
+              ref={dateInputRef}
+              value={date}
+              onChange={setDate}
+            />
           </div>
 
           <div className="flex flex-col gap-2">

@@ -1,15 +1,10 @@
 "use client";
 
+import { DateInput } from "@/components/Selectors/DateInput";
 import { SelectCategory } from "@/components/Selectors/SelectCategory";
 import { SelectProject } from "@/components/Selectors/SelectProject";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -383,57 +378,27 @@ export function EditableDateCellWithCalendar({
   const pendingDate = convertToDate(pendingValue);
   const displayDate = pendingDate || valueDate;
 
-  const valueTimestamp = convertToTimestamp(value);
-  const pendingTimestamp = convertToTimestamp(pendingValue);
+  const toIsoString = (date: Date | null) =>
+    date ? format(date, "yyyy-MM-dd") : "";
 
-  const initialDate = pendingDate || valueDate || undefined;
-  const [editValue, setEditValue] = useState<Date | undefined>(initialDate);
-  const [open, setOpen] = useState(false);
+  const currentIsoValue = toIsoString(pendingDate) || toIsoString(valueDate);
 
-  useEffect(() => {
-    const currentTimestamp = pendingTimestamp ?? valueTimestamp;
-    const currentEditTimestamp = editValue?.getTime();
-
-    if (
-      currentTimestamp !== null &&
-      currentTimestamp !== undefined &&
-      currentTimestamp !== currentEditTimestamp
-    ) {
-      const newDate = new Date(currentTimestamp);
+  const handleDateChange = (isoDate: string) => {
+    if (isoDate) {
+      const newDate = new Date(isoDate);
       if (!isNaN(newDate.getTime())) {
-        setEditValue(newDate);
+        onSave(newDate.getTime());
       }
-    }
-  }, [pendingTimestamp, valueTimestamp, editValue]);
-
-  const handleSelect = (date: Date | undefined) => {
-    if (date) {
-      setEditValue(date);
-      setOpen(false);
-      onSave(date.getTime());
     }
   };
 
   if (isEditing) {
     return (
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            className="w-[200px] justify-start text-left font-normal"
-          >
-            {editValue ? format(editValue, "dd.MM.yyyy") : "Datum wählen..."}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
-          <Calendar
-            mode="single"
-            selected={editValue}
-            onSelect={handleSelect}
-            initialFocus
-          />
-        </PopoverContent>
-      </Popover>
+      <DateInput
+        value={currentIsoValue}
+        onChange={handleDateChange}
+        className="h-8 w-36"
+      />
     );
   }
 
