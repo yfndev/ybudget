@@ -61,7 +61,7 @@ const chartConfig = {
     color: "#fb923c",
   },
   balance: {
-    label: "Kontostand",
+    label: "geplanter Kontostand",
     color: "#4b5563",
   },
 } satisfies ChartConfig;
