@@ -9,18 +9,21 @@ const travelDetailsValidator = v.object({
   destination: v.string(),
   travelPurpose: v.string(),
   isInternational: v.boolean(),
-  transportationMode: v.union(
-    v.literal("car"),
-    v.literal("train"),
-    v.literal("flight"),
-    v.literal("taxi"),
-    v.literal("bus"),
-  ),
-  kilometers: v.optional(v.number()),
-  transportationAmount: v.number(),
-  accommodationAmount: v.number(),
-  transportationReceiptId: v.optional(v.id("_storage")),
+  carAmount: v.optional(v.number()),
+  carKilometers: v.optional(v.number()),
+  carReceiptId: v.optional(v.id("_storage")),
+  trainAmount: v.optional(v.number()),
+  trainReceiptId: v.optional(v.id("_storage")),
+  flightAmount: v.optional(v.number()),
+  flightReceiptId: v.optional(v.id("_storage")),
+  taxiAmount: v.optional(v.number()),
+  taxiReceiptId: v.optional(v.id("_storage")),
+  busAmount: v.optional(v.number()),
+  busReceiptId: v.optional(v.id("_storage")),
+  accommodationAmount: v.optional(v.number()),
   accommodationReceiptId: v.optional(v.id("_storage")),
+  foodAmount: v.optional(v.number()),
+  foodReceiptId: v.optional(v.id("_storage")),
 });
 
 export const createReimbursement = mutation({
@@ -196,10 +199,20 @@ export const deleteReimbursement = mutation({
         )
         .first();
       if (travel) {
-        if (travel.transportationReceiptId)
-          await ctx.storage.delete(travel.transportationReceiptId);
-        if (travel.accommodationReceiptId)
-          await ctx.storage.delete(travel.accommodationReceiptId);
+        const receiptIds = [
+          travel.carReceiptId,
+          travel.trainReceiptId,
+          travel.flightReceiptId,
+          travel.taxiReceiptId,
+          travel.busReceiptId,
+          travel.accommodationReceiptId,
+          travel.foodReceiptId,
+          travel.transportationReceiptId,
+        ].filter(Boolean);
+
+        for (const id of receiptIds) {
+          await ctx.storage.delete(id!);
+        }
         await ctx.db.delete(travel._id);
       }
     }

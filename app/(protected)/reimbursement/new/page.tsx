@@ -7,9 +7,10 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { ReimbursementFormUI } from "./ReimbursementFormUI";
-import { TravelReimbursementFormUI } from "./TravelReimbursementFormUI";
-
-type TransportationMode = "car" | "train" | "flight" | "taxi" | "bus";
+import {
+  TravelReimbursementFormUI,
+  type TravelDetails,
+} from "./TravelReimbursementFormUI";
 
 const calculateNet = (gross: number, taxRate: number) =>
   gross / (1 + taxRate / 100);
@@ -29,7 +30,6 @@ export default function ReimbursementFormPage() {
   const bankDetailsQuery = useQuery(
     api.reimbursements.queries.getUserBankDetails,
   );
-  const projects = useQuery(api.projects.queries.getAllProjects);
   const createReimbursement = useMutation(
     api.reimbursements.functions.createReimbursement,
   );
@@ -56,18 +56,27 @@ export default function ReimbursementFormPage() {
     Omit<Doc<"receipts">, "_id" | "_creationTime">[]
   >([]);
   const [currentReceipt, setCurrentReceipt] = useState(emptyReceipt);
-  const [travelDetails, setTravelDetails] = useState({
+  const [travelDetails, setTravelDetails] = useState<TravelDetails>({
     travelStartDate: "",
     travelEndDate: "",
     destination: "",
     travelPurpose: "",
     isInternational: false,
-    transportationMode: "car" as TransportationMode,
-    kilometers: 0,
-    transportationAmount: 0,
-    accommodationAmount: 0,
-    transportationReceiptId: undefined as Id<"_storage"> | undefined,
-    accommodationReceiptId: undefined as Id<"_storage"> | undefined,
+    carAmount: undefined,
+    carKilometers: undefined,
+    carReceiptId: undefined,
+    trainAmount: undefined,
+    trainReceiptId: undefined,
+    flightAmount: undefined,
+    flightReceiptId: undefined,
+    taxiAmount: undefined,
+    taxiReceiptId: undefined,
+    busAmount: undefined,
+    busReceiptId: undefined,
+    accommodationAmount: undefined,
+    accommodationReceiptId: undefined,
+    foodAmount: undefined,
+    foodReceiptId: undefined,
   });
 
   useEffect(() => {
@@ -130,19 +139,31 @@ export default function ReimbursementFormPage() {
   };
 
   const handleSubmit = async () => {
+    if (!selectedProjectId) {
+      toast.error("Bitte ein Projekt auswählen");
+      return;
+    }
+
     if (reimbursementType === "expense") {
       await createReimbursement({
-        projectId: selectedProjectId!,
+        projectId: selectedProjectId,
         amount: receipts.reduce((sum, r) => sum + r.grossAmount, 0),
         ...bankDetails,
         receipts,
       });
     } else {
+      const totalAmount =
+        (travelDetails.carAmount || 0) +
+        (travelDetails.trainAmount || 0) +
+        (travelDetails.flightAmount || 0) +
+        (travelDetails.taxiAmount || 0) +
+        (travelDetails.busAmount || 0) +
+        (travelDetails.accommodationAmount || 0) +
+        (travelDetails.foodAmount || 0);
+
       await createTravelReimbursement({
-        projectId: selectedProjectId!,
-        amount:
-          travelDetails.transportationAmount +
-          travelDetails.accommodationAmount,
+        projectId: selectedProjectId,
+        amount: totalAmount,
         ...bankDetails,
         travelDetails,
       });
@@ -153,7 +174,6 @@ export default function ReimbursementFormPage() {
   if (reimbursementType === "travel") {
     return (
       <TravelReimbursementFormUI
-        projects={projects || []}
         selectedProjectId={selectedProjectId}
         setSelectedProjectId={setSelectedProjectId}
         bankDetails={bankDetails}
@@ -171,7 +191,6 @@ export default function ReimbursementFormPage() {
 
   return (
     <ReimbursementFormUI
-      projects={projects || []}
       selectedProjectId={selectedProjectId}
       setSelectedProjectId={setSelectedProjectId}
       bankDetails={bankDetails}
