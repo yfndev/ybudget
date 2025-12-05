@@ -65,15 +65,15 @@ export function SelectCategoryUI({
       <PopoverTrigger asChild>
         <Button
           ref={triggerRef}
-          variant="outline"
-          className="w-full justify-between h-auto py-2.5 hover:bg-accent/50 transition-all"
+          variant="ghost"
+          className="w-full justify-between bg-muted"
           data-testid="category-trigger"
         >
           <span className="flex flex-col items-start gap-1 flex-1 min-w-0">
             <span
               className={cn(
                 "font-medium text-sm",
-                value ? "text-foreground" : "text-muted-foreground",
+                value ? "text-foreground" : "text-muted-foreground"
               )}
             >
               {value ? selectedItem?.name : "Kategorie wählen..."}
@@ -139,7 +139,7 @@ export function SelectCategoryUI({
                     key={group.parent._id}
                     className={cn(
                       "w-full text-left px-4 py-3 text-sm font-semibold hover:bg-accent/50 transition-colors",
-                      idx === activeGroupIdx && "bg-accent",
+                      idx === activeGroupIdx && "bg-accent"
                     )}
                     onMouseEnter={() => {
                       onActiveGroupChange(idx);
@@ -163,7 +163,7 @@ export function SelectCategoryUI({
                       value === item._id && "bg-accent/50",
                       item.taxsphere !== "non-profit" &&
                         item.taxsphere !== "purpose-operations" &&
-                        "bg-red-50",
+                        "bg-red-50"
                     )}
                     onClick={() => onSelect(item._id)}
                     onMouseEnter={() => onActiveItemChange(itemIdx)}
@@ -181,7 +181,7 @@ export function SelectCategoryUI({
                       <Check
                         className={cn(
                           "h-4 w-4 shrink-0 mt-0.5 transition-all",
-                          value === item._id ? "opacity-100" : "opacity-0",
+                          value === item._id ? "opacity-100" : "opacity-0"
                         )}
                       />
                     </div>

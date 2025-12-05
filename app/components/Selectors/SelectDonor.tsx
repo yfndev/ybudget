@@ -129,10 +129,10 @@ export const SelectDonor = forwardRef<HTMLButtonElement, SelectDonorProps>(
           <PopoverTrigger asChild>
             <Button
               ref={buttonRef}
-              variant="outline"
+              variant="ghost"
               role="combobox"
               aria-expanded={open}
-              className="w-full justify-between"
+              className="w-full justify-between bg-muted"
               onKeyDown={handleKeyDown}
             >
               <span
