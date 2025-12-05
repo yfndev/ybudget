@@ -173,7 +173,15 @@ export default defineSchema({
     .index("by_organization", ["organizationId"])
     .index("by_organization_and_createdBy", ["organizationId", "createdBy"]),
 
-  // multiple receipts make one reimbursement
+  travelDetails: defineTable({
+    reimbursementId: v.id("reimbursements"),
+    startDate: v.string(),
+    endDate: v.string(),
+    destination: v.string(),
+    purpose: v.string(),
+    isInternational: v.boolean(),
+  }).index("by_reimbursement", ["reimbursementId"]),
+
   receipts: defineTable({
     reimbursementId: v.id("reimbursements"),
     receiptNumber: v.string(),
@@ -184,43 +192,18 @@ export default defineSchema({
     taxRate: v.number(),
     grossAmount: v.number(),
     fileStorageId: v.id("_storage"),
-  }).index("by_reimbursement", ["reimbursementId"]),
-
-  travelDetails: defineTable({
-    reimbursementId: v.id("reimbursements"),
-    travelStartDate: v.string(),
-    travelEndDate: v.string(),
-    destination: v.string(),
-    travelPurpose: v.string(),
-    isInternational: v.boolean(),
-    carAmount: v.optional(v.number()),
-    carKilometers: v.optional(v.number()),
-    carReceiptId: v.optional(v.id("_storage")),
-    trainAmount: v.optional(v.number()),
-    trainReceiptId: v.optional(v.id("_storage")),
-    flightAmount: v.optional(v.number()),
-    flightReceiptId: v.optional(v.id("_storage")),
-    taxiAmount: v.optional(v.number()),
-    taxiReceiptId: v.optional(v.id("_storage")),
-    busAmount: v.optional(v.number()),
-    busReceiptId: v.optional(v.id("_storage")),
-    accommodationAmount: v.optional(v.number()),
-    accommodationReceiptId: v.optional(v.id("_storage")),
-    foodAmount: v.optional(v.number()),
-    foodReceiptId: v.optional(v.id("_storage")),
-    transportationMode: v.optional(
+    costType: v.optional(
       v.union(
         v.literal("car"),
         v.literal("train"),
         v.literal("flight"),
         v.literal("taxi"),
         v.literal("bus"),
-        v.literal("other"),
+        v.literal("accommodation"),
+        v.literal("food"),
       ),
     ),
     kilometers: v.optional(v.number()),
-    transportationAmount: v.optional(v.number()),
-    transportationReceiptId: v.optional(v.id("_storage")),
   }).index("by_reimbursement", ["reimbursementId"]),
 
   logs: defineTable({

@@ -3,28 +3,15 @@ import { mutation } from "../_generated/server";
 import { addLog } from "../logs/functions";
 import { getCurrentUser } from "../users/getCurrentUser";
 
-const travelDetailsValidator = v.object({
-  travelStartDate: v.string(),
-  travelEndDate: v.string(),
-  destination: v.string(),
-  travelPurpose: v.string(),
-  isInternational: v.boolean(),
-  carAmount: v.optional(v.number()),
-  carKilometers: v.optional(v.number()),
-  carReceiptId: v.optional(v.id("_storage")),
-  trainAmount: v.optional(v.number()),
-  trainReceiptId: v.optional(v.id("_storage")),
-  flightAmount: v.optional(v.number()),
-  flightReceiptId: v.optional(v.id("_storage")),
-  taxiAmount: v.optional(v.number()),
-  taxiReceiptId: v.optional(v.id("_storage")),
-  busAmount: v.optional(v.number()),
-  busReceiptId: v.optional(v.id("_storage")),
-  accommodationAmount: v.optional(v.number()),
-  accommodationReceiptId: v.optional(v.id("_storage")),
-  foodAmount: v.optional(v.number()),
-  foodReceiptId: v.optional(v.id("_storage")),
-});
+const costTypeValidator = v.union(
+  v.literal("car"),
+  v.literal("train"),
+  v.literal("flight"),
+  v.literal("taxi"),
+  v.literal("bus"),
+  v.literal("accommodation"),
+  v.literal("food"),
+);
 
 export const createReimbursement = mutation({
   args: {
@@ -84,7 +71,25 @@ export const createTravelReimbursement = mutation({
     iban: v.string(),
     bic: v.string(),
     accountHolder: v.string(),
-    travelDetails: travelDetailsValidator,
+    startDate: v.string(),
+    endDate: v.string(),
+    destination: v.string(),
+    purpose: v.string(),
+    isInternational: v.boolean(),
+    receipts: v.array(
+      v.object({
+        receiptNumber: v.string(),
+        receiptDate: v.string(),
+        companyName: v.string(),
+        description: v.string(),
+        netAmount: v.number(),
+        taxRate: v.number(),
+        grossAmount: v.number(),
+        fileStorageId: v.id("_storage"),
+        costType: costTypeValidator,
+        kilometers: v.optional(v.number()),
+      }),
+    ),
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
@@ -103,8 +108,17 @@ export const createTravelReimbursement = mutation({
 
     await ctx.db.insert("travelDetails", {
       reimbursementId,
-      ...args.travelDetails,
+      startDate: args.startDate,
+      endDate: args.endDate,
+      destination: args.destination,
+      purpose: args.purpose,
+      isInternational: args.isInternational,
     });
+
+    for (const receipt of args.receipts) {
+      await ctx.db.insert("receipts", { reimbursementId, ...receipt });
+    }
+
     await addLog(
       ctx,
       user.organizationId,
@@ -192,29 +206,13 @@ export const deleteReimbursement = mutation({
     }
 
     if (reimbursement.type === "travel") {
-      const travel = await ctx.db
+      const travelDetails = await ctx.db
         .query("travelDetails")
         .withIndex("by_reimbursement", (q) =>
           q.eq("reimbursementId", args.reimbursementId),
         )
         .first();
-      if (travel) {
-        const receiptIds = [
-          travel.carReceiptId,
-          travel.trainReceiptId,
-          travel.flightReceiptId,
-          travel.taxiReceiptId,
-          travel.busReceiptId,
-          travel.accommodationReceiptId,
-          travel.foodReceiptId,
-          travel.transportationReceiptId,
-        ].filter(Boolean);
-
-        for (const id of receiptIds) {
-          await ctx.storage.delete(id!);
-        }
-        await ctx.db.delete(travel._id);
-      }
+      if (travelDetails) await ctx.db.delete(travelDetails._id);
     }
 
     await ctx.db.delete(args.reimbursementId);
@@ -312,7 +310,11 @@ export const updateTravelReimbursement = mutation({
     reimbursementId: v.id("reimbursements"),
     projectId: v.id("projects"),
     amount: v.number(),
-    travelDetails: travelDetailsValidator,
+    startDate: v.string(),
+    endDate: v.string(),
+    destination: v.string(),
+    purpose: v.string(),
+    isInternational: v.boolean(),
   },
   handler: async (ctx, args) => {
     await ctx.db.patch(args.reimbursementId, {
@@ -328,12 +330,20 @@ export const updateTravelReimbursement = mutation({
       )
       .first();
 
+    const travelData = {
+      startDate: args.startDate,
+      endDate: args.endDate,
+      destination: args.destination,
+      purpose: args.purpose,
+      isInternational: args.isInternational,
+    };
+
     if (existing) {
-      await ctx.db.patch(existing._id, args.travelDetails);
+      await ctx.db.patch(existing._id, travelData);
     } else {
       await ctx.db.insert("travelDetails", {
         reimbursementId: args.reimbursementId,
-        ...args.travelDetails,
+        ...travelData,
       });
     }
   },

@@ -9,7 +9,8 @@ import toast from "react-hot-toast";
 import { ReimbursementFormUI } from "./ReimbursementFormUI";
 import {
   TravelReimbursementFormUI,
-  type TravelDetails,
+  type TravelInfo,
+  type TravelReceipt,
 } from "./TravelReimbursementFormUI";
 
 const calculateNet = (gross: number, taxRate: number) =>
@@ -56,28 +57,14 @@ export default function ReimbursementFormPage() {
     Omit<Doc<"receipts">, "_id" | "_creationTime">[]
   >([]);
   const [currentReceipt, setCurrentReceipt] = useState(emptyReceipt);
-  const [travelDetails, setTravelDetails] = useState<TravelDetails>({
-    travelStartDate: "",
-    travelEndDate: "",
+  const [travelInfo, setTravelInfo] = useState<TravelInfo>({
+    startDate: "",
+    endDate: "",
     destination: "",
-    travelPurpose: "",
+    purpose: "",
     isInternational: false,
-    carAmount: undefined,
-    carKilometers: undefined,
-    carReceiptId: undefined,
-    trainAmount: undefined,
-    trainReceiptId: undefined,
-    flightAmount: undefined,
-    flightReceiptId: undefined,
-    taxiAmount: undefined,
-    taxiReceiptId: undefined,
-    busAmount: undefined,
-    busReceiptId: undefined,
-    accommodationAmount: undefined,
-    accommodationReceiptId: undefined,
-    foodAmount: undefined,
-    foodReceiptId: undefined,
   });
+  const [travelReceipts, setTravelReceipts] = useState<TravelReceipt[]>([]);
 
   useEffect(() => {
     if (bankDetailsQuery && !bankDetailsLoaded) {
@@ -152,20 +139,13 @@ export default function ReimbursementFormPage() {
         receipts,
       });
     } else {
-      const totalAmount =
-        (travelDetails.carAmount || 0) +
-        (travelDetails.trainAmount || 0) +
-        (travelDetails.flightAmount || 0) +
-        (travelDetails.taxiAmount || 0) +
-        (travelDetails.busAmount || 0) +
-        (travelDetails.accommodationAmount || 0) +
-        (travelDetails.foodAmount || 0);
-
+      const totalAmount = travelReceipts.reduce((sum, r) => sum + r.grossAmount, 0);
       await createTravelReimbursement({
         projectId: selectedProjectId,
         amount: totalAmount,
         ...bankDetails,
-        travelDetails,
+        ...travelInfo,
+        receipts: travelReceipts,
       });
     }
     router.push("/reimbursement");
@@ -180,8 +160,10 @@ export default function ReimbursementFormPage() {
         setBankDetails={setBankDetails}
         editingBank={editingBank}
         setEditingBank={handleBankDetailsUpdate}
-        travelDetails={travelDetails}
-        setTravelDetails={setTravelDetails}
+        travelInfo={travelInfo}
+        setTravelInfo={setTravelInfo}
+        receipts={travelReceipts}
+        setReceipts={setTravelReceipts}
         handleSubmit={handleSubmit}
         reimbursementType={reimbursementType}
         setReimbursementType={setReimbursementType}

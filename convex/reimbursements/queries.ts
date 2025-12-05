@@ -18,7 +18,9 @@ export const getReimbursement = query({
   args: { reimbursementId: v.id("reimbursements") },
   handler: async (ctx, args) => {
     const reimbursement = await ctx.db.get(args.reimbursementId);
-    if (reimbursement?.type === "travel") {
+    if (!reimbursement) return null;
+
+    if (reimbursement.type === "travel") {
       const travelDetails = await ctx.db
         .query("travelDetails")
         .withIndex("by_reimbursement", (q) =>
@@ -27,6 +29,7 @@ export const getReimbursement = query({
         .first();
       return { ...reimbursement, travelDetails };
     }
+
     return reimbursement;
   },
 });
@@ -47,18 +50,6 @@ export const getFileUrl = query({
   args: { storageId: v.id("_storage") },
   handler: async (ctx, args) => {
     return await ctx.storage.getUrl(args.storageId);
-  },
-});
-
-export const getTravelDetails = query({
-  args: { reimbursementId: v.id("reimbursements") },
-  handler: async (ctx, args) => {
-    return await ctx.db
-      .query("travelDetails")
-      .withIndex("by_reimbursement", (q) =>
-        q.eq("reimbursementId", args.reimbursementId),
-      )
-      .first();
   },
 });
 
