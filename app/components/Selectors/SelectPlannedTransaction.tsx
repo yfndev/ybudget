@@ -34,10 +34,10 @@ export function SelectPlannedTransaction({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant="outline"
+          variant="ghost"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between"
+          className="w-full justify-between bg-muted"
         >
           <span
             className={cn(
