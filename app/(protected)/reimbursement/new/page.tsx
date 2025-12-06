@@ -1,5 +1,6 @@
 "use client";
 
+import { PageHeader } from "@/components/Layout/PageHeader";
 import { api } from "@/convex/_generated/api";
 import type { Doc, Id } from "@/convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
@@ -153,43 +154,45 @@ export default function ReimbursementFormPage() {
     router.push("/reimbursement");
   };
 
-  if (reimbursementType === "travel") {
-    return (
-      <TravelReimbursementFormUI
-        selectedProjectId={selectedProjectId}
-        setSelectedProjectId={setSelectedProjectId}
-        bankDetails={bankDetails}
-        setBankDetails={setBankDetails}
-        editingBank={editingBank}
-        setEditingBank={handleBankDetailsUpdate}
-        travelInfo={travelInfo}
-        setTravelInfo={setTravelInfo}
-        receipts={travelReceipts}
-        setReceipts={setTravelReceipts}
-        handleSubmit={handleSubmit}
-        reimbursementType={reimbursementType}
-        setReimbursementType={setReimbursementType}
-      />
-    );
-  }
-
   return (
-    <ReimbursementFormUI
-      selectedProjectId={selectedProjectId}
-      setSelectedProjectId={setSelectedProjectId}
-      bankDetails={bankDetails}
-      setBankDetails={setBankDetails}
-      editingBank={editingBank}
-      setEditingBank={handleBankDetailsUpdate}
-      currentReceipt={currentReceipt}
-      setCurrentReceipt={setCurrentReceipt}
-      calculatedNet={calculatedNet}
-      handleAddReceipt={handleAddReceipt}
-      receipts={receipts}
-      handleDeleteReceipt={handleDeleteReceipt}
-      handleSubmit={handleSubmit}
-      reimbursementType={reimbursementType}
-      setReimbursementType={setReimbursementType}
-    />
+    <div>
+      <PageHeader title="Neue Erstattung" />
+      {reimbursementType === "travel" && (
+        <TravelReimbursementFormUI
+          selectedProjectId={selectedProjectId}
+          setSelectedProjectId={setSelectedProjectId}
+          bankDetails={bankDetails}
+          setBankDetails={setBankDetails}
+          editingBank={editingBank}
+          setEditingBank={handleBankDetailsUpdate}
+          travelInfo={travelInfo}
+          setTravelInfo={setTravelInfo}
+          receipts={travelReceipts}
+          setReceipts={setTravelReceipts}
+          handleSubmit={handleSubmit}
+          reimbursementType={reimbursementType}
+          setReimbursementType={setReimbursementType}
+        />
+      )}
+      {reimbursementType === "expense" && (
+        <ReimbursementFormUI
+          selectedProjectId={selectedProjectId}
+          setSelectedProjectId={setSelectedProjectId}
+          bankDetails={bankDetails}
+          setBankDetails={setBankDetails}
+          editingBank={editingBank}
+          setEditingBank={handleBankDetailsUpdate}
+          currentReceipt={currentReceipt}
+          setCurrentReceipt={setCurrentReceipt}
+          calculatedNet={calculatedNet}
+          handleAddReceipt={handleAddReceipt}
+          receipts={receipts}
+          handleDeleteReceipt={handleDeleteReceipt}
+          handleSubmit={handleSubmit}
+          reimbursementType={reimbursementType}
+          setReimbursementType={setReimbursementType}
+        />
+      )}
+    </div>
   );
 }

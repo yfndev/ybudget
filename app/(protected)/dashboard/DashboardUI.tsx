@@ -22,7 +22,7 @@ export default function DashboardUI({
 }: DashboardUIProps) {
   return (
     <div>
-      <PageHeader title="Dashboard" />
+      <PageHeader title="Dashboard" showRangeCalendar />
       <div
         className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6"
         id="tour-budget-cards"

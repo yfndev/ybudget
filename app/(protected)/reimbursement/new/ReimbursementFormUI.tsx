@@ -42,7 +42,7 @@ type Props = {
   setCurrentReceipt: (receipt: CurrentReceipt) => void;
   calculatedNet: number;
   handleAddReceipt: () => void;
-  receipts: Omit<Doc<"receipts">, "_id" | "_creationTime">[];
+  receipts: Omit<Doc<"receipts">, "_id" | "_creationTime" | "reimbursementId">[];
   handleDeleteReceipt: (index: number) => void;
   handleSubmit: () => void;
   reimbursementType: "expense" | "travel";
@@ -81,12 +81,9 @@ export function ReimbursementFormUI({
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-8">
       <div className="space-y-4">
-        <h1 className="text-2xl font-semibold">Neue Erstattung</h1>
         <Tabs
           value={reimbursementType}
-          onValueChange={(v) =>
-            setReimbursementType(v as "expense" | "travel")
-          }
+          onValueChange={(v) => setReimbursementType(v as "expense" | "travel")}
         >
           <TabsList>
             <TabsTrigger value="expense">Auslagenerstattung</TabsTrigger>

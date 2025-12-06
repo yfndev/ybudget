@@ -7,10 +7,26 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Id } from "@/convex/_generated/dataModel";
-import { Bus, Car, Hotel, Pencil, Plane, Train, Trash2, Utensils } from "lucide-react";
+import {
+  Bus,
+  Car,
+  Hotel,
+  Pencil,
+  Plane,
+  Train,
+  Trash2,
+  Utensils,
+} from "lucide-react";
 import { ReceiptUpload } from "./ReceiptUpload";
 
-export type CostType = "car" | "train" | "flight" | "taxi" | "bus" | "accommodation" | "food";
+export type CostType =
+  | "car"
+  | "train"
+  | "flight"
+  | "taxi"
+  | "bus"
+  | "accommodation"
+  | "food";
 
 export type TravelReceipt = {
   receiptNumber: string;
@@ -37,7 +53,11 @@ type Props = {
   selectedProjectId: Id<"projects"> | null;
   setSelectedProjectId: (id: Id<"projects"> | null) => void;
   bankDetails: { iban: string; bic: string; accountHolder: string };
-  setBankDetails: (details: { iban: string; bic: string; accountHolder: string }) => void;
+  setBankDetails: (details: {
+    iban: string;
+    bic: string;
+    accountHolder: string;
+  }) => void;
   editingBank: boolean;
   setEditingBank: () => void;
   travelInfo: TravelInfo;
@@ -59,7 +79,8 @@ const costTypes = [
   { type: "food" as CostType, label: "Essen", icon: Utensils },
 ];
 
-const getLabel = (type: CostType) => costTypes.find((c) => c.type === type)?.label || type;
+const getLabel = (type: CostType) =>
+  costTypes.find((c) => c.type === type)?.label || type;
 
 export function TravelReimbursementFormUI({
   selectedProjectId,
@@ -76,8 +97,10 @@ export function TravelReimbursementFormUI({
   reimbursementType,
   setReimbursementType,
 }: Props) {
-  const hasReceipt = (type: CostType) => receipts.some((r) => r.costType === type);
-  const getReceipt = (type: CostType) => receipts.find((r) => r.costType === type);
+  const hasReceipt = (type: CostType) =>
+    receipts.some((r) => r.costType === type);
+  const getReceipt = (type: CostType) =>
+    receipts.find((r) => r.costType === type);
 
   const toggleType = (type: CostType) => {
     if (hasReceipt(type)) {
@@ -102,7 +125,9 @@ export function TravelReimbursementFormUI({
   };
 
   const updateReceipt = (type: CostType, updates: Partial<TravelReceipt>) => {
-    setReceipts(receipts.map((r) => (r.costType === type ? { ...r, ...updates } : r)));
+    setReceipts(
+      receipts.map((r) => (r.costType === type ? { ...r, ...updates } : r))
+    );
   };
 
   const hasBasicInfo =
@@ -112,29 +137,36 @@ export function TravelReimbursementFormUI({
     travelInfo.endDate;
 
   const totalAmount = receipts.reduce((sum, r) => sum + r.grossAmount, 0);
-  const allReceiptsComplete = receipts.every((r) => r.grossAmount > 0 && r.fileStorageId && r.companyName);
-  const canSubmit = hasBasicInfo && receipts.length > 0 && allReceiptsComplete && selectedProjectId;
+  const allReceiptsComplete = receipts.every(
+    (r) => r.grossAmount > 0 && r.fileStorageId && r.companyName
+  );
+  const canSubmit =
+    hasBasicInfo &&
+    receipts.length > 0 &&
+    allReceiptsComplete &&
+    selectedProjectId;
 
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-8">
       <div className="space-y-4">
-        <h1 className="text-2xl font-semibold">Neue Erstattung</h1>
-        <div className="flex items-center gap-3">
-          <Tabs value={reimbursementType} onValueChange={(v) => setReimbursementType(v as "expense" | "travel")}>
-            <TabsList>
-              <TabsTrigger value="expense">Auslagenerstattung</TabsTrigger>
-              <TabsTrigger value="travel">Reisekostenerstattung</TabsTrigger>
-            </TabsList>
-          </Tabs>
-          <div className="w-[200px]">
-            <SelectProject
-              value={selectedProjectId || ""}
-              onValueChange={(v) => setSelectedProjectId(v ? (v as Id<"projects">) : null)}
-            />
-          </div>
+        <Tabs
+          value={reimbursementType}
+          onValueChange={(v) => setReimbursementType(v as "expense" | "travel")}
+        >
+          <TabsList>
+            <TabsTrigger value="expense">Auslagenerstattung</TabsTrigger>
+            <TabsTrigger value="travel">Reisekostenerstattung</TabsTrigger>
+          </TabsList>
+        </Tabs>
+        <div className="w-[200px]">
+          <SelectProject
+            value={selectedProjectId || ""}
+            onValueChange={(v) =>
+              setSelectedProjectId(v ? (v as Id<"projects">) : null)
+            }
+          />
         </div>
       </div>
-
       <div className="space-y-4">
         <h2 className="text-lg font-medium">Reiseangaben</h2>
         <div className="grid grid-cols-2 gap-4">
@@ -142,7 +174,9 @@ export function TravelReimbursementFormUI({
             <Label>Reiseziel *</Label>
             <Input
               value={travelInfo.destination}
-              onChange={(e) => setTravelInfo({ ...travelInfo, destination: e.target.value })}
+              onChange={(e) =>
+                setTravelInfo({ ...travelInfo, destination: e.target.value })
+              }
               placeholder="z.B. München, Berlin"
             />
           </div>
@@ -150,7 +184,9 @@ export function TravelReimbursementFormUI({
             <Label>Reisezweck *</Label>
             <Input
               value={travelInfo.purpose}
-              onChange={(e) => setTravelInfo({ ...travelInfo, purpose: e.target.value })}
+              onChange={(e) =>
+                setTravelInfo({ ...travelInfo, purpose: e.target.value })
+              }
               placeholder="z.B. Kundentermin, Konferenz"
             />
           </div>
@@ -175,14 +211,17 @@ export function TravelReimbursementFormUI({
               <Checkbox
                 id="international"
                 checked={travelInfo.isInternational}
-                onCheckedChange={(c: boolean) => setTravelInfo({ ...travelInfo, isInternational: c })}
+                onCheckedChange={(c: boolean) =>
+                  setTravelInfo({ ...travelInfo, isInternational: c })
+                }
               />
-              <Label htmlFor="international" className="font-normal">Auslandsreise</Label>
+              <Label htmlFor="international" className="font-normal">
+                Auslandsreise
+              </Label>
             </div>
           </div>
         </div>
       </div>
-
       {hasBasicInfo && (
         <div className="space-y-6">
           <div>
@@ -217,12 +256,21 @@ export function TravelReimbursementFormUI({
           </div>
 
           {receipts.map((receipt) => (
-            <div key={receipt.costType} className="border rounded-lg p-4 space-y-4">
+            <div
+              key={receipt.costType}
+              className="border rounded-lg p-4 space-y-4"
+            >
               <div className="flex justify-between items-center">
                 <h3 className="font-medium">
-                  {receipt.costType === "car" ? "PKW (0,30€/km)" : getLabel(receipt.costType)}
+                  {receipt.costType === "car"
+                    ? "PKW (0,30€/km)"
+                    : getLabel(receipt.costType)}
                 </h3>
-                <Button variant="ghost" size="icon" onClick={() => toggleType(receipt.costType)}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => toggleType(receipt.costType)}
+                >
                   <Trash2 className="size-4" />
                 </Button>
               </div>
@@ -232,8 +280,16 @@ export function TravelReimbursementFormUI({
                   <Label>Firma/Anbieter *</Label>
                   <Input
                     value={receipt.companyName}
-                    onChange={(e) => updateReceipt(receipt.costType, { companyName: e.target.value })}
-                    placeholder={receipt.costType === "car" ? "Eigenfahrt" : "z.B. Deutsche Bahn"}
+                    onChange={(e) =>
+                      updateReceipt(receipt.costType, {
+                        companyName: e.target.value,
+                      })
+                    }
+                    placeholder={
+                      receipt.costType === "car"
+                        ? "Eigenfahrt"
+                        : "z.B. Deutsche Bahn"
+                    }
                   />
                 </div>
                 {receipt.costType === "car" ? (
@@ -245,7 +301,10 @@ export function TravelReimbursementFormUI({
                         min={0}
                         value={receipt.kilometers || ""}
                         onChange={(e) => {
-                          const km = Math.max(0, Math.floor(parseFloat(e.target.value) || 0));
+                          const km = Math.max(
+                            0,
+                            Math.floor(parseFloat(e.target.value) || 0)
+                          );
                           updateReceipt(receipt.costType, {
                             kilometers: km,
                             grossAmount: Math.round(km * 0.3 * 100) / 100,
@@ -257,7 +316,11 @@ export function TravelReimbursementFormUI({
                     </div>
                     <div>
                       <Label className="text-muted-foreground">Betrag</Label>
-                      <Input value={`${receipt.grossAmount.toFixed(2)} €`} disabled className="bg-muted/50 font-mono" />
+                      <Input
+                        value={`${receipt.grossAmount.toFixed(2)} €`}
+                        disabled
+                        className="bg-muted/50 font-mono"
+                      />
                     </div>
                   </>
                 ) : (
@@ -269,8 +332,14 @@ export function TravelReimbursementFormUI({
                       min={0}
                       value={receipt.grossAmount || ""}
                       onChange={(e) => {
-                        const amount = Math.max(0, parseFloat(e.target.value) || 0);
-                        updateReceipt(receipt.costType, { grossAmount: amount, netAmount: amount });
+                        const amount = Math.max(
+                          0,
+                          parseFloat(e.target.value) || 0
+                        );
+                        updateReceipt(receipt.costType, {
+                          grossAmount: amount,
+                          netAmount: amount,
+                        });
                       }}
                       placeholder="0.00"
                     />
@@ -282,7 +351,9 @@ export function TravelReimbursementFormUI({
                 <div>
                   <Label>Beleg *</Label>
                   <ReceiptUpload
-                    onUploadComplete={(id) => updateReceipt(receipt.costType, { fileStorageId: id })}
+                    onUploadComplete={(id) =>
+                      updateReceipt(receipt.costType, { fileStorageId: id })
+                    }
                     storageId={receipt.fileStorageId || undefined}
                   />
                 </div>
@@ -291,42 +362,63 @@ export function TravelReimbursementFormUI({
           ))}
         </div>
       )}
-
       {canSubmit && (
         <div className="space-y-8 mt-24">
           <h2 className="text-2xl font-bold">Zusammenfassung</h2>
           <div className="flex items-end gap-4">
-            <div className="grid gap-4 flex-1" style={{ gridTemplateColumns: "1fr 2fr 1fr" }}>
+            <div
+              className="grid gap-4 flex-1"
+              style={{ gridTemplateColumns: "1fr 2fr 1fr" }}
+            >
               <div>
-                <Label className="text-xs text-muted-foreground uppercase">Kontoinhaber</Label>
+                <Label className="text-xs text-muted-foreground uppercase">
+                  Kontoinhaber
+                </Label>
                 <Input
                   value={bankDetails.accountHolder}
-                  onChange={(e) => setBankDetails({ ...bankDetails, accountHolder: e.target.value })}
+                  onChange={(e) =>
+                    setBankDetails({
+                      ...bankDetails,
+                      accountHolder: e.target.value,
+                    })
+                  }
                   disabled={!editingBank}
                 />
               </div>
               <div>
-                <Label className="text-xs text-muted-foreground uppercase">IBAN</Label>
+                <Label className="text-xs text-muted-foreground uppercase">
+                  IBAN
+                </Label>
                 <Input
                   value={bankDetails.iban}
-                  onChange={(e) => setBankDetails({ ...bankDetails, iban: e.target.value })}
+                  onChange={(e) =>
+                    setBankDetails({ ...bankDetails, iban: e.target.value })
+                  }
                   disabled={!editingBank}
                   placeholder="DE89 3704 0044 0532 0130 00"
                   className="font-mono"
                 />
               </div>
               <div>
-                <Label className="text-xs text-muted-foreground uppercase">BIC</Label>
+                <Label className="text-xs text-muted-foreground uppercase">
+                  BIC
+                </Label>
                 <Input
                   value={bankDetails.bic}
-                  onChange={(e) => setBankDetails({ ...bankDetails, bic: e.target.value })}
+                  onChange={(e) =>
+                    setBankDetails({ ...bankDetails, bic: e.target.value })
+                  }
                   disabled={!editingBank}
                   placeholder="COBADEFFXXX"
                   className="font-mono"
                 />
               </div>
             </div>
-            <Button variant={editingBank ? "default" : "outline"} size="sm" onClick={setEditingBank}>
+            <Button
+              variant={editingBank ? "default" : "outline"}
+              size="sm"
+              onClick={setEditingBank}
+            >
               {editingBank ? "Speichern" : <Pencil className="size-4" />}
             </Button>
           </div>
@@ -335,14 +427,23 @@ export function TravelReimbursementFormUI({
             {receipts
               .filter((r) => r.grossAmount > 0)
               .map((receipt) => (
-                <div key={receipt.costType} className="flex items-center justify-between px-3 bg-gray-50 border rounded-md">
+                <div
+                  key={receipt.costType}
+                  className="flex items-center justify-between px-3 bg-gray-50 border rounded-md"
+                >
                   <div className="flex items-center gap-8 flex-1">
-                    <span className="font-semibold">{getLabel(receipt.costType)}</span>
+                    <span className="font-semibold">
+                      {getLabel(receipt.costType)}
+                    </span>
                     {receipt.costType === "car" && (
-                      <span className="text-sm text-muted-foreground">{receipt.kilometers} km × 0,30€</span>
+                      <span className="text-sm text-muted-foreground">
+                        {receipt.kilometers} km × 0,30€
+                      </span>
                     )}
                   </div>
-                  <span className="font-semibold">{receipt.grossAmount.toFixed(2)} €</span>
+                  <span className="font-semibold">
+                    {receipt.grossAmount.toFixed(2)} €
+                  </span>
                 </div>
               ))}
           </div>
@@ -355,7 +456,11 @@ export function TravelReimbursementFormUI({
             </div>
           </div>
 
-          <Button onClick={handleSubmit} className="w-full h-14 font-semibold mt-8" size="lg">
+          <Button
+            onClick={handleSubmit}
+            className="w-full h-14 font-semibold mt-8"
+            size="lg"
+          >
             Zur Genehmigung einreichen
           </Button>
         </div>

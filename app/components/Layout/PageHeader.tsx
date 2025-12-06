@@ -20,6 +20,7 @@ interface PageHeaderProps {
   subtitle?: string;
   showBackButton?: boolean;
   backUrl?: string;
+  showRangeCalendar?: boolean;
 }
 
 export function PageHeader({
@@ -27,6 +28,7 @@ export function PageHeader({
   subtitle,
   showBackButton = false,
   backUrl,
+  showRangeCalendar = false,
 }: PageHeaderProps) {
   const router = useRouter();
   const [isExpenseOpen, setIsExpenseOpen] = useState(false);
@@ -104,7 +106,7 @@ export function PageHeader({
               </div>
             </div>
             <div className="flex flex-row gap-4">
-              <RangeCalendarToggle />
+              {showRangeCalendar && <RangeCalendarToggle />}
 
               <div id="tour-add-dropdown">
                 <DashboardDropdown

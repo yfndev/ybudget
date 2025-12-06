@@ -16,7 +16,7 @@ interface TransactionsPageUIProps {
   onUpdateTransaction: (
     rowId: string,
     field: string,
-    value: any,
+    value: any
   ) => Promise<void>;
   onDeleteTransaction: (rowId: string) => Promise<void>;
 }
@@ -34,7 +34,7 @@ export default function TransactionsOverviewUI({
 
   return (
     <div className="flex flex-col w-full h-screen">
-      <PageHeader title="Transaktionen" />
+      <PageHeader title="Transaktionen" showRangeCalendar />
       <div className="text-sm text-muted-foreground pb-4 ">
         {fromDate} - {toDate}
       </div>
