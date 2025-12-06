@@ -43,9 +43,9 @@ export function TransactionSheet({
   const dateInputRef = useRef<HTMLInputElement>(null);
   const counterpartyInputRef = useRef<HTMLInputElement>(null);
   const descriptionInputRef = useRef<HTMLTextAreaElement>(null);
-  const projectButtonRef = useRef<HTMLButtonElement>(null);
-  const categoryButtonRef = useRef<HTMLButtonElement>(null);
-  const donorButtonRef = useRef<HTMLButtonElement>(null);
+  const projectInputRef = useRef<HTMLInputElement>(null);
+  const categoryInputRef = useRef<HTMLInputElement>(null);
+  const donorInputRef = useRef<HTMLInputElement>(null);
 
   const addTransaction = useMutation(
     api.transactions.functions.createExpectedTransaction,
@@ -202,7 +202,7 @@ export function TransactionSheet({
               }
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              onKeyDown={(e) => handleKeyPress(e, projectButtonRef)}
+              onKeyDown={(e) => handleKeyPress(e, projectInputRef)}
               className="min-h-[80px] resize-none"
             />
           </div>
@@ -210,32 +210,33 @@ export function TransactionSheet({
           <div className="flex flex-col gap-3">
             <Label className="text-base">Projekt</Label>
             <SelectProject
+              ref={projectInputRef}
               value={project}
               onValueChange={(value) => {
                 setProject(value);
-                focusNext(categoryButtonRef);
+                focusNext(categoryInputRef);
               }}
-              onTabPressed={() => focusNext(categoryButtonRef)}
+              onTabPressed={() => focusNext(categoryInputRef)}
             />
           </div>
 
           <div className="flex flex-col gap-2">
             <Label>Kategorie</Label>
             <SelectCategory
-              ref={categoryButtonRef}
+              ref={categoryInputRef}
               value={category as Id<"categories">}
               onValueChange={(value) => {
                 setCategory(value);
-                focusNext(donorButtonRef);
+                focusNext(donorInputRef);
               }}
-              onTabPressed={() => focusNext(donorButtonRef)}
+              onTabPressed={() => focusNext(donorInputRef)}
             />
           </div>
 
           <div className="flex flex-col gap-2">
             <Label>Förderer</Label>
             <SelectDonor
-              ref={donorButtonRef}
+              ref={donorInputRef}
               value={donor}
               onValueChange={setDonor}
             />

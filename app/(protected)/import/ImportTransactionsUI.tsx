@@ -75,7 +75,7 @@ export const ImportTransactionsUI = ({
             />
           </div>
         )}
-        <div className={`flex flex-col items-center gap-8 order-1 lg:order-2 ${expectedTransactions.length > 0 ? "flex-1" : "w-full max-w-xl"}`}>
+        <div className={`flex flex-col xl:flex-row items-start gap-8 order-1 lg:order-2 ${expectedTransactions.length > 0 ? "flex-1" : "w-full justify-center"}`}>
           <div id="tour-import-card" className="w-full max-w-xl">
             {current && (
               <ImportTransactionCardUI
@@ -99,7 +99,7 @@ export const ImportTransactionsUI = ({
             )}
           </div>
           {splitIncome && current && current.amount > 0 && (
-            <div className="w-full max-w-xl">
+            <div className="w-full max-w-md">
               <BudgetSplit
                 totalAmount={current.amount}
                 onAllocationsChange={onBudgetAllocationsChange}

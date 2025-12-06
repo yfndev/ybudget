@@ -1,25 +1,11 @@
 "use client";
 
 import { CreateProjectDialog } from "@/components/Dialogs/CreateProjectDialog";
-import { Button } from "@/components/ui/button";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { api } from "@/convex/_generated/api";
 import { cn } from "@/lib/utils";
 import { useQuery } from "convex-helpers/react/cache";
 import { Check, ChevronsUpDown, Plus } from "lucide-react";
-import { useRef, useState } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 
 interface SelectProjectProps {
   value: string;
@@ -27,144 +13,136 @@ interface SelectProjectProps {
   onTabPressed?: () => void;
 }
 
-export function SelectProject({
-  value,
-  onValueChange,
-  onTabPressed,
-}: SelectProjectProps) {
-  const [open, setOpen] = useState(false);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [highlightedIndex, setHighlightedIndex] = useState(0);
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  const projects = useQuery(api.projects.queries.getAllProjects);
+export const SelectProject = forwardRef<HTMLInputElement, SelectProjectProps>(
+  function SelectProject({ value, onValueChange, onTabPressed }, ref) {
+    const [open, setOpen] = useState(false);
+    const [search, setSearch] = useState("");
+    const [highlightedIndex, setHighlightedIndex] = useState(0);
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const containerRef = useRef<HTMLDivElement>(null);
 
-  const selectedProject = projects?.find((p) => p._id === value);
-  const displayText = selectedProject?.name || "Projekt suchen...";
+    const projects = useQuery(api.projects.queries.getAllProjects);
+    const selectedProject = projects?.find((p) => p._id === value);
+    const filtered = projects?.filter((p) =>
+      p.name.toLowerCase().includes(search.toLowerCase()),
+    ) ?? [];
 
-  const handleSelect = (selectedValue: string) => {
-    const newValue = selectedValue === value ? "" : selectedValue;
-    onValueChange(newValue);
-    setOpen(false);
-  };
-
-  const handleCreateNew = () => {
-    setDialogOpen(true);
-    setOpen(false);
-  };
-
-  const handleProjectCreated = (projectId: string) => {
-    onValueChange(projectId);
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Tab" || e.key === "Enter") {
-      if (!open) {
-        e.preventDefault();
-        setOpen(true);
-      } else {
-        e.preventDefault();
-        if (e.key === "Enter" && projects && projects[highlightedIndex]) {
-          handleSelect(projects[highlightedIndex]._id);
-        } else if (e.key === "Tab" && onTabPressed) {
+    useEffect(() => {
+      if (!open) return;
+      const handleClickOutside = (e: MouseEvent) => {
+        if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
           setOpen(false);
-          onTabPressed();
+          setSearch("");
         }
-      }
-    } else if (e.key === "ArrowDown" && !open) {
-      e.preventDefault();
-      setOpen(true);
-    } else if (e.key === "ArrowDown" && open) {
-      e.preventDefault();
-      setHighlightedIndex((prev) =>
-        prev < (projects?.length ?? 0) ? prev + 1 : 0,
-      );
-    } else if (e.key === "ArrowUp" && open) {
-      e.preventDefault();
-      setHighlightedIndex((prev) =>
-        prev > 0 ? prev - 1 : (projects?.length ?? 0) - 1,
-      );
-    } else if (e.key === "Escape") {
-      e.preventDefault();
+      };
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [open]);
+
+    useEffect(() => setHighlightedIndex(0), [search]);
+
+    const close = () => {
       setOpen(false);
-    }
-  };
+      setSearch("");
+    };
 
-  const handleOpenChange = (newOpen: boolean) => {
-    setOpen(newOpen);
-    if (newOpen) {
-      setHighlightedIndex(0);
-    }
-  };
+    const handleSelect = (id: string) => {
+      onValueChange(id === value ? "" : id);
+      close();
+    };
 
-  return (
-    <>
-      <Popover open={open} onOpenChange={handleOpenChange}>
-        <PopoverTrigger asChild>
-          <Button
-            ref={buttonRef}
-            variant="ghost"
-            role="combobox"
-            aria-expanded={open}
-            className="w-full justify-between bg-muted"
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+      if (e.key === "Escape") return close();
+
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        if (!open) return setOpen(true);
+        setHighlightedIndex((i) => (i < filtered.length - 1 ? i + 1 : 0));
+        return;
+      }
+
+      if (e.key === "ArrowUp" && open) {
+        e.preventDefault();
+        setHighlightedIndex((i) => (i > 0 ? i - 1 : filtered.length - 1));
+        return;
+      }
+
+      if (e.key === "Enter") {
+        e.preventDefault();
+        if (open && filtered[highlightedIndex]) return handleSelect(filtered[highlightedIndex]._id);
+        if (!open) return setOpen(true);
+      }
+
+      if (e.key === "Tab" && open) {
+        e.preventDefault();
+        close();
+        onTabPressed?.();
+      }
+    };
+
+    return (
+      <>
+        <div ref={containerRef} className="relative">
+          <input
+            ref={ref}
+            className={cn(
+              "h-9 w-full rounded-md bg-muted px-3 pr-8 text-sm outline-none",
+              open || !selectedProject ? "text-muted-foreground" : "text-foreground",
+            )}
+            placeholder="Projekt suchen..."
+            value={open ? search : selectedProject?.name ?? ""}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setOpen(true);
+            }}
+            onFocus={() => setOpen(true)}
             onKeyDown={handleKeyDown}
-          >
-            <span
-              className={cn(
-                "font-medium",
-                value ? "text-foreground" : "text-muted-foreground",
-              )}
-            >
-              {displayText}
-            </span>
-            <ChevronsUpDown className="opacity-50" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-full p-0" align="start">
-          <Command>
-            <CommandInput
-              placeholder="Projekt suchen..."
-              className="h-9 text-muted-foreground"
-            />
-            <CommandList>
-              <CommandEmpty>Keine Projekte :(</CommandEmpty>
-              <CommandGroup>
-                {projects?.map((project, idx) => (
-                  <CommandItem
-                    key={project._id}
-                    value={project._id}
-                    onSelect={handleSelect}
-                    className={cn(idx === highlightedIndex && "bg-accent")}
-                    onMouseEnter={() => setHighlightedIndex(idx)}
-                  >
-                    {project.name}
-                    <Check
-                      className={cn(
-                        "ml-auto",
-                        value === project._id ? "opacity-100" : "opacity-0",
-                      )}
-                    />
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-              <CommandGroup>
-                <CommandItem
-                  onSelect={handleCreateNew}
-                  className="text-primary"
-                >
-                  <Plus className="mr-2 h-4 w-4" />
-                  Neues Projekt erstellen
-                </CommandItem>
-              </CommandGroup>
-            </CommandList>
-          </Command>
-        </PopoverContent>
-      </Popover>
+          />
+          <ChevronsUpDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 opacity-50 pointer-events-none" />
 
-      <CreateProjectDialog
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        onProjectCreated={handleProjectCreated}
-      />
-    </>
-  );
-}
+          {open && (
+            <div className="absolute mt-1 w-full bg-background border rounded-md shadow-lg z-50 max-h-64 overflow-auto">
+              {filtered.length === 0 && (
+                <div className="px-3 py-2 text-sm text-muted-foreground">
+                  Keine Projekte gefunden
+                </div>
+              )}
+              {filtered.map((project, idx) => (
+                <button
+                  key={project._id}
+                  type="button"
+                  className={cn(
+                    "w-full text-left px-3 py-2 text-sm flex items-center justify-between",
+                    idx === highlightedIndex && "bg-accent",
+                  )}
+                  onClick={() => handleSelect(project._id)}
+                  onMouseEnter={() => setHighlightedIndex(idx)}
+                >
+                  {project.name}
+                  <Check className={cn("h-4 w-4", value === project._id ? "opacity-100" : "opacity-0")} />
+                </button>
+              ))}
+              <button
+                type="button"
+                className="w-full text-left px-3 py-2 text-sm text-primary flex items-center gap-2 border-t"
+                onClick={() => {
+                  setDialogOpen(true);
+                  close();
+                }}
+              >
+                <Plus className="h-4 w-4" />
+                Neues Projekt erstellen
+              </button>
+            </div>
+          )}
+        </div>
+
+        <CreateProjectDialog
+          open={dialogOpen}
+          onOpenChange={setDialogOpen}
+          onProjectCreated={onValueChange}
+        />
+      </>
+    );
+  },
+);
