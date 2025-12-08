@@ -1,11 +1,10 @@
 "use client";
 
 import {
+  buildCashflowData,
   calculateAxisConfig,
   calculateStartBalance,
-  generateCashflowData,
-  type CashflowDataPoint,
-} from "@/components/Dashboard/cashflowChartLogic";
+} from "@/components/Dashboard/CashflowChartLogic";
 import {
   Card,
   CardContent,
@@ -32,7 +31,6 @@ import {
 import { useQuery } from "convex-helpers/react/cache";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
-import { useMemo } from "react";
 import {
   Bar,
   CartesianGrid,
@@ -51,38 +49,21 @@ const chartConfig = {
   balance: { label: "voraussichtlicher Kontostand", color: "#4b5563" },
 } satisfies ChartConfig;
 
-function formatTooltipLabel(value: string, payload: any[]) {
-  if (!payload?.[0]?.payload?.timestamp) return value;
+function formatTooltipLabel(_: string, payload: any[]) {
+  if (!payload?.[0]?.payload?.timestamp) return "";
   const date = new Date(payload[0].payload.timestamp);
   return `${format(date, "EEEE", { locale: de })}, ${format(date, "d. MMMM", { locale: de })}`;
 }
 
-function TooltipItem({ value, name }: { value: number; name: string }) {
-  if (value === 0) return null;
-  const config = chartConfig[name as keyof typeof chartConfig];
-  const formatted = new Intl.NumberFormat("de-DE", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(value);
-
-  return (
-    <div className="flex w-full items-center gap-3">
-      <div
-        className="h-2.5 w-2.5 shrink-0 rounded-[2px]"
-        style={{ backgroundColor: config?.color || "hsl(0 0% 50%)" }}
-      />
-      <div className="flex flex-1 items-center justify-between gap-4">
-        <span className="text-muted-foreground">{config?.label || name}</span>
-        <span className="text-foreground font-mono font-medium tabular-nums">
-          {formatted} €
-        </span>
-      </div>
-    </div>
-  );
-}
-
 interface CashflowChartUIProps {
   transactions?: Doc<"transactions">[];
+}
+
+function getPastEndDate(from: Date) {
+  const pastEndDate = new Date(from);
+  pastEndDate.setDate(pastEndDate.getDate() - 1);
+  pastEndDate.setHours(23, 59, 59, 999);
+  return pastEndDate;
 }
 
 export function CashflowChartUI({
@@ -90,59 +71,34 @@ export function CashflowChartUI({
 }: CashflowChartUIProps) {
   const { selectedDateRange } = useDateRange();
 
-  // Only fetch all transactions if not provided (for standalone usage)
   const allTransactionsQuery = useQuery(
     api.transactions.queries.getAllTransactions,
     providedTransactions ? "skip" : {}
   );
 
-  const transactions = useMemo(() => {
-    if (providedTransactions) {
-      // Use provided transactions (already filtered)
-      return providedTransactions;
-    }
-    return filterTransactionsByDateRange(
-      allTransactionsQuery,
-      selectedDateRange
-    );
-  }, [providedTransactions, allTransactionsQuery, selectedDateRange]);
+  const sourceTransactions = providedTransactions || allTransactionsQuery;
 
-  const pastTransactions = useMemo(() => {
-    const sourceTransactions = providedTransactions || allTransactionsQuery;
-    if (!sourceTransactions) return undefined;
+  const transactions = providedTransactions
+    ? providedTransactions
+    : filterTransactionsByDateRange(allTransactionsQuery, selectedDateRange);
 
-    const pastEndDate = new Date(selectedDateRange.from);
-    pastEndDate.setDate(pastEndDate.getDate() - 1);
-    pastEndDate.setHours(23, 59, 59, 999);
-
-    return filterTransactionsBeforeDate(
-      sourceTransactions,
-      pastEndDate,
-      (t) => t.status === "processed"
-    );
-  }, [providedTransactions, allTransactionsQuery, selectedDateRange]);
+  const pastTransactions = sourceTransactions
+    ? filterTransactionsBeforeDate(
+        sourceTransactions,
+        getPastEndDate(selectedDateRange.from),
+        (t) => t.status === "processed"
+      )
+    : undefined;
 
   const startBalance = calculateStartBalance(pastTransactions);
 
-  const dataPoints =
-    transactions !== undefined
-      ? generateCashflowData(
-          transactions,
-          startBalance,
-          selectedDateRange.from,
-          selectedDateRange.to
-        )
-      : [];
+  const dataPoints = transactions
+    ? buildCashflowData(transactions, startBalance, selectedDateRange.from, selectedDateRange.to)
+    : [];
 
-  const axisConfig = calculateAxisConfig(
-    dataPoints,
-    selectedDateRange.from,
-    selectedDateRange.to
-  );
+  const axisConfig = calculateAxisConfig(dataPoints, selectedDateRange.from, selectedDateRange.to);
 
-  const dateRangeText = `${format(selectedDateRange.from, "d. MMM yyyy", {
-    locale: de,
-  })} - ${format(selectedDateRange.to, "d. MMM yyyy", { locale: de })}`;
+  const dateRangeText = `${format(selectedDateRange.from, "d. MMM yyyy", { locale: de })} - ${format(selectedDateRange.to, "d. MMM yyyy", { locale: de })}`;
 
   return (
     <Card className="flex flex-col flex-1">
@@ -174,27 +130,9 @@ export function CashflowChartUI({
                 axisLine={false}
                 tickMargin={8}
                 interval={axisConfig.xAxisInterval}
-                angle={
-                  axisConfig.isLongPeriod
-                    ? 0
-                    : axisConfig.isManyDataPoints
-                      ? -45
-                      : 0
-                }
-                textAnchor={
-                  axisConfig.isLongPeriod
-                    ? "middle"
-                    : axisConfig.isManyDataPoints
-                      ? "end"
-                      : "middle"
-                }
-                height={
-                  axisConfig.isLongPeriod
-                    ? 20
-                    : axisConfig.isManyDataPoints
-                      ? 60
-                      : 30
-                }
+                angle={axisConfig.isManyDataPoints && !axisConfig.isLongTimeSlot ? -45 : 0}
+                textAnchor={axisConfig.isManyDataPoints && !axisConfig.isLongTimeSlot ? "end" : "middle"}
+                height={axisConfig.isManyDataPoints && !axisConfig.isLongTimeSlot ? 60 : axisConfig.isLongTimeSlot ? 20 : 30}
               />
               <YAxis
                 tickLine={false}
@@ -212,13 +150,9 @@ export function CashflowChartUI({
                 cursor={false}
                 content={
                   <ChartTooltipContent
-                    className="!gap-2.5 px-3 py-2.5 [&>div]:!gap-2.5"
                     labelFormatter={formatTooltipLabel}
                     labelClassName="font-bold"
-                    formatter={(value, name) => (
-                      <TooltipItem value={value as number} name={name as string} />
-                    )}
-                    filterNull={true}
+                    hideIndicator={false}
                   />
                 }
               />
