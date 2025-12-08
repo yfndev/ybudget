@@ -86,19 +86,8 @@ export default defineSchema({
     .index("by_archived", ["isArchived"])
     .index("by_transferId", ["transferId"]),
 
-  budgets: defineTable({
-    projectId: v.id("projects"),
-    amount: v.number(),
-    budgetedBy: v.id("users"),
-    sourceTransactionId: v.optional(v.id("transactions")),
-    note: v.optional(v.string()),
-  })
-    .index("by_project", ["projectId"])
-    .index("by_source_transaction", ["sourceTransactionId"]),
-
   categories: defineTable({
     name: v.string(),
-    description: v.string(),
     taxsphere: v.union(
       v.literal("non-profit"), // Ideeller Bereich
       v.literal("asset-management"), // Vermögensverwaltung

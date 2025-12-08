@@ -6,7 +6,7 @@ import { requireRole } from "../users/permissions";
 export const createCategory = mutation({
   args: {
     name: v.string(),
-    description: v.string(),
+
     taxsphere: v.union(
       v.literal("non-profit"),
       v.literal("asset-management"),
@@ -20,7 +20,6 @@ export const createCategory = mutation({
     const user = await getCurrentUser(ctx);
     return ctx.db.insert("categories", {
       name: args.name,
-      description: args.description,
       taxsphere: args.taxsphere,
       approved: false,
       createdBy: user._id,

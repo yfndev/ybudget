@@ -15,7 +15,6 @@ export const seedCategories = internalMutation({
       const type = group.type === "income" ? "Einnahmen" : "Ausgaben";
       const parentId = await ctx.db.insert("categories", {
         name: group.group,
-        description: `${type}: ${group.group}`,
         taxsphere: group.items[0].taxsphere,
         approved: true,
       });
@@ -24,7 +23,6 @@ export const seedCategories = internalMutation({
       for (const item of group.items) {
         await ctx.db.insert("categories", {
           name: item.label,
-          description: item.label,
           taxsphere: item.taxsphere,
           approved: true,
           parentId,
