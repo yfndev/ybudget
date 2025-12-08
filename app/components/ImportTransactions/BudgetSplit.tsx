@@ -7,40 +7,40 @@ import { Label } from "../ui/label";
 
 interface BudgetSplitProps {
   totalAmount: number;
-  onAllocationsChange: (
-    allocations: Array<{ projectId: string; amount: number }>,
+  onBudgetsChange: (
+    budgets: Array<{ projectId: string; amount: number }>
   ) => void;
 }
 
 export default function BudgetSplit({
   totalAmount,
-  onAllocationsChange,
+  onBudgetsChange,
 }: BudgetSplitProps) {
-  const [allocations, setAllocations] = useState<Map<string, string>>(
-    new Map(),
+  const [budgetInputs, setBudgetInputs] = useState<Map<string, string>>(
+    new Map()
   );
   const departments = useQuery(api.budgets.queries.getDepartmentProjects);
 
-  const total = Array.from(allocations.values()).reduce(
+  const total = Array.from(budgetInputs.values()).reduce(
     (sum, value) => sum + (parseFloat(value) || 0),
-    0,
+    0
   );
   const remaining = totalAmount - total;
   const isValid = total > 0 && remaining >= 0;
 
   const handleAmountChange = (projectId: string, value: string) => {
-    const newAllocations = new Map(allocations);
+    const newBudgetInputs = new Map(budgetInputs);
     if (!value || parseFloat(value) === 0) {
-      newAllocations.delete(projectId);
+      newBudgetInputs.delete(projectId);
     } else {
-      newAllocations.set(projectId, value);
+      newBudgetInputs.set(projectId, value);
     }
-    setAllocations(newAllocations);
-    onAllocationsChange(
-      Array.from(newAllocations.entries()).map(([id, amount]) => ({
+    setBudgetInputs(newBudgetInputs);
+    onBudgetsChange(
+      Array.from(newBudgetInputs.entries()).map(([id, amount]) => ({
         projectId: id,
         amount: parseFloat(amount) || 0,
-      })),
+      }))
     );
   };
 
@@ -65,16 +65,16 @@ export default function BudgetSplit({
         </div>
       </div>
       <div className="space-y-3 overflow-y-auto">
-        {departments.map((dept) => (
+        {departments.map((department) => (
           <div
-            key={dept._id}
+            key={department._id}
             className="flex items-center justify-between gap-3"
           >
-            <Label className="text-sm">{dept.name}</Label>
+            <Label className="text-sm">{department.name}</Label>
             <div className="min-w-32 max-w-32">
               <AmountInput
-                value={allocations.get(dept._id) || ""}
-                onChange={(value) => handleAmountChange(dept._id, value)}
+                value={budgetInputs.get(department._id) || ""}
+                onChange={(value) => handleAmountChange(department._id, value)}
               />
             </div>
           </div>

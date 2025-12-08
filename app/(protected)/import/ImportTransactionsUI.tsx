@@ -21,8 +21,8 @@ interface ImportTransactionsUIProps {
   setDonorId: (value: string) => void;
   handleExpectedTransactionSelect: (id: string) => void;
   onSplitIncomeChange: (splitIncome: boolean) => void;
-  onBudgetAllocationsChange: (
-    allocations: Array<{ projectId: string; amount: number }>,
+  onBudgetsChange: (
+    budgets: Array<{ projectId: string; amount: number }>,
   ) => void;
 }
 
@@ -42,7 +42,7 @@ export const ImportTransactionsUI = ({
   setDonorId,
   handleExpectedTransactionSelect,
   onSplitIncomeChange,
-  onBudgetAllocationsChange,
+  onBudgetsChange,
 }: ImportTransactionsUIProps) => {
   if (totalCount === 0) {
     return (
@@ -102,7 +102,7 @@ export const ImportTransactionsUI = ({
             <div className="w-full max-w-md">
               <BudgetSplit
                 totalAmount={current.amount}
-                onAllocationsChange={onBudgetAllocationsChange}
+                onBudgetsChange={onBudgetsChange}
               />
             </div>
           )}

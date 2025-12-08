@@ -89,7 +89,7 @@ export default defineSchema({
   budgets: defineTable({
     projectId: v.id("projects"),
     amount: v.number(),
-    allocatedBy: v.id("users"),
+    budgetedBy: v.id("users"),
     sourceTransactionId: v.optional(v.id("transactions")),
     note: v.optional(v.string()),
   })

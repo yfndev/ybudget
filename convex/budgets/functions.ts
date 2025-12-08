@@ -3,10 +3,10 @@ import { mutation } from "../_generated/server";
 import { getCurrentUser } from "../users/getCurrentUser";
 import { requireRole } from "../users/permissions";
 
-export const allocateBudget = mutation({
+export const setBudgets = mutation({
   args: {
     transactionId: v.id("transactions"),
-    allocations: v.array(
+    budgets: v.array(
       v.object({
         projectId: v.id("projects"),
         amount: v.number(),
@@ -23,14 +23,14 @@ export const allocateBudget = mutation({
       throw new Error("Access denied");
     }
     if (transaction.amount <= 0) {
-      throw new Error("Can only allocate budget from income");
+      throw new Error("Can only set budget from income");
     }
 
-    const totalAllocated = args.allocations.reduce(
-      (sum, a) => sum + a.amount,
+    const totalBudgeted = args.budgets.reduce(
+      (sum, budget) => sum + budget.amount,
       0,
     );
-    if (totalAllocated > transaction.amount) {
+    if (totalBudgeted > transaction.amount) {
       throw new Error("Total exceeds transaction amount");
     }
 
@@ -45,12 +45,12 @@ export const allocateBudget = mutation({
       await ctx.db.delete(budget._id);
     }
 
-    for (const allocation of args.allocations) {
-      if (allocation.amount > 0) {
+    for (const budget of args.budgets) {
+      if (budget.amount > 0) {
         await ctx.db.insert("budgets", {
-          projectId: allocation.projectId,
-          amount: allocation.amount,
-          allocatedBy: user._id,
+          projectId: budget.projectId,
+          amount: budget.amount,
+          budgetedBy: user._id,
           sourceTransactionId: args.transactionId,
         });
       }
