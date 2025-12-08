@@ -2,9 +2,7 @@ import { convexTest } from "convex-test";
 import { expect, test } from "vitest";
 import { api } from "../_generated/api";
 import schema from "../schema";
-import { setupTestData } from "../test/setup";
-
-
+import { modules, setupTestData } from "../test.setup";
 
 test("get all transactions", async () => {
   const test = convexTest(schema, modules);
@@ -132,5 +130,3 @@ test("transfer money between projects and create debit and credit transactions",
   expect(transactions.find((transaction) => transaction.amount === -500)).toBeDefined();
   expect(transactions.find((transaction) => transaction.amount === 500)).toBeDefined();
 });
-
-const modules = import.meta.glob("./**/*.ts");

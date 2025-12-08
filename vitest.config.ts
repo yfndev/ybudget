@@ -6,7 +6,7 @@ export default defineConfig({
     projects: [
       {
         test: {
-          include: ["convex/**"],
+          include: ["convex/**/*.test.ts"],
           environment: "edge-runtime",
         },
       },

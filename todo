@@ -1,4 +1,27 @@
-- [ ] add tests (5 unit tests, 10 integration tests, 3 end to end tests)
+Tests
+-> add tests (5 unit tests, 10 integration tests, 3 end to end tests)
+
+- [ ] budgets
+- [ ] categories
+- [ ] donors
+- [ ] invitations
+- [ ] logs
+- [ ] organizations
+- [ ] payments
+- [ ] projects
+- [ ] reimbursements
+- [ ] teams
+
+- e2e creating expected transaction
+
+done
+
+- [x] unit tests
+- [ ] transactions
+
+**todo**
+
+- [ ] check budgets implementation and if it really works what i had intended
 
 archive (latest on top):
 
