@@ -59,6 +59,6 @@ export const calculateUnallocated = (
   transactionAmount: number,
   allocations: Doc<"budgets">[],
 ): number => {
-  const totalAllocated = allocations.reduce((sum, b) => sum + b.amount, 0);
+  const totalAllocated = allocations.reduce((sum, balance) => sum + balance.amount, 0);
   return transactionAmount - totalAllocated;
 };
