@@ -20,9 +20,7 @@ interface ImportTransactionsUIProps {
   setDonorId: (value: string) => void;
   handleExpectedTransactionSelect: (id: string) => void;
   onSplitIncomeChange: (splitIncome: boolean) => void;
-  onBudgetsChange: (
-    budgets: Array<{ projectId: string; amount: number }>,
-  ) => void;
+  onBudgetsChange: (budgets: Array<{ projectId: string; amount: number }>) => void;
 }
 
 export const ImportTransactionsUI = ({
@@ -56,14 +54,16 @@ export const ImportTransactionsUI = ({
     );
   }
 
+  const hasMatches = expectedTransactions.length > 0;
+
   return (
     <div id="tour-import-page">
       <PageHeader title="Transaktionen zuordnen" />
       <div className="flex mt-8 justify-center" id="tour-import-progress">
         <Progress className="w-3/4" value={((index + 1) / totalCount) * 100} />
       </div>
-      <div className={`flex flex-col mt-12 gap-8 ${expectedTransactions.length > 0 ? "lg:flex-row" : "items-center"}`}>
-        {expectedTransactions.length > 0 && (
+      <div className={`flex flex-col mt-12 gap-8 ${hasMatches ? "lg:flex-row" : "items-center"}`}>
+        {hasMatches && (
           <div id="tour-expected-matches" className="lg:w-72 shrink-0 order-2 lg:order-1">
             <ExpectedTransactionMatchesUI
               expectedTransactions={expectedTransactions}
@@ -72,21 +72,16 @@ export const ImportTransactionsUI = ({
             />
           </div>
         )}
-        <div className={`flex flex-col xl:flex-row items-start gap-8 order-1 lg:order-2 ${expectedTransactions.length > 0 ? "flex-1" : "w-full justify-center"}`}>
+        <div className={`flex flex-col xl:flex-row items-start gap-8 order-1 lg:order-2 ${hasMatches ? "flex-1" : "w-full justify-center"}`}>
           <div id="tour-import-card" className="w-full max-w-xl">
             {current && (
               <ImportTransactionCardUI
-                title={current.counterparty || ""}
-                description={current.description}
-                amount={current.amount}
-                date={new Date(current.date)}
+                transaction={current}
                 currentIndex={index + 1}
                 totalCount={totalCount}
                 projectId={projectId}
                 categoryId={categoryId}
                 donorId={donorId}
-                isExpense={current.amount < 0}
-                isIncome={current.amount > 0}
                 splitIncome={splitIncome}
                 onProjectChange={setProjectId}
                 onCategoryChange={setCategoryId}
@@ -97,10 +92,7 @@ export const ImportTransactionsUI = ({
           </div>
           {splitIncome && current && current.amount > 0 && (
             <div className="w-full max-w-md">
-              <BudgetSplit
-                totalAmount={current.amount}
-                onBudgetsChange={onBudgetsChange}
-              />
+              <BudgetSplit totalAmount={current.amount} onBudgetsChange={onBudgetsChange} />
             </div>
           )}
         </div>

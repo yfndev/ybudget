@@ -16,12 +16,10 @@ export default function BudgetSplit({
   totalAmount,
   onBudgetsChange,
 }: BudgetSplitProps) {
-  const [budgetInputs, setBudgetInputs] = useState<Map<string, string>>(
-    new Map()
-  );
+  const [budgetInputs, setBudgetInputs] = useState<Record<string, string>>({});
   const departments = useQuery(api.budgets.queries.getDepartmentProjects);
 
-  const total = Array.from(budgetInputs.values()).reduce(
+  const total = Object.values(budgetInputs).reduce(
     (sum, value) => sum + (parseFloat(value) || 0),
     0
   );
@@ -29,15 +27,15 @@ export default function BudgetSplit({
   const isValid = total > 0 && remaining >= 0;
 
   const handleAmountChange = (projectId: string, value: string) => {
-    const newBudgetInputs = new Map(budgetInputs);
+    const newInputs = { ...budgetInputs };
     if (!value || parseFloat(value) === 0) {
-      newBudgetInputs.delete(projectId);
+      delete newInputs[projectId];
     } else {
-      newBudgetInputs.set(projectId, value);
+      newInputs[projectId] = value;
     }
-    setBudgetInputs(newBudgetInputs);
+    setBudgetInputs(newInputs);
     onBudgetsChange(
-      Array.from(newBudgetInputs.entries()).map(([id, amount]) => ({
+      Object.entries(newInputs).map(([id, amount]) => ({
         projectId: id,
         amount: parseFloat(amount) || 0,
       }))
@@ -73,7 +71,7 @@ export default function BudgetSplit({
             <Label className="text-sm">{department.name}</Label>
             <div className="min-w-32 max-w-32">
               <AmountInput
-                value={budgetInputs.get(department._id) || ""}
+                value={budgetInputs[department._id] || ""}
                 onChange={(value) => handleAmountChange(department._id, value)}
               />
             </div>
