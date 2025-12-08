@@ -41,24 +41,15 @@ const RangeCalendar = ({
     {},
   );
 
-  const presetRanges: Record<string, DateRange> = {
-    month: { from: startOfMonth(today), to: endOfMonth(today) },
-    lastMonth: {
-      from: startOfMonth(subMonths(today, 1)),
-      to: endOfMonth(subMonths(today, 1)),
-    },
-    quarter: { from: startOfQuarter(today), to: endOfQuarter(today) },
-    lastQuarter: {
-      from: startOfQuarter(subQuarters(today, 1)),
-      to: endOfQuarter(subQuarters(today, 1)),
-    },
-    year: { from: startOfYear(today), to: endOfYear(today) },
-    lastYear: {
-      from: startOfYear(subYears(today, 1)),
-      to: endOfYear(subYears(today, 1)),
-    },
-    all: { from: new Date(oldestDate ?? 0), to: new Date() },
-  };
+  const presets: Array<{ key: string; label: string; range: DateRange }> = [
+    { key: "month", label: "Monat", range: { from: startOfMonth(today), to: endOfMonth(today) } },
+    { key: "lastMonth", label: "Letzter Monat", range: { from: startOfMonth(subMonths(today, 1)), to: endOfMonth(subMonths(today, 1)) } },
+    { key: "quarter", label: "Quartal", range: { from: startOfQuarter(today), to: endOfQuarter(today) } },
+    { key: "lastQuarter", label: "Letztes Quartal", range: { from: startOfQuarter(subQuarters(today, 1)), to: endOfQuarter(subQuarters(today, 1)) } },
+    { key: "year", label: "Jahr", range: { from: startOfYear(today), to: endOfYear(today) } },
+    { key: "lastYear", label: "Letztes Jahr", range: { from: startOfYear(subYears(today, 1)), to: endOfYear(subYears(today, 1)) } },
+    { key: "all", label: "Alles", range: { from: new Date(oldestDate ?? 0), to: new Date() } },
+  ];
 
   const handlePresetClick = (range: DateRange) => {
     onDateRangeChange(range);
@@ -82,55 +73,16 @@ const RangeCalendar = ({
         />
       </CardContent>
       <CardFooter className="flex flex-wrap gap-2 border-t px-4 pt-4!">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => handlePresetClick(presetRanges.month)}
-        >
-          Monat
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => handlePresetClick(presetRanges.lastMonth)}
-        >
-          Letzter Monat
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => handlePresetClick(presetRanges.quarter)}
-        >
-          Quartal
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => handlePresetClick(presetRanges.lastQuarter)}
-        >
-          Letztes Quartal
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => handlePresetClick(presetRanges.year)}
-        >
-          Jahr
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => handlePresetClick(presetRanges.lastYear)}
-        >
-          Letztes Jahr
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => handlePresetClick(presetRanges.all)}
-        >
-          All
-        </Button>
+        {presets.map((preset) => (
+          <Button
+            key={preset.key}
+            variant="outline"
+            size="sm"
+            onClick={() => handlePresetClick(preset.range)}
+          >
+            {preset.label}
+          </Button>
+        ))}
       </CardFooter>
     </Card>
   );
