@@ -10,6 +10,12 @@ export default defineConfig({
           environment: "edge-runtime",
         },
       },
+      {
+        test: {
+          include: ["app/**/*.test.ts"],
+          environment: "node",
+        },
+      },
     ],
   },
 });
