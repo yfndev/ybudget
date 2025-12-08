@@ -23,6 +23,37 @@ import {
 } from "@/components/ui/sidebar";
 import { Input } from "../ui/input";
 
+function EditableProjectName({
+  isEditing,
+  editValue,
+  setEditValue,
+  saveEdit,
+  cancelEdit,
+}: {
+  isEditing: boolean;
+  editValue: string;
+  setEditValue: (value: string) => void;
+  saveEdit: () => void;
+  cancelEdit: () => void;
+}) {
+  if (!isEditing) return null;
+
+  return (
+    <div className="px-2 py-1.5">
+      <Input
+        value={editValue}
+        onChange={(e) => setEditValue(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") saveEdit();
+          if (e.key === "Escape") cancelEdit();
+        }}
+        onBlur={saveEdit}
+        autoFocus
+      />
+    </div>
+  );
+}
+
 export type ProjectItem = {
   id: Id<"projects">;
   name: string;
@@ -113,26 +144,18 @@ export function ProjectNavUI({
         {items.map((item) => (
           <Collapsible key={item.id} asChild defaultOpen={true}>
             <SidebarMenuItem>
-              {editingId === item.id ? (
-                <div className="px-2 py-1.5">
-                  <Input
-                    value={editValue}
-                    onChange={(e) => setEditValue(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") saveEdit();
-                      if (e.key === "Escape") setEditingId(null);
-                    }}
-                    onBlur={saveEdit}
-                    autoFocus
-                  />
-                </div>
-              ) : (
+              <EditableProjectName
+                isEditing={editingId === item.id}
+                editValue={editValue}
+                setEditValue={setEditValue}
+                saveEdit={saveEdit}
+                cancelEdit={() => setEditingId(null)}
+              />
+              {editingId !== item.id && (
                 <SidebarMenuButton asChild tooltip={item.name}>
                   <Link href={item.url}>
                     <span
-                      className={
-                        item.children.length ? "font-medium" : undefined
-                      }
+                      className={item.children.length ? "font-medium" : undefined}
                       onDoubleClick={(e) => {
                         e.preventDefault();
                         startEdit(item.id, item.name);
@@ -155,20 +178,14 @@ export function ProjectNavUI({
                     <SidebarMenuSub>
                       {item.children.map((child) => (
                         <SidebarMenuSubItem key={child.id}>
-                          {editingId === child.id ? (
-                            <div className="px-2 py-1.5">
-                              <Input
-                                value={editValue}
-                                onChange={(e) => setEditValue(e.target.value)}
-                                onKeyDown={(e) => {
-                                  if (e.key === "Enter") saveEdit();
-                                  if (e.key === "Escape") setEditingId(null);
-                                }}
-                                onBlur={saveEdit}
-                                autoFocus
-                              />
-                            </div>
-                          ) : (
+                          <EditableProjectName
+                            isEditing={editingId === child.id}
+                            editValue={editValue}
+                            setEditValue={setEditValue}
+                            saveEdit={saveEdit}
+                            cancelEdit={() => setEditingId(null)}
+                          />
+                          {editingId !== child.id && (
                             <SidebarMenuSubButton asChild>
                               <Link href={child.url}>
                                 <span

@@ -60,41 +60,11 @@ export function EditableDataTable<T extends { _id: string }>({
   const updatePendingChanges = (rowId: string, field: string, value: any) => {
     setPendingChanges((prev) => ({
       ...prev,
-      [rowId]: {
-        ...prev[rowId],
-        [field]: value,
-      },
+      [rowId]: { ...prev[rowId], [field]: value },
     }));
   };
 
-  const saveRow = async (rowId: string) => {
-    const changes = pendingChanges[rowId];
-    if (!changes || Object.keys(changes).length === 0) return;
-    if (!onUpdate) return;
-
-    setIsUpdating(true);
-    try {
-      for (const [field, value] of Object.entries(changes)) {
-        await onUpdate(rowId, field, value);
-      }
-      setPendingChanges((prev) => {
-        const updated = { ...prev };
-        delete updated[rowId];
-        return updated;
-      });
-      setEditingRows((prev) => {
-        const updated = new Set(prev);
-        updated.delete(rowId);
-        return updated;
-      });
-    } catch (error) {
-      console.error("Update failed:", error);
-    } finally {
-      setIsUpdating(false);
-    }
-  };
-
-  const cancelRow = (rowId: string) => {
+  const clearRowState = (rowId: string) => {
     setPendingChanges((prev) => {
       const updated = { ...prev };
       delete updated[rowId];
@@ -107,23 +77,35 @@ export function EditableDataTable<T extends { _id: string }>({
     });
   };
 
+  const saveRow = async (rowId: string) => {
+    const changes = pendingChanges[rowId];
+    if (!changes || Object.keys(changes).length === 0) return;
+    if (!onUpdate) return;
+
+    setIsUpdating(true);
+    try {
+      for (const [field, value] of Object.entries(changes)) {
+        await onUpdate(rowId, field, value);
+      }
+      clearRowState(rowId);
+    } catch (error) {
+      console.error("Update failed:", error);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const cancelRow = (rowId: string) => {
+    clearRowState(rowId);
+  };
+
   const deleteRow = async (rowId: string) => {
     if (!onDelete) return;
 
     setIsUpdating(true);
     try {
       await onDelete(rowId);
-
-      setPendingChanges((prev) => {
-        const updated = { ...prev };
-        delete updated[rowId];
-        return updated;
-      });
-      setEditingRows((prev) => {
-        const updated = new Set(prev);
-        updated.delete(rowId);
-        return updated;
-      });
+      clearRowState(rowId);
       toast.success("Transaktion erfolgreich gelöscht");
     } catch (error) {
       toast.error("Fehler beim Löschen der Transaktion");
