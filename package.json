@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "format": "prettier --write .",
-    "lint": "biome lint --write"
+    "lint": "biome lint --write",
+    "test": "vitest"
   },
   "dependencies": {
     "@auth/core": "^0.37.4",
@@ -71,6 +72,7 @@
     "@types/react-csv": "^1.1.10",
     "@types/react-dom": "^19.2.3",
     "tailwindcss": "^4.1.17",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.15"
   }
 }
