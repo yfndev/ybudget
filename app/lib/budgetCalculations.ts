@@ -39,26 +39,3 @@ export const calculateBudget = (
   };
 };
 
-export const calculateProgressPercentage = (
-  transactions: Doc<"transactions">[],
-): number => {
-  const totalIncome = transactions
-    .filter((transaction) => transaction.amount > 0)
-    .reduce((sum, transaction) => sum + transaction.amount, 0);
-
-  const totalExpenses = transactions
-    .filter((transaction) => transaction.amount < 0)
-    .reduce((sum, transaction) => sum + Math.abs(transaction.amount), 0);
-
-  return totalIncome === 0
-    ? 0
-    : Math.min(100, (totalExpenses / totalIncome) * 100);
-};
-
-export const calculateUnbudgeted = (
-  transactionAmount: number,
-  budgets: Doc<"budgets">[],
-): number => {
-  const totalBudgeted = budgets.reduce((sum, budget) => sum + budget.amount, 0);
-  return transactionAmount - totalBudgeted;
-};
