@@ -39,7 +39,7 @@ import type * as users_functions from "../users/functions.js";
 import type * as users_getCurrentUser from "../users/getCurrentUser.js";
 import type * as users_permissions from "../users/permissions.js";
 import type * as users_queries from "../users/queries.js";
-import type * as utils_addProjectNames from "../utils/addProjectNames.js";
+import type * as utils_addProjectAndCategoryNames from "../utils/addProjectAndCategoryNames.js";
 
 import type {
   ApiFromModules,
@@ -79,7 +79,7 @@ declare const fullApi: ApiFromModules<{
   "users/getCurrentUser": typeof users_getCurrentUser;
   "users/permissions": typeof users_permissions;
   "users/queries": typeof users_queries;
-  "utils/addProjectNames": typeof utils_addProjectNames;
+  "utils/addProjectAndCategoryNames": typeof utils_addProjectAndCategoryNames;
 }>;
 
 /**

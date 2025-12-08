@@ -3,7 +3,7 @@ import { v } from "convex/values";
 import { query } from "../_generated/server";
 import { filterByProjectAccess } from "../teams/permissions";
 import { getCurrentUser } from "../users/getCurrentUser";
-import { addProjectAndCategoryNames } from "../utils/addProjectNames";
+import { addProjectAndCategoryNames } from "../utils/addProjectAndCategoryNames";
 
 export const getAllTransactions = query({
   args: {
