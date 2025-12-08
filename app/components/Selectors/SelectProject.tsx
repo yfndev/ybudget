@@ -106,7 +106,7 @@ export const SelectProject = forwardRef<HTMLInputElement, SelectProjectProps>(
             onFocus={() => setOpen(true)}
             onKeyDown={handleKeyDown}
           />
-          <ChevronsUpDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 opacity pointer-events-none" />
+          <ChevronsUpDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 opacity-50 pointer-events-none" />
 
           {open && (
             <div className="absolute mt-1 w-full bg-background border rounded-md shadow-lg z-50 max-h-64 overflow-auto">

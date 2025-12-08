@@ -129,7 +129,7 @@ export const SelectCategory = forwardRef<HTMLInputElement, SelectCategoryProps>(
         <ChevronsUpDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 opacity-50 pointer-events-none" />
 
         {open && (
-          <div className="absolute mt-1 w-[640px] bg-background border rounded-md shadow-lg z-50">
+          <div className="absolute mt-1 w-full min-w-80 bg-background border rounded-md shadow-lg z-50">
             <div className="flex h-[400px]">
               {filtered.length === 0 ? (
                 <div className="flex-1 flex items-center justify-center">
@@ -172,12 +172,9 @@ export const SelectCategory = forwardRef<HTMLInputElement, SelectCategoryProps>(
                         onClick={() => handleSelect(item._id)}
                         onMouseEnter={() => setActiveItemIdx(idx)}
                       >
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="flex-1 min-w-0">
-                            <div className="text-sm font-medium">{item.name}</div>
-                            <div className="text-xs text-muted-foreground">{item.description}</div>
-                          </div>
-                          <Check className={cn("h-4 w-4 shrink-0 mt-0.5", value === item._id ? "opacity-100" : "opacity-0")} />
+                        <div className="flex items-center justify-between gap-3">
+                          <span className="text-sm">{item.name}</span>
+                          <Check className={cn("h-4 w-4 shrink-0", value === item._id ? "opacity-100" : "opacity-0")} />
                         </div>
                       </button>
                     ))}
