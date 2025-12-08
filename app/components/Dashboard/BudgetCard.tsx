@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { formatCurrency } from "@/lib/formatCurrency";
+import { formatCurrency } from "@/lib/formatters/formatCurrency";
 
 interface BudgetCardTypes {
   title: string;

@@ -3,7 +3,7 @@ import BudgetCard from "@/components/Dashboard/BudgetCard";
 import { CashflowChartUI } from "@/components/Dashboard/CashflowChartUI";
 import { PageHeader } from "@/components/Layout/PageHeader";
 import { api } from "@/convex/_generated/api";
-import { calculateBudget } from "@/lib/budgetCalculations";
+import { calculateBudget } from "@/lib/calculations/budgetCalculations";
 import { useQuery } from "convex-helpers/react/cache";
 
 export default function Dashboard() {

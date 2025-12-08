@@ -5,8 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
-import { formatCurrency } from "@/lib/formatCurrency";
-import { formatDate } from "@/lib/formatDate";
+import { formatCurrency } from "@/lib/formatters/formatCurrency";
+import { formatDate } from "@/lib/formatters/formatDate";
 import { useQuery } from "convex/react";
 import { useParams } from "next/navigation";
 

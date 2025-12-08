@@ -1,6 +1,6 @@
 import type { Doc } from "@/convex/_generated/dataModel";
-import { formatCurrency } from "@/lib/formatCurrency";
-import { formatDate } from "@/lib/formatDate";
+import { formatCurrency } from "@/lib/formatters/formatCurrency";
+import { formatDate } from "@/lib/formatters/formatDate";
 
 interface ExpectedTransactionMatchesUIProps {
   expectedTransactions: Doc<"transactions">[];

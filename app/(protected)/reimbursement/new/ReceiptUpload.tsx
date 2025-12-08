@@ -6,7 +6,7 @@ import {
   convertToJPG,
   FileConversionError,
   isValidFileType,
-} from "@/lib/fileConversion";
+} from "@/lib/files/fileConversion";
 import { useMutation, useQuery } from "convex/react";
 import { Loader2, Upload } from "lucide-react";
 import { useRef, useState } from "react";

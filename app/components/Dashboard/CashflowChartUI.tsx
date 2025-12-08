@@ -24,11 +24,11 @@ import {
 import { api } from "@/convex/_generated/api";
 import type { Doc } from "@/convex/_generated/dataModel";
 import { useDateRange } from "@/lib/contexts/DateRangeContext";
-import { formatCurrency } from "@/lib/formatCurrency";
+import { formatCurrency } from "@/lib/formatters/formatCurrency";
 import {
   filterTransactionsBeforeDate,
   filterTransactionsByDateRange,
-} from "@/lib/transactionFilters";
+} from "@/lib/calculations/transactionFilters";
 import { useQuery } from "convex-helpers/react/cache";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";

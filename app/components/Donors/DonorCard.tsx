@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
-import { formatCurrency } from "@/lib/formatCurrency";
+import { formatCurrency } from "@/lib/formatters/formatCurrency";
 import { useQuery } from "convex-helpers/react/cache";
 import Link from "next/link";
 

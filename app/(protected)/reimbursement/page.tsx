@@ -14,8 +14,8 @@ import {
 } from "@/components/ui/table";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
-import { formatDate } from "@/lib/formatDate";
-import { generateReimbursementPDF } from "@/lib/generateReimbursementPDF";
+import { formatDate } from "@/lib/formatters/formatDate";
+import { generateReimbursementPDF } from "@/lib/files/generateReimbursementPDF";
 import { useIsAdmin } from "@/lib/hooks/useCurrentUserRole";
 import { useConvex, useMutation, useQuery } from "convex/react";
 import { Check, Download, Plus, Trash2, X } from "lucide-react";

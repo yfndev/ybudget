@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import type { Doc, Id } from "@/convex/_generated/dataModel";
-import { formatCurrency } from "@/lib/formatCurrency";
+import { formatCurrency } from "@/lib/formatters/formatCurrency";
 import { useRef } from "react";
 
 interface ImportTransactionCardUIProps {

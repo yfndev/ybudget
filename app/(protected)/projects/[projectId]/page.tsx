@@ -5,9 +5,9 @@ import ProjectDashboardUI from "@/(protected)/projects/[projectId]/ProjectDashbo
 import TransferDialog from "@/components/Dialogs/TransferDialog";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
-import { calculateBudget } from "@/lib/budgetCalculations";
+import { calculateBudget } from "@/lib/calculations/budgetCalculations";
 import { useDateRange } from "@/lib/contexts/DateRangeContext";
-import { filterTransactionsByDateRange } from "@/lib/transactionFilters";
+import { filterTransactionsByDateRange } from "@/lib/calculations/transactionFilters";
 import { useQuery } from "convex-helpers/react/cache";
 import { useMutation, usePaginatedQuery } from "convex/react";
 import { useParams } from "next/navigation";

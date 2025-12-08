@@ -24,7 +24,7 @@ export const seedCategories = internalMutation({
       for (const item of group.items) {
         await ctx.db.insert("categories", {
           name: item.label,
-          description: item.description,
+          description: item.label,
           taxsphere: item.taxsphere,
           approved: true,
           parentId,

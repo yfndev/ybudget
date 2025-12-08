@@ -1,5 +1,5 @@
 import { api } from "@/convex/_generated/api";
-import { formatCurrency } from "@/lib/formatCurrency";
+import { formatCurrency } from "@/lib/formatters/formatCurrency";
 import { useQuery } from "convex/react";
 import { useState } from "react";
 import { AmountInput } from "../Selectors/AmountInput";
