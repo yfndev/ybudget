@@ -1,4 +1,5 @@
 import BudgetCard from "@/components/Dashboard/BudgetCard";
+import { donorTypeLabels } from "@/components/Donors/DonorCard";
 import DonorCSVExport from "@/components/Donors/DonorCSVExport";
 import { PageHeader } from "@/components/Layout/PageHeader";
 import { editableColumnsWithoutProject } from "@/components/Tables/TransactionTable/EditableColumns";
@@ -29,7 +30,7 @@ export default function DonorDetailUI({
     <div>
       <PageHeader
         title={donor.name}
-        subtitle={donor.type}
+        subtitle={donorTypeLabels[donor.type] ?? donor.type}
         showBackButton={true}
         backUrl="/donors"
       />

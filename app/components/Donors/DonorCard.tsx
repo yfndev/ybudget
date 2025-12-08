@@ -8,6 +8,11 @@ import { formatCurrency } from "@/lib/formatters/formatCurrency";
 import { useQuery } from "convex-helpers/react/cache";
 import Link from "next/link";
 
+export const donorTypeLabels: Record<string, string> = {
+  donation: "Spende",
+  sponsoring: "Sponsoring",
+};
+
 interface DonorCardProps {
   donorId: Id<"donors">;
 }
@@ -38,7 +43,7 @@ export default function DonorCard({ donorId }: DonorCardProps) {
             <div>
               <h3 className="text-xl font-semibold">{donor.name}</h3>
               <span className="text-xs text-muted-foreground capitalize">
-                {donor.type}
+                {donorTypeLabels[donor.type] ?? donor.type}
               </span>
             </div>
             <span className="text-sm font-medium text-muted-foreground">
