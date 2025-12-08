@@ -17,56 +17,46 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/convex/_generated/api";
 import type { Doc, Id } from "@/convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 
+type Taxsphere =
+  | "non-profit"
+  | "asset-management"
+  | "purpose-operations"
+  | "commercial-operations";
+
 export function CreateCategoryDialog({
-  children,
   open,
   onOpenChange,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  children?: React.ReactNode;
 }) {
   const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [taxsphere, setTaxsphere] = useState<
-    | "non-profit"
-    | "asset-management"
-    | "purpose-operations"
-    | "commercial-operations"
-  >("non-profit");
+  const [taxsphere, setTaxsphere] = useState<Taxsphere>("non-profit");
   const [parentId, setParentId] = useState<Id<"categories"> | undefined>();
 
   const categories = useQuery(api.categories.functions.getAllCategories);
   const createCategory = useMutation(api.categories.functions.createCategory);
 
-  // Only allow selecting parent categories (no nested subcategories)
   const parentCategories = categories?.filter(
-    (category: Doc<"categories">) => !category.parentId,
+    (category: Doc<"categories">) => !category.parentId
   );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await createCategory({
-        name,
-        description,
-        taxsphere,
-        parentId,
-      });
+      await createCategory({ name, taxsphere, parentId });
       onOpenChange(false);
       setName("");
-      setDescription("");
       setTaxsphere("non-profit");
       setParentId(undefined);
       toast.success("Kategorie erstellt!");
-    } catch (error) {
+    } catch {
       toast.error("Fehler beim Erstellen der Kategorie");
     }
   };
@@ -93,30 +83,10 @@ export function CreateCategoryDialog({
           </div>
 
           <div className="flex flex-col gap-2">
-            <Label htmlFor="description">Beschreibung</Label>
-            <Textarea
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="z.B. Kosten für Speisen und Catering-Service"
-              rows={3}
-              required
-            />
-          </div>
-
-          <div className="flex flex-col gap-2">
             <Label htmlFor="taxsphere">Steuerbereich</Label>
             <Select
               value={taxsphere}
-              onValueChange={(value) =>
-                setTaxsphere(
-                  value as
-                    | "non-profit"
-                    | "asset-management"
-                    | "purpose-operations"
-                    | "commercial-operations",
-                )
-              }
+              onValueChange={(value) => setTaxsphere(value as Taxsphere)}
             >
               <SelectTrigger>
                 <SelectValue />
@@ -145,7 +115,7 @@ export function CreateCategoryDialog({
               value={parentId || "none"}
               onValueChange={(value) =>
                 setParentId(
-                  value === "none" ? undefined : (value as Id<"categories">),
+                  value === "none" ? undefined : (value as Id<"categories">)
                 )
               }
             >
@@ -166,10 +136,7 @@ export function CreateCategoryDialog({
           </div>
 
           <div className="flex justify-end gap-2 ">
-            <Button
-              type="submit"
-              disabled={!name.trim() || !description.trim()}
-            >
+            <Button type="submit" disabled={!name.trim()}>
               Kategorie erstellen
             </Button>
           </div>
