@@ -3,10 +3,13 @@ import { ConvexHttpClient } from "convex/browser";
 import { api } from "../convex/_generated/api";
 
 const TEST_EMAIL = "importtransactions@test.com";
-const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
+
+function getConvex() {
+  return new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
+}
 
 async function cleanup() {
-  await convex.mutation(api.testing.functions.clearTestData, {
+  await getConvex().mutation(api.testing.functions.clearTestData, {
     email: TEST_EMAIL,
   });
 }
@@ -34,7 +37,7 @@ test.describe.serial("import transactions flow (without import logic)", () => {
       page.getByRole("heading", { name: "Dashboard" }),
     ).toBeVisible();
 
-    await convex.mutation(api.testing.seed.seedTestTransactions, {
+    await getConvex().mutation(api.testing.seed.seedTestTransactions, {
       email: TEST_EMAIL,
     });
     await page.goto("/import");

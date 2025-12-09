@@ -3,10 +3,13 @@ import { ConvexHttpClient } from "convex/browser";
 import { api } from "../convex/_generated/api";
 
 const TEST_EMAIL = "user@test.com";
-const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
+
+function getConvex() {
+  return new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
+}
 
 async function cleanup() {
-  await convex.mutation(api.testing.functions.clearTestData, {
+  await getConvex().mutation(api.testing.functions.clearTestData, {
     email: TEST_EMAIL,
   });
 }
