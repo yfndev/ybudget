@@ -64,7 +64,6 @@ export default defineSchema({
     status: v.union(v.literal("expected"), v.literal("processed")),
     matchedTransactionId: v.optional(v.string()),
     accountName: v.optional(v.string()),
-    isSplitIncome: v.optional(v.boolean()),
     isArchived: v.optional(v.boolean()),
     splitFromTransactionId: v.optional(v.id("transactions")),
     transferId: v.optional(v.string()),
