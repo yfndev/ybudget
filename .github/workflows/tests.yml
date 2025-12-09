@@ -25,9 +25,9 @@ jobs:
       - name: Build app
         run: pnpm build
         env:
-          NEXT_PUBLIC_CONVEX_URL: ${{ secrets.CONVEX_URL_DEV }}
+          NEXT_PUBLIC_CONVEX_URL: ${{ secrets.CONVEX_URL }}
       - name: Run Playwright tests
         run: pnpm exec playwright test --reporter=list
         env:
-          NEXT_PUBLIC_CONVEX_URL: ${{ secrets.CONVEX_URL_DEV }}
+          NEXT_PUBLIC_CONVEX_URL: ${{ secrets.CONVEX_URL }}
           IS_TEST: "true"
