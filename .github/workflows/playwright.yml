@@ -20,8 +20,7 @@ jobs:
     - name: Run Playwright tests
       run: pnpm exec playwright test
       env:
-        SITE_URL: ${{ secrets.SITE_URL }}
-        CONVEX_URL: ${{ secrets.CONVEX_URL }}
+        CONVEX_URL: ${{ secrets.NEXT_PUBLIC_CONVEX_URL }}
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:

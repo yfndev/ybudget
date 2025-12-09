@@ -1,13 +1,12 @@
 import { ConvexCredentials } from "@convex-dev/auth/providers/ConvexCredentials";
+import { createAccount } from "@convex-dev/auth/server";
 import type { Id } from "../_generated/dataModel";
-import { ConvexError } from "convex/values";
-import { v } from "convex/values";
-import { internal } from "../_generated/api";
-import { internalMutation, mutation, type MutationCtx } from "../_generated/server";
+import { mutation, type MutationCtx } from "../_generated/server";
+import { ConvexError, v } from "convex/values";
 
 export const TestingCredentials = ConvexCredentials({
   id: "testing",
-  authorize: async (credentials, ctx): Promise<{ userId: Id<"users"> } | null> => {
+  authorize: async (credentials, ctx): Promise<{ userId: Id<"users"> }> => {
     if (!process.env.IS_TEST)
       throw new ConvexError("Testing provider is only available in test environment");
 
@@ -15,33 +14,18 @@ export const TestingCredentials = ConvexCredentials({
     if (!email)
       throw new ConvexError("Email is required for testing authentication");
 
-    const userId = await ctx.runMutation(
-      internal.testing.functions.findOrCreateTestUser,
-      { email, name: credentials.name as string | undefined },
-    );
-
-    return { userId };
-  },
-});
-
-export const findOrCreateTestUser = internalMutation({
-  args: {
-    email: v.string(),
-    name: v.optional(v.string()),
-  },
-  handler: async (ctx, args) => {
-    const existingUser = await ctx.db
-      .query("users")
-      .withIndex("email", (q) => q.eq("email", args.email))
-      .unique();
-
-    if (existingUser) return existingUser._id;
-
-    return ctx.db.insert("users", {
-      email: args.email,
-      name: args.name ?? "Test User",
-      emailVerificationTime: Date.now(),
+    const { user } = await createAccount(ctx, {
+      provider: "testing",
+      account: { id: email },
+      profile: {
+        email,
+        name: (credentials.name as string) ?? "Test User",
+        emailVerificationTime: Date.now(),
+      },
+      shouldLinkViaEmail: true,
     });
+
+    return { userId: user._id as Id<"users"> };
   },
 });
 
@@ -66,6 +50,25 @@ export const clearTestData = mutation({
     if (!process.env.IS_TEST)
       throw new ConvexError("Only available in test environment");
 
+    // Delete orphaned authAccounts by providerAccountId (email)
+    const orphanedAccounts = await ctx.db
+      .query("authAccounts")
+      .withIndex("providerAndAccountId", (q) =>
+        q.eq("provider", "testing").eq("providerAccountId", args.email)
+      )
+      .collect();
+    for (const account of orphanedAccounts) {
+      // Delete sessions for this account's user
+      const sessions = await ctx.db
+        .query("authSessions")
+        .withIndex("userId", (q) => q.eq("userId", account.userId))
+        .collect();
+      for (const session of sessions) {
+        await ctx.db.delete(session._id);
+      }
+      await ctx.db.delete(account._id);
+    }
+
     const user = await ctx.db
       .query("users")
       .withIndex("email", (q) => q.eq("email", args.email))
@@ -79,6 +82,22 @@ export const clearTestData = mutation({
       await deleteByOrganization(ctx, "donors", user.organizationId);
       await deleteByOrganization(ctx, "logs", user.organizationId);
       await ctx.db.delete(user.organizationId);
+    }
+
+    const sessions = await ctx.db
+      .query("authSessions")
+      .withIndex("userId", (q) => q.eq("userId", user._id))
+      .collect();
+    for (const session of sessions) {
+      await ctx.db.delete(session._id);
+    }
+
+    const accounts = await ctx.db
+      .query("authAccounts")
+      .withIndex("userIdAndProvider", (q) => q.eq("userId", user._id))
+      .collect();
+    for (const account of accounts) {
+      await ctx.db.delete(account._id);
     }
 
     await ctx.db.delete(user._id);

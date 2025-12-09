@@ -2,6 +2,8 @@ Tests
 -> add tests (5 unit tests, 10 integration tests, 3 end to end tests)
 
 - e2e creating expected transaction
+- [ ] fix e2e tests
+- [ ] add import e2e test but without import logic, just adding it, splitting it and making sure they are correctly there
 
 done
 - [x] unit tests
@@ -16,10 +18,12 @@ done
 
 **todo**
 
-- [ ] check budgets implementation and if it really works what i had intended
+- [ ] check if Readme is up to date and gives all information to install programm
+
 
 archive (latest on top):
 
+- [x] check budgets implementation and if it really works what i had intended
 - [x] add logs
 - [x] add reimbursement as expected transaction when marked as paid
 - [x] negative amount in chart should be negative

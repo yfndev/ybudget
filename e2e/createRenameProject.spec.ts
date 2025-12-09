@@ -3,7 +3,7 @@ import { ConvexHttpClient } from "convex/browser";
 import { api } from "../convex/_generated/api";
 
 const TEST_EMAIL = "user@test.com";
-const convex = new ConvexHttpClient(process.env.CONVEX_URL!);
+const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
 async function cleanup() {
   await convex.mutation(api.testing.functions.clearTestData, {
@@ -14,10 +14,12 @@ async function cleanup() {
 test.beforeEach(cleanup);
 test.afterEach(cleanup);
 
-test("create, rename and archive project", async ({ page }) => {
+test("create, rename and archive project", async ({ page, context }) => {
+  await context.clearCookies();
   await page.goto("/test-auth");
+  await page.evaluate(() => localStorage.clear());
   await page.getByTestId("test-auth-submit").click();
-  await expect(page.getByText("Wie heißt dein Verein?")).toBeVisible();
+  await expect(page.getByText("Wie heißt dein Verein?")).toBeVisible({ timeout: 10000 });
 
   await page
     .getByRole("textbox", { name: "Wie heißt dein Verein?" })

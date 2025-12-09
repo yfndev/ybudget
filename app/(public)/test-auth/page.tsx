@@ -17,7 +17,6 @@ export default function TestAuthPage() {
   const handleSubmit = () => {
     setStatus("Authenticating...");
     signIn("testing", { email, name })
-      .then(() => setStatus("Authenticated!"))
       .then(() => router.push("/dashboard"))
       .catch((error) => setStatus(`Error: ${error.message}`));
   };
