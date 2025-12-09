@@ -7,8 +7,12 @@ import { calculateBudget } from "@/lib/calculations/budgetCalculations";
 import { useQuery } from "convex-helpers/react/cache";
 
 export default function Dashboard() {
-  const transactions = useQuery(api.transactions.queries.getAllTransactions, {});
-  const { currentBalance, expectedIncome, expectedExpenses, availableBudget } = calculateBudget(transactions ?? []);
+  const transactions = useQuery(
+    api.transactions.queries.getAllTransactions,
+    {},
+  );
+  const { currentBalance, expectedIncome, expectedExpenses, availableBudget } =
+    calculateBudget(transactions ?? []);
 
   return (
     <div>

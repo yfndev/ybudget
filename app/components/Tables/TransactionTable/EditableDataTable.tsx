@@ -35,7 +35,12 @@ interface EditableDataTableProps<T> {
   data: T[];
   onUpdate?: (rowId: string, field: string, value: any) => Promise<void>;
   onDelete?: (rowId: string) => Promise<void>;
-  paginationStatus?: "Loading" | "LoadingMore" | "CanLoadMore" | "Exhausted" | "LoadingFirstPage";
+  paginationStatus?:
+    | "Loading"
+    | "LoadingMore"
+    | "CanLoadMore"
+    | "Exhausted"
+    | "LoadingFirstPage";
   loadMore?: () => void;
 }
 
@@ -47,14 +52,18 @@ export function EditableDataTable<T extends { _id: string }>({
   paginationStatus,
   loadMore,
 }: EditableDataTableProps<T>) {
-  const [sorting, setSorting] = useState<SortingState>([{ id: "date", desc: true }]);
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: "date", desc: true },
+  ]);
   const [editingRows, setEditingRows] = useState<Set<string>>(new Set());
   const [isUpdating, setIsUpdating] = useState(false);
   const [deleteRowId, setDeleteRowId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLTableRowElement>(null);
 
   const hasNextPage = paginationStatus === "CanLoadMore";
-  const isLoading = paginationStatus === "LoadingMore" || paginationStatus === "LoadingFirstPage";
+  const isLoading =
+    paginationStatus === "LoadingMore" ||
+    paginationStatus === "LoadingFirstPage";
 
   const startEditing = (rowId: string) => {
     setEditingRows((prev) => new Set(prev).add(rowId));
@@ -134,7 +143,10 @@ export function EditableDataTable<T extends { _id: string }>({
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <TableHead key={header.id}>
-                    {flexRender(header.column.columnDef.header, header.getContext())}
+                    {flexRender(
+                      header.column.columnDef.header,
+                      header.getContext(),
+                    )}
                   </TableHead>
                 ))}
               </TableRow>
@@ -154,7 +166,10 @@ export function EditableDataTable<T extends { _id: string }>({
         </Table>
       </div>
 
-      <AlertDialog open={!!deleteRowId} onOpenChange={(open) => !open && setDeleteRowId(null)}>
+      <AlertDialog
+        open={!!deleteRowId}
+        onOpenChange={(open) => !open && setDeleteRowId(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Transaktion löschen?</AlertDialogTitle>
@@ -164,7 +179,10 @@ export function EditableDataTable<T extends { _id: string }>({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Abbrechen</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-red-500 hover:bg-red-600">
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-red-500 hover:bg-red-600"
+            >
               Löschen
             </AlertDialogAction>
           </AlertDialogFooter>

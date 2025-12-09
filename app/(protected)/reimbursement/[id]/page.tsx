@@ -10,7 +10,13 @@ import { formatDate } from "@/lib/formatters/formatDate";
 import { useQuery } from "convex/react";
 import { useParams } from "next/navigation";
 
-const STATUS_BADGES: Record<string, { variant: "default" | "destructive" | "secondary" | "outline"; label: string }> = {
+const STATUS_BADGES: Record<
+  string,
+  {
+    variant: "default" | "destructive" | "secondary" | "outline";
+    label: string;
+  }
+> = {
   paid: { variant: "default", label: "Bezahlt" },
   approved: { variant: "default", label: "Genehmigt" },
   rejected: { variant: "destructive", label: "Abgelehnt" },
@@ -30,15 +36,25 @@ const COST_TYPE_LABELS: Record<string, string> = {
 function ReceiptImage({ storageId }: { storageId: Id<"_storage"> }) {
   const url = useQuery(api.reimbursements.queries.getFileUrl, { storageId });
   if (!url) return <div className="w-32 h-32 bg-muted animate-pulse rounded" />;
-  return <img src={url} alt="Beleg" className="w-32 h-32 object-cover rounded border" />;
+  return (
+    <img
+      src={url}
+      alt="Beleg"
+      className="w-32 h-32 object-cover rounded border"
+    />
+  );
 }
 
 export default function ReimbursementDetailPage() {
   const { id } = useParams();
   const reimbursementId = id as Id<"reimbursements">;
 
-  const reimbursement = useQuery(api.reimbursements.queries.getReimbursement, { reimbursementId });
-  const receipts = useQuery(api.reimbursements.queries.getReceipts, { reimbursementId });
+  const reimbursement = useQuery(api.reimbursements.queries.getReimbursement, {
+    reimbursementId,
+  });
+  const receipts = useQuery(api.reimbursements.queries.getReceipts, {
+    reimbursementId,
+  });
 
   if (!reimbursement || !receipts) {
     return (
@@ -49,16 +65,31 @@ export default function ReimbursementDetailPage() {
     );
   }
 
-  const totalNet = receipts.reduce((sum, receipt) => sum + receipt.netAmount, 0);
+  const totalNet = receipts.reduce(
+    (sum, receipt) => sum + receipt.netAmount,
+    0,
+  );
   const totalTax7 = receipts
     .filter((receipt) => receipt.taxRate === 7)
-    .reduce((sum, receipt) => sum + (receipt.grossAmount - receipt.netAmount), 0);
+    .reduce(
+      (sum, receipt) => sum + (receipt.grossAmount - receipt.netAmount),
+      0,
+    );
   const totalTax19 = receipts
     .filter((receipt) => receipt.taxRate === 19)
-    .reduce((sum, receipt) => sum + (receipt.grossAmount - receipt.netAmount), 0);
-  const totalGross = receipts.reduce((sum, receipt) => sum + receipt.grossAmount, 0);
+    .reduce(
+      (sum, receipt) => sum + (receipt.grossAmount - receipt.netAmount),
+      0,
+    );
+  const totalGross = receipts.reduce(
+    (sum, receipt) => sum + receipt.grossAmount,
+    0,
+  );
 
-  const statusBadge = STATUS_BADGES[reimbursement.status] || { variant: "outline" as const, label: "Unbekannt" };
+  const statusBadge = STATUS_BADGES[reimbursement.status] || {
+    variant: "outline" as const,
+    label: "Unbekannt",
+  };
 
   return (
     <div className="flex flex-col w-full h-screen">
@@ -69,7 +100,9 @@ export default function ReimbursementDetailPage() {
           <div className="flex items-center gap-3 mb-2">
             <Badge variant={statusBadge.variant}>{statusBadge.label}</Badge>
             <span className="text-muted-foreground">
-              {reimbursement.type === "travel" ? "Reisekostenerstattung" : "Auslagenerstattung"}
+              {reimbursement.type === "travel"
+                ? "Reisekostenerstattung"
+                : "Auslagenerstattung"}
             </span>
           </div>
           <p className="text-3xl font-bold">{formatCurrency(totalGross)}</p>
@@ -87,14 +120,17 @@ export default function ReimbursementDetailPage() {
             <h3 className="font-medium">Reisedetails</h3>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <span className="text-muted-foreground">Reiseziel:</span> {reimbursement.travelDetails.destination}
+                <span className="text-muted-foreground">Reiseziel:</span>{" "}
+                {reimbursement.travelDetails.destination}
               </div>
               <div>
-                <span className="text-muted-foreground">Zweck:</span> {reimbursement.travelDetails.purpose}
+                <span className="text-muted-foreground">Zweck:</span>{" "}
+                {reimbursement.travelDetails.purpose}
               </div>
               <div>
                 <span className="text-muted-foreground">Zeitraum:</span>{" "}
-                {formatDate(reimbursement.travelDetails.startDate)} – {formatDate(reimbursement.travelDetails.endDate)}
+                {formatDate(reimbursement.travelDetails.startDate)} –{" "}
+                {formatDate(reimbursement.travelDetails.endDate)}
               </div>
               {reimbursement.travelDetails.isInternational && (
                 <div>
@@ -109,7 +145,8 @@ export default function ReimbursementDetailPage() {
           <h3 className="font-medium">Bankverbindung</h3>
           <div className="grid grid-cols-3 gap-4 text-sm">
             <div>
-              <span className="text-muted-foreground">Kontoinhaber:</span> {reimbursement.accountHolder || "–"}
+              <span className="text-muted-foreground">Kontoinhaber:</span>{" "}
+              {reimbursement.accountHolder || "–"}
             </div>
             <div>
               <span className="text-muted-foreground">IBAN:</span>{" "}
@@ -132,22 +169,34 @@ export default function ReimbursementDetailPage() {
                   <div>
                     <p className="font-semibold">{receipt.companyName}</p>
                     <p className="text-sm text-muted-foreground">
-                      Beleg-Nr. {receipt.receiptNumber} • {formatDate(receipt.receiptDate)}
+                      Beleg-Nr. {receipt.receiptNumber} •{" "}
+                      {formatDate(receipt.receiptDate)}
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="font-semibold">{formatCurrency(receipt.grossAmount)}</p>
+                    <p className="font-semibold">
+                      {formatCurrency(receipt.grossAmount)}
+                    </p>
                     <p className="text-sm text-muted-foreground">
-                      {formatCurrency(receipt.netAmount)} netto + {receipt.taxRate}% USt
+                      {formatCurrency(receipt.netAmount)} netto +{" "}
+                      {receipt.taxRate}% USt
                     </p>
                   </div>
                 </div>
-                {receipt.description && <p className="text-sm text-muted-foreground">{receipt.description}</p>}
+                {receipt.description && (
+                  <p className="text-sm text-muted-foreground">
+                    {receipt.description}
+                  </p>
+                )}
                 {receipt.costType && (
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline">{COST_TYPE_LABELS[receipt.costType] || receipt.costType}</Badge>
+                    <Badge variant="outline">
+                      {COST_TYPE_LABELS[receipt.costType] || receipt.costType}
+                    </Badge>
                     {receipt.kilometers && (
-                      <span className="text-sm text-muted-foreground">{receipt.kilometers} km × 0,30€</span>
+                      <span className="text-sm text-muted-foreground">
+                        {receipt.kilometers} km × 0,30€
+                      </span>
                     )}
                   </div>
                 )}

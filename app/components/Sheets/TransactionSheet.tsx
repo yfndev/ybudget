@@ -73,9 +73,7 @@ export function TransactionSheet({
 
     try {
       const numAmount = parseFloat(amount.replace(",", "."));
-      const dateTimestamp = date
-        ? new Date(date).getTime()
-        : Date.now();
+      const dateTimestamp = date ? new Date(date).getTime() : Date.now();
       await addTransaction({
         projectId: project as Id<"projects">,
         date: dateTimestamp,
@@ -167,11 +165,7 @@ export function TransactionSheet({
 
           <div className="flex flex-col gap-3">
             <Label className="text-base">Wann?</Label>
-            <DateInput
-              ref={dateInputRef}
-              value={date}
-              onChange={setDate}
-            />
+            <DateInput ref={dateInputRef} value={date} onChange={setDate} />
           </div>
 
           <div className="flex flex-col gap-2">

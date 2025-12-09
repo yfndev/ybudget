@@ -29,7 +29,7 @@ test("add team member", async () => {
       memberIds: [],
       projectIds: [],
       createdBy: userId,
-    })
+    }),
   );
 
   const user = test.withIdentity({ subject: userId });

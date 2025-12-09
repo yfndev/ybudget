@@ -45,14 +45,14 @@ export default function ReimbursementPage() {
   const router = useRouter();
   const convex = useConvex();
   const reimbursements = useQuery(
-    api.reimbursements.queries.getAllReimbursements
+    api.reimbursements.queries.getAllReimbursements,
   );
   const markAsPaid = useMutation(api.reimbursements.functions.markAsPaid);
   const rejectReimbursement = useMutation(
-    api.reimbursements.functions.rejectReimbursement
+    api.reimbursements.functions.rejectReimbursement,
   );
   const deleteReimbursement = useMutation(
-    api.reimbursements.functions.deleteReimbursement
+    api.reimbursements.functions.deleteReimbursement,
   );
 
   const [rejectDialog, setRejectDialog] = useState<{
@@ -73,7 +73,7 @@ export default function ReimbursementPage() {
   const handleDownloadPDF = async (reimbursementId: Id<"reimbursements">) => {
     const reimbursement = await convex.query(
       api.reimbursements.queries.getReimbursement,
-      { reimbursementId }
+      { reimbursementId },
     );
     if (!reimbursement) return;
 
@@ -81,7 +81,7 @@ export default function ReimbursementPage() {
       api.reimbursements.queries.getReceipts,
       {
         reimbursementId,
-      }
+      },
     );
 
     const receiptsWithUrls = await Promise.all(
@@ -90,12 +90,12 @@ export default function ReimbursementPage() {
         fileUrl: await convex.query(api.reimbursements.queries.getFileUrl, {
           storageId: receipt.fileStorageId,
         }),
-      }))
+      })),
     );
 
     const pdfBlob = await generateReimbursementPDF(
       reimbursement,
-      receiptsWithUrls
+      receiptsWithUrls,
     );
     const url = URL.createObjectURL(pdfBlob);
     const a = document.createElement("a");

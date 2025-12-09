@@ -30,7 +30,9 @@ interface UserRowProps {
 
 export default function UserRow({ user, onRoleChange, isAdmin }: UserRowProps) {
   const allTeams = useQuery(api.teams.queries.getAllTeams);
-  const userTeams = useQuery(api.teams.queries.getUserTeams, { userId: user._id });
+  const userTeams = useQuery(api.teams.queries.getUserTeams, {
+    userId: user._id,
+  });
   const addTeamMember = useMutation(api.teams.functions.addTeamMember);
   const removeTeamMember = useMutation(api.teams.functions.removeTeamMember);
 
@@ -56,9 +58,13 @@ export default function UserRow({ user, onRoleChange, isAdmin }: UserRowProps) {
         <div className="flex items-center gap-3">
           <Avatar>
             <AvatarImage src={user.image} />
-            <AvatarFallback>{getInitials(user.name, user.email)}</AvatarFallback>
+            <AvatarFallback>
+              {getInitials(user.name, user.email)}
+            </AvatarFallback>
           </Avatar>
-          <span className="font-medium">{user.name || "Unbekannter Benutzer"}</span>
+          <span className="font-medium">
+            {user.name || "Unbekannter Benutzer"}
+          </span>
         </div>
       </TableCell>
       <TableCell className="text-muted-foreground">

@@ -56,7 +56,8 @@ const EMPTY_RECEIPT: ReceiptDraft = {
   fileStorageId: undefined,
 };
 
-const calculateNet = (gross: number, taxRate: number) => gross / (1 + taxRate / 100);
+const calculateNet = (gross: number, taxRate: number) =>
+  gross / (1 + taxRate / 100);
 
 type Props = {
   selectedProjectId: Id<"projects"> | null;
@@ -91,19 +92,37 @@ export function ReimbursementFormUI({
     ? calculateNet(parseFloat(draft.grossAmount), parseFloat(draft.taxRate))
     : 0;
 
-  const totalNet = receipts.reduce((sum, receipt) => sum + receipt.netAmount, 0);
-  const totalGross = receipts.reduce((sum, receipt) => sum + receipt.grossAmount, 0);
+  const totalNet = receipts.reduce(
+    (sum, receipt) => sum + receipt.netAmount,
+    0,
+  );
+  const totalGross = receipts.reduce(
+    (sum, receipt) => sum + receipt.grossAmount,
+    0,
+  );
   const totalTax7 = receipts
     .filter((receipt) => receipt.taxRate === 7)
-    .reduce((sum, receipt) => sum + (receipt.grossAmount - receipt.netAmount), 0);
+    .reduce(
+      (sum, receipt) => sum + (receipt.grossAmount - receipt.netAmount),
+      0,
+    );
   const totalTax19 = receipts
     .filter((receipt) => receipt.taxRate === 19)
-    .reduce((sum, receipt) => sum + (receipt.grossAmount - receipt.netAmount), 0);
+    .reduce(
+      (sum, receipt) => sum + (receipt.grossAmount - receipt.netAmount),
+      0,
+    );
 
-  const updateDraft = (fields: Partial<ReceiptDraft>) => setDraft({ ...draft, ...fields });
+  const updateDraft = (fields: Partial<ReceiptDraft>) =>
+    setDraft({ ...draft, ...fields });
 
   const handleAddReceipt = () => {
-    if (!draft.receiptNumber || !draft.companyName || !draft.grossAmount || !draft.fileStorageId) {
+    if (
+      !draft.receiptNumber ||
+      !draft.companyName ||
+      !draft.grossAmount ||
+      !draft.fileStorageId
+    ) {
       toast.error("Bitte Pflichtfelder ausfüllen");
       return;
     }
@@ -139,7 +158,9 @@ export function ReimbursementFormUI({
       <div className="space-y-4">
         <Tabs
           value={reimbursementType}
-          onValueChange={(value) => setReimbursementType(value as "expense" | "travel")}
+          onValueChange={(value) =>
+            setReimbursementType(value as "expense" | "travel")
+          }
         >
           <TabsList>
             <TabsTrigger value="expense">Auslagenerstattung</TabsTrigger>
@@ -149,7 +170,9 @@ export function ReimbursementFormUI({
         <div className="w-[200px]">
           <SelectProject
             value={selectedProjectId || ""}
-            onValueChange={(value) => setSelectedProjectId(value ? (value as Id<"projects">) : null)}
+            onValueChange={(value) =>
+              setSelectedProjectId(value ? (value as Id<"projects">) : null)
+            }
           />
         </div>
       </div>
@@ -206,7 +229,10 @@ export function ReimbursementFormUI({
           </div>
           <div>
             <Label>Wie viel MwSt.?</Label>
-            <Select value={draft.taxRate} onValueChange={(value) => updateDraft({ taxRate: value })}>
+            <Select
+              value={draft.taxRate}
+              onValueChange={(value) => updateDraft({ taxRate: value })}
+            >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -236,7 +262,12 @@ export function ReimbursementFormUI({
           />
         </div>
 
-        <Button onClick={handleAddReceipt} className="w-full" variant="outline" size="lg">
+        <Button
+          onClick={handleAddReceipt}
+          className="w-full"
+          variant="outline"
+          size="lg"
+        >
           <Plus className="size-5 mr-2" />
           Beleg hinzufügen
         </Button>
@@ -247,37 +278,59 @@ export function ReimbursementFormUI({
           <h2 className="text-2xl font-bold">Zusammenfassung</h2>
 
           <div className="flex items-end gap-4">
-            <div className="grid gap-4 flex-1" style={{ gridTemplateColumns: "1fr 2fr 1fr" }}>
+            <div
+              className="grid gap-4 flex-1"
+              style={{ gridTemplateColumns: "1fr 2fr 1fr" }}
+            >
               <div>
-                <Label className="text-xs text-muted-foreground uppercase">Kontoinhaber</Label>
+                <Label className="text-xs text-muted-foreground uppercase">
+                  Kontoinhaber
+                </Label>
                 <Input
                   value={bankDetails.accountHolder}
-                  onChange={(e) => setBankDetails({ ...bankDetails, accountHolder: e.target.value })}
+                  onChange={(e) =>
+                    setBankDetails({
+                      ...bankDetails,
+                      accountHolder: e.target.value,
+                    })
+                  }
                   disabled={!editingBank}
                 />
               </div>
               <div>
-                <Label className="text-xs text-muted-foreground uppercase">IBAN</Label>
+                <Label className="text-xs text-muted-foreground uppercase">
+                  IBAN
+                </Label>
                 <Input
                   value={bankDetails.iban}
-                  onChange={(e) => setBankDetails({ ...bankDetails, iban: e.target.value })}
+                  onChange={(e) =>
+                    setBankDetails({ ...bankDetails, iban: e.target.value })
+                  }
                   disabled={!editingBank}
                   placeholder="DE89 3704 0044 0532 0130 00"
                   className="font-mono"
                 />
               </div>
               <div>
-                <Label className="text-xs text-muted-foreground uppercase">BIC</Label>
+                <Label className="text-xs text-muted-foreground uppercase">
+                  BIC
+                </Label>
                 <Input
                   value={bankDetails.bic}
-                  onChange={(e) => setBankDetails({ ...bankDetails, bic: e.target.value })}
+                  onChange={(e) =>
+                    setBankDetails({ ...bankDetails, bic: e.target.value })
+                  }
                   disabled={!editingBank}
                   placeholder="COBADEFFXXX"
                   className="font-mono"
                 />
               </div>
             </div>
-            <Button variant={editingBank ? "default" : "outline"} size="sm" onClick={onBankToggle}>
+            <Button
+              variant={editingBank ? "default" : "outline"}
+              size="sm"
+              onClick={onBankToggle}
+            >
               {editingBank ? "Speichern" : <Pencil className="size-4" />}
             </Button>
           </div>
@@ -295,7 +348,9 @@ export function ReimbursementFormUI({
                   </span>
                 </div>
                 <div className="flex items-center gap-4">
-                  <span className="font-semibold">{receipt.grossAmount.toFixed(2)} €</span>
+                  <span className="font-semibold">
+                    {receipt.grossAmount.toFixed(2)} €
+                  </span>
                   <Button
                     variant="ghost"
                     size="icon"
@@ -333,7 +388,11 @@ export function ReimbursementFormUI({
             </div>
           </div>
 
-          <Button onClick={onSubmit} className="w-full h-14 font-semibold mt-8" size="lg">
+          <Button
+            onClick={onSubmit}
+            className="w-full h-14 font-semibold mt-8"
+            size="lg"
+          >
             Zur Genehmigung einreichen
           </Button>
         </div>

@@ -23,7 +23,10 @@ test("get all reimbursements", async () => {
   });
 
   const user = test.withIdentity({ subject: userId });
-  const reimbursements = await user.query(api.reimbursements.queries.getAllReimbursements, {});
+  const reimbursements = await user.query(
+    api.reimbursements.queries.getAllReimbursements,
+    {},
+  );
   expect(reimbursements).toHaveLength(1);
 });
 
@@ -42,11 +45,13 @@ test("delete reimbursement", async () => {
       bic: "BIC",
       accountHolder: "Account Holder",
       createdBy: userId,
-    })
+    }),
   );
 
   const user = test.withIdentity({ subject: userId });
-  await user.mutation(api.reimbursements.functions.deleteReimbursement, { reimbursementId });
+  await user.mutation(api.reimbursements.functions.deleteReimbursement, {
+    reimbursementId,
+  });
 
   const deleted = await test.run(async (ctx) => ctx.db.get(reimbursementId));
   expect(deleted).toBeNull();

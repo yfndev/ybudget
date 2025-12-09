@@ -8,7 +8,9 @@ export const TestingCredentials = ConvexCredentials({
   id: "testing",
   authorize: async (credentials, ctx): Promise<{ userId: Id<"users"> }> => {
     if (!process.env.IS_TEST)
-      throw new ConvexError("Testing provider is only available in test environment");
+      throw new ConvexError(
+        "Testing provider is only available in test environment",
+      );
 
     const email = credentials.email as string | undefined;
     if (!email)
@@ -56,7 +58,7 @@ export const clearTestData = mutation({
     const accountsByEmail = await ctx.db
       .query("authAccounts")
       .withIndex("providerAndAccountId", (q) =>
-        q.eq("provider", "testing").eq("providerAccountId", args.email)
+        q.eq("provider", "testing").eq("providerAccountId", args.email),
       )
       .collect();
     for (const account of accountsByEmail) {

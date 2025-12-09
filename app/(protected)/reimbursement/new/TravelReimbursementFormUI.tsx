@@ -7,10 +7,26 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Id } from "@/convex/_generated/dataModel";
-import { Bus, Car, Hotel, Pencil, Plane, Train, Trash2, Utensils } from "lucide-react";
+import {
+  Bus,
+  Car,
+  Hotel,
+  Pencil,
+  Plane,
+  Train,
+  Trash2,
+  Utensils,
+} from "lucide-react";
 import { ReceiptUpload } from "./ReceiptUpload";
 
-export type CostType = "car" | "train" | "flight" | "taxi" | "bus" | "accommodation" | "food";
+export type CostType =
+  | "car"
+  | "train"
+  | "flight"
+  | "taxi"
+  | "bus"
+  | "accommodation"
+  | "food";
 
 export type TravelReceipt = {
   receiptNumber: string;
@@ -65,7 +81,8 @@ const COST_TYPES = [
   { type: "food" as CostType, label: "Essen", icon: Utensils },
 ];
 
-const getLabel = (type: CostType) => COST_TYPES.find((cost) => cost.type === type)?.label || type;
+const getLabel = (type: CostType) =>
+  COST_TYPES.find((cost) => cost.type === type)?.label || type;
 
 export function TravelReimbursementFormUI({
   selectedProjectId,
@@ -82,7 +99,8 @@ export function TravelReimbursementFormUI({
   reimbursementType,
   setReimbursementType,
 }: Props) {
-  const hasReceipt = (type: CostType) => receipts.some((receipt) => receipt.costType === type);
+  const hasReceipt = (type: CostType) =>
+    receipts.some((receipt) => receipt.costType === type);
 
   const toggleType = (type: CostType) => {
     if (hasReceipt(type)) {
@@ -109,26 +127,39 @@ export function TravelReimbursementFormUI({
   const updateReceipt = (type: CostType, updates: Partial<TravelReceipt>) => {
     setReceipts(
       receipts.map((receipt) =>
-        receipt.costType === type ? { ...receipt, ...updates } : receipt
-      )
+        receipt.costType === type ? { ...receipt, ...updates } : receipt,
+      ),
     );
   };
 
   const hasBasicInfo =
-    travelInfo.destination && travelInfo.purpose && travelInfo.startDate && travelInfo.endDate;
+    travelInfo.destination &&
+    travelInfo.purpose &&
+    travelInfo.startDate &&
+    travelInfo.endDate;
 
-  const totalAmount = receipts.reduce((sum, receipt) => sum + receipt.grossAmount, 0);
-  const allReceiptsComplete = receipts.every(
-    (receipt) => receipt.grossAmount > 0 && receipt.fileStorageId && receipt.companyName
+  const totalAmount = receipts.reduce(
+    (sum, receipt) => sum + receipt.grossAmount,
+    0,
   );
-  const canSubmit = hasBasicInfo && receipts.length > 0 && allReceiptsComplete && selectedProjectId;
+  const allReceiptsComplete = receipts.every(
+    (receipt) =>
+      receipt.grossAmount > 0 && receipt.fileStorageId && receipt.companyName,
+  );
+  const canSubmit =
+    hasBasicInfo &&
+    receipts.length > 0 &&
+    allReceiptsComplete &&
+    selectedProjectId;
 
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-8">
       <div className="space-y-4">
         <Tabs
           value={reimbursementType}
-          onValueChange={(value) => setReimbursementType(value as "expense" | "travel")}
+          onValueChange={(value) =>
+            setReimbursementType(value as "expense" | "travel")
+          }
         >
           <TabsList>
             <TabsTrigger value="expense">Auslagenerstattung</TabsTrigger>
@@ -138,7 +169,9 @@ export function TravelReimbursementFormUI({
         <div className="w-[200px]">
           <SelectProject
             value={selectedProjectId || ""}
-            onValueChange={(value) => setSelectedProjectId(value ? (value as Id<"projects">) : null)}
+            onValueChange={(value) =>
+              setSelectedProjectId(value ? (value as Id<"projects">) : null)
+            }
           />
         </div>
       </div>
@@ -150,7 +183,9 @@ export function TravelReimbursementFormUI({
             <Label>Reiseziel *</Label>
             <Input
               value={travelInfo.destination}
-              onChange={(e) => setTravelInfo({ ...travelInfo, destination: e.target.value })}
+              onChange={(e) =>
+                setTravelInfo({ ...travelInfo, destination: e.target.value })
+              }
               placeholder="z.B. München, Berlin"
             />
           </div>
@@ -158,7 +193,9 @@ export function TravelReimbursementFormUI({
             <Label>Reisezweck *</Label>
             <Input
               value={travelInfo.purpose}
-              onChange={(e) => setTravelInfo({ ...travelInfo, purpose: e.target.value })}
+              onChange={(e) =>
+                setTravelInfo({ ...travelInfo, purpose: e.target.value })
+              }
               placeholder="z.B. Kundentermin, Konferenz"
             />
           </div>
@@ -168,14 +205,18 @@ export function TravelReimbursementFormUI({
             <Label>Reisebeginn *</Label>
             <DateInput
               value={travelInfo.startDate}
-              onChange={(date) => setTravelInfo({ ...travelInfo, startDate: date })}
+              onChange={(date) =>
+                setTravelInfo({ ...travelInfo, startDate: date })
+              }
             />
           </div>
           <div>
             <Label>Reiseende *</Label>
             <DateInput
               value={travelInfo.endDate}
-              onChange={(date) => setTravelInfo({ ...travelInfo, endDate: date })}
+              onChange={(date) =>
+                setTravelInfo({ ...travelInfo, endDate: date })
+              }
             />
           </div>
           <div className="col-span-2 flex items-end pb-2">
@@ -183,7 +224,9 @@ export function TravelReimbursementFormUI({
               <Checkbox
                 id="international"
                 checked={travelInfo.isInternational}
-                onCheckedChange={(checked) => setTravelInfo({ ...travelInfo, isInternational: !!checked })}
+                onCheckedChange={(checked) =>
+                  setTravelInfo({ ...travelInfo, isInternational: !!checked })
+                }
               />
               <Label htmlFor="international" className="font-normal">
                 Auslandsreise
@@ -227,12 +270,21 @@ export function TravelReimbursementFormUI({
           </div>
 
           {receipts.map((receipt) => (
-            <div key={receipt.costType} className="border rounded-lg p-4 space-y-4">
+            <div
+              key={receipt.costType}
+              className="border rounded-lg p-4 space-y-4"
+            >
               <div className="flex justify-between items-center">
                 <h3 className="font-medium">
-                  {receipt.costType === "car" ? "PKW (0,30€/km)" : getLabel(receipt.costType)}
+                  {receipt.costType === "car"
+                    ? "PKW (0,30€/km)"
+                    : getLabel(receipt.costType)}
                 </h3>
-                <Button variant="ghost" size="icon" onClick={() => toggleType(receipt.costType)}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => toggleType(receipt.costType)}
+                >
                   <Trash2 className="size-4" />
                 </Button>
               </div>
@@ -242,8 +294,16 @@ export function TravelReimbursementFormUI({
                   <Label>Firma/Anbieter *</Label>
                   <Input
                     value={receipt.companyName}
-                    onChange={(e) => updateReceipt(receipt.costType, { companyName: e.target.value })}
-                    placeholder={receipt.costType === "car" ? "Eigenfahrt" : "z.B. Deutsche Bahn"}
+                    onChange={(e) =>
+                      updateReceipt(receipt.costType, {
+                        companyName: e.target.value,
+                      })
+                    }
+                    placeholder={
+                      receipt.costType === "car"
+                        ? "Eigenfahrt"
+                        : "z.B. Deutsche Bahn"
+                    }
                   />
                 </div>
                 {receipt.costType === "car" ? (
@@ -255,7 +315,10 @@ export function TravelReimbursementFormUI({
                         min={0}
                         value={receipt.kilometers || ""}
                         onChange={(e) => {
-                          const km = Math.max(0, Math.floor(parseFloat(e.target.value) || 0));
+                          const km = Math.max(
+                            0,
+                            Math.floor(parseFloat(e.target.value) || 0),
+                          );
                           updateReceipt(receipt.costType, {
                             kilometers: km,
                             grossAmount: Math.round(km * 0.3 * 100) / 100,
@@ -283,8 +346,14 @@ export function TravelReimbursementFormUI({
                       min={0}
                       value={receipt.grossAmount || ""}
                       onChange={(e) => {
-                        const amount = Math.max(0, parseFloat(e.target.value) || 0);
-                        updateReceipt(receipt.costType, { grossAmount: amount, netAmount: amount });
+                        const amount = Math.max(
+                          0,
+                          parseFloat(e.target.value) || 0,
+                        );
+                        updateReceipt(receipt.costType, {
+                          grossAmount: amount,
+                          netAmount: amount,
+                        });
                       }}
                       placeholder="0.00"
                     />
@@ -296,7 +365,9 @@ export function TravelReimbursementFormUI({
                 <div>
                   <Label>Beleg *</Label>
                   <ReceiptUpload
-                    onUploadComplete={(id) => updateReceipt(receipt.costType, { fileStorageId: id })}
+                    onUploadComplete={(id) =>
+                      updateReceipt(receipt.costType, { fileStorageId: id })
+                    }
                     storageId={receipt.fileStorageId || undefined}
                   />
                 </div>
@@ -310,37 +381,59 @@ export function TravelReimbursementFormUI({
         <div className="space-y-8 mt-24">
           <h2 className="text-2xl font-bold">Zusammenfassung</h2>
           <div className="flex items-end gap-4">
-            <div className="grid gap-4 flex-1" style={{ gridTemplateColumns: "1fr 2fr 1fr" }}>
+            <div
+              className="grid gap-4 flex-1"
+              style={{ gridTemplateColumns: "1fr 2fr 1fr" }}
+            >
               <div>
-                <Label className="text-xs text-muted-foreground uppercase">Kontoinhaber</Label>
+                <Label className="text-xs text-muted-foreground uppercase">
+                  Kontoinhaber
+                </Label>
                 <Input
                   value={bankDetails.accountHolder}
-                  onChange={(e) => setBankDetails({ ...bankDetails, accountHolder: e.target.value })}
+                  onChange={(e) =>
+                    setBankDetails({
+                      ...bankDetails,
+                      accountHolder: e.target.value,
+                    })
+                  }
                   disabled={!editingBank}
                 />
               </div>
               <div>
-                <Label className="text-xs text-muted-foreground uppercase">IBAN</Label>
+                <Label className="text-xs text-muted-foreground uppercase">
+                  IBAN
+                </Label>
                 <Input
                   value={bankDetails.iban}
-                  onChange={(e) => setBankDetails({ ...bankDetails, iban: e.target.value })}
+                  onChange={(e) =>
+                    setBankDetails({ ...bankDetails, iban: e.target.value })
+                  }
                   disabled={!editingBank}
                   placeholder="DE89 3704 0044 0532 0130 00"
                   className="font-mono"
                 />
               </div>
               <div>
-                <Label className="text-xs text-muted-foreground uppercase">BIC</Label>
+                <Label className="text-xs text-muted-foreground uppercase">
+                  BIC
+                </Label>
                 <Input
                   value={bankDetails.bic}
-                  onChange={(e) => setBankDetails({ ...bankDetails, bic: e.target.value })}
+                  onChange={(e) =>
+                    setBankDetails({ ...bankDetails, bic: e.target.value })
+                  }
                   disabled={!editingBank}
                   placeholder="COBADEFFXXX"
                   className="font-mono"
                 />
               </div>
             </div>
-            <Button variant={editingBank ? "default" : "outline"} size="sm" onClick={onBankToggle}>
+            <Button
+              variant={editingBank ? "default" : "outline"}
+              size="sm"
+              onClick={onBankToggle}
+            >
               {editingBank ? "Speichern" : <Pencil className="size-4" />}
             </Button>
           </div>
@@ -354,14 +447,18 @@ export function TravelReimbursementFormUI({
                   className="flex items-center justify-between px-3 bg-gray-50 border rounded-md"
                 >
                   <div className="flex items-center gap-8 flex-1">
-                    <span className="font-semibold">{getLabel(receipt.costType)}</span>
+                    <span className="font-semibold">
+                      {getLabel(receipt.costType)}
+                    </span>
                     {receipt.costType === "car" && (
                       <span className="text-sm text-muted-foreground">
                         {receipt.kilometers} km × 0,30€
                       </span>
                     )}
                   </div>
-                  <span className="font-semibold">{receipt.grossAmount.toFixed(2)} €</span>
+                  <span className="font-semibold">
+                    {receipt.grossAmount.toFixed(2)} €
+                  </span>
                 </div>
               ))}
           </div>
@@ -374,7 +471,11 @@ export function TravelReimbursementFormUI({
             </div>
           </div>
 
-          <Button onClick={onSubmit} className="w-full h-14 font-semibold mt-8" size="lg">
+          <Button
+            onClick={onSubmit}
+            className="w-full h-14 font-semibold mt-8"
+            size="lg"
+          >
             Zur Genehmigung einreichen
           </Button>
         </div>

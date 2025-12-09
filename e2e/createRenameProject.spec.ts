@@ -19,7 +19,9 @@ test("create, rename and archive project", async ({ page, context }) => {
   await page.goto("/test-auth");
   await page.evaluate(() => localStorage.clear());
   await page.getByTestId("test-auth-submit").click();
-  await expect(page.getByText("Wie heißt dein Verein?")).toBeVisible({ timeout: 10000 });
+  await expect(page.getByText("Wie heißt dein Verein?")).toBeVisible({
+    timeout: 10000,
+  });
 
   await page
     .getByRole("textbox", { name: "Wie heißt dein Verein?" })

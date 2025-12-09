@@ -31,7 +31,8 @@ function parseToIso(display: string): string {
   const y = parseInt(year, 10);
   const currentYear = new Date().getFullYear();
 
-  if (d < 1 || d > 31 || m < 1 || m > 12 || y < 2000 || y > currentYear) return "";
+  if (d < 1 || d > 31 || m < 1 || m > 12 || y < 2000 || y > currentYear)
+    return "";
 
   return `${year}-${month}-${day}`;
 }
@@ -59,7 +60,9 @@ function formatAsUserTypes(input: string): string {
 
 export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(
   ({ value, onChange, placeholder = "TT.MM.JJJJ", className, id }, ref) => {
-    const [displayValue, setDisplayValue] = useState(() => formatDisplayDate(value));
+    const [displayValue, setDisplayValue] = useState(() =>
+      formatDisplayDate(value),
+    );
     const [isFocused, setIsFocused] = useState(false);
 
     useEffect(() => {

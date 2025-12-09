@@ -6,14 +6,19 @@ import { canAccessProject } from "../teams/permissions";
 import { getCurrentUser } from "../users/getCurrentUser";
 import { requireRole } from "../users/permissions";
 
-async function getOrCreateReserves(ctx: MutationCtx, organizationId: Id<"organizations">) {
+async function getOrCreateReserves(
+  ctx: MutationCtx,
+  organizationId: Id<"organizations">,
+) {
   const existing = await ctx.db
     .query("projects")
     .withIndex("by_organization", (q) => q.eq("organizationId", organizationId))
-    .filter((q) => q.and(
-      q.eq(q.field("name"), "Rücklagen"),
-      q.eq(q.field("parentId"), undefined),
-    ))
+    .filter((q) =>
+      q.and(
+        q.eq(q.field("name"), "Rücklagen"),
+        q.eq(q.field("parentId"), undefined),
+      ),
+    )
     .first();
 
   if (existing) return existing._id;
@@ -158,10 +163,12 @@ export const updateTransaction = mutation({
 export const splitTransaction = mutation({
   args: {
     transactionId: v.id("transactions"),
-    splits: v.array(v.object({
-      projectId: v.id("projects"),
-      amount: v.number(),
-    })),
+    splits: v.array(
+      v.object({
+        projectId: v.id("projects"),
+        amount: v.number(),
+      }),
+    ),
   },
   handler: async (ctx, args) => {
     await requireRole(ctx, "lead");
@@ -177,9 +184,19 @@ export const splitTransaction = mutation({
     const total = args.splits.reduce((sum, s) => sum + s.amount, 0);
     const remainder = original.amount - total;
 
-    const allSplits = remainder > 0
-      ? [...args.splits, { projectId: await getOrCreateReserves(ctx, original.organizationId), amount: remainder }]
-      : args.splits;
+    const allSplits =
+      remainder > 0
+        ? [
+            ...args.splits,
+            {
+              projectId: await getOrCreateReserves(
+                ctx,
+                original.organizationId,
+              ),
+              amount: remainder,
+            },
+          ]
+        : args.splits;
 
     for (const split of allSplits) {
       await ctx.db.insert("transactions", {

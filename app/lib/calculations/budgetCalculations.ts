@@ -28,4 +28,3 @@ export const calculateBudget = (transactions: Doc<"transactions">[]) => {
     availableBudget,
   };
 };
-

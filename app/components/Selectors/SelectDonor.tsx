@@ -23,25 +23,36 @@ export const SelectDonor = forwardRef<HTMLInputElement, SelectDonorProps>(
     const [dialogOpen, setDialogOpen] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
 
-    const allDonors = useQuery(api.donors.queries.getAllDonors, projectId ? "skip" : {});
-    const projectDonors = useQuery(api.donors.queries.getDonorsByProject, projectId ? { projectId } : "skip");
+    const allDonors = useQuery(
+      api.donors.queries.getAllDonors,
+      projectId ? "skip" : {},
+    );
+    const projectDonors = useQuery(
+      api.donors.queries.getDonorsByProject,
+      projectId ? { projectId } : "skip",
+    );
     const donors = projectId ? projectDonors : allDonors;
 
     const selectedDonor = donors?.find((d) => d._id.toString() === value);
-    const filtered = donors?.filter((d) =>
-      d.name.toLowerCase().includes(search.toLowerCase()),
-    ) ?? [];
+    const filtered =
+      donors?.filter((d) =>
+        d.name.toLowerCase().includes(search.toLowerCase()),
+      ) ?? [];
 
     useEffect(() => {
       if (!open) return;
       const handleClickOutside = (e: MouseEvent) => {
-        if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        if (
+          containerRef.current &&
+          !containerRef.current.contains(e.target as Node)
+        ) {
           setOpen(false);
           setSearch("");
         }
       };
       document.addEventListener("mousedown", handleClickOutside);
-      return () => document.removeEventListener("mousedown", handleClickOutside);
+      return () =>
+        document.removeEventListener("mousedown", handleClickOutside);
     }, [open]);
 
     useEffect(() => setHighlightedIndex(0), [search]);
@@ -74,7 +85,8 @@ export const SelectDonor = forwardRef<HTMLInputElement, SelectDonorProps>(
 
       if (e.key === "Enter") {
         e.preventDefault();
-        if (open && filtered[highlightedIndex]) return handleSelect(filtered[highlightedIndex]._id.toString());
+        if (open && filtered[highlightedIndex])
+          return handleSelect(filtered[highlightedIndex]._id.toString());
         if (!open) return setOpen(true);
       }
 
@@ -92,10 +104,12 @@ export const SelectDonor = forwardRef<HTMLInputElement, SelectDonorProps>(
             ref={ref}
             className={cn(
               "h-9 w-full rounded-md bg-muted px-3 pr-8 text-sm outline-none",
-              open || !selectedDonor ? "text-muted-foreground" : "text-foreground",
+              open || !selectedDonor
+                ? "text-muted-foreground"
+                : "text-foreground",
             )}
             placeholder="Förderer suchen..."
-            value={open ? search : selectedDonor?.name ?? ""}
+            value={open ? search : (selectedDonor?.name ?? "")}
             onChange={(e) => {
               setSearch(e.target.value);
               setOpen(true);
@@ -125,9 +139,18 @@ export const SelectDonor = forwardRef<HTMLInputElement, SelectDonorProps>(
                 >
                   <span>
                     {donor.name}
-                    <span className="text-xs text-muted-foreground ml-2 capitalize">{donor.type}</span>
+                    <span className="text-xs text-muted-foreground ml-2 capitalize">
+                      {donor.type}
+                    </span>
                   </span>
-                  <Check className={cn("h-4 w-4", value === donor._id.toString() ? "opacity-100" : "opacity-0")} />
+                  <Check
+                    className={cn(
+                      "h-4 w-4",
+                      value === donor._id.toString()
+                        ? "opacity-100"
+                        : "opacity-0",
+                    )}
+                  />
                 </button>
               ))}
               <button

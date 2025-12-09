@@ -43,7 +43,7 @@ export default function TeamRow({ team }: { team: Doc<"teams"> }) {
       toast.success("Team umbenannt");
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Fehler beim Umbenennen"
+        error instanceof Error ? error.message : "Fehler beim Umbenennen",
       );
       setEditedName(team.name);
     } finally {
@@ -87,7 +87,9 @@ export default function TeamRow({ team }: { team: Doc<"teams"> }) {
             allProjects.map((project) => (
               <Badge
                 key={project._id}
-                variant={team.projectIds?.includes(project._id) ? "default" : "outline"}
+                variant={
+                  team.projectIds?.includes(project._id) ? "default" : "outline"
+                }
                 className="cursor-pointer hover:opacity-80 transition-opacity"
                 onClick={() => handleToggleProject(project._id)}
               >
@@ -95,7 +97,9 @@ export default function TeamRow({ team }: { team: Doc<"teams"> }) {
               </Badge>
             ))
           ) : (
-            <span className="text-sm text-muted-foreground">Keine Projekte</span>
+            <span className="text-sm text-muted-foreground">
+              Keine Projekte
+            </span>
           )}
         </div>
       </TableCell>

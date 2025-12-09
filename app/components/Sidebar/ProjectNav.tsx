@@ -105,7 +105,9 @@ export function ProjectNav({ id }: { id?: string }) {
           Departments / Projekte
         </SidebarGroupLabel>
         {canEdit && countText && (
-          <span className="text-xs pr-5 text-muted-foreground">{countText}</span>
+          <span className="text-xs pr-5 text-muted-foreground">
+            {countText}
+          </span>
         )}
       </div>
       {canEdit && (
@@ -145,10 +147,16 @@ export function ProjectNav({ id }: { id?: string }) {
                 ) : (
                   <ContextMenu>
                     <ContextMenuTrigger asChild>
-                      <SidebarMenuButton asChild tooltip={project.name} isActive={isActive}>
+                      <SidebarMenuButton
+                        asChild
+                        tooltip={project.name}
+                        isActive={isActive}
+                      >
                         <Link href={`/projects/${project._id}`}>
                           <span
-                            className={children.length ? "font-medium" : undefined}
+                            className={
+                              children.length ? "font-medium" : undefined
+                            }
                             onDoubleClick={(e) => {
                               e.preventDefault();
                               startEdit(project._id, project.name);
@@ -161,11 +169,15 @@ export function ProjectNav({ id }: { id?: string }) {
                     </ContextMenuTrigger>
                     {canEdit && (
                       <ContextMenuContent>
-                        <ContextMenuItem onClick={() => startEdit(project._id, project.name)}>
+                        <ContextMenuItem
+                          onClick={() => startEdit(project._id, project.name)}
+                        >
                           <Pencil className="mr-2 h-4 w-4" />
                           Umbenennen
                         </ContextMenuItem>
-                        <ContextMenuItem onClick={() => handleArchive(project._id)}>
+                        <ContextMenuItem
+                          onClick={() => handleArchive(project._id)}
+                        >
                           <Archive className="mr-2 h-4 w-4" />
                           Archivieren
                         </ContextMenuItem>
@@ -192,10 +204,13 @@ export function ProjectNav({ id }: { id?: string }) {
                                 <div className="px-2 py-1.5">
                                   <Input
                                     value={editValue}
-                                    onChange={(e) => setEditValue(e.target.value)}
+                                    onChange={(e) =>
+                                      setEditValue(e.target.value)
+                                    }
                                     onKeyDown={(e) => {
                                       if (e.key === "Enter") handleSave();
-                                      if (e.key === "Escape") setEditingId(null);
+                                      if (e.key === "Escape")
+                                        setEditingId(null);
                                     }}
                                     onBlur={handleSave}
                                     autoFocus
@@ -219,11 +234,17 @@ export function ProjectNav({ id }: { id?: string }) {
                                   </ContextMenuTrigger>
                                   {canEdit && (
                                     <ContextMenuContent>
-                                      <ContextMenuItem onClick={() => startEdit(child._id, child.name)}>
+                                      <ContextMenuItem
+                                        onClick={() =>
+                                          startEdit(child._id, child.name)
+                                        }
+                                      >
                                         <Pencil className="mr-2 h-4 w-4" />
                                         Umbenennen
                                       </ContextMenuItem>
-                                      <ContextMenuItem onClick={() => handleArchive(child._id)}>
+                                      <ContextMenuItem
+                                        onClick={() => handleArchive(child._id)}
+                                      >
                                         <Archive className="mr-2 h-4 w-4" />
                                         Archivieren
                                       </ContextMenuItem>

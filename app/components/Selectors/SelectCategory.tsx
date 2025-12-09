@@ -7,7 +7,9 @@ import { useQuery } from "convex/react";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { forwardRef, useEffect, useRef, useState } from "react";
 
-type Category = NonNullable<ReturnType<typeof useQuery<typeof api.categories.functions.getAllCategories>>>[number];
+type Category = NonNullable<
+  ReturnType<typeof useQuery<typeof api.categories.functions.getAllCategories>>
+>[number];
 type CategoryGroup = { parent: Category; children: Category[] };
 
 function groupCategories(categories: Category[]): CategoryGroup[] {
@@ -18,7 +20,10 @@ function groupCategories(categories: Category[]): CategoryGroup[] {
   }));
 }
 
-function filterGroups(groups: CategoryGroup[], search: string): CategoryGroup[] {
+function filterGroups(
+  groups: CategoryGroup[],
+  search: string,
+): CategoryGroup[] {
   if (!search) return groups;
 
   const term = search.toLowerCase();
@@ -27,7 +32,9 @@ function filterGroups(groups: CategoryGroup[], search: string): CategoryGroup[] 
   return groups
     .map((group) => ({
       parent: group.parent,
-      children: group.children.filter((child) => matches(child.name) || matches(group.parent.name)),
+      children: group.children.filter(
+        (child) => matches(child.name) || matches(group.parent.name),
+      ),
     }))
     .filter((group) => group.children.length > 0 || matches(group.parent.name));
 }
@@ -55,13 +62,17 @@ export const SelectCategory = forwardRef<HTMLInputElement, SelectCategoryProps>(
     useEffect(() => {
       if (!open) return;
       const handleClickOutside = (event: MouseEvent) => {
-        if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        if (
+          containerRef.current &&
+          !containerRef.current.contains(event.target as Node)
+        ) {
           setOpen(false);
           setSearch("");
         }
       };
       document.addEventListener("mousedown", handleClickOutside);
-      return () => document.removeEventListener("mousedown", handleClickOutside);
+      return () =>
+        document.removeEventListener("mousedown", handleClickOutside);
     }, [open]);
 
     useEffect(() => {
@@ -79,11 +90,15 @@ export const SelectCategory = forwardRef<HTMLInputElement, SelectCategoryProps>(
     const handleOpen = () => {
       setOpen(true);
       const groupIndex = grouped.findIndex(
-        (group) => group.parent._id === value || group.children.some((child) => child._id === value),
+        (group) =>
+          group.parent._id === value ||
+          group.children.some((child) => child._id === value),
       );
       setActiveGroupIndex(Math.max(0, groupIndex));
       if (groupIndex >= 0) {
-        const itemIndex = grouped[groupIndex].children.findIndex((child) => child._id === value);
+        const itemIndex = grouped[groupIndex].children.findIndex(
+          (child) => child._id === value,
+        );
         setActiveItemIndex(Math.max(0, itemIndex));
       }
     };
@@ -105,7 +120,10 @@ export const SelectCategory = forwardRef<HTMLInputElement, SelectCategoryProps>(
 
       if (event.key === "ArrowUp" && open) {
         event.preventDefault();
-        setActiveItemIndex((current) => (current - 1 + activeChildren.length) % activeChildren.length);
+        setActiveItemIndex(
+          (current) =>
+            (current - 1 + activeChildren.length) % activeChildren.length,
+        );
         return;
       }
 
@@ -118,14 +136,17 @@ export const SelectCategory = forwardRef<HTMLInputElement, SelectCategoryProps>(
 
       if (event.key === "ArrowLeft" && open) {
         event.preventDefault();
-        setActiveGroupIndex((current) => (current - 1 + filtered.length) % filtered.length);
+        setActiveGroupIndex(
+          (current) => (current - 1 + filtered.length) % filtered.length,
+        );
         setActiveItemIndex(0);
         return;
       }
 
       if (event.key === "Enter") {
         event.preventDefault();
-        if (open && activeChildren[activeItemIndex]) return handleSelect(activeChildren[activeItemIndex]._id);
+        if (open && activeChildren[activeItemIndex])
+          return handleSelect(activeChildren[activeItemIndex]._id);
         if (!open) return handleOpen();
       }
 
@@ -137,7 +158,8 @@ export const SelectCategory = forwardRef<HTMLInputElement, SelectCategoryProps>(
     };
 
     const isTaxWarning = (item: Category) =>
-      item.taxsphere !== "non-profit" && item.taxsphere !== "purpose-operations";
+      item.taxsphere !== "non-profit" &&
+      item.taxsphere !== "purpose-operations";
 
     return (
       <div ref={containerRef} className="relative">
@@ -148,7 +170,7 @@ export const SelectCategory = forwardRef<HTMLInputElement, SelectCategoryProps>(
             open || !selectedItem ? "text-muted-foreground" : "text-foreground",
           )}
           placeholder="Kategorie suchen..."
-          value={open ? search : selectedItem?.name ?? ""}
+          value={open ? search : (selectedItem?.name ?? "")}
           onChange={(event) => {
             setSearch(event.target.value);
             if (!open) handleOpen();
@@ -194,7 +216,9 @@ export const SelectCategory = forwardRef<HTMLInputElement, SelectCategoryProps>(
                 >
                   <div className="flex items-center justify-between gap-3">
                     <span className="text-sm">{item.name}</span>
-                    {value === item._id && <Check className="h-4 w-4 shrink-0" />}
+                    {value === item._id && (
+                      <Check className="h-4 w-4 shrink-0" />
+                    )}
                   </div>
                 </button>
               ))}

@@ -74,7 +74,7 @@ export function CashflowChartUI({
 
   const allTransactionsQuery = useQuery(
     api.transactions.queries.getAllTransactions,
-    providedTransactions ? "skip" : {}
+    providedTransactions ? "skip" : {},
   );
 
   const sourceTransactions = providedTransactions || allTransactionsQuery;
@@ -87,7 +87,7 @@ export function CashflowChartUI({
     ? filterTransactionsBeforeDate(
         sourceTransactions,
         getPastEndDate(selectedDateRange.from),
-        (t) => t.status === "processed"
+        (t) => t.status === "processed",
       )
     : undefined;
 
@@ -98,14 +98,14 @@ export function CashflowChartUI({
         transactions,
         startBalance,
         selectedDateRange.from,
-        selectedDateRange.to
+        selectedDateRange.to,
       )
     : [];
 
   const axisConfig = calculateAxisConfig(
     dataPoints,
     selectedDateRange.from,
-    selectedDateRange.to
+    selectedDateRange.to,
   );
 
   const dateRangeText = `${format(selectedDateRange.from, "d. MMM yyyy", { locale: de })} - ${format(selectedDateRange.to, "d. MMM yyyy", { locale: de })}`;

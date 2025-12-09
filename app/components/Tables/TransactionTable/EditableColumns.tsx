@@ -15,7 +15,11 @@ import {
 
 function SortableHeader({ column, label }: { column: any; label: string }) {
   return (
-    <Button variant="ghost" onClick={() => column.toggleSorting()} className="h-8 px-2">
+    <Button
+      variant="ghost"
+      onClick={() => column.toggleSorting()}
+      className="h-8 px-2"
+    >
       {label}
       <ArrowUpDown className="ml-2 h-4 w-4" />
     </Button>
@@ -57,9 +61,11 @@ function ActionsCell({ row, table }: { row: any; table: any }) {
       <Button
         variant="ghost"
         size="sm"
-        onClick={() => table.options.meta?.setEditingRows(
-          (prev: Set<string>) => new Set(prev).add(rowId)
-        )}
+        onClick={() =>
+          table.options.meta?.setEditingRows((prev: Set<string>) =>
+            new Set(prev).add(rowId),
+          )
+        }
         className="h-8 w-8 p-0 text-gray-400 hover:text-gray-600"
       >
         <Pencil className="h-4 w-4" />
@@ -73,13 +79,17 @@ const baseColumns = [
     id: "indicator",
     cell: ({ row }: any) => (
       <div className="flex items-center px-1 justify-center">
-        <div className={`w-2 h-2 rounded-full ${row.getValue("amount") < 0 ? "bg-red-500" : "bg-green-500"}`} />
+        <div
+          className={`w-2 h-2 rounded-full ${row.getValue("amount") < 0 ? "bg-red-500" : "bg-green-500"}`}
+        />
       </div>
     ),
   },
   {
     accessorKey: "date",
-    header: ({ column }: any) => <SortableHeader column={column} label="Datum" />,
+    header: ({ column }: any) => (
+      <SortableHeader column={column} label="Datum" />
+    ),
     cell: ({ row, table }: any) => {
       const rowId = row.original._id;
       const isPlanned = row.original.status === "expected";
@@ -90,7 +100,9 @@ const baseColumns = [
           <div className="pl-2">
             <EditableDateCell
               value={row.getValue("date")}
-              onSave={(value) => table.options.meta?.onUpdate(rowId, "date", value)}
+              onSave={(value) =>
+                table.options.meta?.onUpdate(rowId, "date", value)
+              }
             />
           </div>
         );
@@ -111,12 +123,16 @@ const baseColumns = [
         return (
           <EditableProjectCell
             value={row.original.projectId}
-            onSave={(value) => table.options.meta?.onUpdate(rowId, "projectId", value)}
+            onSave={(value) =>
+              table.options.meta?.onUpdate(rowId, "projectId", value)
+            }
           />
         );
       }
 
-      return <div className="p-1 max-w-32">{row.original.projectName || ""}</div>;
+      return (
+        <div className="p-1 max-w-32">{row.original.projectName || ""}</div>
+      );
     },
   },
   {
@@ -125,13 +141,16 @@ const baseColumns = [
     cell: ({ row, table }: any) => {
       const rowId = row.original._id;
       const isEditing = table.options.meta?.editingRows?.has(rowId);
-      const description = row.getValue("description") || row.original.reference || "";
+      const description =
+        row.getValue("description") || row.original.reference || "";
 
       if (isEditing) {
         return (
           <EditableTextareaCell
             value={description}
-            onSave={(value) => table.options.meta?.onUpdate(rowId, "description", value)}
+            onSave={(value) =>
+              table.options.meta?.onUpdate(rowId, "description", value)
+            }
           />
         );
       }
@@ -156,12 +175,16 @@ const baseColumns = [
         return (
           <EditableCategoryCell
             value={row.original.categoryId}
-            onSave={(value) => table.options.meta?.onUpdate(rowId, "categoryId", value)}
+            onSave={(value) =>
+              table.options.meta?.onUpdate(rowId, "categoryId", value)
+            }
           />
         );
       }
 
-      return <div className="p-1 max-w-32">{row.original.categoryName || ""}</div>;
+      return (
+        <div className="p-1 max-w-32">{row.original.categoryName || ""}</div>
+      );
     },
   },
   {
@@ -182,13 +205,19 @@ const baseColumns = [
           <div className="flex justify-end pr-2">
             <EditableAmountCell
               value={amount}
-              onSave={(value) => table.options.meta?.onUpdate(rowId, "amount", value)}
+              onSave={(value) =>
+                table.options.meta?.onUpdate(rowId, "amount", value)
+              }
             />
           </div>
         );
       }
 
-      return <div className="text-right font-medium pr-2">{formatCurrency(amount)}</div>;
+      return (
+        <div className="text-right font-medium pr-2">
+          {formatCurrency(amount)}
+        </div>
+      );
     },
   },
   {
@@ -205,7 +234,15 @@ const baseColumns = [
           : "Abgerechnet";
 
       return (
-        <Badge variant={status === "processed" ? "default" : "secondary"}>
+        <Badge
+          variant={
+            isBudgetSplit
+              ? "outline"
+              : status === "processed"
+                ? "default"
+                : "secondary"
+          }
+        >
           {label}
         </Badge>
       );
@@ -220,5 +257,5 @@ const baseColumns = [
 export const editableColumns = baseColumns;
 
 export const editableColumnsWithoutProject = baseColumns.filter(
-  (col) => col.accessorKey !== "projectName"
+  (col) => col.accessorKey !== "projectName",
 );

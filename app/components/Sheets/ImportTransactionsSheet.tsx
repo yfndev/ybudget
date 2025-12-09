@@ -2,8 +2,20 @@
 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { api } from "@/convex/_generated/api";
 import { mapCSVRow } from "@/lib/bankImportMapping/csvMappers";
 import { useQuery } from "convex-helpers/react/cache";
@@ -21,25 +33,36 @@ interface ImportTransactionsSheetProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function ImportTransactionsSheet({ open, onOpenChange }: ImportTransactionsSheetProps) {
+export function ImportTransactionsSheet({
+  open,
+  onOpenChange,
+}: ImportTransactionsSheetProps) {
   const [csvData, setCsvData] = useState<Record<string, string>[]>([]);
   const [importSource, setImportSource] = useState<ImportSource | "">("");
   const [isDragging, setIsDragging] = useState(false);
   const router = useRouter();
 
-  const allTransactions = useQuery(api.transactions.queries.getAllTransactions, {});
-  const addTransaction = useMutation(api.transactions.functions.createImportedTransaction);
+  const allTransactions = useQuery(
+    api.transactions.queries.getAllTransactions,
+    {},
+  );
+  const addTransaction = useMutation(
+    api.transactions.functions.createImportedTransaction,
+  );
 
   const existingIds = useMemo(() => {
     if (!allTransactions) return undefined;
-    return new Set(allTransactions.map((t) => t.importedTransactionId).filter(Boolean));
+    return new Set(
+      allTransactions.map((t) => t.importedTransactionId).filter(Boolean),
+    );
   }, [allTransactions]);
 
   const handleFile = (file: File) => {
     Papa.parse(file, {
       header: true,
       skipEmptyLines: true,
-      complete: (results: Papa.ParseResult<Record<string, string>>) => setCsvData(results.data),
+      complete: (results: Papa.ParseResult<Record<string, string>>) =>
+        setCsvData(results.data),
     });
   };
 
@@ -59,7 +82,9 @@ export function ImportTransactionsSheet({ open, onOpenChange }: ImportTransactio
     });
 
     const skipped = csvData.length - newTransactions.length;
-    const toastId = toast.loading(`Importiere 0/${newTransactions.length} Transaktionen...`);
+    const toastId = toast.loading(
+      `Importiere 0/${newTransactions.length} Transaktionen...`,
+    );
 
     try {
       for (let i = 0; i < newTransactions.length; i++) {
@@ -73,10 +98,16 @@ export function ImportTransactionsSheet({ open, onOpenChange }: ImportTransactio
           importSource,
           accountName: mapped.accountName,
         });
-        toast.loading(`Importiere ${i + 1}/${newTransactions.length} Transaktionen...`, { id: toastId });
+        toast.loading(
+          `Importiere ${i + 1}/${newTransactions.length} Transaktionen...`,
+          { id: toastId },
+        );
       }
 
-      toast.success(`${newTransactions.length} neue Transaktionen importiert, ${skipped} Duplikate übersprungen`, { id: toastId });
+      toast.success(
+        `${newTransactions.length} neue Transaktionen importiert, ${skipped} Duplikate übersprungen`,
+        { id: toastId },
+      );
       router.push("/import");
       setCsvData([]);
       setImportSource("");
@@ -91,20 +122,29 @@ export function ImportTransactionsSheet({ open, onOpenChange }: ImportTransactio
       <SheetContent side="right" className="sm:max-w-lg">
         <SheetHeader>
           <SheetTitle>CSV-Datei importieren</SheetTitle>
-          <SheetDescription>Ziehen Sie eine CSV-Datei hierher oder wählen Sie eine Datei aus</SheetDescription>
+          <SheetDescription>
+            Ziehen Sie eine CSV-Datei hierher oder wählen Sie eine Datei aus
+          </SheetDescription>
         </SheetHeader>
 
         {csvData.length === 0 ? (
           <div className="mt-8 px-5">
             <div
-              onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+              onDragOver={(e) => {
+                e.preventDefault();
+                setIsDragging(true);
+              }}
               onDragLeave={() => setIsDragging(false)}
               onDrop={handleDrop}
               className={`border-2 border-dashed rounded-lg p-12 flex flex-col items-center justify-center cursor-pointer ${
-                isDragging ? "border-primary bg-primary/5" : "border-muted-foreground/25 hover:border-primary/50"
+                isDragging
+                  ? "border-primary bg-primary/5"
+                  : "border-muted-foreground/25 hover:border-primary/50"
               }`}
             >
-              <Upload className={`h-12 w-12 mb-4 ${isDragging ? "text-primary" : "text-muted-foreground"}`} />
+              <Upload
+                className={`h-12 w-12 mb-4 ${isDragging ? "text-primary" : "text-muted-foreground"}`}
+              />
               <p className="text-lg font-medium mb-2">CSV-Datei hier ablegen</p>
               <p className="text-sm text-muted-foreground mb-4">oder</p>
               <Button asChild variant="outline">
@@ -114,7 +154,9 @@ export function ImportTransactionsSheet({ open, onOpenChange }: ImportTransactio
                     type="file"
                     accept=".csv"
                     className="hidden"
-                    onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])}
+                    onChange={(e) =>
+                      e.target.files?.[0] && handleFile(e.target.files[0])
+                    }
                   />
                 </label>
               </Button>
@@ -123,14 +165,23 @@ export function ImportTransactionsSheet({ open, onOpenChange }: ImportTransactio
         ) : (
           <div className="mt-8 px-5">
             <div className="mb-6">
-              <Label className="text-base font-medium">Von wo möchtest du die CSV importieren?</Label>
-              <Select value={importSource} onValueChange={(value) => setImportSource(value as ImportSource)}>
+              <Label className="text-base font-medium">
+                Von wo möchtest du die CSV importieren?
+              </Label>
+              <Select
+                value={importSource}
+                onValueChange={(value) =>
+                  setImportSource(value as ImportSource)
+                }
+              >
                 <SelectTrigger className="mt-2">
                   <SelectValue placeholder="Wählen Sie die Datenquelle" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="moss">Moss</SelectItem>
-                  <SelectItem value="sparkasse">Sparkasse (CSV-CAMT V8)</SelectItem>
+                  <SelectItem value="sparkasse">
+                    Sparkasse (CSV-CAMT V8)
+                  </SelectItem>
                   <SelectItem value="volksbank">Volksbank</SelectItem>
                 </SelectContent>
               </Select>
@@ -138,11 +189,19 @@ export function ImportTransactionsSheet({ open, onOpenChange }: ImportTransactio
 
             <h3 className="text-lg font-medium mb-4">CSV Vorschau</h3>
             <div className="max-h-64 overflow-auto border rounded-md mb-4">
-              <pre className="p-4 text-xs">{JSON.stringify(csvData.slice(0, 5), null, 2)}</pre>
+              <pre className="p-4 text-xs">
+                {JSON.stringify(csvData.slice(0, 5), null, 2)}
+              </pre>
             </div>
-            <p className="text-sm text-muted-foreground mb-4">Zeige erste 5 Zeilen von {csvData.length} Zeilen</p>
+            <p className="text-sm text-muted-foreground mb-4">
+              Zeige erste 5 Zeilen von {csvData.length} Zeilen
+            </p>
 
-            <Button onClick={handleImport} disabled={!importSource || !existingIds} className="w-full">
+            <Button
+              onClick={handleImport}
+              disabled={!importSource || !existingIds}
+              className="w-full"
+            >
               Transaktionen importieren
             </Button>
           </div>

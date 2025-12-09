@@ -59,7 +59,11 @@ export function TourCard({
   }, [currentStep]);
 
   return (
-    <Card ref={cardRef} className="max-w-md shadow-lg" style={{ zIndex: 99999 }}>
+    <Card
+      ref={cardRef}
+      className="max-w-md shadow-lg"
+      style={{ zIndex: 99999 }}
+    >
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-center gap-2">

@@ -20,7 +20,11 @@ type BankDetails = {
   accountHolder: string;
 };
 
-const EMPTY_BANK_DETAILS: BankDetails = { iban: "", bic: "", accountHolder: "" };
+const EMPTY_BANK_DETAILS: BankDetails = {
+  iban: "",
+  bic: "",
+  accountHolder: "",
+};
 
 const EMPTY_TRAVEL_INFO: TravelInfo = {
   startDate: "",
@@ -32,14 +36,26 @@ const EMPTY_TRAVEL_INFO: TravelInfo = {
 
 export default function ReimbursementFormPage() {
   const router = useRouter();
-  const bankDetailsQuery = useQuery(api.reimbursements.queries.getUserBankDetails);
-  const createReimbursement = useMutation(api.reimbursements.functions.createReimbursement);
-  const createTravelReimbursement = useMutation(api.reimbursements.functions.createTravelReimbursement);
-  const updateUserBankDetails = useMutation(api.users.functions.updateBankDetails);
+  const bankDetailsQuery = useQuery(
+    api.reimbursements.queries.getUserBankDetails,
+  );
+  const createReimbursement = useMutation(
+    api.reimbursements.functions.createReimbursement,
+  );
+  const createTravelReimbursement = useMutation(
+    api.reimbursements.functions.createTravelReimbursement,
+  );
+  const updateUserBankDetails = useMutation(
+    api.users.functions.updateBankDetails,
+  );
 
-  const [reimbursementType, setReimbursementType] = useState<"expense" | "travel">("expense");
-  const [selectedProjectId, setSelectedProjectId] = useState<Id<"projects"> | null>(null);
-  const [bankDetails, setBankDetails] = useState<BankDetails>(EMPTY_BANK_DETAILS);
+  const [reimbursementType, setReimbursementType] = useState<
+    "expense" | "travel"
+  >("expense");
+  const [selectedProjectId, setSelectedProjectId] =
+    useState<Id<"projects"> | null>(null);
+  const [bankDetails, setBankDetails] =
+    useState<BankDetails>(EMPTY_BANK_DETAILS);
   const [bankDetailsLoaded, setBankDetailsLoaded] = useState(false);
   const [editingBank, setEditingBank] = useState(false);
   const [receipts, setReceipts] = useState<Receipt[]>([]);

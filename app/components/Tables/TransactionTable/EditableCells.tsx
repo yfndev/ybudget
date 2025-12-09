@@ -46,7 +46,7 @@ export function EditableAmountCell({ value, onSave }: EditableCellProps) {
 export function EditableDateCell({ value, onSave }: EditableCellProps) {
   const dateValue = value ? new Date(value) : null;
   const [editValue, setEditValue] = useState(
-    dateValue ? format(dateValue, "yyyy-MM-dd") : ""
+    dateValue ? format(dateValue, "yyyy-MM-dd") : "",
   );
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -85,7 +85,11 @@ interface EditableSelectCellProps extends EditableCellProps {
   options: { value: string; label: string }[];
 }
 
-export function EditableSelectCell({ value, onSave, options }: EditableSelectCellProps) {
+export function EditableSelectCell({
+  value,
+  onSave,
+  options,
+}: EditableSelectCellProps) {
   return (
     <Select value={value} onValueChange={onSave}>
       <SelectTrigger className="h-8 w-48">

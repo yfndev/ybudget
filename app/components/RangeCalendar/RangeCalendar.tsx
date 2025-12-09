@@ -42,13 +42,50 @@ const RangeCalendar = ({
   );
 
   const presets: Array<{ key: string; label: string; range: DateRange }> = [
-    { key: "month", label: "Monat", range: { from: startOfMonth(today), to: endOfMonth(today) } },
-    { key: "lastMonth", label: "Letzter Monat", range: { from: startOfMonth(subMonths(today, 1)), to: endOfMonth(subMonths(today, 1)) } },
-    { key: "quarter", label: "Quartal", range: { from: startOfQuarter(today), to: endOfQuarter(today) } },
-    { key: "lastQuarter", label: "Letztes Quartal", range: { from: startOfQuarter(subQuarters(today, 1)), to: endOfQuarter(subQuarters(today, 1)) } },
-    { key: "year", label: "Jahr", range: { from: startOfYear(today), to: endOfYear(today) } },
-    { key: "lastYear", label: "Letztes Jahr", range: { from: startOfYear(subYears(today, 1)), to: endOfYear(subYears(today, 1)) } },
-    { key: "all", label: "Alles", range: { from: new Date(oldestDate ?? 0), to: new Date() } },
+    {
+      key: "month",
+      label: "Monat",
+      range: { from: startOfMonth(today), to: endOfMonth(today) },
+    },
+    {
+      key: "lastMonth",
+      label: "Letzter Monat",
+      range: {
+        from: startOfMonth(subMonths(today, 1)),
+        to: endOfMonth(subMonths(today, 1)),
+      },
+    },
+    {
+      key: "quarter",
+      label: "Quartal",
+      range: { from: startOfQuarter(today), to: endOfQuarter(today) },
+    },
+    {
+      key: "lastQuarter",
+      label: "Letztes Quartal",
+      range: {
+        from: startOfQuarter(subQuarters(today, 1)),
+        to: endOfQuarter(subQuarters(today, 1)),
+      },
+    },
+    {
+      key: "year",
+      label: "Jahr",
+      range: { from: startOfYear(today), to: endOfYear(today) },
+    },
+    {
+      key: "lastYear",
+      label: "Letztes Jahr",
+      range: {
+        from: startOfYear(subYears(today, 1)),
+        to: endOfYear(subYears(today, 1)),
+      },
+    },
+    {
+      key: "all",
+      label: "Alles",
+      range: { from: new Date(oldestDate ?? 0), to: new Date() },
+    },
   ];
 
   const handlePresetClick = (range: DateRange) => {
