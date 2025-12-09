@@ -95,3 +95,76 @@ test("transfer money between projects", async () => {
   );
   expect(transactions).toHaveLength(2);
 });
+
+test("split transaction creates multiple transactions and archives original", async () => {
+  const test = convexTest(schema, modules);
+  const { organizationId, userId, projectId } = await setupTestData(test);
+
+  const project2Id = await test.run(async (ctx) =>
+    ctx.db.insert("projects", {
+      name: "Project 2",
+      organizationId,
+      isArchived: false,
+      createdBy: userId,
+    })
+  );
+
+  const originalId = await test.run(async (ctx) =>
+    ctx.db.insert("transactions", {
+      organizationId,
+      date: Date.now(),
+      amount: 1000,
+      description: "Original",
+      counterparty: "Test",
+      status: "processed",
+      importedBy: userId,
+    })
+  );
+
+  const user = test.withIdentity({ subject: userId });
+  await user.mutation(api.transactions.functions.splitTransaction, {
+    transactionId: originalId,
+    splits: [
+      { projectId, amount: 400 },
+      { projectId: project2Id, amount: 600 },
+    ],
+  });
+
+  const original = await test.run(async (ctx) => ctx.db.get(originalId));
+  expect(original?.isArchived).toBe(true);
+
+  const splits = await test.run(async (ctx) =>
+    ctx.db.query("transactions")
+      .filter((q) => q.eq(q.field("splitFromTransactionId"), originalId))
+      .collect()
+  );
+  expect(splits).toHaveLength(2);
+  expect(splits.map((s) => s.amount).sort()).toEqual([400, 600]);
+});
+
+test("create imported transaction skips duplicates", async () => {
+  const test = convexTest(schema, modules);
+  const { userId } = await setupTestData(test);
+
+  const user = test.withIdentity({ subject: userId });
+
+  const result1 = await user.mutation(api.transactions.functions.createImportedTransaction, {
+    date: Date.now(),
+    importedTransactionId: "transaction123",
+    importSource: "sparkasse",
+    amount: 100,
+    description: "Test",
+    counterparty: "Test",
+  });
+  expect(result1).toEqual({ inserted: true });
+
+  const result2 = await user.mutation(api.transactions.functions.createImportedTransaction, {
+    date: Date.now(),
+    importedTransactionId: "transaction123",
+    importSource: "sparkasse",
+    amount: 100,
+    description: "Test",
+    counterparty: "Test",
+  });
+  expect(result2).toEqual({ skipped: true });
+});
