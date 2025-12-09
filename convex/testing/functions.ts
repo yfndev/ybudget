@@ -50,23 +50,28 @@ export const clearTestData = mutation({
     if (!process.env.IS_TEST)
       throw new ConvexError("Only available in test environment");
 
-    // Delete orphaned authAccounts by providerAccountId (email)
-    const orphanedAccounts = await ctx.db
+    const deletedAccountIds = new Set<string>();
+    const deletedSessionIds = new Set<string>();
+
+    const accountsByEmail = await ctx.db
       .query("authAccounts")
       .withIndex("providerAndAccountId", (q) =>
         q.eq("provider", "testing").eq("providerAccountId", args.email)
       )
       .collect();
-    for (const account of orphanedAccounts) {
-      // Delete sessions for this account's user
+    for (const account of accountsByEmail) {
       const sessions = await ctx.db
         .query("authSessions")
         .withIndex("userId", (q) => q.eq("userId", account.userId))
         .collect();
       for (const session of sessions) {
-        await ctx.db.delete(session._id);
+        if (!deletedSessionIds.has(session._id)) {
+          await ctx.db.delete(session._id);
+          deletedSessionIds.add(session._id);
+        }
       }
       await ctx.db.delete(account._id);
+      deletedAccountIds.add(account._id);
     }
 
     const user = await ctx.db
@@ -81,7 +86,8 @@ export const clearTestData = mutation({
       await deleteByOrganization(ctx, "projects", user.organizationId);
       await deleteByOrganization(ctx, "donors", user.organizationId);
       await deleteByOrganization(ctx, "logs", user.organizationId);
-      await ctx.db.delete(user.organizationId);
+      const org = await ctx.db.get(user.organizationId);
+      if (org) await ctx.db.delete(user.organizationId);
     }
 
     const sessions = await ctx.db
@@ -89,7 +95,9 @@ export const clearTestData = mutation({
       .withIndex("userId", (q) => q.eq("userId", user._id))
       .collect();
     for (const session of sessions) {
-      await ctx.db.delete(session._id);
+      if (!deletedSessionIds.has(session._id)) {
+        await ctx.db.delete(session._id);
+      }
     }
 
     const accounts = await ctx.db
@@ -97,7 +105,9 @@ export const clearTestData = mutation({
       .withIndex("userIdAndProvider", (q) => q.eq("userId", user._id))
       .collect();
     for (const account of accounts) {
-      await ctx.db.delete(account._id);
+      if (!deletedAccountIds.has(account._id)) {
+        await ctx.db.delete(account._id);
+      }
     }
 
     await ctx.db.delete(user._id);
