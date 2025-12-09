@@ -14,7 +14,7 @@ async function cleanup() {
   });
 }
 
-test.describe.serial("import transactions flow (without import logic)", () => {
+test.describe.serial("import transactions flow (without csv import logic)", () => {
   let page: Page;
 
   test.beforeAll(async ({ browser }) => {
@@ -97,12 +97,12 @@ test.describe.serial("import transactions flow (without import logic)", () => {
 
   test("3. Split income transaction across projects", async () => {
     await page.goto("/import");
-    await expect(page.getByText("Einnahme auf Departments")).toBeVisible({
-      timeout: 5000,
-    });
+    await expect(
+      page.getByRole("checkbox", { name: "Einnahme auf Departments aufteilen" }),
+    ).toBeVisible({ timeout: 5000 });
 
     await page
-      .getByRole("checkbox", { name: "Einnahme auf Departments" })
+      .getByRole("checkbox", { name: "Einnahme auf Departments aufteilen" })
       .click();
 
     await page.getByRole("button", { name: "Projekt hinzufügen" }).click();
@@ -131,7 +131,9 @@ test.describe.serial("import transactions flow (without import logic)", () => {
 
   test("4. Verify split transactions in table", async () => {
     await page.getByRole("link", { name: "Transaktionen" }).click();
-    await expect(page.getByText("Processed 3 (Split)").first()).toBeVisible();
+    await expect(
+      page.getByText("Processed 3 (Split)").first(),
+    ).toBeVisible();
 
     await page
       .locator("#tour-transactions-table")
