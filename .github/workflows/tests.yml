@@ -41,19 +41,8 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: pnpm exec playwright install-deps
 
-      - name: Install Stripe CLI
-        run: |
-          curl -L https://github.com/stripe/stripe-cli/releases/latest/download/stripe_linux_x86_64.tar.gz -o stripe.tar.gz
-          tar -xzf stripe.tar.gz
-          sudo mv stripe /usr/local/bin/
-
-      - name: Start Stripe webhook listener
-        run: stripe listen --forward-to ${{ secrets.CONVEX_SITE_URL }}/stripe --api-key ${{ secrets.STRIPE_KEY }} &
-
       - name: Run Playwright tests
         run: pnpm exec playwright test --reporter=list
         env:
           NEXT_PUBLIC_CONVEX_URL: ${{ secrets.CONVEX_URL }}
           IS_TEST: "true"
-          STRIPE_KEY: ${{ secrets.STRIPE_KEY }}
-          STRIPE_WEBHOOKS_SECRET: ${{ secrets.STRIPE_WEBHOOKS_SECRET }}
