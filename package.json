@@ -9,7 +9,7 @@
     "start": "next start",
     "format": "prettier --write .",
     "lint": "biome lint --write",
-    "test": "vitest && pnpm exec playwright test"
+    "test": "vitest run && pnpm exec playwright test"
   },
   "dependencies": {
     "@auth/core": "^0.37.4",
