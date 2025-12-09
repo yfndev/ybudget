@@ -5,11 +5,14 @@ import { api } from "../convex/_generated/api";
 const TEST_EMAIL = "user@test.com";
 const convex = new ConvexHttpClient(process.env.CONVEX_URL!);
 
-test.afterEach(async () => {
+async function cleanup() {
   await convex.mutation(api.testing.functions.clearTestData, {
     email: TEST_EMAIL,
   });
-});
+}
+
+test.beforeEach(cleanup);
+test.afterEach(cleanup);
 
 test("create, rename and archive project", async ({ page }) => {
   await page.goto("/test-auth");
