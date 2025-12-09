@@ -12,7 +12,7 @@ test.afterEach(async () => {
 });
 
 test("create and delete transaction", async ({ page }) => {
-  await page.goto("http://localhost:3000/test-auth");
+  await page.goto("/test-auth");
   await page.getByTestId("test-auth-submit").click();
   await expect(page.getByText("Wie heißt dein Verein?")).toBeVisible();
 
