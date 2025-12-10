@@ -2,6 +2,7 @@
 
 import {
   Coins,
+  HelpCircle,
   LayoutDashboard,
   SquareCheckBig,
   Upload,
@@ -9,8 +10,10 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useOnborda } from "onborda";
 
-import { StartTourButton } from "@/components/Onboarding/StartTourButton";
+import { Button } from "@/components/ui/button";
 import {
   Sidebar,
   SidebarContent,
@@ -38,6 +41,14 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   const user = useQuery(api.users.queries.getCurrentUserProfile);
   const isAdmin = user?.role === "admin";
   const navItems = NAV_ITEMS.filter((item) => !item.adminOnly || isAdmin);
+  const { startOnborda } = useOnborda();
+  const router = useRouter();
+
+  const handleStartTour = () => {
+    localStorage.removeItem("onborda:main-tour");
+    router.push("/dashboard");
+    setTimeout(() => startOnborda("main-tour"), 300);
+  };
 
   return (
     <Sidebar variant="sidebar" collapsible="icon" {...props}>
@@ -66,7 +77,15 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
       <SidebarFooter className="flex flex-row items-center justify-between">
         <NavUser user={user} />
-        <StartTourButton />
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleStartTour}
+          title="Tour starten"
+          className="h-8 w-8"
+        >
+          <HelpCircle className="h-4 w-4" />
+        </Button>
       </SidebarFooter>
     </Sidebar>
   );
