@@ -4,16 +4,10 @@ import { formatCurrency } from "@/lib/formatters/formatCurrency";
 interface BudgetCardTypes {
   title: string;
   amount: number;
-  changePercent?: number;
   description?: string;
 }
 
-const BudgetCard = ({
-  title,
-  amount,
-  changePercent,
-  description,
-}: BudgetCardTypes) => {
+const BudgetCard = ({ title, amount, description }: BudgetCardTypes) => {
   return (
     <Card className="w-full p-4">
       <div className="flex justify-between items-start">
