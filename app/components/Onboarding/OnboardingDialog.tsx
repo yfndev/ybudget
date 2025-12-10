@@ -24,12 +24,10 @@ export const OnboardingDialog = ({
 }) => {
   const [name, setName] = useState("");
 
-  const orgCheck = useQuery(
-    api.organizations.queries.checkOrganizationExistsByUserDomain,
-  );
+  const orgCheck = useQuery(api.organizations.queries.getOrganizationByDomain);
 
-  const setupUserOrganization = useMutation(
-    api.organizations.functions.setupUserOrganization,
+  const initializeOrganization = useMutation(
+    api.organizations.functions.initializeOrganization,
   );
 
   const isJoiningExisting = orgCheck?.exists === true;
@@ -38,7 +36,7 @@ export const OnboardingDialog = ({
     e.preventDefault();
 
     try {
-      const result = await setupUserOrganization({
+      const result = await initializeOrganization({
         organizationName: name.trim() || undefined,
       });
 
