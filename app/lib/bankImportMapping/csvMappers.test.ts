@@ -86,3 +86,33 @@ test("cleans volksbank description from sensitive data", () => {
   );
   expect(result.description).toBe("Payment done");
 });
+
+test("parses moss date with correct format (DD/MM/YYYY)", () => {
+  const result = mapCSVRow(
+    { "Payment Date": "31/01/2024", Amount: "100" },
+    "moss",
+  );
+  expect(new Date(result.date).getFullYear()).toBe(2024);
+  expect(new Date(result.date).getMonth()).toBe(0);
+  expect(new Date(result.date).getDate()).toBe(31);
+});
+
+
+test("creates new import id for sparkassen imports", () => {
+  const result = mapCSVRow(
+    { Buchungstag: "", Betrag: "100", Verwendungszweck: "" },
+    "sparkasse",
+  );
+  expect(result.importedTransactionId).toMatch(/^sparkasse-\d+-/);
+});
+
+test("parse moss date returns current date if month/date is not correct", () => {
+  const before = Date.now();
+  const result = mapCSVRow(
+    { "Payment Date": "99/99/2024", Amount: "100" },
+    "moss",
+  );
+  const after = Date.now();
+  expect(result.date).toBeGreaterThanOrEqual(before);
+  expect(result.date).toBeLessThanOrEqual(after);
+});

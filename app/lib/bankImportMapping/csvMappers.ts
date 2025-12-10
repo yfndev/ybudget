@@ -54,14 +54,13 @@ function createImportId(
   return `${source}-${Date.now()}-${Math.random()}`;
 }
 
-function cleanDescription(text: string, source: ImportSource): string {
-  if (source === "sparkasse") {
-    return text.replace(DATE_TIME_PATTERN, "").replace(/\s+/g, " ").trim();
-  }
-  if (source === "volksbank") {
-    return text.replace(SENSITIVE_DATA_PATTERN, "").replace(/\s+/g, " ").trim();
-  }
-  return text;
+function cleanDescription(
+  text: string,
+  source: "sparkasse" | "volksbank",
+): string {
+  const pattern =
+    source === "sparkasse" ? DATE_TIME_PATTERN : SENSITIVE_DATA_PATTERN;
+  return text.replace(pattern, "").replace(/\s+/g, " ").trim();
 }
 
 function mapMoss(row: Record<string, string>): TransactionData {
