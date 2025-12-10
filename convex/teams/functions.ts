@@ -72,7 +72,7 @@ export const removeTeamMember = mutation({
   handler: async (ctx, args) => {
     await requireRole(ctx, "admin");
     const team = await ctx.db.get(args.teamId);
-    if (!team) return;
+    if (!team) throw new Error("Team not found");
 
     await ctx.db.patch(args.teamId, {
       memberIds: team.memberIds.filter((id) => id !== args.userId),
@@ -99,7 +99,7 @@ export const removeProjectFromTeam = mutation({
   handler: async (ctx, args) => {
     await requireRole(ctx, "admin");
     const team = await ctx.db.get(args.teamId);
-    if (!team) return;
+    if (!team) throw new Error("Team not found");
 
     await ctx.db.patch(args.teamId, {
       projectIds: team.projectIds.filter((id) => id !== args.projectId),
