@@ -37,9 +37,9 @@ export const renameTeam = mutation({
     const user = await getCurrentUser(ctx);
     const team = await ctx.db.get(args.teamId);
 
-    if (!team) throw new Error("Team nicht gefunden");
+    if (!team) throw new Error("Team not found");
     if (team.organizationId !== user.organizationId)
-      throw new Error("Zugriff verweigert");
+      throw new Error("Access denied");
 
     await ctx.db.patch(args.teamId, { name: args.name });
     await addLog(
@@ -58,7 +58,7 @@ export const addTeamMember = mutation({
   handler: async (ctx, args) => {
     await requireRole(ctx, "admin");
     const team = await ctx.db.get(args.teamId);
-    if (!team) throw new Error("Team nicht gefunden");
+    if (!team) throw new Error("Team not found");
     if (team.memberIds.includes(args.userId)) return;
 
     await ctx.db.patch(args.teamId, {
@@ -85,7 +85,7 @@ export const assignProjectToTeam = mutation({
   handler: async (ctx, args) => {
     await requireRole(ctx, "admin");
     const team = await ctx.db.get(args.teamId);
-    if (!team) throw new Error("Team nicht gefunden");
+    if (!team) throw new Error("Team not found");
     if (team.projectIds.includes(args.projectId)) return;
 
     await ctx.db.patch(args.teamId, {
