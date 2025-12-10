@@ -7,7 +7,7 @@ export default defineSchema({
   organizations: defineTable({
     name: v.string(),
     domain: v.string(),
-    createdBy: v.string(),
+    createdBy: v.id("users"),
   })
     .index("by_name", ["name"])
     .index("by_domain", ["domain"]),
@@ -40,7 +40,7 @@ export default defineSchema({
     organizationId: v.id("organizations"),
     description: v.optional(v.string()),
     isArchived: v.boolean(),
-    createdBy: v.string(),
+    createdBy: v.id("users"),
   }).index("by_organization", ["organizationId"]),
 
   transactions: defineTable({
