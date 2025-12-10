@@ -45,6 +45,14 @@ export async function setupTestData(test: ReturnType<typeof convexTest>) {
       createdBy: userId,
     });
 
+    const teamId = await ctx.db.insert("teams", {
+      name: "Test Team",
+      organizationId,
+      memberIds: [userId],
+      projectIds: [projectId],
+      createdBy: userId,
+    });
+
     const reimbursementId = await ctx.db.insert("reimbursements", {
       organizationId,
       projectId,
@@ -78,6 +86,6 @@ export async function setupTestData(test: ReturnType<typeof convexTest>) {
       isInternational: false,
     });
 
-    return { organizationId, userId, projectId, categoryId, donorId, reimbursementId, travelReimbursementId };
+    return { organizationId, userId, projectId, categoryId, donorId, teamId, reimbursementId, travelReimbursementId };
   });
 }
