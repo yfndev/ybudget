@@ -91,6 +91,9 @@ We're building a tool to support NGOs on their mission by making budgeting as ea
 
 ## Testing
 
+Through using vitest, I've got a 99% test coverage on lines and 98.6% on functions.
+This was especially helpful when cleaning up my code
+
 ```bash
 pnpm vitest run              # Unit & integration tests
 pnpm vitest run --coverage   # Get test coverage report

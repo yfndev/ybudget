@@ -142,7 +142,9 @@ test("rename team from other organization throws access denied", async () => {
   const { userId } = await setupTestData(t);
 
   const otherTeamId = await t.run(async (ctx) => {
-    const otherUserId = await ctx.db.insert("users", { email: "other@other.com" });
+    const otherUserId = await ctx.db.insert("users", {
+      email: "other@other.com",
+    });
     const otherOrgId = await ctx.db.insert("organizations", {
       name: "Other Org",
       domain: "other.com",

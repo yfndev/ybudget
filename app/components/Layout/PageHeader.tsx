@@ -126,16 +126,25 @@ export function PageHeader({
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-auto mr-4" align="start">
                       <DropdownMenuGroup>
-                        <DropdownMenuItem onSelect={() => setIsExpenseOpen(true)}>
+                        <DropdownMenuItem
+                          onSelect={() => setIsExpenseOpen(true)}
+                        >
                           <span className="font-semibold"> Ausgabe planen</span>
                           <DropdownMenuShortcut>⌘E</DropdownMenuShortcut>
                         </DropdownMenuItem>
-                        <DropdownMenuItem onSelect={() => setIsIncomeOpen(true)}>
-                          <span className="font-semibold"> Einnahme planen</span>
+                        <DropdownMenuItem
+                          onSelect={() => setIsIncomeOpen(true)}
+                        >
+                          <span className="font-semibold">
+                            {" "}
+                            Einnahme planen
+                          </span>
                           <DropdownMenuShortcut>⌘I</DropdownMenuShortcut>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onSelect={() => setIsProjectOpen(true)}>
+                        <DropdownMenuItem
+                          onSelect={() => setIsProjectOpen(true)}
+                        >
                           <span> Projekt erstellen</span>
                           <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
                         </DropdownMenuItem>
@@ -143,11 +152,15 @@ export function PageHeader({
                           <span> Förderer hinzufügen</span>
                           <DropdownMenuShortcut>⇧⌘F</DropdownMenuShortcut>
                         </DropdownMenuItem>
-                        <DropdownMenuItem onSelect={() => setIsCategoryOpen(true)}>
+                        <DropdownMenuItem
+                          onSelect={() => setIsCategoryOpen(true)}
+                        >
                           <span> Kategorie hinzufügen</span>
                           <DropdownMenuShortcut>⇧⌘K</DropdownMenuShortcut>
                         </DropdownMenuItem>
-                        <DropdownMenuItem onSelect={() => setIsImportOpen(true)}>
+                        <DropdownMenuItem
+                          onSelect={() => setIsImportOpen(true)}
+                        >
                           CSV importieren
                         </DropdownMenuItem>
                       </DropdownMenuGroup>

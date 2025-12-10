@@ -8,7 +8,6 @@ export async function getCurrentUser(ctx: QueryCtx | MutationCtx) {
   const user = await ctx.db.get(userId);
   if (!user) throw new Error("User not found");
 
-
   return {
     ...user,
     organizationId: user.organizationId as Id<"organizations">,

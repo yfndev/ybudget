@@ -69,7 +69,9 @@ test("get project by id throws when no access", async () => {
   const { userId } = await setupTestData(t);
 
   const otherProjectId = await t.run(async (ctx) => {
-    const otherUserId = await ctx.db.insert("users", { email: "other@other.com" });
+    const otherUserId = await ctx.db.insert("users", {
+      email: "other@other.com",
+    });
     const otherOrgId = await ctx.db.insert("organizations", {
       name: "Other",
       domain: "other.com",

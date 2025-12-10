@@ -118,7 +118,9 @@ test("throw error if donor is not in user organization", async () => {
   const { userId } = await setupTestData(t);
 
   const otherDonorId = await t.run(async (ctx) => {
-    const otherUserId = await ctx.db.insert("users", { email: "other@other.com" });
+    const otherUserId = await ctx.db.insert("users", {
+      email: "other@other.com",
+    });
     const otherOrgId = await ctx.db.insert("organizations", {
       name: "Other",
       domain: "other.com",
