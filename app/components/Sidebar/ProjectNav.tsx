@@ -3,6 +3,7 @@
 import { Archive, ChevronRight, Pencil, Plus } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import type { ReactNode } from "react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
@@ -132,58 +133,38 @@ export function ProjectNav({ id }: { id?: string }) {
             <Collapsible key={project._id} asChild defaultOpen>
               <SidebarMenuItem>
                 {isEditing ? (
-                  <div className="px-2 py-1.5">
-                    <Input
-                      value={editValue}
-                      onChange={(e) => setEditValue(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") handleSave();
-                        if (e.key === "Escape") setEditingId(null);
-                      }}
-                      onBlur={handleSave}
-                      autoFocus
-                    />
-                  </div>
+                  <EditInput
+                    value={editValue}
+                    onChange={setEditValue}
+                    onSave={handleSave}
+                    onCancel={() => setEditingId(null)}
+                  />
                 ) : (
-                  <ContextMenu>
-                    <ContextMenuTrigger asChild>
-                      <SidebarMenuButton
-                        asChild
-                        tooltip={project.name}
-                        isActive={isActive}
-                      >
-                        <Link href={`/projects/${project._id}`}>
-                          <span
-                            className={
-                              children.length ? "font-medium" : undefined
-                            }
-                            onDoubleClick={(e) => {
-                              e.preventDefault();
-                              startEdit(project._id, project.name);
-                            }}
-                          >
-                            {project.name}
-                          </span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </ContextMenuTrigger>
-                    {canEdit && (
-                      <ContextMenuContent>
-                        <ContextMenuItem
-                          onClick={() => startEdit(project._id, project.name)}
+                  <ProjectContextMenu
+                    canEdit={canEdit}
+                    onRename={() => startEdit(project._id, project.name)}
+                    onArchive={() => handleArchive(project._id)}
+                  >
+                    <SidebarMenuButton
+                      asChild
+                      tooltip={project.name}
+                      isActive={isActive}
+                    >
+                      <Link href={`/projects/${project._id}`}>
+                        <span
+                          className={
+                            children.length ? "font-medium" : undefined
+                          }
+                          onDoubleClick={(e) => {
+                            e.preventDefault();
+                            startEdit(project._id, project.name);
+                          }}
                         >
-                          <Pencil className="mr-2 h-4 w-4" />
-                          Umbenennen
-                        </ContextMenuItem>
-                        <ContextMenuItem
-                          onClick={() => handleArchive(project._id)}
-                        >
-                          <Archive className="mr-2 h-4 w-4" />
-                          Archivieren
-                        </ContextMenuItem>
-                      </ContextMenuContent>
-                    )}
-                  </ContextMenu>
+                          {project.name}
+                        </span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </ProjectContextMenu>
                 )}
                 {children.length > 0 && (
                   <>
@@ -201,56 +182,33 @@ export function ProjectNav({ id }: { id?: string }) {
                           return (
                             <SidebarMenuSubItem key={child._id}>
                               {isChildEditing ? (
-                                <div className="px-2 py-1.5">
-                                  <Input
-                                    value={editValue}
-                                    onChange={(e) =>
-                                      setEditValue(e.target.value)
-                                    }
-                                    onKeyDown={(e) => {
-                                      if (e.key === "Enter") handleSave();
-                                      if (e.key === "Escape")
-                                        setEditingId(null);
-                                    }}
-                                    onBlur={handleSave}
-                                    autoFocus
-                                  />
-                                </div>
+                                <EditInput
+                                  value={editValue}
+                                  onChange={setEditValue}
+                                  onSave={handleSave}
+                                  onCancel={() => setEditingId(null)}
+                                />
                               ) : (
-                                <ContextMenu>
-                                  <ContextMenuTrigger asChild>
-                                    <SidebarMenuSubButton asChild>
-                                      <Link href={`/projects/${child._id}`}>
-                                        <span
-                                          onDoubleClick={(e) => {
-                                            e.preventDefault();
-                                            startEdit(child._id, child.name);
-                                          }}
-                                        >
-                                          {child.name}
-                                        </span>
-                                      </Link>
-                                    </SidebarMenuSubButton>
-                                  </ContextMenuTrigger>
-                                  {canEdit && (
-                                    <ContextMenuContent>
-                                      <ContextMenuItem
-                                        onClick={() =>
-                                          startEdit(child._id, child.name)
-                                        }
+                                <ProjectContextMenu
+                                  canEdit={canEdit}
+                                  onRename={() =>
+                                    startEdit(child._id, child.name)
+                                  }
+                                  onArchive={() => handleArchive(child._id)}
+                                >
+                                  <SidebarMenuSubButton asChild>
+                                    <Link href={`/projects/${child._id}`}>
+                                      <span
+                                        onDoubleClick={(e) => {
+                                          e.preventDefault();
+                                          startEdit(child._id, child.name);
+                                        }}
                                       >
-                                        <Pencil className="mr-2 h-4 w-4" />
-                                        Umbenennen
-                                      </ContextMenuItem>
-                                      <ContextMenuItem
-                                        onClick={() => handleArchive(child._id)}
-                                      >
-                                        <Archive className="mr-2 h-4 w-4" />
-                                        Archivieren
-                                      </ContextMenuItem>
-                                    </ContextMenuContent>
-                                  )}
-                                </ContextMenu>
+                                        {child.name}
+                                      </span>
+                                    </Link>
+                                  </SidebarMenuSubButton>
+                                </ProjectContextMenu>
                               )}
                             </SidebarMenuSubItem>
                           );
@@ -271,5 +229,62 @@ export function ProjectNav({ id }: { id?: string }) {
         </>
       )}
     </SidebarGroup>
+  );
+}
+
+function EditInput({
+  value,
+  onChange,
+  onSave,
+  onCancel,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  onSave: () => void;
+  onCancel: () => void;
+}) {
+  return (
+    <div className="px-2 py-1.5">
+      <Input
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") onSave();
+          if (e.key === "Escape") onCancel();
+        }}
+        onBlur={onSave}
+        autoFocus
+      />
+    </div>
+  );
+}
+
+function ProjectContextMenu({
+  children,
+  canEdit,
+  onRename,
+  onArchive,
+}: {
+  children: ReactNode;
+  canEdit: boolean;
+  onRename: () => void;
+  onArchive: () => void;
+}) {
+  return (
+    <ContextMenu>
+      <ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
+      {canEdit && (
+        <ContextMenuContent>
+          <ContextMenuItem onClick={onRename}>
+            <Pencil className="mr-2 h-4 w-4" />
+            Umbenennen
+          </ContextMenuItem>
+          <ContextMenuItem onClick={onArchive}>
+            <Archive className="mr-2 h-4 w-4" />
+            Archivieren
+          </ContextMenuItem>
+        </ContextMenuContent>
+      )}
+    </ContextMenu>
   );
 }
