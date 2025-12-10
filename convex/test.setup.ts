@@ -5,17 +5,18 @@ export const modules = import.meta.glob("./**/*.ts");
 export async function setupTestData(test: ReturnType<typeof convexTest>) {
   // convex insert returns the id of the inserted document
   return await test.run(async (ctx) => {
+    const userId = await ctx.db.insert("users", {
+      email: "test@test.com",
+      role: "admin",
+    });
+
     const organizationId = await ctx.db.insert("organizations", {
       name: "Test Organization",
       domain: "test.com",
-      createdBy: "system",
+      createdBy: userId,
     });
 
-    const userId = await ctx.db.insert("users", {
-      email: "test@test.com",
-      organizationId,
-      role: "admin",
-    });
+    await ctx.db.patch(userId, { organizationId });
 
     await ctx.db.insert("projects", {
       name: "Rücklagen",

@@ -136,3 +136,33 @@ test("remove project from team", async () => {
   const team = await t.run((ctx) => ctx.db.get(teamId));
   expect(team?.projectIds).not.toContain(projectId);
 });
+
+test("rename team from other organization throws access denied", async () => {
+  const t = convexTest(schema, modules);
+  const { userId } = await setupTestData(t);
+
+  const otherTeamId = await t.run(async (ctx) => {
+    const otherUserId = await ctx.db.insert("users", { email: "other@other.com" });
+    const otherOrgId = await ctx.db.insert("organizations", {
+      name: "Other Org",
+      domain: "other.com",
+      createdBy: otherUserId,
+    });
+    return ctx.db.insert("teams", {
+      name: "Other Team",
+      organizationId: otherOrgId,
+      memberIds: [],
+      projectIds: [],
+      createdBy: otherUserId,
+    });
+  });
+
+  await expect(
+    t
+      .withIdentity({ subject: userId })
+      .mutation(api.teams.functions.renameTeam, {
+        teamId: otherTeamId,
+        name: "Hacked Name",
+      }),
+  ).rejects.toThrow("Access denied");
+});

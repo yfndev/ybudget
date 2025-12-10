@@ -79,21 +79,19 @@ test("update role throws for different org", async () => {
   const t = convexTest(schema, modules);
   const { userId } = await setupTestData(t);
 
-  const otherOrgId = await t.run((ctx) =>
-    ctx.db.insert("organizations", {
+  const { otherOrgId, otherUserId } = await t.run(async (ctx) => {
+    const otherUserId = await ctx.db.insert("users", {
+      email: "other@other.com",
+      role: "member",
+    });
+    const otherOrgId = await ctx.db.insert("organizations", {
       name: "Other Org",
       domain: "other.com",
-      createdBy: "system",
-    }),
-  );
-
-  const otherUserId = await t.run((ctx) =>
-    ctx.db.insert("users", {
-      email: "other@other.com",
-      organizationId: otherOrgId,
-      role: "member",
-    }),
-  );
+      createdBy: otherUserId,
+    });
+    await ctx.db.patch(otherUserId, { organizationId: otherOrgId });
+    return { otherOrgId, otherUserId };
+  });
 
   await expect(
     t

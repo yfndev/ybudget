@@ -68,22 +68,20 @@ test("get project by id throws when no access", async () => {
   const t = convexTest(schema, modules);
   const { userId } = await setupTestData(t);
 
-  const otherOrgId = await t.run((ctx) =>
-    ctx.db.insert("organizations", {
+  const otherProjectId = await t.run(async (ctx) => {
+    const otherUserId = await ctx.db.insert("users", { email: "other@other.com" });
+    const otherOrgId = await ctx.db.insert("organizations", {
       name: "Other",
       domain: "other.com",
-      createdBy: "system",
-    }),
-  );
-
-  const otherProjectId = await t.run((ctx) =>
-    ctx.db.insert("projects", {
+      createdBy: otherUserId,
+    });
+    return ctx.db.insert("projects", {
       name: "Other",
       organizationId: otherOrgId,
       isArchived: false,
-      createdBy: userId,
-    }),
-  );
+      createdBy: otherUserId,
+    });
+  });
 
   await expect(
     t

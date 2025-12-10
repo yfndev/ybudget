@@ -117,23 +117,21 @@ test("throw error if donor is not in user organization", async () => {
   const t = convexTest(schema, modules);
   const { userId } = await setupTestData(t);
 
-  const otherOrgId = await t.run((ctx) =>
-    ctx.db.insert("organizations", {
+  const otherDonorId = await t.run(async (ctx) => {
+    const otherUserId = await ctx.db.insert("users", { email: "other@other.com" });
+    const otherOrgId = await ctx.db.insert("organizations", {
       name: "Other",
       domain: "other.com",
-      createdBy: "system",
-    }),
-  );
-
-  const otherDonorId = await t.run((ctx) =>
-    ctx.db.insert("donors", {
+      createdBy: otherUserId,
+    });
+    return ctx.db.insert("donors", {
       name: "Donor",
       type: "donation",
       allowedTaxSpheres: ["non-profit"],
       organizationId: otherOrgId,
-      createdBy: userId,
-    }),
-  );
+      createdBy: otherUserId,
+    });
+  });
 
   await expect(
     t

@@ -110,6 +110,34 @@ test("generate upload url", async () => {
   expect(typeof url).toBe("string");
 });
 
+test("throw error if trying to delete non existent reimbursement", async () => {
+  const t = convexTest(schema, modules);
+  const { userId, reimbursementId } = await setupTestData(t);
+
+  await t.run((ctx) => ctx.db.delete(reimbursementId));
+
+  await expect(
+    t
+      .withIdentity({ subject: userId })
+      .mutation(api.reimbursements.functions.deleteReimbursement, {
+        reimbursementId,
+      }),
+  ).rejects.toThrow("Erstattung nicht gefunden");
+});
+
+test("throw error if trying to mark non existent reimbursement as paid", async () => {
+  const t = convexTest(schema, modules);
+  const { userId, reimbursementId } = await setupTestData(t);
+
+  await t.run((ctx) => ctx.db.delete(reimbursementId));
+
+  await expect(
+    t
+      .withIdentity({ subject: userId })
+      .mutation(api.reimbursements.functions.markAsPaid, { reimbursementId }),
+  ).rejects.toThrow("Erstattung nicht gefunden");
+});
+
 test("delete travel reimbursement deletes travel details", async () => {
   const t = convexTest(schema, modules);
   const { userId, travelReimbursementId } = await setupTestData(t);

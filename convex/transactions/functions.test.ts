@@ -195,24 +195,18 @@ test("update transaction throws error if not in user organization", async () => 
   const t = convexTest(schema, modules);
   const { userId } = await setupTestData(t);
 
-  const otherOrgId = await t.run((ctx) =>
-    ctx.db.insert("organizations", {
+  const transactionId = await t.run(async (ctx) => {
+    const otherUserId = await ctx.db.insert("users", {
+      email: "other@other.com",
+      role: "admin",
+    });
+    const otherOrgId = await ctx.db.insert("organizations", {
       name: "Other",
       domain: "other.com",
-      createdBy: "system",
-    }),
-  );
-
-  const otherUserId = await t.run((ctx) =>
-    ctx.db.insert("users", {
-      email: "other@other.com",
-      organizationId: otherOrgId,
-      role: "admin",
-    }),
-  );
-
-  const transactionId = await t.run((ctx) =>
-    ctx.db.insert("transactions", {
+      createdBy: otherUserId,
+    });
+    await ctx.db.patch(otherUserId, { organizationId: otherOrgId });
+    return ctx.db.insert("transactions", {
       organizationId: otherOrgId,
       date: Date.now(),
       amount: 100,
@@ -220,8 +214,8 @@ test("update transaction throws error if not in user organization", async () => 
       counterparty: "Test",
       status: "processed",
       importedBy: otherUserId,
-    }),
-  );
+    });
+  });
 
   await expect(
     t
@@ -326,24 +320,18 @@ test("split transaction throws error for splitting transactions in wrong organiz
   const t = convexTest(schema, modules);
   const { userId, projectId } = await setupTestData(t);
 
-  const otherOrgId = await t.run((ctx) =>
-    ctx.db.insert("organizations", {
+  const transactionId = await t.run(async (ctx) => {
+    const otherUserId = await ctx.db.insert("users", {
+      email: "other@other.com",
+      role: "admin",
+    });
+    const otherOrgId = await ctx.db.insert("organizations", {
       name: "Other",
       domain: "other.com",
-      createdBy: "system",
-    }),
-  );
-
-  const otherUserId = await t.run((ctx) =>
-    ctx.db.insert("users", {
-      email: "other@other.com",
-      organizationId: otherOrgId,
-      role: "admin",
-    }),
-  );
-
-  const transactionId = await t.run((ctx) =>
-    ctx.db.insert("transactions", {
+      createdBy: otherUserId,
+    });
+    await ctx.db.patch(otherUserId, { organizationId: otherOrgId });
+    return ctx.db.insert("transactions", {
       organizationId: otherOrgId,
       date: Date.now(),
       amount: 1000,
@@ -351,8 +339,8 @@ test("split transaction throws error for splitting transactions in wrong organiz
       counterparty: "Test",
       status: "processed",
       importedBy: otherUserId,
-    }),
-  );
+    });
+  });
 
   await expect(
     t
