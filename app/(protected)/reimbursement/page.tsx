@@ -1,9 +1,16 @@
 "use client";
 
-import { RejectReimbursementDialog } from "@/components/Dialogs/RejectReimbursementDialog";
 import { PageHeader } from "@/components/Layout/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Table,
   TableBody,
@@ -12,6 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { formatDate } from "@/lib/formatters/formatDate";
@@ -272,13 +280,39 @@ export default function ReimbursementPage() {
         )}
       </div>
 
-      <RejectReimbursementDialog
+      <Dialog
         open={rejectDialog.open}
         onOpenChange={(open) => setRejectDialog({ ...rejectDialog, open })}
-        note={rejectDialog.note}
-        onNoteChange={(note) => setRejectDialog({ ...rejectDialog, note })}
-        onReject={handleReject}
-      />
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Erstattung ablehnen</DialogTitle>
+            <DialogDescription>
+              Gib bitte einen Grund für die Ablehnung ein. Diese Nachricht wird
+              dem Nutzer angezeigt
+            </DialogDescription>
+          </DialogHeader>
+          <Textarea
+            value={rejectDialog.note}
+            onChange={(e) =>
+              setRejectDialog({ ...rejectDialog, note: e.target.value })
+            }
+            placeholder="Grund für die Ablehnung..."
+            rows={4}
+          />
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setRejectDialog({ ...rejectDialog, open: false })}
+            >
+              Abbrechen
+            </Button>
+            <Button onClick={handleReject} disabled={!rejectDialog.note}>
+              Ablehnen
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
