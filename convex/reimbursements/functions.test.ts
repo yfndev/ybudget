@@ -122,7 +122,7 @@ test("throw error if trying to delete non existent reimbursement", async () => {
       .mutation(api.reimbursements.functions.deleteReimbursement, {
         reimbursementId,
       }),
-  ).rejects.toThrow("Erstattung nicht gefunden");
+  ).rejects.toThrow("Reimbursement not found");
 });
 
 test("throw error if trying to mark non existent reimbursement as paid", async () => {
@@ -135,7 +135,7 @@ test("throw error if trying to mark non existent reimbursement as paid", async (
     t
       .withIdentity({ subject: userId })
       .mutation(api.reimbursements.functions.markAsPaid, { reimbursementId }),
-  ).rejects.toThrow("Erstattung nicht gefunden");
+  ).rejects.toThrow("Reimbursement not found");
 });
 
 test("delete travel reimbursement deletes travel details", async () => {

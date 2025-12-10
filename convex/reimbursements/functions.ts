@@ -144,7 +144,7 @@ export const deleteReimbursement = mutation({
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
     const reimbursement = await ctx.db.get(args.reimbursementId);
-    if (!reimbursement) throw new Error("Erstattung nicht gefunden");
+    if (!reimbursement) throw new Error("Reimbursement not found");
 
     const receipts = await ctx.db
       .query("receipts")
@@ -184,7 +184,7 @@ export const markAsPaid = mutation({
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
     const reimbursement = await ctx.db.get(args.reimbursementId);
-    if (!reimbursement) throw new Error("Erstattung nicht gefunden");
+    if (!reimbursement) throw new Error("Reimbursement not found");
 
     const category = await ctx.db
       .query("categories")
