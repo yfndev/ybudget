@@ -4,7 +4,7 @@ import { api } from "../_generated/api";
 import schema from "../schema";
 import { modules, setupTestData } from "../test.setup";
 
-test("initializeOrganization returns existing organization when user already has one", async () => {
+test("return existing organization when user already has one", async () => {
   const t = convexTest(schema, modules);
   const { organizationId, userId } = await setupTestData(t);
 
@@ -17,7 +17,7 @@ test("initializeOrganization returns existing organization when user already has
 });
 
 
-test("initializeOrganization adds user to existing organization by domain", async () => {
+test("add user to existing organization by domain", async () => {
   const t = convexTest(schema, modules);
   const { organizationId } = await setupTestData(t);
 
@@ -36,7 +36,7 @@ test("initializeOrganization adds user to existing organization by domain", asyn
 });
 
 
-test("initializeOrganization creates new organization with 'Rücklagen' project", async () => {
+test("create new organization with reserves project", async () => {
   const t = convexTest(schema, modules);
 
   const userId = await t.run((ctx) =>
@@ -64,7 +64,7 @@ test("initializeOrganization creates new organization with 'Rücklagen' project"
 });
 
 
-test("initializeOrganization throws error when email has no domain", async () => {
+test("throw error when email has no @ (can't split domain)", async () => {
   const t = convexTest(schema, modules);
 
   const userId = await t.run((ctx) =>
@@ -76,4 +76,19 @@ test("initializeOrganization throws error when email has no domain", async () =>
       .withIdentity({ subject: userId })
       .mutation(api.organizations.functions.initializeOrganization, {}),
   ).rejects.toThrow("Could not find a domain for this E-Mail");
+});
+
+test("use domain as fallback name", async () => {
+  const t = convexTest(schema, modules);
+
+  const userId = await t.run((ctx) =>
+    ctx.db.insert("users", { email: "user@fallback.com" }),
+  );
+
+  const result = await t
+    .withIdentity({ subject: userId })
+    .mutation(api.organizations.functions.initializeOrganization, {});
+
+  const org = await t.run((ctx) => ctx.db.get(result.organizationId));
+  expect(org?.name).toBe("fallback.com Organization");
 });

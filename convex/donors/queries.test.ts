@@ -142,3 +142,27 @@ test("throw error if donor is not in user organization", async () => {
       .query(api.donors.queries.getDonorById, { donorId: otherDonorId }),
   ).rejects.toThrow("Unauthorized");
 });
+
+test("calculate expenses with negative amounts", async () => {
+  const t = convexTest(schema, modules);
+  const { organizationId, userId, donorId } = await setupTestData(t);
+
+  await t.run((ctx) =>
+    ctx.db.insert("transactions", {
+      organizationId,
+      donorId,
+      date: Date.now(),
+      amount: -200,
+      description: "Expense",
+      counterparty: "Vendor",
+      status: "processed",
+      importedBy: userId,
+    }),
+  );
+
+  const donor = await t
+    .withIdentity({ subject: userId })
+    .query(api.donors.queries.getDonorById, { donorId });
+
+  expect(donor?.totalExpenses).toBe(200);
+});
