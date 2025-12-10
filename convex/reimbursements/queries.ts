@@ -3,7 +3,6 @@ import { query } from "../_generated/server";
 import { getCurrentUser } from "../users/getCurrentUser";
 
 export const getUserBankDetails = query({
-  args: {},
   handler: async (ctx) => {
     const user = await getCurrentUser(ctx);
     return {
@@ -37,7 +36,7 @@ export const getReimbursement = query({
 export const getReceipts = query({
   args: { reimbursementId: v.id("reimbursements") },
   handler: async (ctx, args) => {
-    return await ctx.db
+    return ctx.db
       .query("receipts")
       .withIndex("by_reimbursement", (q) =>
         q.eq("reimbursementId", args.reimbursementId),
@@ -49,12 +48,11 @@ export const getReceipts = query({
 export const getFileUrl = query({
   args: { storageId: v.id("_storage") },
   handler: async (ctx, args) => {
-    return await ctx.storage.getUrl(args.storageId);
+    return ctx.storage.getUrl(args.storageId);
   },
 });
 
 export const getAllReimbursements = query({
-  args: {},
   handler: async (ctx) => {
     const user = await getCurrentUser(ctx);
     const isAdmin = user.role === "admin";

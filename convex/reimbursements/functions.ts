@@ -3,16 +3,6 @@ import { mutation } from "../_generated/server";
 import { addLog } from "../logs/functions";
 import { getCurrentUser } from "../users/getCurrentUser";
 
-const costTypeValidator = v.union(
-  v.literal("car"),
-  v.literal("train"),
-  v.literal("flight"),
-  v.literal("taxi"),
-  v.literal("bus"),
-  v.literal("accommodation"),
-  v.literal("food"),
-);
-
 export const createReimbursement = mutation({
   args: {
     amount: v.number(),
@@ -52,14 +42,7 @@ export const createReimbursement = mutation({
       await ctx.db.insert("receipts", { reimbursementId, ...receipt });
     }
 
-    await addLog(
-      ctx,
-      user.organizationId,
-      user._id,
-      "reimbursement.create",
-      reimbursementId,
-      `${args.amount}€`,
-    );
+    await addLog(ctx, user.organizationId, user._id, "reimbursement.create", reimbursementId, `${args.amount}€`);
     return reimbursementId;
   },
 });
@@ -86,7 +69,15 @@ export const createTravelReimbursement = mutation({
         taxRate: v.number(),
         grossAmount: v.number(),
         fileStorageId: v.id("_storage"),
-        costType: costTypeValidator,
+        costType: v.union(
+          v.literal("car"),
+          v.literal("train"),
+          v.literal("flight"),
+          v.literal("taxi"),
+          v.literal("bus"),
+          v.literal("accommodation"),
+          v.literal("food"),
+        ),
         kilometers: v.optional(v.number()),
       }),
     ),
@@ -119,14 +110,7 @@ export const createTravelReimbursement = mutation({
       await ctx.db.insert("receipts", { reimbursementId, ...receipt });
     }
 
-    await addLog(
-      ctx,
-      user.organizationId,
-      user._id,
-      "reimbursement.create",
-      reimbursementId,
-      `Travel ${args.amount}€`,
-    );
+    await addLog(ctx, user.organizationId, user._id, "reimbursement.create", reimbursementId, `Travel ${args.amount}€`);
     return reimbursementId;
   },
 });
@@ -135,54 +119,6 @@ export const generateUploadUrl = mutation({
   handler: async (ctx) => {
     await getCurrentUser(ctx);
     return ctx.storage.generateUploadUrl();
-  },
-});
-
-export const addReceipt = mutation({
-  args: {
-    reimbursementId: v.id("reimbursements"),
-    receiptNumber: v.string(),
-    receiptDate: v.string(),
-    companyName: v.string(),
-    description: v.string(),
-    netAmount: v.number(),
-    taxRate: v.number(),
-    grossAmount: v.number(),
-    fileStorageId: v.id("_storage"),
-  },
-  handler: async (ctx, args) => {
-    await getCurrentUser(ctx);
-    return ctx.db.insert("receipts", args);
-  },
-});
-
-export const updateReceipt = mutation({
-  args: {
-    receiptId: v.id("receipts"),
-    receiptNumber: v.string(),
-    receiptDate: v.string(),
-    companyName: v.string(),
-    description: v.string(),
-    netAmount: v.number(),
-    taxRate: v.number(),
-    grossAmount: v.number(),
-    fileStorageId: v.id("_storage"),
-  },
-  handler: async (ctx, args) => {
-    await getCurrentUser(ctx);
-    const { receiptId, ...data } = args;
-    await ctx.db.patch(receiptId, data);
-  },
-});
-
-export const deleteReceipt = mutation({
-  args: { receiptId: v.id("receipts") },
-  handler: async (ctx, args) => {
-    await getCurrentUser(ctx);
-    const receipt = await ctx.db.get(args.receiptId);
-    if (!receipt) return;
-    await ctx.storage.delete(receipt.fileStorageId);
-    await ctx.db.delete(args.receiptId);
   },
 });
 
@@ -195,11 +131,8 @@ export const deleteReimbursement = mutation({
 
     const receipts = await ctx.db
       .query("receipts")
-      .withIndex("by_reimbursement", (q) =>
-        q.eq("reimbursementId", args.reimbursementId),
-      )
+      .withIndex("by_reimbursement", (q) => q.eq("reimbursementId", args.reimbursementId))
       .collect();
-
     for (const receipt of receipts) {
       await ctx.storage.delete(receipt.fileStorageId);
       await ctx.db.delete(receipt._id);
@@ -208,22 +141,13 @@ export const deleteReimbursement = mutation({
     if (reimbursement.type === "travel") {
       const travelDetails = await ctx.db
         .query("travelDetails")
-        .withIndex("by_reimbursement", (q) =>
-          q.eq("reimbursementId", args.reimbursementId),
-        )
+        .withIndex("by_reimbursement", (q) => q.eq("reimbursementId", args.reimbursementId))
         .first();
       if (travelDetails) await ctx.db.delete(travelDetails._id);
     }
 
     await ctx.db.delete(args.reimbursementId);
-    await addLog(
-      ctx,
-      user.organizationId,
-      user._id,
-      "reimbursement.delete",
-      args.reimbursementId,
-      `${reimbursement.amount}€`,
-    );
+    await addLog(ctx, user.organizationId, user._id, "reimbursement.delete", args.reimbursementId, `${reimbursement.amount}€`);
   },
 });
 
@@ -270,81 +194,20 @@ export const rejectReimbursement = mutation({
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
-    const reimbursement = await ctx.db.get(args.reimbursementId);
 
     await ctx.db.patch(args.reimbursementId, {
       status: "rejected",
       adminNote: args.adminNote,
     });
 
-    if (reimbursement) {
-      await addLog(
-        ctx,
-        user.organizationId,
-        user._id,
-        "reimbursement.reject",
-        args.reimbursementId,
-        `${reimbursement.amount}€`,
-      );
-    }
+    await addLog(
+      ctx,
+      user.organizationId,
+      user._id,
+      "reimbursement.reject",
+      args.reimbursementId,
+      args.adminNote,
+    );
   },
 });
 
-export const updateReimbursement = mutation({
-  args: {
-    reimbursementId: v.id("reimbursements"),
-    projectId: v.id("projects"),
-    amount: v.number(),
-  },
-  handler: async (ctx, args) => {
-    await ctx.db.patch(args.reimbursementId, {
-      projectId: args.projectId,
-      amount: args.amount,
-      status: "pending",
-    });
-  },
-});
-
-export const updateTravelReimbursement = mutation({
-  args: {
-    reimbursementId: v.id("reimbursements"),
-    projectId: v.id("projects"),
-    amount: v.number(),
-    startDate: v.string(),
-    endDate: v.string(),
-    destination: v.string(),
-    purpose: v.string(),
-    isInternational: v.boolean(),
-  },
-  handler: async (ctx, args) => {
-    await ctx.db.patch(args.reimbursementId, {
-      projectId: args.projectId,
-      amount: args.amount,
-      status: "pending",
-    });
-
-    const existing = await ctx.db
-      .query("travelDetails")
-      .withIndex("by_reimbursement", (q) =>
-        q.eq("reimbursementId", args.reimbursementId),
-      )
-      .first();
-
-    const travelData = {
-      startDate: args.startDate,
-      endDate: args.endDate,
-      destination: args.destination,
-      purpose: args.purpose,
-      isInternational: args.isInternational,
-    };
-
-    if (existing) {
-      await ctx.db.patch(existing._id, travelData);
-    } else {
-      await ctx.db.insert("travelDetails", {
-        reimbursementId: args.reimbursementId,
-        ...travelData,
-      });
-    }
-  },
-});
