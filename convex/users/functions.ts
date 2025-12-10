@@ -8,9 +8,7 @@ export const addUserToOrganization = mutation({
   args: {
     userId: v.id("users"),
     organizationId: v.id("organizations"),
-    role: v.optional(
-      v.union(v.literal("admin"), v.literal("lead"), v.literal("member")),
-    ),
+    role: v.optional(v.union(v.literal("admin"), v.literal("lead"), v.literal("member"))),
   },
   handler: async (ctx, args) => {
     await ctx.db.patch(args.userId, {
@@ -31,36 +29,20 @@ export const updateUserRole = mutation({
     const targetUser = await ctx.db.get(args.userId);
 
     if (!targetUser) throw new Error("User not found");
-    if (targetUser.organizationId !== currentUser.organizationId)
-      throw new Error("Access denied");
+    if (targetUser.organizationId !== currentUser.organizationId) throw new Error("Access denied");
 
     if (targetUser.role === "admin" && args.role !== "admin") {
-      let adminCount = 0;
-      const users = ctx.db
+      const admins = await ctx.db
         .query("users")
-        .withIndex("by_organization", (q) =>
-          q.eq("organizationId", currentUser.organizationId),
-        );
-      for await (const user of users) {
-        if (user.role === "admin") adminCount++;
-        if (adminCount > 1) break;
-      }
-      if (adminCount <= 1)
-        throw new Error(
-          "Der letzte Admin kann nicht entfernt werden. Mindestens ein Admin ist erforderlich.",
-        );
+        .withIndex("by_organization", (q) => q.eq("organizationId", currentUser.organizationId))
+        .filter((q) => q.eq(q.field("role"), "admin"))
+        .take(2);
+      if (admins.length <= 1) throw new Error("Der letzte Admin kann nicht entfernt werden. Mindestens ein Admin ist erforderlich.");
     }
 
     const oldRole = targetUser.role ?? "member";
     await ctx.db.patch(args.userId, { role: args.role });
-    await addLog(
-      ctx,
-      currentUser.organizationId,
-      currentUser._id,
-      "user.role_change",
-      args.userId,
-      `${targetUser.name ?? targetUser.email}: ${oldRole} → ${args.role}`,
-    );
+    await addLog(ctx, currentUser.organizationId, currentUser._id, "user.role_change", args.userId, `${targetUser.name ?? targetUser.email}: ${oldRole} → ${args.role}`);
   },
 });
 
