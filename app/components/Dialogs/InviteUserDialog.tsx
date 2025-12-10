@@ -12,7 +12,7 @@ import { api } from "@/convex/_generated/api";
 import { useMutation } from "convex/react";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { Input } from "../ui/input";
+import { Input } from "@/components/ui/input";
 
 interface InviteUserDialogProps {
   open: boolean;
