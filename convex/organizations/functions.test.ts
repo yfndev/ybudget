@@ -1,0 +1,79 @@
+import { convexTest } from "convex-test";
+import { expect, test } from "vitest";
+import { api } from "../_generated/api";
+import schema from "../schema";
+import { modules, setupTestData } from "../test.setup";
+
+test("initializeOrganization returns existing organization when user already has one", async () => {
+  const t = convexTest(schema, modules);
+  const { organizationId, userId } = await setupTestData(t);
+
+  const result = await t
+    .withIdentity({ subject: userId })
+    .mutation(api.organizations.functions.initializeOrganization, {});
+
+  expect(result.organizationId).toBe(organizationId);
+  expect(result.isNew).toBe(false);
+});
+
+
+test("initializeOrganization adds user to existing organization by domain", async () => {
+  const t = convexTest(schema, modules);
+  const { organizationId } = await setupTestData(t);
+
+  const newUserId = await t.run((ctx) =>
+    ctx.db.insert("users", { email: "newuser@test.com" }),
+  );
+
+  const result = await t
+    .withIdentity({ subject: newUserId })
+    .mutation(api.organizations.functions.initializeOrganization, {});
+
+  expect(result.organizationId).toBe(organizationId);
+
+  const user = await t.run((ctx) => ctx.db.get(newUserId));
+  expect(user?.role).toBe("member");
+});
+
+
+test("initializeOrganization creates new organization with 'Rücklagen' project", async () => {
+  const t = convexTest(schema, modules);
+
+  const userId = await t.run((ctx) =>
+    ctx.db.insert("users", { email: "user@newdomain.com" }),
+  );
+
+  const result = await t
+    .withIdentity({ subject: userId })
+    .mutation(api.organizations.functions.initializeOrganization, {
+      organizationName: "New Test Organization",
+    });
+
+  expect(result.isNew).toBe(true);
+
+  const org = await t.run((ctx) => ctx.db.get(result.organizationId));
+  expect(org?.name).toBe("New Test Organization");
+
+  const project = await t.run((ctx) =>
+    ctx.db
+      .query("projects")
+      .withIndex("by_organization", (q) => q.eq("organizationId", result.organizationId))
+      .first(),
+  );
+  expect(project?.name).toBe("Rücklagen");
+});
+
+
+test("initializeOrganization throws error when email has no domain", async () => {
+  const t = convexTest(schema, modules);
+
+  const userId = await t.run((ctx) =>
+    ctx.db.insert("users", { email: "maxmustermann" }),
+  );
+
+  await expect(
+    t
+      .withIdentity({ subject: userId })
+      .mutation(api.organizations.functions.initializeOrganization, {}),
+  ).rejects.toThrow("Could not find a domain for this E-Mail");
+});

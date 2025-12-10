@@ -1,64 +1,8 @@
 import { v } from "convex/values";
-import type { Id } from "../_generated/dataModel";
-import { mutation, type MutationCtx } from "../_generated/server";
+import { mutation } from "../_generated/server";
 import { getCurrentUser } from "../users/getCurrentUser";
 
-function getUserDomain(email: string | undefined): string | null {
-  if (!email) return null;
-  const domain = email.split("@")[1];
-  return domain || null;
-}
-
-async function getOrganizationByDomain(
-  ctx: MutationCtx,
-  domain: string,
-): Promise<Id<"organizations"> | null> {
-  const organization = await ctx.db
-    .query("organizations")
-    .withIndex("by_domain", (q) => q.eq("domain", domain))
-    .first();
-
-  return organization?._id ?? null;
-}
-
-async function addUserToOrganization(
-  ctx: MutationCtx,
-  userId: Id<"users">,
-  organizationId: Id<"organizations">,
-  role: "admin" | "lead" | "member",
-): Promise<void> {
-  await ctx.db.patch(userId, {
-    organizationId,
-    role,
-  });
-}
-
-export const createOrganization = mutation({
-  args: {
-    name: v.string(),
-    domain: v.string(),
-    userId: v.id("users"),
-  },
-  handler: async (ctx, args) => {
-    const organizationId = await ctx.db.insert("organizations", {
-      name: args.name,
-      domain: args.domain,
-      createdBy: args.userId,
-    });
-
-    await ctx.db.insert("projects", {
-      name: "Rücklagen",
-      parentId: undefined,
-      organizationId,
-      isArchived: false,
-      createdBy: args.userId,
-    });
-
-    return organizationId;
-  },
-});
-
-export const setupUserOrganization = mutation({
+export const initializeOrganization = mutation({
   args: {
     organizationName: v.optional(v.string()),
   },
@@ -66,23 +10,20 @@ export const setupUserOrganization = mutation({
     const user = await getCurrentUser(ctx);
 
     if (user.organizationId) {
-      return {
-        organizationId: user.organizationId,
-        isNew: false,
-      };
+      return { organizationId: user.organizationId, isNew: false };
     }
 
-    const domain = getUserDomain(user.email);
-    if (!domain) throw new Error("Email domain not found");
+    const domain = user.email?.split("@")[1];
+    if (!domain) throw new Error("Could not find a domain for this E-Mail");
 
-    const existingOrgId = await getOrganizationByDomain(ctx, domain);
+    const existingOrg = await ctx.db
+      .query("organizations")
+      .withIndex("by_domain", (q) => q.eq("domain", domain))
+      .first();
 
-    if (existingOrgId) {
-      await addUserToOrganization(ctx, user._id, existingOrgId, "member");
-      return {
-        organizationId: existingOrgId,
-        isNew: false,
-      };
+    if (existingOrg) {
+      await ctx.db.patch(user._id, { organizationId: existingOrg._id, role: "member" });
+      return { organizationId: existingOrg._id, isNew: false };
     }
 
     const organizationId = await ctx.db.insert("organizations", {
@@ -91,11 +32,15 @@ export const setupUserOrganization = mutation({
       createdBy: user._id,
     });
 
-    await addUserToOrganization(ctx, user._id, organizationId, "admin");
-
-    return {
+    await ctx.db.insert("projects", {
+      name: "Rücklagen",
       organizationId,
-      isNew: true,
-    };
+      isArchived: false,
+      createdBy: user._id,
+    });
+
+    await ctx.db.patch(user._id, { organizationId, role: "admin" });
+
+    return { organizationId, isNew: true };
   },
 });
