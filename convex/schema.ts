@@ -168,6 +168,8 @@ export default defineSchema({
     destination: v.string(),
     purpose: v.string(),
     isInternational: v.boolean(),
+    mealAllowanceDays: v.optional(v.number()),
+    mealAllowanceDailyBudget: v.optional(v.number()),
   }).index("by_reimbursement", ["reimbursementId"]),
 
   receipts: defineTable({
@@ -188,7 +190,6 @@ export default defineSchema({
         v.literal("taxi"),
         v.literal("bus"),
         v.literal("accommodation"),
-        v.literal("food"),
       ),
     ),
     kilometers: v.optional(v.number()),

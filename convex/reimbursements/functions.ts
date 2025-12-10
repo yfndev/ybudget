@@ -59,6 +59,8 @@ export const createTravelReimbursement = mutation({
     destination: v.string(),
     purpose: v.string(),
     isInternational: v.boolean(),
+    mealAllowanceDays: v.optional(v.number()),
+    mealAllowanceDailyBudget: v.optional(v.number()),
     receipts: v.array(
       v.object({
         receiptNumber: v.string(),
@@ -76,7 +78,6 @@ export const createTravelReimbursement = mutation({
           v.literal("taxi"),
           v.literal("bus"),
           v.literal("accommodation"),
-          v.literal("food"),
         ),
         kilometers: v.optional(v.number()),
       }),
@@ -104,6 +105,8 @@ export const createTravelReimbursement = mutation({
       destination: args.destination,
       purpose: args.purpose,
       isInternational: args.isInternational,
+      mealAllowanceDays: args.mealAllowanceDays,
+      mealAllowanceDailyBudget: args.mealAllowanceDailyBudget,
     });
 
     for (const receipt of args.receipts) {

@@ -1,3 +1,5 @@
+"use client";
+
 import { DateInput } from "@/components/Selectors/DateInput";
 import { SelectProject } from "@/components/Selectors/SelectProject";
 import { Button } from "@/components/ui/button";
@@ -5,106 +7,73 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { Id } from "@/convex/_generated/dataModel";
-import {
-  Bus,
-  Car,
-  Hotel,
-  Pencil,
-  Plane,
-  Train,
-  Trash2,
-  Utensils,
-} from "lucide-react";
+import { api } from "@/convex/_generated/api";
+import type { Doc, Id } from "@/convex/_generated/dataModel";
+import { useMutation } from "convex/react";
+import { Pencil, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import toast from "react-hot-toast";
 import { ReceiptUpload } from "./ReceiptUpload";
 
-export type CostType =
-  | "car"
-  | "train"
-  | "flight"
-  | "taxi"
-  | "bus"
-  | "accommodation"
-  | "food";
+type BankDetails = Pick<
+  Doc<"reimbursements">,
+  "iban" | "bic" | "accountHolder"
+>;
+type CostType = NonNullable<Doc<"receipts">["costType"]>;
+type TravelReceipt = Omit<
+  Doc<"receipts">,
+  "_id" | "_creationTime" | "reimbursementId" | "costType"
+> & { costType: CostType };
+type TravelInfo = Omit<
+  Doc<"travelDetails">,
+  "_id" | "_creationTime" | "reimbursementId"
+>;
 
-export type TravelReceipt = {
-  receiptNumber: string;
-  receiptDate: string;
-  companyName: string;
-  description: string;
-  netAmount: number;
-  taxRate: number;
-  grossAmount: number;
-  fileStorageId: Id<"_storage">;
-  costType: CostType;
-  kilometers?: number;
+const costTypeLabels: Record<CostType, string> = {
+  car: "PKW",
+  train: "Bahn",
+  flight: "Flug",
+  taxi: "Taxi",
+  bus: "Bus",
+  accommodation: "Unterkunft",
 };
 
-export type TravelInfo = {
-  startDate: string;
-  endDate: string;
-  destination: string;
-  purpose: string;
-  isInternational: boolean;
+const EMPTY_TRAVEL_INFO: TravelInfo = {
+  startDate: "",
+  endDate: "",
+  destination: "",
+  purpose: "",
+  isInternational: false,
 };
-
-type BankDetails = {
-  iban: string;
-  bic: string;
-  accountHolder: string;
-};
-
-type Props = {
-  selectedProjectId: Id<"projects"> | null;
-  setSelectedProjectId: (id: Id<"projects"> | null) => void;
-  bankDetails: BankDetails;
-  setBankDetails: (details: BankDetails) => void;
-  editingBank: boolean;
-  onBankToggle: () => void;
-  travelInfo: TravelInfo;
-  setTravelInfo: (info: TravelInfo) => void;
-  receipts: TravelReceipt[];
-  setReceipts: (receipts: TravelReceipt[]) => void;
-  onSubmit: () => void;
-  reimbursementType: "expense" | "travel";
-  setReimbursementType: (type: "expense" | "travel") => void;
-};
-
-const COST_TYPES = [
-  { type: "car" as CostType, label: "PKW", icon: Car },
-  { type: "train" as CostType, label: "Bahn", icon: Train },
-  { type: "flight" as CostType, label: "Flug", icon: Plane },
-  { type: "taxi" as CostType, label: "Taxi", icon: Car },
-  { type: "bus" as CostType, label: "Bus", icon: Bus },
-  { type: "accommodation" as CostType, label: "Hotel", icon: Hotel },
-  { type: "food" as CostType, label: "Essen", icon: Utensils },
-];
-
-const getLabel = (type: CostType) =>
-  COST_TYPES.find((cost) => cost.type === type)?.label || type;
 
 export function TravelReimbursementFormUI({
-  selectedProjectId,
-  setSelectedProjectId,
-  bankDetails,
-  setBankDetails,
-  editingBank,
-  onBankToggle,
-  travelInfo,
-  setTravelInfo,
-  receipts,
-  setReceipts,
-  onSubmit,
-  reimbursementType,
-  setReimbursementType,
-}: Props) {
+  defaultBankDetails,
+}: {
+  defaultBankDetails: BankDetails;
+}) {
+  const router = useRouter();
+  const createTravelReimbursement = useMutation(
+    api.reimbursements.functions.createTravelReimbursement
+  );
+  const updateUserBankDetails = useMutation(
+    api.users.functions.updateBankDetails
+  );
+
+  const [selectedProjectId, setSelectedProjectId] =
+    useState<Id<"projects"> | null>(null);
+  const [bankDetails, setBankDetails] =
+    useState<BankDetails>(defaultBankDetails);
+  const [editingBank, setEditingBank] = useState(false);
+  const [travelInfo, setTravelInfo] = useState<TravelInfo>(EMPTY_TRAVEL_INFO);
+  const [receipts, setReceipts] = useState<TravelReceipt[]>([]);
+
   const hasReceipt = (type: CostType) =>
-    receipts.some((receipt) => receipt.costType === type);
+    receipts.some((r) => r.costType === type);
 
   const toggleType = (type: CostType) => {
     if (hasReceipt(type)) {
-      setReceipts(receipts.filter((receipt) => receipt.costType !== type));
+      setReceipts(receipts.filter((r) => r.costType !== type));
       return;
     }
     setReceipts([
@@ -126,9 +95,7 @@ export function TravelReimbursementFormUI({
 
   const updateReceipt = (type: CostType, updates: Partial<TravelReceipt>) => {
     setReceipts(
-      receipts.map((receipt) =>
-        receipt.costType === type ? { ...receipt, ...updates } : receipt,
-      ),
+      receipts.map((r) => (r.costType === type ? { ...r, ...updates } : r))
     );
   };
 
@@ -137,43 +104,52 @@ export function TravelReimbursementFormUI({
     travelInfo.purpose &&
     travelInfo.startDate &&
     travelInfo.endDate;
-
-  const totalAmount = receipts.reduce(
-    (sum, receipt) => sum + receipt.grossAmount,
-    0,
-  );
+  const receiptsTotal = receipts.reduce((sum, r) => sum + r.grossAmount, 0);
+  const mealAllowanceTotal =
+    (travelInfo.mealAllowanceDays || 0) *
+    (travelInfo.mealAllowanceDailyBudget || 0);
+  const totalAmount = receiptsTotal + mealAllowanceTotal;
   const allReceiptsComplete = receipts.every(
-    (receipt) =>
-      receipt.grossAmount > 0 && receipt.fileStorageId && receipt.companyName,
+    (r) => r.grossAmount > 0 && r.fileStorageId && r.companyName
   );
+  const hasExpenses = receipts.length > 0 || mealAllowanceTotal > 0;
   const canSubmit =
     hasBasicInfo &&
-    receipts.length > 0 &&
-    allReceiptsComplete &&
+    hasExpenses &&
+    (receipts.length === 0 || allReceiptsComplete) &&
     selectedProjectId;
+
+  const handleBankToggle = async () => {
+    if (editingBank) {
+      await updateUserBankDetails(bankDetails);
+    }
+    setEditingBank(!editingBank);
+  };
+
+  const handleSubmit = async () => {
+    if (!selectedProjectId) {
+      toast.error("Bitte ein Projekt auswählen");
+      return;
+    }
+    await createTravelReimbursement({
+      projectId: selectedProjectId,
+      amount: totalAmount,
+      ...bankDetails,
+      ...travelInfo,
+      receipts,
+    });
+    router.push("/reimbursement");
+  };
 
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-8">
-      <div className="space-y-4">
-        <Tabs
-          value={reimbursementType}
+      <div className="w-[200px]">
+        <SelectProject
+          value={selectedProjectId || ""}
           onValueChange={(value) =>
-            setReimbursementType(value as "expense" | "travel")
+            setSelectedProjectId(value ? (value as Id<"projects">) : null)
           }
-        >
-          <TabsList>
-            <TabsTrigger value="expense">Auslagenerstattung</TabsTrigger>
-            <TabsTrigger value="travel">Reisekostenerstattung</TabsTrigger>
-          </TabsList>
-        </Tabs>
-        <div className="w-[200px]">
-          <SelectProject
-            value={selectedProjectId || ""}
-            onValueChange={(value) =>
-              setSelectedProjectId(value ? (value as Id<"projects">) : null)
-            }
-          />
-        </div>
+        />
       </div>
 
       <div className="space-y-4">
@@ -241,29 +217,14 @@ export function TravelReimbursementFormUI({
           <div>
             <h2 className="text-lg font-medium mb-3">Kostenarten auswählen</h2>
             <div className="flex flex-wrap gap-2">
-              {COST_TYPES.slice(0, 5).map(({ type, label, icon: Icon }) => (
+              {(Object.keys(costTypeLabels) as CostType[]).map((type) => (
                 <Button
                   key={type}
                   type="button"
                   variant={hasReceipt(type) ? "default" : "outline"}
                   onClick={() => toggleType(type)}
-                  className="gap-2"
                 >
-                  <Icon className="size-4" />
-                  {label}
-                </Button>
-              ))}
-              <div className="w-px bg-border mx-2" />
-              {COST_TYPES.slice(5).map(({ type, label, icon: Icon }) => (
-                <Button
-                  key={type}
-                  type="button"
-                  variant={hasReceipt(type) ? "default" : "outline"}
-                  onClick={() => toggleType(type)}
-                  className="gap-2"
-                >
-                  <Icon className="size-4" />
-                  {label}
+                  {costTypeLabels[type]}
                 </Button>
               ))}
             </div>
@@ -278,7 +239,7 @@ export function TravelReimbursementFormUI({
                 <h3 className="font-medium">
                   {receipt.costType === "car"
                     ? "PKW (0,30€/km)"
-                    : getLabel(receipt.costType)}
+                    : costTypeLabels[receipt.costType]}
                 </h3>
                 <Button
                   variant="ghost"
@@ -317,7 +278,7 @@ export function TravelReimbursementFormUI({
                         onChange={(e) => {
                           const km = Math.max(
                             0,
-                            Math.floor(parseFloat(e.target.value) || 0),
+                            Math.floor(parseFloat(e.target.value) || 0)
                           );
                           updateReceipt(receipt.costType, {
                             kilometers: km,
@@ -348,7 +309,7 @@ export function TravelReimbursementFormUI({
                       onChange={(e) => {
                         const amount = Math.max(
                           0,
-                          parseFloat(e.target.value) || 0,
+                          parseFloat(e.target.value) || 0
                         );
                         updateReceipt(receipt.costType, {
                           grossAmount: amount,
@@ -374,6 +335,58 @@ export function TravelReimbursementFormUI({
               )}
             </div>
           ))}
+
+          <div className="border rounded-lg p-4 space-y-4">
+            <h3 className="font-medium">Verpflegungsmehraufwand</h3>
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <Label>Tage</Label>
+                <Input
+                  type="number"
+                  step="0.5"
+                  min={0}
+                  value={travelInfo.mealAllowanceDays || ""}
+                  onChange={(e) =>
+                    setTravelInfo({
+                      ...travelInfo,
+                      mealAllowanceDays:
+                        parseFloat(e.target.value) || undefined,
+                    })
+                  }
+                  placeholder="z.B. 2.5"
+                />
+              </div>
+              <div>
+                <Label>Tagessatz (€)</Label>
+                <Input
+                  type="number"
+                  step="1"
+                  min={0}
+                  value={travelInfo.mealAllowanceDailyBudget || ""}
+                  onChange={(e) =>
+                    setTravelInfo({
+                      ...travelInfo,
+                      mealAllowanceDailyBudget:
+                        parseFloat(e.target.value) || undefined,
+                    })
+                  }
+                  placeholder={
+                    travelInfo.isInternational
+                      ? "Auslandspauschale"
+                      : "14 oder 28"
+                  }
+                />
+              </div>
+              <div>
+                <Label className="text-muted-foreground">Betrag</Label>
+                <Input
+                  value={`${mealAllowanceTotal.toFixed(2)} €`}
+                  disabled
+                  className="bg-muted/50 font-mono"
+                />
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
@@ -432,7 +445,7 @@ export function TravelReimbursementFormUI({
             <Button
               variant={editingBank ? "default" : "outline"}
               size="sm"
-              onClick={onBankToggle}
+              onClick={handleBankToggle}
             >
               {editingBank ? "Speichern" : <Pencil className="size-4" />}
             </Button>
@@ -440,7 +453,7 @@ export function TravelReimbursementFormUI({
 
           <div className="space-y-3">
             {receipts
-              .filter((receipt) => receipt.grossAmount > 0)
+              .filter((r) => r.grossAmount > 0)
               .map((receipt) => (
                 <div
                   key={receipt.costType}
@@ -448,7 +461,7 @@ export function TravelReimbursementFormUI({
                 >
                   <div className="flex items-center gap-8 flex-1">
                     <span className="font-semibold">
-                      {getLabel(receipt.costType)}
+                      {costTypeLabels[receipt.costType]}
                     </span>
                     {receipt.costType === "car" && (
                       <span className="text-sm text-muted-foreground">
@@ -472,7 +485,7 @@ export function TravelReimbursementFormUI({
           </div>
 
           <Button
-            onClick={onSubmit}
+            onClick={handleSubmit}
             className="w-full h-14 font-semibold mt-8"
             size="lg"
           >

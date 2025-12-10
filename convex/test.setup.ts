@@ -45,6 +45,39 @@ export async function setupTestData(test: ReturnType<typeof convexTest>) {
       createdBy: userId,
     });
 
-    return { organizationId, userId, projectId, categoryId, donorId };
+    const reimbursementId = await ctx.db.insert("reimbursements", {
+      organizationId,
+      projectId,
+      amount: 100,
+      type: "expense",
+      status: "pending",
+      iban: "DE12340000000000000000",
+      bic: "BIC",
+      accountHolder: "Test",
+      createdBy: userId,
+    });
+
+    const travelReimbursementId = await ctx.db.insert("reimbursements", {
+      organizationId,
+      projectId,
+      amount: 200,
+      type: "travel",
+      status: "pending",
+      iban: "DE12340000000000000000",
+      bic: "BIC",
+      accountHolder: "Test",
+      createdBy: userId,
+    });
+
+    await ctx.db.insert("travelDetails", {
+      reimbursementId: travelReimbursementId,
+      startDate: "2024-01-01",
+      endDate: "2024-01-02",
+      destination: "Berlin",
+      purpose: "Conference",
+      isInternational: false,
+    });
+
+    return { organizationId, userId, projectId, categoryId, donorId, reimbursementId, travelReimbursementId };
   });
 }

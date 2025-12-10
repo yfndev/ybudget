@@ -2,7 +2,7 @@ import { convexTest } from "convex-test";
 import { expect, test } from "vitest";
 import { api } from "../_generated/api";
 import schema from "../schema";
-import { createTravelReimbursement, modules, setupTestData } from "../test.setup";
+import { modules, setupTestData } from "../test.setup";
 
 test("create (standard) reimbursement", async () => {
   const t = convexTest(schema, modules);
@@ -108,20 +108,16 @@ test("generate upload url", async () => {
 
 test("delete travel reimbursement deletes travel details", async () => {
   const t = convexTest(schema, modules);
-  const { organizationId, userId, projectId } = await setupTestData(t);
-
-  const reimbursementId = await t.run((ctx) =>
-    createTravelReimbursement(ctx, organizationId, projectId, userId),
-  );
+  const { userId, travelReimbursementId } = await setupTestData(t);
 
   await t
     .withIdentity({ subject: userId })
-    .mutation(api.reimbursements.functions.deleteReimbursement, { reimbursementId });
+    .mutation(api.reimbursements.functions.deleteReimbursement, { reimbursementId: travelReimbursementId });
 
   const details = await t.run((ctx) =>
     ctx.db
       .query("travelDetails")
-      .withIndex("by_reimbursement", (q) => q.eq("reimbursementId", reimbursementId))
+      .withIndex("by_reimbursement", (q) => q.eq("reimbursementId", travelReimbursementId))
       .first(),
   );
   expect(details).toBeNull();

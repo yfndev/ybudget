@@ -2,7 +2,7 @@ import { convexTest } from "convex-test";
 import { expect, test } from "vitest";
 import { api } from "../_generated/api";
 import schema from "../schema";
-import { createTravelReimbursement, modules, setupTestData } from "../test.setup";
+import { modules, setupTestData } from "../test.setup";
 
 test("get user bank details", async () => {
   const t = convexTest(schema, modules);
@@ -47,15 +47,11 @@ test("get expense reimbursement", async () => {
 
 test("get travel reimbursement with details", async () => {
   const t = convexTest(schema, modules);
-  const { organizationId, userId, projectId } = await setupTestData(t);
-
-  const reimbursementId = await t.run((ctx) =>
-    createTravelReimbursement(ctx, organizationId, projectId, userId),
-  );
+  const { userId, travelReimbursementId } = await setupTestData(t);
 
   const reimbursement = await t
     .withIdentity({ subject: userId })
-    .query(api.reimbursements.queries.getReimbursement, { reimbursementId });
+    .query(api.reimbursements.queries.getReimbursement, { reimbursementId: travelReimbursementId });
 
   expect(reimbursement?.type).toBe("travel");
 });
@@ -174,9 +170,7 @@ test("non-admin sees own only", async () => {
 
 test("getAllReimbursements includes travel details", async () => {
   const t = convexTest(schema, modules);
-  const { organizationId, userId, projectId } = await setupTestData(t);
-
-  await t.run((ctx) => createTravelReimbursement(ctx, organizationId, projectId, userId));
+  const { userId } = await setupTestData(t);
 
   const reimbursements = await t
     .withIdentity({ subject: userId })
