@@ -2,7 +2,7 @@ Tests
 
 **todo**
 
-- [ ] e2e test for reimbursement & travel reimbursement
+- [ ] test setup with cloning
 
 **archive (latest on top):**
 
@@ -10,6 +10,7 @@ Tests
 
 -> add tests (5 unit tests, 10 integration tests, 3 end to end tests) -> 94.5% of lines
 
+- [x] e2e test for reimbursement & travel reimbursement
 - [x] unit tests
 - [x] transactions
 - [x] categories
