@@ -8,7 +8,7 @@ import {
   isValidFileType,
 } from "@/lib/files/fileConversion";
 import { useMutation, useQuery } from "convex/react";
-import { Loader2, Upload } from "lucide-react";
+import { FileText, Loader2, Upload } from "lucide-react";
 import { useRef, useState } from "react";
 import toast from "react-hot-toast";
 
@@ -19,6 +19,7 @@ type Props = {
 
 export function ReceiptUpload({ onUploadComplete, storageId }: Props) {
   const [isUploading, setIsUploading] = useState(false);
+  const [isPdf, setIsPdf] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const generateUploadUrl = useMutation(
     api.reimbursements.functions.generateUploadUrl,
@@ -48,6 +49,7 @@ export function ReceiptUpload({ onUploadComplete, storageId }: Props) {
       if (!result.ok) throw new Error();
 
       const { storageId } = await result.json();
+      setIsPdf(convertedFile.type === "application/pdf");
       onUploadComplete(storageId);
       toast.success("Beleg hochgeladen");
     } catch (error) {
@@ -67,11 +69,18 @@ export function ReceiptUpload({ onUploadComplete, storageId }: Props) {
         className="border rounded-lg p-4 relative group cursor-pointer"
         onClick={() => inputRef.current?.click()}
       >
-        <img
-          src={previewUrl}
-          alt="Beleg"
-          className="max-h-48 mx-auto rounded"
-        />
+        {isPdf ? (
+          <div className="flex flex-col items-center py-8">
+            <FileText className="size-16 text-primary" />
+            <p className="text-sm text-muted-foreground mt-2">PDF hochgeladen</p>
+          </div>
+        ) : (
+          <img
+            src={previewUrl}
+            alt="Beleg"
+            className="max-h-48 mx-auto rounded"
+          />
+        )}
         <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
           <div className="text-white text-center">
             <Upload className="size-8 mx-auto mb-2" />
