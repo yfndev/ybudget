@@ -45,33 +45,72 @@ Data flows through Convex for real-time sync. Every query is scoped by `organiza
 
 ## Self-Hosting
 
-YBudget is fully self-hostable. Connect it to your own Convex backend and deploy it on your favorite platform (We use Vercel).
+**Prerequisites:** Node.js 20+, pnpm, [Convex account](https://www.convex.dev/)
 
-**Prerequisites:** Node.js 20+, pnpm, [Convex account](https://www.convex.dev/) (free tier available)
-
-**Quick Start:**
+### 1. Clone & Install
 
 ```bash
-# Clone and install
 git clone https://github.com/yourusername/ybudget.git
 cd ybudget
 pnpm install
-
-# Set up Convex
-npx convex dev
-
-# Configure environment variables
-cp env.example .env.local
-# Edit .env.local with your Convex URLs
-# Set google auth & stripe variables in Convex Dashboard → Settings → Environment Variables
-
-# Run locally
-pnpm dev
-
-
-npx vercel          # Deploy Next.js
-npx convex deploy   # Deploy Convex functions
+npx convex dev  # Creates .env.local with CONVEX_DEPLOYMENT and NEXT_PUBLIC_CONVEX_URL
 ```
+
+### 2. Generate JWT Keys
+
+Run this script and copy the output:
+
+```bash
+node -e "
+const { generateKeyPair, exportPKCS8, exportJWK } = require('jose');
+(async () => {
+  const keys = await generateKeyPair('RS256', { extractable: true });
+  const privateKey = await exportPKCS8(keys.privateKey);
+  const publicKey = await exportJWK(keys.publicKey);
+  console.log('JWT_PRIVATE_KEY=\"' + privateKey.trimEnd().replace(/\n/g, ' ') + '\"');
+  console.log('JWKS=' + JSON.stringify({ keys: [{ use: 'sig', ...publicKey }] }));
+})();
+"
+```
+
+### 3. Set Up Google OAuth
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
+2. Create OAuth 2.0 Client ID (Web application)
+3. Add authorized redirect URI: `https://<your-convex-deployment>.convex.site/api/auth/callback/google`
+4. Copy Client ID and Client Secret
+
+### 4. Configure Environment Variables
+
+Set in Convex Dashboard → Settings → Environment Variables, or via CLI:
+
+```bash
+npx convex env set AUTH_GOOGLE_ID "your-google-client-id"
+npx convex env set AUTH_GOOGLE_SECRET "your-google-client-secret"
+npx convex env set JWT_PRIVATE_KEY "-----BEGIN PRIVATE KEY----- ..."
+npx convex env set JWKS '{"keys":[...]}'
+npx convex env set SITE_URL "http://localhost:3000"
+
+# Optional
+npx convex env set RESEND_API_KEY "re_..."
+npx convex env set STRIPE_KEY "sk_test_..."
+npx convex env set STRIPE_WEBHOOKS_SECRET "whsec_..."
+```
+
+### 5. Run
+
+```bash
+pnpm dev
+```
+
+### 6. Deploy
+
+```bash
+npx convex deploy
+npx vercel
+```
+
+Update `SITE_URL` to your production URL after deploying.
 
 ## Contributing
 
@@ -91,8 +130,7 @@ We're building a tool to support NGOs on their mission by making budgeting as ea
 
 ## Testing
 
-Through using vitest, I've got a 99% test coverage on lines and 98.6% on functions.
-This was especially helpful when cleaning up my code
+Through using vitest, the project got a 100% test coverage on lines, functions and ~96% on branch for unit and integration tests.
 
 ```bash
 pnpm vitest run              # Unit & integration tests
@@ -104,106 +142,11 @@ GitHub Actions runs both test suites on every push and PR.
 
 ## Security
 
-We take security seriously at YBudget. Here's how we protect your financial data and keep operations safe for NGOs.
+OAuth 2.0, role-based access control, organizational data isolation, encrypted at rest.
 
-#### Authentication & Authorization
+**[Security Details](security/Security.md)** | **[Threat Model](security/ThreatModel.md)**
 
-**1. OAuth instead of Password**
-
-- We use OAuth 2.0 with Google instead of traditional username/password authentication
-- This eliminates frequent password vulnerabilities (weak passwords or password reuse by user)
-- It's implemented with [Convex Auth](https://labs.convex.dev/auth) → Google Provider in `convex/auth.ts`
-
-**2. Organizational Isolation**
-
-- Every database query is filtered by `organizationId` to make sure that data is seperated between organizations
-- Organizations can only access their own transactions, projects, donors, and financial data
-- All queries use indexed filters similar to `.withIndex("by_organization", (q) => q.eq("organizationId", user.organizationId))`
-
-**3. Role-Based Access Control**
-
-- Implemented permission levels, after talking to first potential customers
-- `member` (read-only) → `lead` (can edit and manage teams) → `admin` (full control over users, projects, etc.)
-- Functions check minimum required roles before executing sensitive operations
-- `requireRole(ctx, "admin")` validates permissions through `convex/users/permissions.ts`
-
-#### Data Protection
-
-**4. Credentials & Secrets**
-
-- All credentials (OAuth secrets, Stripe keys, JWT keys, etc.) are stored server side in Convex Dashboard
-- Client never receives API keys or secrets, so that only public keys are exposed to browsers
-
-**5. HTTPS Enforcement**
-
-- All production traffic is encrypted using TLS, enforced by Convex Hosting and Next.js
-- This protects against man-in-the-middle attacks and stops people from eavesdropping on financial data
-
-**6. Encryption at Rest**
-
-- Database is hosted on Convex Cloud which encrypts all data
-- Backups are automatically encrypted and isolated per organization
-
-**7. Auth JWT token security**
-
-- Convex Auth signs JWT tokens with private keys so that only our backend can access
-- Sessions expire automatically and users need to re-authenticate after some time
-- Tokens are stored using httpOnly cookies with SameSite=Strict
-
-### API Security
-
-**8. Input Validation**
-
-- Every function argument is validated at runtime using Convex validators
-- This prevents malformed data from entering the system and makes sure that the data is correct
-
-**9. Type-Safe Database Operations**
-
-- Convex uses type-safe queries to prevent NoSQL injection attacks
-- All database operations use typed query methods, not string concatenation
-
-**10. Internal vs Public Functions**
-
-- We separate sensitive operations (like payment fulfillment, user management) into internal functions
-- These internal functions can only be called from our backend (not from client code)
-
-#### Third Party Integrations
-
-**11. Stripe Webhook Verification**
-
-- Every Stripe webhook is verified before we process it using `STRIPE_WEBHOOKS_SECRET`
-- Webhooks are signed using a shared secret
-
-**12. Secure Payment Processing**
-
-- We don't store any credit card data, as we can rely on Stripe as market leader for that
-- Subscriptions are managed through Stripe's customer portal and only the subscriptionId and customerId is saved in our database
-
-### Attack Prevention
-
-**13. Cross-Site Scripting (XSS)**
-
-- Content Security Policy (CSP) headers restrict which resources can be loaded
-- React automatically escapes user input when rendering
-- The only use of `dangerouslySetInnerHTML` is for CSS generation in chart components (no user input)
-
-**14. Rate Limiting**
-
-- Convex provides built in rate limiting on queries and mutations
-- Prevents brute force attacks on login and API endpoints
-
-**15. Secure Deployment Architecture**
-
-- Frontend deployed on Vercel: automatic HTTPS, DDoS protection, CDN caching
-- Backend functions run on Convex Cloud: managed security patches, automated encrypted backups
-
-**📋 Threat Model:**
-For a comprehensive threat analysis including STRIDE analysis and our data flow chart have a look at our [Threat model](security/ThreatModel.md)
-
----
-
-**Found a security issue?**
-Please email team@ybudget.de with details. We take security seriously and will respond asap.
+Found an issue? Email team@ybudget.de
 
 ---
 
