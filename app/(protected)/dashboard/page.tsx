@@ -9,7 +9,7 @@ import { useQuery } from "convex-helpers/react/cache";
 export default function Dashboard() {
   const transactions = useQuery(
     api.transactions.queries.getAllTransactions,
-    {},
+    {}
   );
   const { currentBalance, expectedIncome, expectedExpenses, availableBudget } =
     calculateBudget(transactions ?? []);
@@ -34,12 +34,12 @@ export default function Dashboard() {
         <BudgetCard
           title="Muss noch bezahlt werden"
           amount={expectedExpenses}
-          description="Geplante Ausgaben (müssen noch nicht bezahlt werden)"
+          description="Geplante Ausgaben, die noch nicht überwiesen wurden"
         />
         <BudgetCard
           title="Kommt noch rein"
           amount={expectedIncome}
-          description="Geplante Einnahmen die noch nicht überwiesen wurden"
+          description="Geplante Einnahmen die noch nicht eingetroffen wurden"
         />
       </div>
       <div
