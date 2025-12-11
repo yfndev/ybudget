@@ -377,3 +377,127 @@ test("throw error if trying to delete expected transaction without having permis
       }),
   ).rejects.toThrow("Access denied");
 });
+
+test("split transaction saves remainding amount in reserves project (Rücklagen)", async () => {
+  const t = convexTest(schema, modules);
+  const { organizationId, userId, projectId } = await setupTestData(t);
+
+  const originalId = await t.run((ctx) =>
+    ctx.db.insert("transactions", {
+      organizationId,
+      date: Date.now(),
+      amount: 1000,
+      description: "Original",
+      counterparty: "Test",
+      status: "processed",
+      importedBy: userId,
+    }),
+  );
+
+  await t
+    .withIdentity({ subject: userId })
+    .mutation(api.transactions.functions.splitTransaction, {
+      transactionId: originalId,
+      splits: [{ projectId, amount: 300 }],
+    });
+
+  const splits = await t.run((ctx) =>
+    ctx.db
+      .query("transactions")
+      .filter((q) => q.eq(q.field("splitFromTransactionId"), originalId))
+      .collect(),
+  );
+
+  expect(splits).toHaveLength(2);
+  expect(splits.find((s) => s.amount === 300)?.projectId).toBe(projectId);
+
+  const remainderSplit = splits.find((s) => s.amount === 700);
+  expect(remainderSplit).toBeDefined();
+
+  const reservesProject = await t.run((ctx) =>
+    ctx.db
+      .query("projects")
+      .filter((q) => q.eq(q.field("name"), "Rücklagen"))
+      .first(),
+  );
+  expect(remainderSplit?.projectId).toBe(reservesProject?._id);
+});
+
+test("split transaction without remaining amount creates exact splits", async () => {
+  const t = convexTest(schema, modules);
+  const { organizationId, userId, projectId } = await setupTestData(t);
+
+  const otherProjectId = await t.run((ctx) =>
+    ctx.db.insert("projects", {
+      name: "Other",
+      organizationId,
+      isArchived: false,
+      createdBy: userId,
+    }),
+  );
+
+  const originalId = await t.run((ctx) =>
+    ctx.db.insert("transactions", {
+      organizationId,
+      date: Date.now(),
+      amount: 1000,
+      description: "Original",
+      counterparty: "Test",
+      status: "processed",
+      importedBy: userId,
+    }),
+  );
+
+  await t
+    .withIdentity({ subject: userId })
+    .mutation(api.transactions.functions.splitTransaction, {
+      transactionId: originalId,
+      splits: [
+        { projectId, amount: 600 },
+        { projectId: otherProjectId, amount: 400 },
+      ],
+    });
+
+  const splits = await t.run((ctx) =>
+    ctx.db
+      .query("transactions")
+      .filter((q) => q.eq(q.field("splitFromTransactionId"), originalId))
+      .collect(),
+  );
+
+  expect(splits).toHaveLength(2);
+});
+
+test("split throws when reserves (Rücklagen) project is missing", async () => {
+  const t = convexTest(schema, modules);
+  const { organizationId, userId, projectId } = await setupTestData(t);
+
+  const reservesProject = await t.run((ctx) =>
+    ctx.db
+      .query("projects")
+      .filter((q) => q.eq(q.field("name"), "Rücklagen"))
+      .first(),
+  );
+  await t.run((ctx) => ctx.db.delete(reservesProject!._id));
+
+  const originalId = await t.run((ctx) =>
+    ctx.db.insert("transactions", {
+      organizationId,
+      date: Date.now(),
+      amount: 1000,
+      description: "Original",
+      counterparty: "Test",
+      status: "processed",
+      importedBy: userId,
+    }),
+  );
+
+  await expect(
+    t
+      .withIdentity({ subject: userId })
+      .mutation(api.transactions.functions.splitTransaction, {
+        transactionId: originalId,
+        splits: [{ projectId, amount: 300 }],
+      }),
+  ).rejects.toThrow("Reserves project not found");
+});

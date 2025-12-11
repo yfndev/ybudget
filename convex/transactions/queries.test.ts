@@ -387,3 +387,77 @@ test("filter out archived and split transactions when using unassigned processed
   expect(transactions.some((tx) => tx.description === "Archived")).toBe(false);
   expect(transactions.some((tx) => tx.description === "Split")).toBe(false);
 });
+
+test("unassigned transactions include missing project, category, or donor", async () => {
+  const t = convexTest(schema, modules);
+  const { organizationId, userId, projectId, categoryId } =
+    await setupTestData(t);
+
+  await t.run((ctx) =>
+    ctx.db.insert("transactions", {
+      organizationId,
+      date: Date.now(),
+      amount: -100,
+      description: "Missing project",
+      counterparty: "Test",
+      status: "processed",
+      importedBy: userId,
+      categoryId,
+    }),
+  );
+
+  await t.run((ctx) =>
+    ctx.db.insert("transactions", {
+      organizationId,
+      projectId,
+      date: Date.now(),
+      amount: -100,
+      description: "Missing category",
+      counterparty: "Test",
+      status: "processed",
+      importedBy: userId,
+    }),
+  );
+
+  await t.run((ctx) =>
+    ctx.db.insert("transactions", {
+      organizationId,
+      projectId,
+      categoryId,
+      date: Date.now(),
+      amount: 100,
+      description: "Positive missing donor",
+      counterparty: "Test",
+      status: "processed",
+      importedBy: userId,
+    }),
+  );
+
+  const transactions = await t
+    .withIdentity({ subject: userId })
+    .query(api.transactions.queries.getUnassignedProcessedTransactions, {});
+
+  expect(
+    transactions.some((tx) => tx.description === "Missing project"),
+  ).toBe(true);
+  expect(
+    transactions.some((tx) => tx.description === "Missing category"),
+  ).toBe(true);
+  expect(
+    transactions.some((tx) => tx.description === "Positive missing donor"),
+  ).toBe(true);
+});
+
+test("oldest transaction date returns Date.now when there are no transactions", async () => {
+  const t = convexTest(schema, modules);
+  const { userId } = await setupTestData(t);
+
+  const before = Date.now();
+  const oldest = await t
+    .withIdentity({ subject: userId })
+    .query(api.transactions.queries.getOldestTransactionDate, {});
+  const after = Date.now();
+
+  expect(oldest).toBeGreaterThanOrEqual(before);
+  expect(oldest).toBeLessThanOrEqual(after);
+});

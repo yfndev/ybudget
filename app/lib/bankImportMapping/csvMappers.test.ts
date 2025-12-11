@@ -115,3 +115,30 @@ test("parse moss date returns current date if month/date is not correct", () => 
   expect(result.date).toBeGreaterThanOrEqual(before);
   expect(result.date).toBeLessThanOrEqual(after);
 });
+
+test("parseGermanDate fallback for invalid format", () => {
+  const before = Date.now();
+  const result = mapCSVRow(
+    { Buchungstag: "invalid", Betrag: "0", Verwendungszweck: "test" },
+    "sparkasse",
+  );
+  const after = Date.now();
+  expect(result.date).toBeGreaterThanOrEqual(before);
+  expect(result.date).toBeLessThanOrEqual(after);
+});
+
+test("parseMossDate fallback for invalid format", () => {
+  const before = Date.now();
+  const result = mapCSVRow({ "Payment Date": "2024", Amount: "0" }, "moss");
+  const after = Date.now();
+  expect(result.date).toBeGreaterThanOrEqual(before);
+  expect(result.date).toBeLessThanOrEqual(after);
+});
+
+test("mapMoss with no date fields", () => {
+  const before = Date.now();
+  const result = mapCSVRow({ Amount: "100" }, "moss");
+  const after = Date.now();
+  expect(result.date).toBeGreaterThanOrEqual(before);
+  expect(result.date).toBeLessThanOrEqual(after);
+});

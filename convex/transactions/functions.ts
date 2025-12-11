@@ -235,7 +235,7 @@ async function getReservesProjectId(
     )
     .first();
 
-  if (!reserves) throw new Error("Rücklagen project not found");
+  if (!reserves) throw new Error("Reserves project not found");
   return reserves._id;
 }
 

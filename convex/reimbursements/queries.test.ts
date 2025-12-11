@@ -181,3 +181,16 @@ test("getAllReimbursements includes travel details", async () => {
   const travelReimbursement = reimbursements.find((r) => r.type === "travel");
   expect(travelReimbursement?.travelDetails?.destination).toBe("Berlin");
 });
+
+test("getFileUrl returns url", async () => {
+  const t = convexTest(schema, modules);
+  const { userId } = await setupTestData(t);
+
+  const storageId = await t.run((ctx) => ctx.storage.store(new Blob(["test"])));
+
+  const url = await t
+    .withIdentity({ subject: userId })
+    .query(api.reimbursements.queries.getFileUrl, { storageId });
+
+  expect(typeof url).toBe("string");
+});

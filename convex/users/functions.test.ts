@@ -118,3 +118,27 @@ test("update bank details", async () => {
   const user = await t.run((ctx) => ctx.db.get(userId));
   expect(user?.iban).toBe("DE12345678900000000000");
 });
+
+test("throw error when trying to update role throws for non existing user", async () => {
+  const t = convexTest(schema, modules);
+  const { userId, organizationId } = await setupTestData(t);
+
+  const targetUserId = await t.run((ctx) =>
+    ctx.db.insert("users", {
+      email: "temp@test.com",
+      organizationId,
+      role: "member",
+    }),
+  );
+
+  await t.run((ctx) => ctx.db.delete(targetUserId));
+
+  await expect(
+    t
+      .withIdentity({ subject: userId })
+      .mutation(api.users.functions.updateUserRole, {
+        userId: targetUserId,
+        role: "admin",
+      }),
+  ).rejects.toThrow("User not found");
+});
