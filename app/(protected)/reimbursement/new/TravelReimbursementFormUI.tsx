@@ -153,6 +153,7 @@ export function TravelReimbursementFormUI({
       ...travelInfo,
       receipts,
     });
+    toast.success("Reisekostenerstattung eingereicht");
     router.push("/reimbursement");
   };
 

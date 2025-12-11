@@ -116,6 +116,7 @@ export function ReimbursementFormUI({
       ...bankDetails,
       receipts,
     });
+    toast.success("Erstattung eingereicht");
     router.push("/reimbursement");
   };
 
