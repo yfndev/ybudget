@@ -136,7 +136,7 @@ export function EditableDataTable<T extends { _id: string }>({
 
   return (
     <>
-      <div className="rounded-md border overflow-x-auto w-full">
+      <div className="rounded-md border overflow-visible w-full">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

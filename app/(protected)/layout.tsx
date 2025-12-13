@@ -62,7 +62,7 @@ export default function ProtectedLayout({
           <SidebarProvider>
             <AppSidebar />
             <div className="flex flex-col w-full">
-              <div className="p-4 lg:px-6 pb-6 overflow-x-clip w-full">
+              <div className="p-4 lg:px-6 pb-6 w-full">
                 {children}
                 {showOnboarding && (
                   <OnboardingDialog open onOpenChange={() => {}} />
