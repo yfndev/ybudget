@@ -2,8 +2,7 @@
 
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
-import { useQuery } from "convex-helpers/react/cache";
-import { useMutation, usePaginatedQuery } from "convex/react";
+import { useMutation, usePaginatedQuery, useQuery } from "convex/react";
 import { useParams } from "next/navigation";
 import DonorIdUISkeleton from "./DonorDetailSkeleton";
 import DonorIdUI from "./DonorDetailUI";

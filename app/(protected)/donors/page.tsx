@@ -3,7 +3,7 @@
 import DonorCard from "@/components/Donors/DonorCard";
 import { PageHeader } from "@/components/Layout/PageHeader";
 import { api } from "@/convex/_generated/api";
-import { useQuery } from "convex-helpers/react/cache";
+import { useQuery } from "convex/react";
 
 export default function DonorsPage() {
   const donors = useQuery(api.donors.queries.getAllDonors);

@@ -36,8 +36,7 @@ import {
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { useCanEdit } from "@/lib/hooks/useCurrentUserRole";
-import { useQuery } from "convex-helpers/react/cache";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 
 export function ProjectNav({ id }: { id?: string }) {
   const [dialogOpen, setDialogOpen] = useState(false);

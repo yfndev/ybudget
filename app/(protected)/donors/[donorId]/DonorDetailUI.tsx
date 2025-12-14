@@ -6,7 +6,7 @@ import { EditableDataTable } from "@/components/Tables/TransactionTable/Editable
 import { Button } from "@/components/ui/button";
 import { api } from "@/convex/_generated/api";
 import { Doc, Id } from "@/convex/_generated/dataModel";
-import { useQuery } from "convex-helpers/react/cache";
+import { useQuery } from "convex/react";
 import { PaginationStatus } from "convex/react";
 import { CSVLink } from "react-csv";
 

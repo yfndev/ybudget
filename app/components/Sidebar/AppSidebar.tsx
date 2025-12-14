@@ -24,7 +24,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { api } from "@/convex/_generated/api";
-import { useQuery } from "convex-helpers/react/cache";
+import { useQuery } from "convex/react";
 import { MainNav } from "./MainNav";
 import { ProjectNav } from "./ProjectNav";
 import { NavUser } from "./UserNav";

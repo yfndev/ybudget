@@ -3,7 +3,7 @@
 import { CreateProjectDialog } from "@/components/Dialogs/CreateProjectDialog";
 import { api } from "@/convex/_generated/api";
 import { cn } from "@/lib/utils";
-import { useQuery } from "convex-helpers/react/cache";
+import { useQuery } from "convex/react";
 import { Check, ChevronsUpDown, Plus } from "lucide-react";
 import { forwardRef, useEffect, useRef, useState } from "react";
 

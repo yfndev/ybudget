@@ -29,7 +29,7 @@ import {
   filterTransactionsBeforeDate,
   filterTransactionsByDateRange,
 } from "@/lib/calculations/transactionFilters";
-import { useQuery } from "convex-helpers/react/cache";
+import { useQuery } from "convex/react";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
 import {

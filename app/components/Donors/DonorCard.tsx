@@ -5,7 +5,7 @@ import { Progress } from "@/components/ui/progress";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { formatCurrency } from "@/lib/formatters/formatCurrency";
-import { useQuery } from "convex-helpers/react/cache";
+import { useQuery } from "convex/react";
 import Link from "next/link";
 
 export const donorTypeLabels: Record<string, string> = {

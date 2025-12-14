@@ -6,7 +6,6 @@ import { requireRole } from "../users/permissions";
 export const createCategory = mutation({
   args: {
     name: v.string(),
-
     taxsphere: v.union(
       v.literal("non-profit"),
       v.literal("asset-management"),

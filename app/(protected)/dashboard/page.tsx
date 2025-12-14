@@ -6,7 +6,7 @@ import { IncomeByDonorChart } from "@/components/Dashboard/IncomeByDonorChart";
 import { PageHeader } from "@/components/Layout/PageHeader";
 import { api } from "@/convex/_generated/api";
 import { calculateBudget } from "@/lib/calculations/budgetCalculations";
-import { useQuery } from "convex-helpers/react/cache";
+import { useQuery } from "convex/react";
 
 export default function Dashboard() {
   const transactions = useQuery(
