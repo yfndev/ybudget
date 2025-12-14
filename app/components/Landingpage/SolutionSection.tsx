@@ -63,7 +63,7 @@ const features = [
       "Team- und Projektzugriffskontrolle",
       "Interaktives Onboarding für neue Nutzer",
     ],
-    screenshot: "/screenshots/Dashboard Overview.png",
+    screenshot: "/screenshots/Invite.png",
   },
   {
     side: "right",
@@ -75,7 +75,7 @@ const features = [
       "Mobile Unterschrift per QR-Code",
       "Automatische Validierung",
     ],
-    screenshot: "/screenshots/Dashboard Overview.png",
+    screenshot: "/screenshots/Ehrenamtspauschale.png",
   },
   {
     side: "left",
@@ -87,7 +87,7 @@ const features = [
       "Budget Insights auf Knopfdruck",
       "Aktionen direkt aus dem Chat",
     ],
-    screenshot: "/screenshots/Dashboard Overview.png",
+    screenshot: "/screenshots/AI.png",
   },
 ];
 
