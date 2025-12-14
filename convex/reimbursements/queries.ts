@@ -75,7 +75,7 @@ export const getAllReimbursements = query({
           .order("desc")
           .collect();
 
-    return await Promise.all(
+    return Promise.all(
       reimbursements.map(async (r) => {
         const [creator, project, travelDetails] = await Promise.all([
           ctx.db.get(r.createdBy),

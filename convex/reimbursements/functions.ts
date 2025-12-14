@@ -31,7 +31,7 @@ export const createReimbursement = mutation({
       projectId: args.projectId,
       amount: args.amount,
       type: "expense",
-      status: "pending",
+      isApproved: false,
       iban: args.iban,
       bic: args.bic,
       accountHolder: args.accountHolder,
@@ -98,7 +98,7 @@ export const createTravelReimbursement = mutation({
       projectId: args.projectId,
       amount: args.amount,
       type: "travel",
-      status: "pending",
+      isApproved: false,
       iban: args.iban,
       bic: args.bic,
       accountHolder: args.accountHolder,
@@ -203,7 +203,7 @@ export const markAsPaid = mutation({
       importedBy: user._id,
     });
 
-    await ctx.db.patch(args.reimbursementId, { status: "paid" });
+    await ctx.db.patch(args.reimbursementId, { isApproved: true });
     await addLog(
       ctx,
       user.organizationId,
@@ -218,14 +218,14 @@ export const markAsPaid = mutation({
 export const rejectReimbursement = mutation({
   args: {
     reimbursementId: v.id("reimbursements"),
-    adminNote: v.string(),
+    rejectionNote: v.string(),
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
 
     await ctx.db.patch(args.reimbursementId, {
-      status: "rejected",
-      adminNote: args.adminNote,
+      isApproved: false,
+      rejectionNote: args.rejectionNote,
     });
 
     await addLog(
@@ -234,7 +234,7 @@ export const rejectReimbursement = mutation({
       user._id,
       "reimbursement.reject",
       args.reimbursementId,
-      args.adminNote,
+      args.rejectionNote,
     );
   },
 });
