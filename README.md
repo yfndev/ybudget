@@ -17,6 +17,8 @@ Simple, affordable, intuitive and open-source.
 - 🔄 **Budget Transfers:** Move budgets between projects when plans change
 - 🎯 **Project Organization:** Assign expenses to projects, see remaining budgets at a glance
 - 🧾 **Reimbursements:** Submit expense and travel reimbursements with receipt uploads
+- 🎁 **Volunteer Allowance:** "Ehrenamtspauschale" forms with shareable links for external signatures
+- 🤖 **AI Assistant:** Chat with your budget data, get insights and manage finances via natural language
 - 👥 **Team Management:** Organize members into teams with project access control
 - 📤 **Donor Export:** Export transactions by donor to CSV
 - ✉️ **Email Invitations:** Invite team members via email (powered by Resend)
@@ -92,6 +94,7 @@ npx convex env set JWKS '{"keys":[...]}'
 npx convex env set SITE_URL "http://localhost:3000"
 
 # Optional
+npx convex env set OPENAI_API_KEY "sk_proj_"
 npx convex env set RESEND_API_KEY "re_..."
 npx convex env set STRIPE_KEY "sk_test_..."
 npx convex env set STRIPE_WEBHOOKS_SECRET "whsec_..."

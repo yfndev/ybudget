@@ -65,6 +65,30 @@ const features = [
     ],
     screenshot: "/screenshots/Dashboard Overview.png",
   },
+  {
+    side: "right",
+    title: "Ehrenamtspauschale ohne Papierkram",
+    description:
+      "Erstelle Links für Ehrenamtliche, die ihre Pauschale direkt digital einreichen können – inklusive Unterschrift vom Handy.",
+    bullets: [
+      "Teilbare Links für externe Einreichungen",
+      "Mobile Unterschrift per QR-Code",
+      "Automatische Validierung",
+    ],
+    screenshot: "/screenshots/Dashboard Overview.png",
+  },
+  {
+    side: "left",
+    title: "KI-Assistent für dein Budget",
+    description:
+      "Frag deinen Finanzassistenten nach Insights und lass dir komplexe Auswertungen erklären.",
+    bullets: [
+      "Natürliche Sprache statt Formulare",
+      "Budget Insights auf Knopfdruck",
+      "Aktionen direkt aus dem Chat",
+    ],
+    screenshot: "/screenshots/Dashboard Overview.png",
+  },
 ];
 
 export function SolutionSection() {
