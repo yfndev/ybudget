@@ -75,7 +75,10 @@ export default function AIPage() {
     setIsLoading(true);
 
     try {
-      const newThreadId = await sendMessage({ threadId: threadId ?? undefined, prompt });
+      const newThreadId = await sendMessage({
+        threadId: threadId ?? undefined,
+        prompt,
+      });
       if (!threadId) setThreadId(newThreadId);
     } finally {
       setIsLoading(false);
@@ -99,7 +102,8 @@ export default function AIPage() {
                   Hallo! Ich bin dein Budget-Assistent.
                 </p>
                 <p className="mt-2">
-                  Frag mich zu Transaktionen, Kategorien, Steuersphären oder deinen Finanzen.
+                  Frag mich zu Transaktionen, Kategorien, Steuersphären oder
+                  deinen Finanzen.
                 </p>
                 <div className="mt-6 flex flex-wrap justify-center gap-2">
                   {[
@@ -145,7 +149,11 @@ export default function AIPage() {
               autoFocus
               className="flex-1"
             />
-            <Button type="submit" size="icon" disabled={isLoading || !input.trim()}>
+            <Button
+              type="submit"
+              size="icon"
+              disabled={isLoading || !input.trim()}
+            >
               {isLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (

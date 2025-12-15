@@ -100,7 +100,9 @@ test("getAllProjects returns projects", async () => {
     .query(api.projects.queries.getAllProjects, {});
 
   expect(projects.length).toBeGreaterThanOrEqual(1);
-  expect(projects.some((project) => project.name === "Test Project")).toBe(true);
+  expect(projects.some((project) => project.name === "Test Project")).toBe(
+    true,
+  );
 });
 
 test("getAllCategories returns categories", async () => {
@@ -113,7 +115,9 @@ test("getAllCategories returns categories", async () => {
   );
 
   expect(categories.length).toBeGreaterThanOrEqual(1);
-  expect(categories.some((category) => category.name === "Mitgliedsbeiträge")).toBe(true);
+  expect(
+    categories.some((category) => category.name === "Mitgliedsbeiträge"),
+  ).toBe(true);
 });
 
 test("getAllDonors returns donors", async () => {

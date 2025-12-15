@@ -5,58 +5,71 @@ We take security seriously at YBudget. Here's how we protect your financial data
 ## Authentication & Authorization
 
 **OAuth instead of Password**
+
 - OAuth 2.0 with Google eliminates password vulnerabilities
 - Implemented with [Convex Auth](https://labs.convex.dev/auth) in `convex/auth.ts`
 
 **Organizational Isolation**
+
 - Every query is filtered by `organizationId`
 - Organizations can only access their own data
 
 **Role-Based Access Control**
+
 - `member` (read-only) → `lead` (edit, manage teams) → `admin` (full control)
 - `requireRole(ctx, "admin")` validates permissions in `convex/users/permissions.ts`
 
 ## Data Protection
 
 **Credentials & Secrets**
+
 - All secrets stored server-side in Convex Dashboard
 - Client never receives API keys
 
 **Encryption**
+
 - HTTPS/TLS enforced by Convex and Vercel
 - Database encrypted at rest on Convex Cloud
 
 **JWT Security**
+
 - Tokens signed with private keys
 - HTTPOnly cookies with SameSite=Strict
 
 ## API Security
 
 **Input Validation**
+
 - Every function argument validated with Convex validators
 
 **Type-Safe Queries**
+
 - Prevents NoSQL injection attacks
 
 **Internal Functions**
+
 - Sensitive operations use `internalMutation`/`internalQuery`
 
 ## Third Party Integrations
 
 **Stripe**
+
 - Webhook signature verification
 - No credit card data stored
 
 ## Attack Prevention
 
 **XSS**
+
 - CSP headers configured
 - React escapes user input
 
 **Rate Limiting**
+
 - Built into Convex
 
 **Infrastructure**
+
 - Vercel: HTTPS, DDoS protection, CDN
 - Convex Cloud: managed security patches, encrypted backups
 

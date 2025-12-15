@@ -18,7 +18,9 @@ type RejectDialog = {
   note: string;
 };
 
-type Allowance = NonNullable<ReturnType<typeof useQuery<typeof api.volunteerAllowance.queries.getAll>>>[number];
+type Allowance = NonNullable<
+  ReturnType<typeof useQuery<typeof api.volunteerAllowance.queries.getAll>>
+>[number];
 
 function downloadBlob(blob: Blob, filename: string) {
   const url = URL.createObjectURL(blob);
@@ -34,16 +36,30 @@ export default function ReimbursementPage() {
   const router = useRouter();
   const convex = useConvex();
 
-  const reimbursements = useQuery(api.reimbursements.queries.getAllReimbursements);
+  const reimbursements = useQuery(
+    api.reimbursements.queries.getAllReimbursements,
+  );
   const allowances = useQuery(api.volunteerAllowance.queries.getAll);
 
-  const markReimbursementPaid = useMutation(api.reimbursements.functions.markAsPaid);
-  const rejectReimbursementMutation = useMutation(api.reimbursements.functions.rejectReimbursement);
-  const deleteReimbursementMutation = useMutation(api.reimbursements.functions.deleteReimbursement);
+  const markReimbursementPaid = useMutation(
+    api.reimbursements.functions.markAsPaid,
+  );
+  const rejectReimbursementMutation = useMutation(
+    api.reimbursements.functions.rejectReimbursement,
+  );
+  const deleteReimbursementMutation = useMutation(
+    api.reimbursements.functions.deleteReimbursement,
+  );
 
-  const approveAllowanceMutation = useMutation(api.volunteerAllowance.functions.approve);
-  const rejectAllowanceMutation = useMutation(api.volunteerAllowance.functions.reject);
-  const deleteAllowanceMutation = useMutation(api.volunteerAllowance.functions.remove);
+  const approveAllowanceMutation = useMutation(
+    api.volunteerAllowance.functions.approve,
+  );
+  const rejectAllowanceMutation = useMutation(
+    api.volunteerAllowance.functions.reject,
+  );
+  const deleteAllowanceMutation = useMutation(
+    api.volunteerAllowance.functions.remove,
+  );
 
   const [rejectDialog, setRejectDialog] = useState<RejectDialog>({
     open: false,
@@ -112,14 +128,20 @@ export default function ReimbursementPage() {
   };
 
   const handleDownloadReimbursement = async (id: Id<"reimbursements">) => {
-    const reimbursement = await convex.query(api.reimbursements.queries.getReimbursement, {
-      reimbursementId: id,
-    });
+    const reimbursement = await convex.query(
+      api.reimbursements.queries.getReimbursement,
+      {
+        reimbursementId: id,
+      },
+    );
     if (!reimbursement) return;
 
-    const receipts = await convex.query(api.reimbursements.queries.getReceipts, {
-      reimbursementId: id,
-    });
+    const receipts = await convex.query(
+      api.reimbursements.queries.getReceipts,
+      {
+        reimbursementId: id,
+      },
+    );
 
     const receiptsWithUrls = await Promise.all(
       receipts.map(async (receipt) => ({
@@ -130,24 +152,33 @@ export default function ReimbursementPage() {
       })),
     );
 
-    const pdfBlob = await generateReimbursementPDF(reimbursement, receiptsWithUrls);
+    const pdfBlob = await generateReimbursementPDF(
+      reimbursement,
+      receiptsWithUrls,
+    );
     downloadBlob(pdfBlob, `Erstattung_${id}.pdf`);
   };
 
   const handleDownloadAllowance = async (allowance: Allowance) => {
     if (!allowance.signatureStorageId) return;
 
-    const signatureUrl = await convex.query(api.volunteerAllowance.queries.getSignatureUrl, {
-      storageId: allowance.signatureStorageId,
-    });
+    const signatureUrl = await convex.query(
+      api.volunteerAllowance.queries.getSignatureUrl,
+      {
+        storageId: allowance.signatureStorageId,
+      },
+    );
 
-    const pdfBlob = await generateVolunteerAllowancePDF(allowance, signatureUrl);
+    const pdfBlob = await generateVolunteerAllowancePDF(
+      allowance,
+      signatureUrl,
+    );
     downloadBlob(pdfBlob, `Ehrenamtspauschale_${allowance._id}.pdf`);
   };
 
   const handleOpenRejectDialog = (
     type: "reimbursement" | "allowance",
-    id: Id<"reimbursements"> | Id<"volunteerAllowance">
+    id: Id<"reimbursements"> | Id<"volunteerAllowance">,
   ) => {
     setRejectDialog({ open: true, type, id, note: "" });
   };

@@ -36,9 +36,9 @@ test.describe.serial("reimbursement flow", () => {
       .getByRole("textbox", { name: "Wie heißt dein Verein?" })
       .fill("Test Verein");
     await page.getByRole("button", { name: "Loslegen" }).click();
-    await expect(
-      page.getByRole("heading", { name: "Dashboard" }),
-    ).toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole("heading", { name: "Dashboard" })).toBeVisible({
+      timeout: 10000,
+    });
   });
 
   test.afterAll(async () => {
@@ -116,10 +116,7 @@ test.describe.serial("reimbursement flow", () => {
       .getByRole("textbox", { name: "TT.MM.JJJJ" })
       .nth(1)
       .fill("02.01.2025");
-    await page
-      .getByRole("textbox", { name: "TT.MM.JJJJ" })
-      .nth(1)
-      .blur();
+    await page.getByRole("textbox", { name: "TT.MM.JJJJ" }).nth(1).blur();
 
     await page.getByRole("button", { name: "PKW" }).click();
 

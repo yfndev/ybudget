@@ -6,7 +6,13 @@ import { SelectProject } from "@/components/Selectors/SelectProject";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/convex/_generated/api";
@@ -33,36 +39,69 @@ type Receipt = {
 
 const toNet = (gross: number, tax: number) => gross / (1 + tax / 100);
 
-export function ReimbursementFormUI({ defaultBankDetails }: { defaultBankDetails: BankDetails }) {
+export function ReimbursementFormUI({
+  defaultBankDetails,
+}: {
+  defaultBankDetails: BankDetails;
+}) {
   const router = useRouter();
   const submit = useMutation(api.reimbursements.functions.createReimbursement);
 
   const [projectId, setProjectId] = useState<Id<"projects"> | null>(null);
   const [bank, setBank] = useState(defaultBankDetails);
   const [receipts, setReceipts] = useState<Receipt[]>([]);
-  const [draft, setDraft] = useState({ company: "", number: "", desc: "", date: "", gross: 0, tax: 19, file: null as Id<"_storage"> | null });
+  const [draft, setDraft] = useState({
+    company: "",
+    number: "",
+    desc: "",
+    date: "",
+    gross: 0,
+    tax: 19,
+    file: null as Id<"_storage"> | null,
+  });
 
   const net = draft.gross ? toNet(draft.gross, draft.tax) : 0;
   const totalGross = receipts.reduce((s, r) => s + r.grossAmount, 0);
   const totalNet = receipts.reduce((s, r) => s + r.netAmount, 0);
-  const tax7 = receipts.filter((r) => r.taxRate === 7).reduce((s, r) => s + r.grossAmount - r.netAmount, 0);
-  const tax19 = receipts.filter((r) => r.taxRate === 19).reduce((s, r) => s + r.grossAmount - r.netAmount, 0);
+  const tax7 = receipts
+    .filter((r) => r.taxRate === 7)
+    .reduce((s, r) => s + r.grossAmount - r.netAmount, 0);
+  const tax19 = receipts
+    .filter((r) => r.taxRate === 19)
+    .reduce((s, r) => s + r.grossAmount - r.netAmount, 0);
 
   const addReceipt = () => {
-    if (!draft.number || !draft.company || !draft.gross || !draft.file || !draft.date) {
+    if (
+      !draft.number ||
+      !draft.company ||
+      !draft.gross ||
+      !draft.file ||
+      !draft.date
+    ) {
       return toast.error("Bitte Pflichtfelder ausfüllen");
     }
-    setReceipts([...receipts, {
-      receiptNumber: draft.number,
-      receiptDate: draft.date,
-      companyName: draft.company,
-      description: draft.desc,
-      netAmount: toNet(draft.gross, draft.tax),
-      taxRate: draft.tax,
-      grossAmount: draft.gross,
-      fileStorageId: draft.file,
-    }]);
-    setDraft({ company: "", number: "", desc: "", date: "", gross: 0, tax: 19, file: null });
+    setReceipts([
+      ...receipts,
+      {
+        receiptNumber: draft.number,
+        receiptDate: draft.date,
+        companyName: draft.company,
+        description: draft.desc,
+        netAmount: toNet(draft.gross, draft.tax),
+        taxRate: draft.tax,
+        grossAmount: draft.gross,
+        fileStorageId: draft.file,
+      },
+    ]);
+    setDraft({
+      company: "",
+      number: "",
+      desc: "",
+      date: "",
+      gross: 0,
+      tax: 19,
+      file: null,
+    });
     toast.success(`Beleg ${receipts.length + 1} hinzugefügt`);
   };
 
@@ -76,7 +115,10 @@ export function ReimbursementFormUI({ defaultBankDetails }: { defaultBankDetails
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-8">
       <div className="w-[200px]">
-        <SelectProject value={projectId || ""} onValueChange={(v) => setProjectId(v ? (v as Id<"projects">) : null)} />
+        <SelectProject
+          value={projectId || ""}
+          onValueChange={(v) => setProjectId(v ? (v as Id<"projects">) : null)}
+        />
       </div>
 
       <div className="space-y-4">
@@ -84,32 +126,62 @@ export function ReimbursementFormUI({ defaultBankDetails }: { defaultBankDetails
         <div className="grid grid-cols-2 gap-4">
           <div>
             <Label>Name/Firma *</Label>
-            <Input value={draft.company} onChange={(e) => setDraft({ ...draft, company: e.target.value })} placeholder="z.B. Amazon, Deutsche Bahn" />
+            <Input
+              value={draft.company}
+              onChange={(e) => setDraft({ ...draft, company: e.target.value })}
+              placeholder="z.B. Amazon, Deutsche Bahn"
+            />
           </div>
           <div>
             <Label>Beleg-Nr. *</Label>
-            <Input value={draft.number} onChange={(e) => setDraft({ ...draft, number: e.target.value })} placeholder="z.B. INV-2024-001" />
+            <Input
+              value={draft.number}
+              onChange={(e) => setDraft({ ...draft, number: e.target.value })}
+              placeholder="z.B. INV-2024-001"
+            />
           </div>
         </div>
 
         <div>
           <Label>Beschreibung</Label>
-          <Textarea value={draft.desc} onChange={(e) => setDraft({ ...draft, desc: e.target.value })} placeholder="z.B. Büromaterial für Q1" rows={2} className="resize-none" />
+          <Textarea
+            value={draft.desc}
+            onChange={(e) => setDraft({ ...draft, desc: e.target.value })}
+            placeholder="z.B. Büromaterial für Q1"
+            rows={2}
+            className="resize-none"
+          />
         </div>
 
         <div className="grid grid-cols-4 gap-4">
           <div>
             <Label>Datum *</Label>
-            <DateInput value={draft.date} onChange={(v) => setDraft({ ...draft, date: v })} />
+            <DateInput
+              value={draft.date}
+              onChange={(v) => setDraft({ ...draft, date: v })}
+            />
           </div>
           <div>
             <Label>Bruttobetrag (€) *</Label>
-            <Input type="number" step="0.01" value={draft.gross || ""} onChange={(e) => setDraft({ ...draft, gross: parseFloat(e.target.value) || 0 })} placeholder="119,95" />
+            <Input
+              type="number"
+              step="0.01"
+              value={draft.gross || ""}
+              onChange={(e) =>
+                setDraft({ ...draft, gross: parseFloat(e.target.value) || 0 })
+              }
+              placeholder="119,95"
+            />
           </div>
           <div>
             <Label>Wie viel MwSt.?</Label>
-            <Select value={String(draft.tax)} onValueChange={(v) => setDraft({ ...draft, tax: parseInt(v) })}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+            <Select
+              value={String(draft.tax)}
+              onValueChange={(v) => setDraft({ ...draft, tax: parseInt(v) })}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="19">19%</SelectItem>
                 <SelectItem value="7">7%</SelectItem>
@@ -119,17 +191,30 @@ export function ReimbursementFormUI({ defaultBankDetails }: { defaultBankDetails
           </div>
           <div>
             <Label className="text-muted-foreground">Nettobetrag (€)</Label>
-            <Input value={net.toFixed(2)} disabled className="bg-muted/50 font-mono" />
+            <Input
+              value={net.toFixed(2)}
+              disabled
+              className="bg-muted/50 font-mono"
+            />
           </div>
         </div>
 
         <div>
           <Label>Beleg hochladen *</Label>
-          <ReceiptUpload onUploadComplete={(id) => setDraft({ ...draft, file: id })} storageId={draft.file || undefined} />
+          <ReceiptUpload
+            onUploadComplete={(id) => setDraft({ ...draft, file: id })}
+            storageId={draft.file || undefined}
+          />
         </div>
 
-        <Button onClick={addReceipt} className="w-full" variant="outline" size="lg">
-          <Plus className="size-5 mr-2" />Beleg hinzufügen
+        <Button
+          onClick={addReceipt}
+          className="w-full"
+          variant="outline"
+          size="lg"
+        >
+          <Plus className="size-5 mr-2" />
+          Beleg hinzufügen
         </Button>
       </div>
 
@@ -140,14 +225,28 @@ export function ReimbursementFormUI({ defaultBankDetails }: { defaultBankDetails
 
           <div className="space-y-3">
             {receipts.map((r, i) => (
-              <div key={i} className="flex items-center justify-between px-3 bg-gray-50 border rounded-md">
+              <div
+                key={i}
+                className="flex items-center justify-between px-3 bg-gray-50 border rounded-md"
+              >
                 <div className="flex items-center gap-8 flex-1">
                   <span className="font-semibold">{r.companyName}</span>
-                  <span className="text-sm text-muted-foreground">{r.description || "Keine Beschreibung"}</span>
+                  <span className="text-sm text-muted-foreground">
+                    {r.description || "Keine Beschreibung"}
+                  </span>
                 </div>
                 <div className="flex items-center gap-4">
-                  <span className="font-semibold">{r.grossAmount.toFixed(2)} €</span>
-                  <Button variant="ghost" size="icon" onClick={() => setReceipts(receipts.filter((_, j) => j !== i))} className="hover:bg-destructive/10 hover:text-destructive">
+                  <span className="font-semibold">
+                    {r.grossAmount.toFixed(2)} €
+                  </span>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() =>
+                      setReceipts(receipts.filter((_, j) => j !== i))
+                    }
+                    className="hover:bg-destructive/10 hover:text-destructive"
+                  >
                     <Trash2 className="size-4" />
                   </Button>
                 </div>
@@ -156,14 +255,36 @@ export function ReimbursementFormUI({ defaultBankDetails }: { defaultBankDetails
           </div>
 
           <div className="space-y-3 pt-6">
-            <div className="flex justify-between"><span className="text-muted-foreground">Netto gesamt</span><span>{totalNet.toFixed(2)} €</span></div>
-            {tax7 > 0 && <div className="flex justify-between"><span className="text-muted-foreground">UST 7% gesamt</span><span>{tax7.toFixed(2)} €</span></div>}
-            {tax19 > 0 && <div className="flex justify-between"><span className="text-muted-foreground">UST 19% gesamt</span><span>{tax19.toFixed(2)} €</span></div>}
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Netto gesamt</span>
+              <span>{totalNet.toFixed(2)} €</span>
+            </div>
+            {tax7 > 0 && (
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">UST 7% gesamt</span>
+                <span>{tax7.toFixed(2)} €</span>
+              </div>
+            )}
+            {tax19 > 0 && (
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">UST 19% gesamt</span>
+                <span>{tax19.toFixed(2)} €</span>
+              </div>
+            )}
             <Separator className="my-4" />
-            <div className="flex justify-between text-lg font-semibold pt-2"><span>Brutto gesamt</span><span>{totalGross.toFixed(2)} €</span></div>
+            <div className="flex justify-between text-lg font-semibold pt-2">
+              <span>Brutto gesamt</span>
+              <span>{totalGross.toFixed(2)} €</span>
+            </div>
           </div>
 
-          <Button onClick={handleSubmit} className="w-full h-14 font-semibold mt-8" size="lg">Zur Genehmigung einreichen</Button>
+          <Button
+            onClick={handleSubmit}
+            className="w-full h-14 font-semibold mt-8"
+            size="lg"
+          >
+            Zur Genehmigung einreichen
+          </Button>
         </div>
       )}
     </div>

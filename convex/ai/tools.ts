@@ -19,16 +19,23 @@ function filterByDateRange<T extends { date: number }>(
 }
 
 export const getFinancialSummary = createTool({
-  description: "Get financial summary with balance, expected income/expenses. Optionally filter by date range.",
+  description:
+    "Get financial summary with balance, expected income/expenses. Optionally filter by date range.",
   args: dateRangeArgs,
-  handler: async (ctx, args): Promise<{
+  handler: async (
+    ctx,
+    args,
+  ): Promise<{
     currentBalance: number;
     expectedIncome: number;
     expectedExpenses: number;
     availableBudget: number;
     transactionCount: number;
   }> => {
-    const all = await ctx.runQuery(api.transactions.queries.getAllTransactions, {});
+    const all = await ctx.runQuery(
+      api.transactions.queries.getAllTransactions,
+      {},
+    );
     const transactions = filterByDateRange(all, args.startDate, args.endDate);
 
     let balance = 0;
@@ -58,13 +65,20 @@ export const getFinancialSummary = createTool({
 export const getProjects = createTool({
   description: "Get all projects of the organization",
   args: z.object({}),
-  handler: async (ctx): Promise<Array<{
-    id: string;
-    name: string;
-    description: string | undefined;
-    isArchived: boolean;
-  }>> => {
-    const projects = await ctx.runQuery(api.projects.queries.getAllProjects, {});
+  handler: async (
+    ctx,
+  ): Promise<
+    Array<{
+      id: string;
+      name: string;
+      description: string | undefined;
+      isArchived: boolean;
+    }>
+  > => {
+    const projects = await ctx.runQuery(
+      api.projects.queries.getAllProjects,
+      {},
+    );
     return projects.map((project) => ({
       id: project._id,
       name: project.name,
@@ -77,8 +91,13 @@ export const getProjects = createTool({
 export const getCategories = createTool({
   description: "Get all categories grouped by tax sphere",
   args: z.object({}),
-  handler: async (ctx): Promise<Record<string, Array<{ id: string; name: string }>>> => {
-    const categories = await ctx.runQuery(api.categories.functions.getAllCategories, {});
+  handler: async (
+    ctx,
+  ): Promise<Record<string, Array<{ id: string; name: string }>>> => {
+    const categories = await ctx.runQuery(
+      api.categories.functions.getAllCategories,
+      {},
+    );
 
     const grouped: Record<string, Array<{ id: string; name: string }>> = {
       "non-profit": [],
@@ -88,7 +107,10 @@ export const getCategories = createTool({
     };
 
     for (const category of categories) {
-      grouped[category.taxsphere]?.push({ id: category._id, name: category.name });
+      grouped[category.taxsphere]?.push({
+        id: category._id,
+        name: category.name,
+      });
     }
 
     return grouped;
@@ -98,12 +120,16 @@ export const getCategories = createTool({
 export const getDonors = createTool({
   description: "Get all donors of the organization",
   args: z.object({}),
-  handler: async (ctx): Promise<Array<{
-    id: string;
-    name: string;
-    type: string;
-    allowedTaxSpheres: string[];
-  }>> => {
+  handler: async (
+    ctx,
+  ): Promise<
+    Array<{
+      id: string;
+      name: string;
+      type: string;
+      allowedTaxSpheres: string[];
+    }>
+  > => {
     const donors = await ctx.runQuery(api.donors.queries.getAllDonors, {});
     return donors.map((donor) => ({
       id: donor._id,
@@ -115,20 +141,29 @@ export const getDonors = createTool({
 });
 
 export const getRecentTransactions = createTool({
-  description: "Get transactions, optionally filtered by date range. Returns max 20.",
+  description:
+    "Get transactions, optionally filtered by date range. Returns max 20.",
   args: dateRangeArgs.extend({
     limit: z.number().optional().describe("Number of transactions (max 20)"),
   }),
-  handler: async (ctx, args): Promise<Array<{
-    date: string;
-    amount: number;
-    description: string;
-    counterparty: string;
-    project: string | undefined;
-    category: string | undefined;
-    status: string;
-  }>> => {
-    const all = await ctx.runQuery(api.transactions.queries.getAllTransactions, {});
+  handler: async (
+    ctx,
+    args,
+  ): Promise<
+    Array<{
+      date: string;
+      amount: number;
+      description: string;
+      counterparty: string;
+      project: string | undefined;
+      category: string | undefined;
+      status: string;
+    }>
+  > => {
+    const all = await ctx.runQuery(
+      api.transactions.queries.getAllTransactions,
+      {},
+    );
     const filtered = filterByDateRange(all, args.startDate, args.endDate);
     const limit = Math.min(args.limit ?? 10, 20);
 

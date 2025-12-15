@@ -87,9 +87,9 @@ test.describe.serial("stripe subscription flow", () => {
     await page.goto("/test-auth");
     await page.getByTestId("test-auth-email").fill(TEST_EMAIL);
     await page.getByTestId("test-auth-submit").click();
-    await expect(
-      page.getByRole("heading", { name: "Dashboard" }),
-    ).toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole("heading", { name: "Dashboard" })).toBeVisible({
+      timeout: 10000,
+    });
 
     const convex = getConvex();
     await convex.mutation(api.testing.functions.createMockPayment, {

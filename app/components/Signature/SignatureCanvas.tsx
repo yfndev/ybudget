@@ -15,13 +15,22 @@ type Props = {
   generateUploadUrl?: () => Promise<string>;
 };
 
-export function SignatureCanvas({ onUploadComplete, storageId, generateUploadUrl: customUploadUrl }: Props) {
+export function SignatureCanvas({
+  onUploadComplete,
+  storageId,
+  generateUploadUrl: customUploadUrl,
+}: Props) {
   const padRef = useRef<SignaturePad>(null);
   const [uploading, setUploading] = useState(false);
 
-  const defaultUploadUrl = useMutation(api.reimbursements.functions.generateUploadUrl);
+  const defaultUploadUrl = useMutation(
+    api.reimbursements.functions.generateUploadUrl,
+  );
   const generateUploadUrl = customUploadUrl || defaultUploadUrl;
-  const previewUrl = useQuery(api.reimbursements.queries.getFileUrl, storageId ? { storageId } : "skip");
+  const previewUrl = useQuery(
+    api.reimbursements.queries.getFileUrl,
+    storageId ? { storageId } : "skip",
+  );
 
   const handleSave = async () => {
     const pad = padRef.current;
@@ -58,7 +67,9 @@ export function SignatureCanvas({ onUploadComplete, storageId, generateUploadUrl
     return (
       <div className="border rounded-lg p-4">
         <img src={previewUrl} alt="Unterschrift" className="max-h-24 mx-auto" />
-        <p className="text-sm text-muted-foreground text-center mt-2">Unterschrift gespeichert</p>
+        <p className="text-sm text-muted-foreground text-center mt-2">
+          Unterschrift gespeichert
+        </p>
       </div>
     );
   }
@@ -74,11 +85,21 @@ export function SignatureCanvas({ onUploadComplete, storageId, generateUploadUrl
         />
       </div>
       <div className="flex gap-2">
-        <Button type="button" variant="outline" size="sm" onClick={() => padRef.current?.clear()}>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => padRef.current?.clear()}
+        >
           <RotateCcw className="size-4 mr-1" />
           Löschen
         </Button>
-        <Button type="button" size="sm" onClick={handleSave} disabled={uploading}>
+        <Button
+          type="button"
+          size="sm"
+          onClick={handleSave}
+          disabled={uploading}
+        >
           {uploading && <Loader2 className="size-4 animate-spin mr-1" />}
           Unterschrift speichern
         </Button>

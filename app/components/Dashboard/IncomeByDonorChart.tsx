@@ -48,7 +48,10 @@ interface IncomeByDonorChartProps {
 export function IncomeByDonorChart({ transactions }: IncomeByDonorChartProps) {
   const { selectedDateRange } = useDateRange();
 
-  const filtered = filterTransactionsByDateRange(transactions, selectedDateRange);
+  const filtered = filterTransactionsByDateRange(
+    transactions,
+    selectedDateRange,
+  );
   const data = filtered ? aggregateByDonor(filtered) : [];
 
   const dateRangeText = `${format(selectedDateRange.from, "d. MMM yyyy", { locale: de })} - ${format(selectedDateRange.to, "d. MMM yyyy", { locale: de })}`;

@@ -39,23 +39,43 @@ export async function generateVolunteerAllowancePDF(
   });
   yPos -= 50;
 
-  page.drawText("Ehrenamtliche/r:", { x: MARGIN, y: yPos, size: 10, font: boldFont });
+  page.drawText("Ehrenamtliche/r:", {
+    x: MARGIN,
+    y: yPos,
+    size: 10,
+    font: boldFont,
+  });
   yPos -= 18;
   page.drawText(data.volunteerName, { x: MARGIN, y: yPos, size: 12, font });
   yPos -= 15;
   page.drawText(data.volunteerStreet, { x: MARGIN, y: yPos, size: 10, font });
   yPos -= 15;
-  page.drawText(`${data.volunteerPlz} ${data.volunteerCity}`, { x: MARGIN, y: yPos, size: 10, font });
+  page.drawText(`${data.volunteerPlz} ${data.volunteerCity}`, {
+    x: MARGIN,
+    y: yPos,
+    size: 10,
+    font,
+  });
   yPos -= 35;
 
   page.drawText("Verein:", { x: MARGIN, y: yPos, size: 10, font: boldFont });
   yPos -= 18;
   page.drawText(data.organizationName, { x: MARGIN, y: yPos, size: 12, font });
   yPos -= 15;
-  page.drawText(`Projekt: ${data.projectName}`, { x: MARGIN, y: yPos, size: 10, font });
+  page.drawText(`Projekt: ${data.projectName}`, {
+    x: MARGIN,
+    y: yPos,
+    size: 10,
+    font,
+  });
   yPos -= 35;
 
-  page.drawText("Nebenberufliche Tätigkeit:", { x: MARGIN, y: yPos, size: 10, font: boldFont });
+  page.drawText("Nebenberufliche Tätigkeit:", {
+    x: MARGIN,
+    y: yPos,
+    size: 10,
+    font: boldFont,
+  });
   yPos -= 18;
   for (const line of splitText(data.activityDescription, 80)) {
     page.drawText(line, { x: MARGIN, y: yPos, size: 10, font });
@@ -65,29 +85,52 @@ export async function generateVolunteerAllowancePDF(
 
   page.drawText("Zeitraum:", { x: MARGIN, y: yPos, size: 10, font: boldFont });
   yPos -= 18;
-  page.drawText(`${formatDate(data.startDate)} bis ${formatDate(data.endDate)}`, {
+  page.drawText(
+    `${formatDate(data.startDate)} bis ${formatDate(data.endDate)}`,
+    {
+      x: MARGIN,
+      y: yPos,
+      size: 10,
+      font,
+    },
+  );
+  yPos -= 35;
+
+  page.drawText("Betrag:", { x: MARGIN, y: yPos, size: 10, font: boldFont });
+  yPos -= 18;
+  page.drawText(`${data.amount.toFixed(2)} Euro`, {
+    x: MARGIN,
+    y: yPos,
+    size: 14,
+    font: boldFont,
+  });
+  yPos -= 35;
+
+  page.drawText("Bankverbindung:", {
+    x: MARGIN,
+    y: yPos,
+    size: 10,
+    font: boldFont,
+  });
+  yPos -= 18;
+  page.drawText(`Kontoinhaber: ${data.accountHolder}`, {
     x: MARGIN,
     y: yPos,
     size: 10,
     font,
   });
-  yPos -= 35;
-
-  page.drawText("Betrag:", { x: MARGIN, y: yPos, size: 10, font: boldFont });
-  yPos -= 18;
-  page.drawText(`${data.amount.toFixed(2)} Euro`, { x: MARGIN, y: yPos, size: 14, font: boldFont });
-  yPos -= 35;
-
-  page.drawText("Bankverbindung:", { x: MARGIN, y: yPos, size: 10, font: boldFont });
-  yPos -= 18;
-  page.drawText(`Kontoinhaber: ${data.accountHolder}`, { x: MARGIN, y: yPos, size: 10, font });
   yPos -= 15;
   page.drawText(`IBAN: ${data.iban}`, { x: MARGIN, y: yPos, size: 10, font });
   yPos -= 15;
   page.drawText(`BIC: ${data.bic}`, { x: MARGIN, y: yPos, size: 10, font });
   yPos -= 35;
 
-  page.drawText("Bestätigung gemäß § 3 Nr. 26a EStG:", { x: MARGIN, y: yPos, size: 10, font: boldFont });
+  page.drawText("Bestätigung gemäß § 3 Nr. 26a EStG:", {
+    x: MARGIN,
+    y: yPos,
+    size: 10,
+    font: boldFont,
+  });
   yPos -= 18;
   const confirmationText =
     "Ich erkläre, dass die Steuerbefreiung nach § 3 Nr. 26a EStG für nebenberufliche " +
@@ -123,13 +166,25 @@ export async function generateVolunteerAllowancePDF(
     thickness: 0.5,
   });
   yPos -= 15;
-  page.drawText("Unterschrift Ehrenamtliche/r", { x: MARGIN, y: yPos, size: 9, font });
+  page.drawText("Unterschrift Ehrenamtliche/r", {
+    x: MARGIN,
+    y: yPos,
+    size: 9,
+    font,
+  });
   yPos -= 30;
 
-  page.drawText(`Datum: ${new Date().toLocaleDateString("de-DE")}`, { x: MARGIN, y: yPos, size: 9, font });
+  page.drawText(`Datum: ${new Date().toLocaleDateString("de-DE")}`, {
+    x: MARGIN,
+    y: yPos,
+    size: 9,
+    font,
+  });
 
   const pdfBytes = await pdfDoc.save();
-  return new Blob([pdfBytes.buffer as ArrayBuffer], { type: "application/pdf" });
+  return new Blob([pdfBytes.buffer as ArrayBuffer], {
+    type: "application/pdf",
+  });
 }
 
 function splitText(text: string, maxChars: number): string[] {

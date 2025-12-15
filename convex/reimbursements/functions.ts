@@ -145,7 +145,10 @@ export const deleteReimbursement = mutation({
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
     const reimbursement = await ctx.db.get(args.reimbursementId);
-    if (!reimbursement || reimbursement.organizationId !== user.organizationId) {
+    if (
+      !reimbursement ||
+      reimbursement.organizationId !== user.organizationId
+    ) {
       throw new Error("Reimbursement not found");
     }
 
@@ -188,7 +191,10 @@ export const markAsPaid = mutation({
     await requireRole(ctx, "lead");
     const user = await getCurrentUser(ctx);
     const reimbursement = await ctx.db.get(args.reimbursementId);
-    if (!reimbursement || reimbursement.organizationId !== user.organizationId) {
+    if (
+      !reimbursement ||
+      reimbursement.organizationId !== user.organizationId
+    ) {
       throw new Error("Reimbursement not found");
     }
 
@@ -230,7 +236,10 @@ export const rejectReimbursement = mutation({
     await requireRole(ctx, "lead");
     const user = await getCurrentUser(ctx);
     const reimbursement = await ctx.db.get(args.reimbursementId);
-    if (!reimbursement || reimbursement.organizationId !== user.organizationId) {
+    if (
+      !reimbursement ||
+      reimbursement.organizationId !== user.organizationId
+    ) {
       throw new Error("Reimbursement not found");
     }
 

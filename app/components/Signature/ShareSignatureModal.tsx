@@ -34,7 +34,7 @@ export function ShareSignatureModal({
 
   const tokenData = useQuery(
     api.volunteerAllowance.queries.getSignatureToken,
-    open ? { token } : "skip"
+    open ? { token } : "skip",
   );
 
   useEffect(() => {
@@ -58,7 +58,8 @@ export function ShareSignatureModal({
         <DialogHeader>
           <DialogTitle>Auf Handy unterschreiben</DialogTitle>
           <DialogDescription>
-            Scanne den QR-Code oder kopiere den Link um auf deinem Handy zu unterschreiben.
+            Scanne den QR-Code oder kopiere den Link um auf deinem Handy zu
+            unterschreiben.
           </DialogDescription>
         </DialogHeader>
 
@@ -74,7 +75,11 @@ export function ShareSignatureModal({
               className="flex-1 px-3 py-2 text-sm border rounded-md bg-muted truncate"
             />
             <Button variant="outline" size="icon" onClick={handleCopy}>
-              {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
+              {copied ? (
+                <Check className="size-4" />
+              ) : (
+                <Copy className="size-4" />
+              )}
             </Button>
           </div>
 

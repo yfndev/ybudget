@@ -81,7 +81,9 @@ export const ImportTransactionsLogic = () => {
       transactionId: current._id,
       categoryId: categoryId as Id<"categories">,
       donorId: donorId ? (donorId as Id<"donors">) : undefined,
-      matchedTransactionId: selectedMatch ? (selectedMatch as Id<"transactions">) : undefined,
+      matchedTransactionId: selectedMatch
+        ? (selectedMatch as Id<"transactions">)
+        : undefined,
     };
 
     try {
@@ -89,14 +91,23 @@ export const ImportTransactionsLogic = () => {
         await updateTransaction(baseUpdate);
         await splitTransaction({
           transactionId: current._id,
-          splits: budgets.map((b) => ({ projectId: b.projectId as Id<"projects">, amount: b.amount })),
+          splits: budgets.map((b) => ({
+            projectId: b.projectId as Id<"projects">,
+            amount: b.amount,
+          })),
         });
       } else {
-        await updateTransaction({ ...baseUpdate, projectId: projectId as Id<"projects"> });
+        await updateTransaction({
+          ...baseUpdate,
+          projectId: projectId as Id<"projects">,
+        });
       }
 
       if (selectedMatch) {
-        await updateTransaction({ transactionId: selectedMatch as Id<"transactions">, matchedTransactionId: current._id });
+        await updateTransaction({
+          transactionId: selectedMatch as Id<"transactions">,
+          matchedTransactionId: current._id,
+        });
       }
 
       toast.success("Transaktion gespeichert");
@@ -104,7 +115,18 @@ export const ImportTransactionsLogic = () => {
     } catch {
       toast.error("Fehler beim Speichern");
     }
-  }, [current, categoryId, splitIncome, projectId, budgets, donorId, selectedMatch, updateTransaction, splitTransaction, handleNext]);
+  }, [
+    current,
+    categoryId,
+    splitIncome,
+    projectId,
+    budgets,
+    donorId,
+    selectedMatch,
+    updateTransaction,
+    splitTransaction,
+    handleNext,
+  ]);
 
   const handleExpectedTransactionSelect = (expectedTransactionId: string) => {
     setSelectedMatch(expectedTransactionId);

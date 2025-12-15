@@ -54,7 +54,7 @@ function buildChartConfig(data: { name: string }[]): ChartConfig {
     data.map((item, i) => [
       item.name,
       { label: item.name, color: CHART_COLORS[i % CHART_COLORS.length] },
-    ])
+    ]),
   );
 }
 
@@ -63,7 +63,10 @@ export function ExpensesByCategoryChart({
 }: ExpensesByCategoryChartProps) {
   const { selectedDateRange } = useDateRange();
 
-  const filtered = filterTransactionsByDateRange(transactions, selectedDateRange);
+  const filtered = filterTransactionsByDateRange(
+    transactions,
+    selectedDateRange,
+  );
   const data = filtered ? aggregateByCategory(filtered) : [];
   const chartConfig = buildChartConfig(data);
 

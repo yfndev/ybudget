@@ -39,8 +39,7 @@ function parseToIso(display: string): string {
   const m = parseInt(month, 10);
   const y = parseInt(year, 10);
 
-  if (d < 1 || d > 31 || m < 1 || m > 12 || y < 2000 || y > 2100)
-    return "";
+  if (d < 1 || d > 31 || m < 1 || m > 12 || y < 2000 || y > 2100) return "";
 
   return `${year}-${month}-${day}`;
 }

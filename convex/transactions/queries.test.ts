@@ -437,12 +437,12 @@ test("unassigned transactions include missing project, category, or donor", asyn
     .withIdentity({ subject: userId })
     .query(api.transactions.queries.getUnassignedProcessedTransactions, {});
 
-  expect(
-    transactions.some((tx) => tx.description === "Missing project"),
-  ).toBe(true);
-  expect(
-    transactions.some((tx) => tx.description === "Missing category"),
-  ).toBe(true);
+  expect(transactions.some((tx) => tx.description === "Missing project")).toBe(
+    true,
+  );
+  expect(transactions.some((tx) => tx.description === "Missing category")).toBe(
+    true,
+  );
   expect(
     transactions.some((tx) => tx.description === "Positive missing donor"),
   ).toBe(true);

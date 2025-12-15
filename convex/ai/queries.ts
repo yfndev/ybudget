@@ -1,11 +1,7 @@
 import { v } from "convex/values";
 import { query } from "../_generated/server";
 import { paginationOptsValidator } from "convex/server";
-import {
-  listUIMessages,
-  syncStreams,
-  vStreamArgs,
-} from "@convex-dev/agent";
+import { listUIMessages, syncStreams, vStreamArgs } from "@convex-dev/agent";
 import { components } from "../_generated/api";
 import { getAuthUserId } from "@convex-dev/auth/server";
 

@@ -16,7 +16,10 @@ export const calculateBudget = (transactions: Doc<"transactions">[]) => {
     }
   }
 
-  const availableBudget = Math.max(0, currentBalance + expectedIncome + expectedExpenses);
+  const availableBudget = Math.max(
+    0,
+    currentBalance + expectedIncome + expectedExpenses,
+  );
 
   return {
     currentBalance,

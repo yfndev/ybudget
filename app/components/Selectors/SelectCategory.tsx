@@ -23,7 +23,7 @@ function groupCategories(categories: Category[]): CategoryGroup[] {
 
 function filterGroups(
   groups: CategoryGroup[],
-  search: string
+  search: string,
 ): CategoryGroup[] {
   if (!search) return groups;
 
@@ -34,7 +34,7 @@ function filterGroups(
     .map((group) => ({
       parent: group.parent,
       children: group.children.filter(
-        (child) => matches(child.name) || matches(group.parent.name)
+        (child) => matches(child.name) || matches(group.parent.name),
       ),
     }))
     .filter((group) => group.children.length > 0 || matches(group.parent.name));
@@ -108,12 +108,12 @@ export const SelectCategory = forwardRef<HTMLInputElement, SelectCategoryProps>(
       const groupIndex = grouped.findIndex(
         (group) =>
           group.parent._id === value ||
-          group.children.some((child) => child._id === value)
+          group.children.some((child) => child._id === value),
       );
       setActiveGroupIndex(Math.max(0, groupIndex));
       if (groupIndex >= 0) {
         const itemIndex = grouped[groupIndex].children.findIndex(
-          (child) => child._id === value
+          (child) => child._id === value,
         );
         setActiveItemIndex(Math.max(0, itemIndex));
       }
@@ -138,7 +138,7 @@ export const SelectCategory = forwardRef<HTMLInputElement, SelectCategoryProps>(
         event.preventDefault();
         setActiveItemIndex(
           (current) =>
-            (current - 1 + activeChildren.length) % activeChildren.length
+            (current - 1 + activeChildren.length) % activeChildren.length,
         );
         return;
       }
@@ -153,7 +153,7 @@ export const SelectCategory = forwardRef<HTMLInputElement, SelectCategoryProps>(
       if (event.key === "ArrowLeft" && open) {
         event.preventDefault();
         setActiveGroupIndex(
-          (current) => (current - 1 + filtered.length) % filtered.length
+          (current) => (current - 1 + filtered.length) % filtered.length,
         );
         setActiveItemIndex(0);
         return;
@@ -192,7 +192,7 @@ export const SelectCategory = forwardRef<HTMLInputElement, SelectCategoryProps>(
           ref={setRefs}
           className={cn(
             "h-9 w-full rounded-md bg-muted px-3 pr-8 text-sm outline-none",
-            open || !selectedItem ? "text-muted-foreground" : "text-foreground"
+            open || !selectedItem ? "text-muted-foreground" : "text-foreground",
           )}
           placeholder="Kategorie suchen..."
           value={open ? search : (selectedItem?.name ?? "")}
@@ -223,7 +223,7 @@ export const SelectCategory = forwardRef<HTMLInputElement, SelectCategoryProps>(
                     type="button"
                     className={cn(
                       "w-full text-left px-4 py-3 text-sm font-semibold hover:bg-accent/50",
-                      index === activeGroupIndex && "bg-accent"
+                      index === activeGroupIndex && "bg-accent",
                     )}
                     onMouseEnter={() => {
                       setActiveGroupIndex(index);
@@ -243,13 +243,15 @@ export const SelectCategory = forwardRef<HTMLInputElement, SelectCategoryProps>(
                       "w-full text-left px-3 py-2 hover:bg-accent",
                       index === activeItemIndex && "bg-accent",
                       value === item._id && "bg-accent/50",
-                      isTaxWarning(item) && "bg-red-50"
+                      isTaxWarning(item) && "bg-red-50",
                     )}
                     onClick={() => handleSelect(item._id)}
                     onMouseEnter={() => setActiveItemIndex(index)}
                   >
                     <div className="flex items-center justify-between gap-3">
-                      <span className="text-sm wrap-break-word">{item.name}</span>
+                      <span className="text-sm wrap-break-word">
+                        {item.name}
+                      </span>
                       {value === item._id && (
                         <Check className="h-4 w-4 shrink-0" />
                       )}
@@ -258,9 +260,9 @@ export const SelectCategory = forwardRef<HTMLInputElement, SelectCategoryProps>(
                 ))}
               </div>
             </div>,
-            document.body
+            document.body,
           )}
       </div>
     );
-  }
+  },
 );

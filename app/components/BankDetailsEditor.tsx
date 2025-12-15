@@ -14,7 +14,13 @@ type BankDetails = { iban: string; bic: string; accountHolder: string };
 const IBAN_REGEX = /^[A-Z]{2}[0-9]{2}[A-Z0-9]{4}[0-9]{7}([A-Z0-9]?){0,16}$/;
 const BIC_REGEX = /^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/;
 
-export function BankDetailsEditor({ value, onChange }: { value: BankDetails; onChange: (value: BankDetails) => void }) {
+export function BankDetailsEditor({
+  value,
+  onChange,
+}: {
+  value: BankDetails;
+  onChange: (value: BankDetails) => void;
+}) {
   const [editing, setEditing] = useState(false);
   const save = useMutation(api.users.functions.updateBankDetails);
 
@@ -36,7 +42,12 @@ export function BankDetailsEditor({ value, onChange }: { value: BankDetails; onC
     setEditing(!editing);
   };
 
-  const field = (key: keyof BankDetails, label: string, placeholder?: string, mono?: boolean) => (
+  const field = (
+    key: keyof BankDetails,
+    label: string,
+    placeholder?: string,
+    mono?: boolean,
+  ) => (
     <div>
       <Label className="text-xs text-muted-foreground uppercase">{label}</Label>
       <Input
@@ -53,12 +64,19 @@ export function BankDetailsEditor({ value, onChange }: { value: BankDetails; onC
     <div className="space-y-4">
       <h2 className="text-lg font-medium">Bankverbindung</h2>
       <div className="flex items-end gap-4">
-        <div className="grid gap-4 flex-1" style={{ gridTemplateColumns: "1fr 2fr 1fr" }}>
+        <div
+          className="grid gap-4 flex-1"
+          style={{ gridTemplateColumns: "1fr 2fr 1fr" }}
+        >
           {field("accountHolder", "Kontoinhaber")}
           {field("iban", "IBAN", "DE89 3704 0044 0532 0130 00", true)}
           {field("bic", "BIC", "COBADEFFXXX", true)}
         </div>
-        <Button variant={editing ? "default" : "outline"} size="sm" onClick={toggle}>
+        <Button
+          variant={editing ? "default" : "outline"}
+          size="sm"
+          onClick={toggle}
+        >
           {editing ? "Speichern" : <Pencil className="size-4" />}
         </Button>
       </div>

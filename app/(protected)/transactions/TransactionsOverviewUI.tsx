@@ -1,10 +1,10 @@
 "use client";
 
 import { PageHeader } from "@/components/Layout/PageHeader";
-import { EditableDataTable } from "@/components/Tables/TransactionTable/EditableDataTable";
-import { editableColumns } from "@/components/Tables/TransactionTable/EditableColumns";
-import { formatDate } from "@/lib/formatters/formatDate";
+import { editableColumns } from "@/components/Tables/Transactions/EditableColumns";
+import { EditableDataTable } from "@/components/Tables/Transactions/EditableDataTable";
 import type { EnrichedTransaction } from "@/lib/calculations/transactionFilters";
+import { formatDate } from "@/lib/formatters/formatDate";
 import type { PaginationStatus } from "convex/react";
 import type { DateRange } from "react-day-picker";
 

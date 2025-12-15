@@ -72,7 +72,9 @@ export function ReceiptUpload({ onUploadComplete, storageId }: Props) {
         {isPdf ? (
           <div className="flex flex-col items-center py-8">
             <FileText className="size-16 text-primary" />
-            <p className="text-sm text-muted-foreground mt-2">PDF hochgeladen</p>
+            <p className="text-sm text-muted-foreground mt-2">
+              PDF hochgeladen
+            </p>
           </div>
         ) : (
           <img

@@ -22,11 +22,17 @@ import toast from "react-hot-toast";
 
 type BankDetails = { iban: string; bic: string; accountHolder: string };
 
-export function VolunteerAllowanceFormUI({ defaultBankDetails }: { defaultBankDetails: BankDetails }) {
+export function VolunteerAllowanceFormUI({
+  defaultBankDetails,
+}: {
+  defaultBankDetails: BankDetails;
+}) {
   const router = useRouter();
   const currentUser = useQuery(api.users.queries.getCurrentUserProfile);
   const submit = useMutation(api.volunteerAllowance.functions.create);
-  const createToken = useMutation(api.volunteerAllowance.functions.createSignatureToken);
+  const createToken = useMutation(
+    api.volunteerAllowance.functions.createSignatureToken,
+  );
 
   const [projectId, setProjectId] = useState<Id<"projects"> | null>(null);
   const [bank, setBank] = useState(defaultBankDetails);
@@ -54,14 +60,17 @@ export function VolunteerAllowanceFormUI({ defaultBankDetails }: { defaultBankDe
 
   const validate = () => {
     if (!projectId) return "Bitte ein Projekt auswählen";
-    if (!form.name || !form.street || !form.plz || !form.city) return "Bitte alle persönlichen Daten ausfüllen";
-    if (!form.activity || !form.startDate || !form.endDate) return "Bitte Tätigkeit und Zeitraum angeben";
+    if (!form.name || !form.street || !form.plz || !form.city)
+      return "Bitte alle persönlichen Daten ausfüllen";
+    if (!form.activity || !form.startDate || !form.endDate)
+      return "Bitte Tätigkeit und Zeitraum angeben";
     const amt = parseFloat(form.amount.replace(",", "."));
     if (!amt || amt <= 0) return "Bitte einen gültigen Betrag eingeben";
     if (amt > 840) return "Ehrenamtspauschale darf 840€ nicht überschreiten";
     if (!form.confirmed) return "Bitte die Bestätigung ankreuzen";
     if (!signature) return "Bitte unterschreiben";
-    if (!bank.iban || !bank.bic || !bank.accountHolder) return "Bitte Bankdaten ausfüllen";
+    if (!bank.iban || !bank.bic || !bank.accountHolder)
+      return "Bitte Bankdaten ausfüllen";
     return null;
   };
 
@@ -105,11 +114,19 @@ export function VolunteerAllowanceFormUI({ defaultBankDetails }: { defaultBankDe
         <div className="grid grid-cols-2 gap-4">
           <div className="col-span-2">
             <Label>Name *</Label>
-            <Input value={form.name} onChange={(e) => set("name", e.target.value)} placeholder="Vor- und Nachname" />
+            <Input
+              value={form.name}
+              onChange={(e) => set("name", e.target.value)}
+              placeholder="Vor- und Nachname"
+            />
           </div>
           <div className="col-span-2">
             <Label>Straße und Hausnummer *</Label>
-            <Input value={form.street} onChange={(e) => set("street", e.target.value)} placeholder="Musterstraße 123" />
+            <Input
+              value={form.street}
+              onChange={(e) => set("street", e.target.value)}
+              placeholder="Musterstraße 123"
+            />
           </div>
           <div>
             <Label>PLZ *</Label>
@@ -123,7 +140,11 @@ export function VolunteerAllowanceFormUI({ defaultBankDetails }: { defaultBankDe
           </div>
           <div>
             <Label>Ort *</Label>
-            <Input value={form.city} onChange={(e) => set("city", e.target.value)} placeholder="Musterstadt" />
+            <Input
+              value={form.city}
+              onChange={(e) => set("city", e.target.value)}
+              placeholder="Musterstadt"
+            />
           </div>
         </div>
       </div>
@@ -143,11 +164,17 @@ export function VolunteerAllowanceFormUI({ defaultBankDetails }: { defaultBankDe
         <div className="grid grid-cols-2 gap-4">
           <div>
             <Label>Von *</Label>
-            <DateInput value={form.startDate} onChange={(v) => set("startDate", v)} />
+            <DateInput
+              value={form.startDate}
+              onChange={(v) => set("startDate", v)}
+            />
           </div>
           <div>
             <Label>Bis *</Label>
-            <DateInput value={form.endDate} onChange={(v) => set("endDate", v)} />
+            <DateInput
+              value={form.endDate}
+              onChange={(v) => set("endDate", v)}
+            />
           </div>
         </div>
       </div>
@@ -173,11 +200,17 @@ export function VolunteerAllowanceFormUI({ defaultBankDetails }: { defaultBankDe
       <div className="space-y-4">
         <h2 className="text-lg font-medium">Bestätigung</h2>
         <div className="flex items-start gap-3">
-          <Checkbox id="confirm" checked={form.confirmed} onCheckedChange={(c) => set("confirmed", c === true)} />
+          <Checkbox
+            id="confirm"
+            checked={form.confirmed}
+            onCheckedChange={(c) => set("confirmed", c === true)}
+          />
           <Label htmlFor="confirm" className="text-sm leading-relaxed">
-            Ich erkläre, dass die Steuerbefreiung nach § 3 Nr. 26a EStG für nebenberufliche ehrenamtliche Tätigkeit in
-            voller Höhe von {form.amount || "0,00"} Euro in Anspruch genommen werden kann. Sollte sich im Lauf des
-            Jahres eine Änderung ergeben, informiere ich hierüber unverzüglich den Verein.
+            Ich erkläre, dass die Steuerbefreiung nach § 3 Nr. 26a EStG für
+            nebenberufliche ehrenamtliche Tätigkeit in voller Höhe von{" "}
+            {form.amount || "0,00"} Euro in Anspruch genommen werden kann.
+            Sollte sich im Lauf des Jahres eine Änderung ergeben, informiere ich
+            hierüber unverzüglich den Verein.
           </Label>
         </div>
       </div>
@@ -190,14 +223,26 @@ export function VolunteerAllowanceFormUI({ defaultBankDetails }: { defaultBankDe
             Auf Handy unterschreiben
           </Button>
         )}
-        <SignatureCanvas onUploadComplete={setSignature} storageId={signature || undefined} />
+        <SignatureCanvas
+          onUploadComplete={setSignature}
+          storageId={signature || undefined}
+        />
       </div>
 
       {token && (
-        <ShareSignatureModal token={token} open={modalOpen} onClose={() => setModalOpen(false)} onSignatureReceived={setSignature} />
+        <ShareSignatureModal
+          token={token}
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
+          onSignatureReceived={setSignature}
+        />
       )}
 
-      <Button onClick={handleSubmit} className="w-full h-14 font-semibold mt-8" size="lg">
+      <Button
+        onClick={handleSubmit}
+        className="w-full h-14 font-semibold mt-8"
+        size="lg"
+      >
         Zur Genehmigung einreichen
       </Button>
     </div>

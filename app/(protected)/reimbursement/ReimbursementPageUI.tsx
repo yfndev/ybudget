@@ -51,7 +51,10 @@ interface ReimbursementPageUIProps {
   onRowClick: (id: Id<"reimbursements">) => void;
   onApproveReimbursement: (id: Id<"reimbursements">) => void;
   onApproveAllowance: (id: Id<"volunteerAllowance">) => void;
-  onOpenRejectDialog: (type: "reimbursement" | "allowance", id: Id<"reimbursements"> | Id<"volunteerAllowance">) => void;
+  onOpenRejectDialog: (
+    type: "reimbursement" | "allowance",
+    id: Id<"reimbursements"> | Id<"volunteerAllowance">,
+  ) => void;
   onRejectDialogChange: (dialog: RejectDialog) => void;
   onReject: () => void;
   onDownloadReimbursement: (id: Id<"reimbursements">) => void;
@@ -100,7 +103,9 @@ export default function ReimbursementPageUI({
           </div>
         ) : isEmpty ? (
           <div className="text-center py-12">
-            <p className="text-muted-foreground">Keine Erstattungen gefunden.</p>
+            <p className="text-muted-foreground">
+              Keine Erstattungen gefunden.
+            </p>
           </div>
         ) : (
           <Table>
@@ -127,10 +132,14 @@ export default function ReimbursementPageUI({
                       <div>
                         <span>Reisekostenerstattung</span>
                         {item.travelDetails?.destination && (
-                          <span className="block text-xs">{item.travelDetails.destination}</span>
+                          <span className="block text-xs">
+                            {item.travelDetails.destination}
+                          </span>
                         )}
                       </div>
-                    ) : "Auslagenerstattung"
+                    ) : (
+                      "Auslagenerstattung"
+                    )
                   }
                   onClick={() => onRowClick(item._id)}
                   onApprove={() => onApproveReimbursement(item._id)}
@@ -148,7 +157,9 @@ export default function ReimbursementPageUI({
                   description={
                     <div>
                       <span>Ehrenamtspauschale</span>
-                      <span className="block text-xs">{item.volunteerName}</span>
+                      <span className="block text-xs">
+                        {item.volunteerName}
+                      </span>
                     </div>
                   }
                   onApprove={() => onApproveAllowance(item._id)}
@@ -169,18 +180,24 @@ export default function ReimbursementPageUI({
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Ablehnen</DialogTitle>
-            <DialogDescription>Bitte gib einen Grund für die Ablehnung ein.</DialogDescription>
+            <DialogDescription>
+              Bitte gib einen Grund für die Ablehnung ein.
+            </DialogDescription>
           </DialogHeader>
           <Textarea
             value={rejectDialog.note}
-            onChange={(e) => onRejectDialogChange({ ...rejectDialog, note: e.target.value })}
+            onChange={(e) =>
+              onRejectDialogChange({ ...rejectDialog, note: e.target.value })
+            }
             placeholder="Grund für die Ablehnung..."
             rows={4}
           />
           <DialogFooter>
             <Button
               variant="outline"
-              onClick={() => onRejectDialogChange({ ...rejectDialog, open: false })}
+              onClick={() =>
+                onRejectDialogChange({ ...rejectDialog, open: false })
+              }
             >
               Abbrechen
             </Button>

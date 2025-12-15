@@ -64,7 +64,8 @@ async function deleteOrganization(
       .withIndex("by_reimbursement", (q) => q.eq("reimbursementId", r._id))
       .collect();
     for (const receipt of receipts) {
-      if (receipt.fileStorageId) await ctx.storage.delete(receipt.fileStorageId);
+      if (receipt.fileStorageId)
+        await ctx.storage.delete(receipt.fileStorageId);
       await ctx.db.delete(receipt._id);
     }
 
@@ -87,7 +88,9 @@ async function deleteOrganization(
   ] as const) {
     const docs = await ctx.db
       .query(table)
-      .withIndex("by_organization", (q) => q.eq("organizationId", organizationId))
+      .withIndex("by_organization", (q) =>
+        q.eq("organizationId", organizationId),
+      )
       .collect();
     for (const doc of docs) await ctx.db.delete(doc._id);
   }

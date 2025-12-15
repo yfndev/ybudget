@@ -34,7 +34,9 @@ export default function ReimbursementFormPage() {
           <TabsList>
             <TabsTrigger value="expense">Auslagenerstattung</TabsTrigger>
             <TabsTrigger value="travel">Reisekostenerstattung</TabsTrigger>
-            <TabsTrigger value="volunteerAllowance">Ehrenamtspauschale</TabsTrigger>
+            <TabsTrigger value="volunteerAllowance">
+              Ehrenamtspauschale
+            </TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
