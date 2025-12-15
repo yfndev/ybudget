@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/convex/_generated/api";
+import type { Id } from "@/convex/_generated/dataModel";
 import { useMutation } from "convex/react";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -48,7 +49,7 @@ export function CreateProjectDialog({
       const projectId = await addProject({
         name: name.trim(),
         description: description.trim() || undefined,
-        parentId: parentId ? (parentId as any) : undefined,
+        parentId: parentId ? (parentId as Id<"projects">) : undefined,
       });
 
       toast.success("Projekt erstellt!");

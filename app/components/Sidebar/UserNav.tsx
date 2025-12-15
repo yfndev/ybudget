@@ -49,9 +49,8 @@ export function NavUser({ user }: { user: Doc<"users"> | null | undefined }) {
     try {
       const portalUrl = await createPortalSession();
       window.location.href = portalUrl;
-    } catch (err) {
+    } catch {
       setIsLoadingPortal(false);
-      console.error("Failed to create portal session: " + err);
     }
   };
 

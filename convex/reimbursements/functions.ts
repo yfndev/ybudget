@@ -2,6 +2,7 @@ import { v } from "convex/values";
 import { mutation } from "../_generated/server";
 import { addLog } from "../logs/functions";
 import { getCurrentUser } from "../users/getCurrentUser";
+import { requireRole } from "../users/permissions";
 
 export const createReimbursement = mutation({
   args: {
@@ -144,7 +145,9 @@ export const deleteReimbursement = mutation({
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
     const reimbursement = await ctx.db.get(args.reimbursementId);
-    if (!reimbursement) throw new Error("Reimbursement not found");
+    if (!reimbursement || reimbursement.organizationId !== user.organizationId) {
+      throw new Error("Reimbursement not found");
+    }
 
     const receipts = await ctx.db
       .query("receipts")
@@ -182,9 +185,12 @@ export const deleteReimbursement = mutation({
 export const markAsPaid = mutation({
   args: { reimbursementId: v.id("reimbursements") },
   handler: async (ctx, args) => {
+    await requireRole(ctx, "lead");
     const user = await getCurrentUser(ctx);
     const reimbursement = await ctx.db.get(args.reimbursementId);
-    if (!reimbursement) throw new Error("Reimbursement not found");
+    if (!reimbursement || reimbursement.organizationId !== user.organizationId) {
+      throw new Error("Reimbursement not found");
+    }
 
     const category = await ctx.db
       .query("categories")
@@ -221,7 +227,12 @@ export const rejectReimbursement = mutation({
     rejectionNote: v.string(),
   },
   handler: async (ctx, args) => {
+    await requireRole(ctx, "lead");
     const user = await getCurrentUser(ctx);
+    const reimbursement = await ctx.db.get(args.reimbursementId);
+    if (!reimbursement || reimbursement.organizationId !== user.organizationId) {
+      throw new Error("Reimbursement not found");
+    }
 
     await ctx.db.patch(args.reimbursementId, {
       isApproved: false,

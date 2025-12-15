@@ -82,8 +82,7 @@ export function EditableDataTable<T extends { _id: string }>({
     setIsUpdating(true);
     try {
       await onUpdate(rowId, field, value);
-    } catch (error) {
-      console.error("Update failed:", error);
+    } catch {
       toast.error("Fehler beim Speichern");
     } finally {
       setIsUpdating(false);
