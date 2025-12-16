@@ -4,7 +4,7 @@ import { PageHeader } from "@/components/Layout/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { api } from "@/convex/_generated/api";
-import type { Id } from "@/convex/_generated/dataModel";
+import type { Doc, Id } from "@/convex/_generated/dataModel";
 import { formatCurrency } from "@/lib/formatters/formatCurrency";
 import { formatDate } from "@/lib/formatters/formatDate";
 import { useQuery } from "convex/react";
@@ -40,7 +40,7 @@ export default function ReimbursementDetailPage() {
   });
   const receipts = useQuery(api.reimbursements.queries.getReceipts, {
     reimbursementId,
-  });
+  }) as Doc<"receipts">[] | undefined;
 
   if (!reimbursement || !receipts) {
     return (

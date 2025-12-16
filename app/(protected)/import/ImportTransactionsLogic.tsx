@@ -3,7 +3,7 @@
 import { ImportTransactionsSkeleton } from "@/(protected)/import/ImportTransactionsSkeleton";
 import { ImportTransactionsUI } from "@/(protected)/import/ImportTransactionsUI";
 import { api } from "@/convex/_generated/api";
-import type { Id } from "@/convex/_generated/dataModel";
+import type { Doc, Id } from "@/convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -32,13 +32,12 @@ export const ImportTransactionsLogic = () => {
 
   const current = transactions?.[index] || null;
 
-  const expectedTransactions =
-    useQuery(
-      api.transactions.queries.getMatchingRecommendations,
-      current
-        ? { projectId: projectId ? (projectId as Id<"projects">) : undefined }
-        : "skip",
-    ) || [];
+  const expectedTransactions = (useQuery(
+    api.transactions.queries.getMatchingRecommendations,
+    current
+      ? { projectId: projectId ? (projectId as Id<"projects">) : undefined }
+      : "skip",
+  ) || []) as Doc<"transactions">[];
 
   useEffect(() => {
     if (!current) {

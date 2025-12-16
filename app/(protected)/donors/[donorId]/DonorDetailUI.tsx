@@ -4,9 +4,8 @@ import { PageHeader } from "@/components/Layout/PageHeader";
 import { editableColumnsWithoutProject } from "@/components/Tables/Transactions/EditableColumns";
 import { EditableDataTable } from "@/components/Tables/Transactions/EditableDataTable";
 import { Button } from "@/components/ui/button";
-import { api } from "@/convex/_generated/api";
-import { Doc, Id } from "@/convex/_generated/dataModel";
-import { PaginationStatus, useQuery } from "convex/react";
+import { Doc } from "@/convex/_generated/dataModel";
+import { PaginationStatus } from "convex/react";
 import { CSVLink } from "react-csv";
 
 interface DonorDetailUIProps {
@@ -21,6 +20,7 @@ interface DonorDetailUIProps {
   handleDelete: (rowId: string) => Promise<void>;
   status: PaginationStatus;
 }
+
 const csvHeaders = [
   { label: "Datum", key: "date" },
   { label: "Betrag", key: "amount" },
@@ -37,19 +37,14 @@ export default function DonorDetailUI({
   handleDelete,
   status,
 }: DonorDetailUIProps) {
-  const donorTransactions = useQuery(api.donors.queries.getDonorTransactions, {
-    donorId: donor._id as Id<"donors">,
-  });
-
-  const csvData =
-    donorTransactions?.map((t) => ({
-      date: new Date(t.date).toISOString(),
-      amount: t.amount,
-      description: t.description,
-      counterparty: t.counterparty,
-      accountName: t.accountName,
-      status: t.status,
-    })) ?? [];
+  const csvData = transactions.map((t) => ({
+    date: new Date(t.date).toISOString(),
+    amount: t.amount,
+    description: t.description,
+    counterparty: t.counterparty,
+    accountName: t.accountName ?? "",
+    status: t.status,
+  }));
 
   return (
     <div>
