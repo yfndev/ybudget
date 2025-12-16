@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Sheet,
   SheetContent,
@@ -10,17 +10,26 @@ import {
 } from "@/components/ui/sheet";
 import { api } from "@/convex/_generated/api";
 import { cn } from "@/lib/utils";
-import { useSmoothText, useUIMessages } from "@convex-dev/agent/react";
-import { useAction } from "convex/react";
+import { useUIMessages } from "@convex-dev/agent/react";
+import { useMutation } from "convex/react";
 import { Bot, MessageCircle, Send } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 const STARTERS = [
-  "Was sind meine größten Ausgaben?",
-  "Wo kann ich Kosten sparen?",
-  "Erstelle einen Finanzreport",
-  "Wie ist meine aktuelle Bilanz?",
+  "Was waren die 10 größten Ausgaben dieses Jahr?",
+  "Liste alle offenen Posten auf",
+  "Liste alle offenen Erstattungen auf",
 ];
+
+function renderText(text: string) {
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return <strong key={i}>{part.slice(2, -2)}</strong>;
+    }
+    return part;
+  });
+}
 
 function LoadingDots({ size = "md" }: { size?: "sm" | "md" }) {
   const dotSize = size === "sm" ? "w-1 h-1" : "w-1.5 h-1.5";
@@ -29,44 +38,16 @@ function LoadingDots({ size = "md" }: { size?: "sm" | "md" }) {
       <span
         className={cn(
           dotSize,
-          "bg-current rounded-full animate-bounce [animation-delay:-0.3s]",
+          "bg-current rounded-full animate-bounce [animation-delay:-0.3s]"
         )}
       />
       <span
         className={cn(
           dotSize,
-          "bg-current rounded-full animate-bounce [animation-delay:-0.15s]",
+          "bg-current rounded-full animate-bounce [animation-delay:-0.15s]"
         )}
       />
       <span className={cn(dotSize, "bg-current rounded-full animate-bounce")} />
-    </div>
-  );
-}
-
-function MessageBubble({
-  role,
-  text,
-  isStreaming,
-}: {
-  role: "user" | "assistant";
-  text: string;
-  isStreaming?: boolean;
-}) {
-  const [smoothText] = useSmoothText(text, {
-    startStreaming: isStreaming ?? false,
-  });
-  const isUser = role === "user";
-
-  return (
-    <div className={cn("flex", isUser && "justify-end")}>
-      <div
-        className={cn(
-          "rounded-lg px-4 py-2 max-w-[80%]",
-          isUser ? "bg-primary text-primary-foreground" : "bg-muted",
-        )}
-      >
-        <p className="text-sm whitespace-pre-wrap">{smoothText || text}</p>
-      </div>
     </div>
   );
 }
@@ -80,42 +61,32 @@ export function ChatOverlay({
 }) {
   const [threadId, setThreadId] = useState<string | null>(null);
   const [input, setInput] = useState("");
-  const [pending, setPending] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const sendMessage = useAction(api.ai.actions.sendMessage);
+  const sendMessage = useMutation(api.ai.mutations.sendMessage);
 
   const { results: messages } = useUIMessages(
     api.ai.queries.listMessages,
     threadId ? { threadId } : "skip",
-    { initialNumItems: 50, stream: true },
+    { initialNumItems: 50, stream: true }
   );
+
+  const isStreaming = messages.some((m) => m.status === "streaming");
 
   useEffect(() => {
     scrollRef.current?.scrollTo(0, scrollRef.current.scrollHeight);
-  }, [messages, pending]);
-
-  useEffect(() => {
-    if (
-      pending &&
-      messages.some((msg) => msg.role === "user" && msg.text === pending)
-    ) {
-      setPending(null);
-    }
-  }, [messages, pending]);
+  }, [messages]);
 
   const send = async (prompt: string) => {
-    if (!prompt.trim() || pending) return;
-    const text = prompt.trim();
+    if (!prompt.trim() || isStreaming) return;
     setInput("");
-    setPending(text);
-    const newId = await sendMessage({
+    const newThreadId = await sendMessage({
       threadId: threadId ?? undefined,
-      prompt: text,
+      prompt: prompt.trim(),
     });
-    if (!threadId) setThreadId(newId);
+    if (!threadId) setThreadId(newThreadId);
   };
 
-  const isEmpty = messages.length === 0 && !pending;
+  const isEmpty = messages.length === 0;
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -154,27 +125,34 @@ export function ChatOverlay({
               </div>
             )}
 
-            {messages.map((msg) =>
-              msg.text ? (
-                <MessageBubble
+            {messages
+              .filter((msg) => msg.role === "user" || msg.role === "assistant")
+              .map((msg) => (
+                <div
                   key={msg.key}
-                  role={msg.role as "user" | "assistant"}
-                  text={msg.text}
-                  isStreaming={msg.status === "streaming"}
-                />
-              ) : null,
-            )}
-
-            {pending && (
-              <>
-                <MessageBubble role="user" text={pending} />
-                <div className="flex">
-                  <div className="rounded-lg px-4 py-2 bg-muted text-muted-foreground">
-                    <LoadingDots />
+                  className={cn("flex", msg.role === "user" && "justify-end")}
+                >
+                  <div
+                    className={cn(
+                      "rounded-lg px-4 py-2 max-w-[80%]",
+                      msg.role === "user"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted"
+                    )}
+                  >
+                    {msg.text ? (
+                      <p className="text-sm whitespace-pre-wrap">
+                        {renderText(msg.text)}
+                        {msg.status === "streaming" && (
+                          <span className="animate-pulse">▊</span>
+                        )}
+                      </p>
+                    ) : msg.status === "streaming" ? (
+                      <LoadingDots />
+                    ) : null}
                   </div>
                 </div>
-              </>
-            )}
+              ))}
           </div>
         </div>
 
@@ -185,24 +163,28 @@ export function ChatOverlay({
           }}
           className="border-t p-4"
         >
-          <div className="flex gap-2">
-            <Input
+          <div className="flex gap-2 items-end">
+            <Textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  send(input);
+                }
+              }}
               placeholder="Nachricht eingeben..."
-              disabled={!!pending}
+              disabled={isStreaming}
               autoFocus
+              rows={1}
+              className="min-h-[40px] max-h-[120px] resize-none"
             />
             <Button
               type="submit"
               size="icon"
-              disabled={!!pending || !input.trim()}
+              disabled={isStreaming || !input.trim()}
             >
-              {pending ? (
-                <LoadingDots size="sm" />
-              ) : (
-                <Send className="h-4 w-4" />
-              )}
+              <Send className="h-4 w-4" />
             </Button>
           </div>
         </form>

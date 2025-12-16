@@ -10,6 +10,8 @@
 
 import type * as ai_actions from "../ai/actions.js";
 import type * as ai_agent from "../ai/agent.js";
+import type * as ai_internalQueries from "../ai/internalQueries.js";
+import type * as ai_mutations from "../ai/mutations.js";
 import type * as ai_queries from "../ai/queries.js";
 import type * as ai_tools from "../ai/tools.js";
 import type * as auth from "../auth.js";
@@ -57,6 +59,8 @@ import type {
 declare const fullApi: ApiFromModules<{
   "ai/actions": typeof ai_actions;
   "ai/agent": typeof ai_agent;
+  "ai/internalQueries": typeof ai_internalQueries;
+  "ai/mutations": typeof ai_mutations;
   "ai/queries": typeof ai_queries;
   "ai/tools": typeof ai_tools;
   auth: typeof auth;

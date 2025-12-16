@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { useAction } from "convex/react";
+import { useMutation } from "convex/react";
 import { useUIMessages, useSmoothText } from "@convex-dev/agent/react";
 import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
-import { Send, Loader2, Bot, User } from "lucide-react";
+import { Send, Bot, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 function MessageBubble({
@@ -50,15 +50,16 @@ function MessageBubble({
 export default function AIPage() {
   const [threadId, setThreadId] = useState<string | null>(null);
   const [input, setInput] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const sendMessage = useAction(api.ai.actions.sendMessage);
+  const sendMessage = useMutation(api.ai.mutations.sendMessage);
 
   const { results: messages } = useUIMessages(
     api.ai.queries.listMessages,
     threadId ? { threadId } : "skip",
     { initialNumItems: 50, stream: true },
   );
+
+  const isStreaming = messages.some((m) => m.status === "streaming");
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -68,21 +69,15 @@ export default function AIPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || isLoading) return;
+    if (!input.trim() || isStreaming) return;
 
     const prompt = input.trim();
     setInput("");
-    setIsLoading(true);
-
-    try {
-      const newThreadId = await sendMessage({
-        threadId: threadId ?? undefined,
-        prompt,
-      });
-      if (!threadId) setThreadId(newThreadId);
-    } finally {
-      setIsLoading(false);
-    }
+    const newThreadId = await sendMessage({
+      threadId: threadId ?? undefined,
+      prompt,
+    });
+    if (!threadId) setThreadId(newThreadId);
   };
 
   return (
@@ -95,7 +90,7 @@ export default function AIPage() {
       <div className="flex-1 border rounded-lg flex flex-col overflow-hidden">
         <ScrollArea className="flex-1 p-4" ref={scrollRef}>
           <div className="flex flex-col gap-4">
-            {messages.length === 0 && !isLoading && (
+            {messages.length === 0 && (
               <div className="text-center text-muted-foreground py-12">
                 <Bot className="h-16 w-16 mx-auto mb-4 opacity-50" />
                 <p className="text-lg font-medium">
@@ -131,11 +126,6 @@ export default function AIPage() {
                 isStreaming={message.status === "streaming"}
               />
             ))}
-            {isLoading && messages.length === 0 && (
-              <div className="flex justify-center py-8">
-                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-              </div>
-            )}
           </div>
         </ScrollArea>
 
@@ -145,20 +135,16 @@ export default function AIPage() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Nachricht eingeben..."
-              disabled={isLoading}
+              disabled={isStreaming}
               autoFocus
               className="flex-1"
             />
             <Button
               type="submit"
               size="icon"
-              disabled={isLoading || !input.trim()}
+              disabled={isStreaming || !input.trim()}
             >
-              {isLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Send className="h-4 w-4" />
-              )}
+              <Send className="h-4 w-4" />
             </Button>
           </div>
         </form>
