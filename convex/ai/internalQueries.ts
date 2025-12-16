@@ -9,12 +9,12 @@ export const getTransactions = internalQuery({
     organizationId: v.id("organizations"),
   },
   handler: async (ctx, args) => {
-    const transactions = await ctx.db
+    const allTransactions = await ctx.db
       .query("transactions")
       .withIndex("by_organization", (q) => q.eq("organizationId", args.organizationId))
-      .filter((q) => q.neq(q.field("isArchived"), true))
       .collect();
 
+    const transactions = allTransactions.filter((t) => !t.isArchived);
     const filtered = await filterByProjectAccess(ctx, args.userId, args.organizationId, transactions);
     return addProjectAndCategoryNames(ctx, filtered);
   },
@@ -29,59 +29,56 @@ export const getReimbursements = internalQuery({
     const user = await ctx.db.get(args.userId);
     const isAdmin = user?.role === "admin";
 
-    const reimbursements = isAdmin
-      ? await ctx.db
-          .query("reimbursements")
-          .withIndex("by_organization", (q) => q.eq("organizationId", args.organizationId))
-          .collect()
-      : await ctx.db
-          .query("reimbursements")
-          .withIndex("by_organization_and_createdBy", (q) =>
-            q.eq("organizationId", args.organizationId).eq("createdBy", args.userId),
-          )
-          .collect();
+    const [reimbursements, volunteerAllowances] = await Promise.all([
+      isAdmin
+        ? ctx.db
+            .query("reimbursements")
+            .withIndex("by_organization", (q) => q.eq("organizationId", args.organizationId))
+            .collect()
+        : ctx.db
+            .query("reimbursements")
+            .withIndex("by_organization_and_createdBy", (q) =>
+              q.eq("organizationId", args.organizationId).eq("createdBy", args.userId),
+            )
+            .collect(),
+      isAdmin
+        ? ctx.db
+            .query("volunteerAllowance")
+            .withIndex("by_organization", (q) => q.eq("organizationId", args.organizationId))
+            .collect()
+        : ctx.db
+            .query("volunteerAllowance")
+            .withIndex("by_organization_and_createdBy", (q) =>
+              q.eq("organizationId", args.organizationId).eq("createdBy", args.userId),
+            )
+            .collect(),
+    ]);
 
-    const volunteerAllowances = isAdmin
-      ? await ctx.db
-          .query("volunteerAllowance")
-          .withIndex("by_organization", (q) => q.eq("organizationId", args.organizationId))
-          .collect()
-      : await ctx.db
-          .query("volunteerAllowance")
-          .withIndex("by_organization_and_createdBy", (q) =>
-            q.eq("organizationId", args.organizationId).eq("createdBy", args.userId),
-          )
-          .collect();
+    const allItems = [...reimbursements, ...volunteerAllowances];
+    const creatorIds = [...new Set(allItems.map((i) => i.createdBy))];
+    const projectIds = [...new Set(allItems.map((i) => i.projectId))];
 
-    const reimbursementResults = await Promise.all(
-      reimbursements.map(async (reimbursement) => {
-        const [creator, project] = await Promise.all([
-          ctx.db.get(reimbursement.createdBy),
-          ctx.db.get(reimbursement.projectId),
-        ]);
-        return {
-          ...reimbursement,
-          category: reimbursement.type === "expense" ? "Ausgabe" : "Reise",
-          creatorName: creator?.name || "Unbekannt",
-          projectName: project?.name || "Unbekanntes Projekt",
-        };
-      }),
-    );
+    const [creators, projects] = await Promise.all([
+      Promise.all(creatorIds.map((id) => ctx.db.get(id))),
+      Promise.all(projectIds.map((id) => ctx.db.get(id))),
+    ]);
 
-    const volunteerResults = await Promise.all(
-      volunteerAllowances.map(async (allowance) => {
-        const [creator, project] = await Promise.all([
-          ctx.db.get(allowance.createdBy),
-          ctx.db.get(allowance.projectId),
-        ]);
-        return {
-          ...allowance,
-          category: "Ehrenamtspauschale" as const,
-          creatorName: creator?.name || "Unbekannt",
-          projectName: project?.name || "Unbekanntes Projekt",
-        };
-      }),
-    );
+    const creatorMap = new Map(creators.filter(Boolean).map((c) => [c!._id, c!.name]));
+    const projectMap = new Map(projects.filter(Boolean).map((p) => [p!._id, p!.name]));
+
+    const reimbursementResults = reimbursements.map((r) => ({
+      ...r,
+      category: r.type === "expense" ? "Ausgabe" : "Reise",
+      creatorName: creatorMap.get(r.createdBy) || "Unbekannt",
+      projectName: projectMap.get(r.projectId) || "Unbekanntes Projekt",
+    }));
+
+    const volunteerResults = volunteerAllowances.map((a) => ({
+      ...a,
+      category: "Ehrenamtspauschale" as const,
+      creatorName: creatorMap.get(a.createdBy) || "Unbekannt",
+      projectName: projectMap.get(a.projectId) || "Unbekanntes Projekt",
+    }));
 
     return [...reimbursementResults, ...volunteerResults];
   },

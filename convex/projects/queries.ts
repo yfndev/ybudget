@@ -52,12 +52,12 @@ export const getProjectById = query({
 export const getDepartments = query({
   handler: async (ctx) => {
     const user = await getCurrentUser(ctx);
-    return ctx.db
+    const projects = await ctx.db
       .query("projects")
-      .withIndex("by_organization", (q) =>
+      .withIndex("by_organization_parentId", (q) =>
         q.eq("organizationId", user.organizationId),
       )
-      .filter((q) => q.eq(q.field("parentId"), undefined))
       .collect();
+    return projects.filter((p) => !p.parentId);
   },
 });
