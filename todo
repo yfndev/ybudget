@@ -2,8 +2,6 @@ Tests
 
 **todo**
 
-- [ ] send ehrenamtspauschale via link
-
 **archive (latest on top):**
 
 ---
@@ -23,6 +21,7 @@ Tests
 
 ---
 
+- [x] send ehrenamtspauschale via link
 - [x] test setup with cloning
 - [x] Pull information about the volunteer allowance ("Ehrenamtspauschale") from the user profile and display a link to forms for users who are not logged in
 - [x] check if Readme is up to date and gives all information to install program
