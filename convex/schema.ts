@@ -41,7 +41,9 @@ export default defineSchema({
     description: v.optional(v.string()),
     isArchived: v.boolean(),
     createdBy: v.id("users"),
-  }).index("by_organization", ["organizationId"]),
+  })
+    .index("by_organization", ["organizationId"])
+    .index("by_organization_parentId", ["organizationId", "parentId"]),
 
   transactions: defineTable({
     projectId: v.optional(v.id("projects")),
@@ -83,7 +85,8 @@ export default defineSchema({
     ])
     .index("by_splitFrom", ["splitFromTransactionId"])
     .index("by_archived", ["isArchived"])
-    .index("by_transferId", ["transferId"]),
+    .index("by_transferId", ["transferId"])
+    .index("by_organization_status", ["organizationId", "status"]),
 
   categories: defineTable({
     name: v.string(),

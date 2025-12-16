@@ -57,22 +57,28 @@ export const getAll = query({
 
     const completed = items.filter((i) => !i.token || i.usedAt);
 
-    const organization = await ctx.db.get(user.organizationId);
+    const creatorIds = [...new Set(completed.map((i) => i.createdBy))];
+    const projectIds = [...new Set(completed.map((i) => i.projectId))];
 
-    return Promise.all(
-      completed.map(async (item) => {
-        const [creator, project] = await Promise.all([
-          ctx.db.get(item.createdBy),
-          ctx.db.get(item.projectId),
-        ]);
-        return {
-          ...item,
-          creatorName: creator?.name || "Unknown",
-          projectName: project?.name || "Unknown",
-          organizationName: organization?.name || "",
-        };
-      }),
+    const [organization, creators, projects] = await Promise.all([
+      ctx.db.get(user.organizationId),
+      Promise.all(creatorIds.map((id) => ctx.db.get(id))),
+      Promise.all(projectIds.map((id) => ctx.db.get(id))),
+    ]);
+
+    const creatorMap = new Map(
+      creators.filter(Boolean).map((c) => [c!._id, c!.name]),
     );
+    const projectMap = new Map(
+      projects.filter(Boolean).map((p) => [p!._id, p!.name]),
+    );
+
+    return completed.map((item) => ({
+      ...item,
+      creatorName: creatorMap.get(item.createdBy) || "Unknown",
+      projectName: projectMap.get(item.projectId) || "Unknown",
+      organizationName: organization?.name || "",
+    }));
   },
 });
 

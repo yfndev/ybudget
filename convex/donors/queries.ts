@@ -20,25 +20,26 @@ export const getDonorsByProject = query({
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
 
-    const transactionsWithDonors = await ctx.db
+    const transactions = await ctx.db
       .query("transactions")
       .withIndex("by_organization_project_donor", (q) =>
         q
           .eq("organizationId", user.organizationId)
           .eq("projectId", args.projectId),
       )
-      .filter((q) => q.neq(q.field("donorId"), undefined))
       .collect();
 
-    const uniqueDonorIds = Array.from(
-      new Set(transactionsWithDonors.map((t) => t.donorId).filter(Boolean)),
-    );
+    const uniqueDonorIds = [
+      ...new Set(transactions.map((t) => t.donorId).filter(Boolean)),
+    ];
 
-    const donors = await Promise.all(
-      uniqueDonorIds.map((donorId) => ctx.db.get(donorId!)),
-    );
-
-    return donors.filter((donor) => donor !== null);
+    const donors = [];
+    for (const id of uniqueDonorIds) {
+      if (!id) continue;
+      const donor = await ctx.db.get(id);
+      if (donor) donors.push(donor);
+    }
+    return donors;
   },
 });
 
