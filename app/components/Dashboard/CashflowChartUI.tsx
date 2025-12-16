@@ -111,12 +111,16 @@ export function CashflowChartUI({
   const dateRangeText = `${format(selectedDateRange.from, "d. MMM yyyy", { locale: de })} - ${format(selectedDateRange.to, "d. MMM yyyy", { locale: de })}`;
 
   return (
-    <Card className="flex flex-col flex-1">
-      <CardHeader>
-        <CardTitle>Cashflow Übersicht</CardTitle>
-        <CardDescription>{dateRangeText}</CardDescription>
+    <Card className="flex flex-col">
+      <CardHeader className="pb-2 sm:pb-6">
+        <CardTitle className="text-base sm:text-lg">
+          Cashflow Übersicht
+        </CardTitle>
+        <CardDescription className="text-xs sm:text-sm">
+          {dateRangeText}
+        </CardDescription>
       </CardHeader>
-      <CardContent className="flex-1 pb-0 overflow-hidden">
+      <CardContent className="pb-0 overflow-hidden">
         {transactions === undefined ? (
           <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
             Daten werden geladen...
@@ -126,7 +130,10 @@ export function CashflowChartUI({
             Keine Transaktionen im ausgewählten Zeitraum
           </div>
         ) : (
-          <ChartContainer config={chartConfig} className="h-[40vh] w-full">
+          <ChartContainer
+            config={chartConfig}
+            className="h-[250px] sm:h-[300px] lg:h-[40vh] w-full"
+          >
             <ComposedChart
               data={dataPoints}
               barCategoryGap="0%"
@@ -161,14 +168,15 @@ export function CashflowChartUI({
               <YAxis
                 tickLine={false}
                 axisLine={false}
-                tickMargin={8}
-                width={90}
+                tickMargin={4}
+                width={70}
                 tickFormatter={formatCurrency}
                 domain={[
                   -axisConfig.roundedMaxBarValue,
                   axisConfig.roundedMaxBarValue,
                 ]}
                 ticks={axisConfig.yAxisTicks}
+                tick={{ fontSize: 11 }}
               />
               <ChartTooltip
                 cursor={false}

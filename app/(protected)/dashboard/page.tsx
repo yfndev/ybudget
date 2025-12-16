@@ -17,10 +17,10 @@ export default function Dashboard() {
     calculateBudget(transactions ?? []);
 
   return (
-    <div>
+    <div className="space-y-4 lg:space-y-6">
       <PageHeader title="Dashboard" showRangeCalendar />
       <div
-        className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6"
+        className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6"
         id="tour-budget-cards"
       >
         <BudgetCard
@@ -44,13 +44,10 @@ export default function Dashboard() {
           description="Geplante Einnahmen die noch nicht eingetroffen wurden"
         />
       </div>
-      <div
-        className="flex flex-col lg:flex-row w-full gap-4 lg:gap-6 mt-4 lg:mt-6"
-        id="tour-chart"
-      >
+      <div id="tour-chart">
         <CashflowChartUI />
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 mt-4 lg:mt-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 lg:gap-6">
         <ExpensesByCategoryChart transactions={transactions} />
         <IncomeByDonorChart transactions={transactions} />
       </div>

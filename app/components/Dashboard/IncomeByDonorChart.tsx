@@ -58,13 +58,17 @@ export function IncomeByDonorChart({ transactions }: IncomeByDonorChartProps) {
 
   if (transactions === undefined) {
     return (
-      <Card className="flex flex-col flex-1">
-        <CardHeader>
-          <CardTitle>Einnahmen nach Förderer</CardTitle>
-          <CardDescription>{dateRangeText}</CardDescription>
+      <Card className="flex flex-col">
+        <CardHeader className="pb-2 sm:pb-6">
+          <CardTitle className="text-base sm:text-lg">
+            Einnahmen nach Förderer
+          </CardTitle>
+          <CardDescription className="text-xs sm:text-sm">
+            {dateRangeText}
+          </CardDescription>
         </CardHeader>
-        <CardContent className="flex-1 pb-4">
-          <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
+        <CardContent className="pb-4 h-[200px] sm:h-[250px] lg:h-[300px] flex items-center justify-center">
+          <div className="text-sm text-muted-foreground">
             Daten werden geladen...
           </div>
         </CardContent>
@@ -74,13 +78,17 @@ export function IncomeByDonorChart({ transactions }: IncomeByDonorChartProps) {
 
   if (data.length === 0) {
     return (
-      <Card className="flex flex-col flex-1">
-        <CardHeader>
-          <CardTitle>Einnahmen nach Förderer</CardTitle>
-          <CardDescription>{dateRangeText}</CardDescription>
+      <Card className="flex flex-col">
+        <CardHeader className="pb-2 sm:pb-6">
+          <CardTitle className="text-base sm:text-lg">
+            Einnahmen nach Förderer
+          </CardTitle>
+          <CardDescription className="text-xs sm:text-sm">
+            {dateRangeText}
+          </CardDescription>
         </CardHeader>
-        <CardContent className="flex-1 pb-4">
-          <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
+        <CardContent className="pb-4 h-[200px] sm:h-[250px] lg:h-[300px] flex items-center justify-center">
+          <div className="text-sm text-muted-foreground">
             Keine Einnahmen im ausgewählten Zeitraum
           </div>
         </CardContent>
@@ -89,21 +97,33 @@ export function IncomeByDonorChart({ transactions }: IncomeByDonorChartProps) {
   }
 
   return (
-    <Card className="flex flex-col flex-1">
-      <CardHeader>
-        <CardTitle>Einnahmen nach Förderer</CardTitle>
-        <CardDescription>{dateRangeText}</CardDescription>
+    <Card className="flex flex-col">
+      <CardHeader className="pb-2 sm:pb-6">
+        <CardTitle className="text-base sm:text-lg">
+          Einnahmen nach Förderer
+        </CardTitle>
+        <CardDescription className="text-xs sm:text-sm">
+          {dateRangeText}
+        </CardDescription>
       </CardHeader>
-      <CardContent className="flex-1 pb-4">
-        <ChartContainer config={chartConfig} className="h-[300px] w-full">
+      <CardContent className="pb-4">
+        <ChartContainer
+          config={chartConfig}
+          className="h-[200px] sm:h-[250px] lg:h-[300px] w-full"
+        >
           <BarChart data={data} layout="vertical">
-            <XAxis type="number" tickFormatter={formatCurrency} />
+            <XAxis
+              type="number"
+              tickFormatter={formatCurrency}
+              tick={{ fontSize: 11 }}
+            />
             <YAxis
               type="category"
               dataKey="name"
-              width={120}
+              width={80}
               tickLine={false}
               axisLine={false}
+              tick={{ fontSize: 11 }}
             />
             <ChartTooltip
               content={

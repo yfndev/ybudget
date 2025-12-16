@@ -74,13 +74,17 @@ export function ExpensesByCategoryChart({
 
   if (transactions === undefined) {
     return (
-      <Card className="flex flex-col flex-1">
-        <CardHeader>
-          <CardTitle>Ausgaben nach Kategorie</CardTitle>
-          <CardDescription>{dateRangeText}</CardDescription>
+      <Card className="flex flex-col">
+        <CardHeader className="pb-2 sm:pb-6">
+          <CardTitle className="text-base sm:text-lg">
+            Ausgaben nach Kategorie
+          </CardTitle>
+          <CardDescription className="text-xs sm:text-sm">
+            {dateRangeText}
+          </CardDescription>
         </CardHeader>
-        <CardContent className="flex-1 pb-4">
-          <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
+        <CardContent className="pb-4 h-[200px] sm:h-[250px] lg:h-[300px] flex items-center justify-center">
+          <div className="text-sm text-muted-foreground">
             Daten werden geladen...
           </div>
         </CardContent>
@@ -90,13 +94,17 @@ export function ExpensesByCategoryChart({
 
   if (data.length === 0) {
     return (
-      <Card className="flex flex-col flex-1">
-        <CardHeader>
-          <CardTitle>Ausgaben nach Kategorie</CardTitle>
-          <CardDescription>{dateRangeText}</CardDescription>
+      <Card className="flex flex-col">
+        <CardHeader className="pb-2 sm:pb-6">
+          <CardTitle className="text-base sm:text-lg">
+            Ausgaben nach Kategorie
+          </CardTitle>
+          <CardDescription className="text-xs sm:text-sm">
+            {dateRangeText}
+          </CardDescription>
         </CardHeader>
-        <CardContent className="flex-1 pb-4">
-          <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
+        <CardContent className="pb-4 h-[200px] sm:h-[250px] lg:h-[300px] flex items-center justify-center">
+          <div className="text-sm text-muted-foreground">
             Keine Ausgaben im ausgewählten Zeitraum
           </div>
         </CardContent>
@@ -105,13 +113,20 @@ export function ExpensesByCategoryChart({
   }
 
   return (
-    <Card className="flex flex-col flex-1">
-      <CardHeader>
-        <CardTitle>Ausgaben nach Kategorie</CardTitle>
-        <CardDescription>{dateRangeText}</CardDescription>
+    <Card className="flex flex-col">
+      <CardHeader className="pb-2 sm:pb-6">
+        <CardTitle className="text-base sm:text-lg">
+          Ausgaben nach Kategorie
+        </CardTitle>
+        <CardDescription className="text-xs sm:text-sm">
+          {dateRangeText}
+        </CardDescription>
       </CardHeader>
-      <CardContent className="flex-1 pb-4">
-        <ChartContainer config={chartConfig} className="h-[300px] w-full">
+      <CardContent className="pb-4">
+        <ChartContainer
+          config={chartConfig}
+          className="h-[200px] sm:h-[250px] lg:h-[300px] w-full"
+        >
           <PieChart>
             <ChartTooltip
               content={
@@ -134,8 +149,8 @@ export function ExpensesByCategoryChart({
               nameKey="name"
               cx="50%"
               cy="50%"
-              innerRadius={60}
-              outerRadius={100}
+              innerRadius="40%"
+              outerRadius="70%"
               paddingAngle={2}
             >
               {data.map((entry, index) => (
