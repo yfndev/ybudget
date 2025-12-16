@@ -52,30 +52,19 @@ Data flows through Convex for real-time sync. Every query is scoped by `organiza
 ### 1. Clone & Install
 
 ```bash
-git clone https://github.com/yourusername/ybudget.git
+git clone https://github.com/joelheile/ybudget.git
 cd ybudget
 pnpm install
 npx convex dev  # Creates .env.local with CONVEX_DEPLOYMENT and NEXT_PUBLIC_CONVEX_URL
 ```
 
-### 2. Generate JWT Keys
-
-Run this script and copy the output:
+### 2. Initialize Auth
 
 ```bash
-node -e "
-const { generateKeyPair, exportPKCS8, exportJWK } = require('jose');
-(async () => {
-  const keys = await generateKeyPair('RS256', { extractable: true });
-  const privateKey = await exportPKCS8(keys.privateKey);
-  const publicKey = await exportJWK(keys.publicKey);
-  console.log('JWT_PRIVATE_KEY=\"' + privateKey.trimEnd().replace(/\n/g, ' ') + '\"');
-  console.log('JWKS=' + JSON.stringify({ keys: [{ use: 'sig', ...publicKey }] }));
-})();
-"
+npx @convex-dev/auth
 ```
 
-### 3. Set Up Google OAuth
+### 3. Set Up Google OAuth to get auth working
 
 1. Go to [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
 2. Create OAuth 2.0 Client ID (Web application)
@@ -84,14 +73,12 @@ const { generateKeyPair, exportPKCS8, exportJWK } = require('jose');
 
 ### 4. Configure Environment Variables
 
-Set in Convex Dashboard → Settings → Environment Variables, or via CLI:
+Set in Convex Dashboard → Settings → Environment Variables
+or via CLI:
 
 ```bash
 npx convex env set AUTH_GOOGLE_ID "your-google-client-id"
 npx convex env set AUTH_GOOGLE_SECRET "your-google-client-secret"
-npx convex env set JWT_PRIVATE_KEY "-----BEGIN PRIVATE KEY----- ..."
-npx convex env set JWKS '{"keys":[...]}'
-npx convex env set SITE_URL "http://localhost:3000"
 
 # Optional
 npx convex env set OPENAI_API_KEY "sk_proj_"
