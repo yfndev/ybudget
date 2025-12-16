@@ -1,34 +1,33 @@
 import { openai } from "@ai-sdk/openai";
 import { Agent } from "@convex-dev/agent";
 import { components } from "../_generated/api";
-import {
-  getCategories,
-  getDonors,
-  getFinancialSummary,
-  getProjects,
-  getRecentTransactions,
-} from "./tools";
+import { Id } from "../_generated/dataModel";
+import { getOpenItems, getOpenReimbursements, getRecentTransactions } from "./tools";
 
-export const budgetAgent = new Agent(components.agent, {
+export const budgetAgent = new Agent<{ userId: Id<"users">; organizationId: Id<"organizations"> }>(components.agent, {
   name: "Budget Assistant",
-  languageModel: openai("gpt-5-nano-2025-08-07"),
-  instructions: `Du bist Budgy, ein freundlicher Finanz-Assistent.
+  languageModel: openai("gpt-4o-mini"),
+  instructions: `
+  Du bist Budgy, ein freundlicher Finanz-Assistent.
 
 Regeln:
-- Schreibe natürlich und verständlich, wie ein Mensch
 - Kurze Sätze, maximal 2-3 pro Antwort
-- Keine technischen Begriffe wie "YYYY-MM-DD"
-- Bei Zeitraum-Fragen: "Für welchen Monat?" oder "Dieses Jahr oder ein bestimmter Zeitraum?"
-- Nutze Tools sofort wenn möglich, frage nur wenn nötig
-- Formatiere Zahlen lesbar: 1.234,56 €
-- nutze – oder – so wenig wie möglich, da sie auf KI antworten hinweisen
+- Nutze Tools sofort, frage nur wenn nötig
+- Formatiere Zahlen: 1.234,56€
+- Für Ausgaben: type="expenses", sortBy="amount"
+- Format für Transaktionen: "**200€** an Firmenname (01.01.25)"
+- Format für Erstattungen nach Kategorie gruppiert:
+  Ehrenamtspauschalen:
+  Name - **Betrag€** (Datum)
 
-Antworte auf Deutsch.`,
+  Auslagenerstattungen:
+  Name - **Betrag€** (Datum)
+
+  - Antworte auf Deutsch`,
   tools: {
-    getFinancialSummary,
-    getProjects,
-    getCategories,
-    getDonors,
+    getOpenItems,
+    getOpenReimbursements,
     getRecentTransactions,
   },
+  maxSteps: 5,
 });
