@@ -3,10 +3,14 @@ import { z } from "zod";
 import { internal } from "../_generated/api";
 import { Id } from "../_generated/dataModel";
 
-type Ctx = ToolCtx & { userId: Id<"users">; organizationId: Id<"organizations"> };
+type Ctx = ToolCtx & {
+  userId: Id<"users">;
+  organizationId: Id<"organizations">;
+};
 
 export const getOpenItems = createTool({
-  description: "Get all open items (expected income and expenses that haven't been processed yet)",
+  description:
+    "Get all open items (expected income and expenses that haven't been processed yet)",
   args: z.object({}),
   handler: async (
     ctx: Ctx,
@@ -20,10 +24,13 @@ export const getOpenItems = createTool({
       type: string;
     }>
   > => {
-    const transactions = await ctx.runQuery(internal.ai.internalQueries.getTransactions, {
-      userId: ctx.userId,
-      organizationId: ctx.organizationId,
-    });
+    const transactions = await ctx.runQuery(
+      internal.ai.internalQueries.getTransactions,
+      {
+        userId: ctx.userId,
+        organizationId: ctx.organizationId,
+      },
+    );
 
     const openItems = transactions
       .filter((transaction) => transaction.status === "expected")
@@ -54,10 +61,13 @@ export const getOpenReimbursements = createTool({
       category: string;
     }>
   > => {
-    const reimbursements = await ctx.runQuery(internal.ai.internalQueries.getReimbursements, {
-      userId: ctx.userId,
-      organizationId: ctx.organizationId,
-    });
+    const reimbursements = await ctx.runQuery(
+      internal.ai.internalQueries.getReimbursements,
+      {
+        userId: ctx.userId,
+        organizationId: ctx.organizationId,
+      },
+    );
 
     const openReimbursements = reimbursements.filter(
       (reimbursement) => !reimbursement.isApproved,
@@ -74,11 +84,18 @@ export const getOpenReimbursements = createTool({
 });
 
 export const getRecentTransactions = createTool({
-  description: "Get recent transactions, optionally filtered by type. Returns max 20.",
+  description:
+    "Get recent transactions, optionally filtered by type. Returns max 20.",
   args: z.object({
     limit: z.number().optional().describe("Number of transactions (max 20)"),
-    type: z.enum(["all", "expenses", "income"]).optional().describe("Filter by type"),
-    sortBy: z.enum(["date", "amount"]).optional().describe("Sort by date or amount"),
+    type: z
+      .enum(["all", "expenses", "income"])
+      .optional()
+      .describe("Filter by type"),
+    sortBy: z
+      .enum(["date", "amount"])
+      .optional()
+      .describe("Sort by date or amount"),
   }),
   handler: async (
     ctx: Ctx,
@@ -92,12 +109,17 @@ export const getRecentTransactions = createTool({
       project: string | undefined;
     }>
   > => {
-    const all = await ctx.runQuery(internal.ai.internalQueries.getTransactions, {
-      userId: ctx.userId,
-      organizationId: ctx.organizationId,
-    });
+    const all = await ctx.runQuery(
+      internal.ai.internalQueries.getTransactions,
+      {
+        userId: ctx.userId,
+        organizationId: ctx.organizationId,
+      },
+    );
 
-    let filtered = all.filter((transaction) => transaction.status === "processed");
+    let filtered = all.filter(
+      (transaction) => transaction.status === "processed",
+    );
 
     if (args.type === "expenses") {
       filtered = filtered.filter((transaction) => transaction.amount < 0);
@@ -106,7 +128,9 @@ export const getRecentTransactions = createTool({
     }
 
     if (args.sortBy === "amount") {
-      filtered.sort((first, second) => Math.abs(second.amount) - Math.abs(first.amount));
+      filtered.sort(
+        (first, second) => Math.abs(second.amount) - Math.abs(first.amount),
+      );
     } else {
       filtered.sort((first, second) => second.date - first.date);
     }

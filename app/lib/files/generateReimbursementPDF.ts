@@ -1,11 +1,20 @@
-import { PDFDocument, PDFEmbeddedPage, PDFImage, rgb, StandardFonts } from "pdf-lib";
+import {
+  PDFDocument,
+  PDFEmbeddedPage,
+  PDFImage,
+  rgb,
+  StandardFonts,
+} from "pdf-lib";
 
 type EmbedResult =
   | { draw: PDFEmbeddedPage; width: number; height: number }
   | { image: PDFImage; width: number; height: number }
   | null;
 
-async function embedFile(pdfDoc: PDFDocument, bytes: Uint8Array): Promise<EmbedResult> {
+async function embedFile(
+  pdfDoc: PDFDocument,
+  bytes: Uint8Array,
+): Promise<EmbedResult> {
   try {
     const pdf = await PDFDocument.load(bytes);
     const [page] = await pdfDoc.embedPdf(pdf, [0]);
@@ -156,12 +165,25 @@ export async function generateReimbursementPDF(
       const embedded = await embedFile(pdfDoc, bytes);
       if (!embedded) continue;
 
-      const scale = Math.min(maxWidth / embedded.width, imageHeight / embedded.height);
+      const scale = Math.min(
+        maxWidth / embedded.width,
+        imageHeight / embedded.height,
+      );
 
       if ("draw" in embedded) {
-        page.drawPage(embedded.draw, { x: M, y: M, xScale: scale, yScale: scale });
+        page.drawPage(embedded.draw, {
+          x: M,
+          y: M,
+          xScale: scale,
+          yScale: scale,
+        });
       } else {
-        page.drawImage(embedded.image, { x: M, y: M, width: embedded.width * scale, height: embedded.height * scale });
+        page.drawImage(embedded.image, {
+          x: M,
+          y: M,
+          width: embedded.width * scale,
+          height: embedded.height * scale,
+        });
       }
     } catch {}
   }

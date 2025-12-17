@@ -101,9 +101,7 @@ export const getAllReimbursements = query({
       projects.filter(Boolean).map((p) => [p!._id, p!.name]),
     );
     const travelMap = new Map(
-      travelDetailsList
-        .filter(Boolean)
-        .map((t) => [t!.reimbursementId, t!]),
+      travelDetailsList.filter(Boolean).map((t) => [t!.reimbursementId, t!]),
     );
 
     return reimbursements.map((r) => ({

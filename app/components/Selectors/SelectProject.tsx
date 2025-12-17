@@ -25,7 +25,7 @@ export const SelectProject = forwardRef<HTMLInputElement, Props>(
     const selected = projects?.find((project) => project._id === value);
     const filtered =
       projects?.filter((project) =>
-        project.name.toLowerCase().includes(search.toLowerCase())
+        project.name.toLowerCase().includes(search.toLowerCase()),
       ) ?? [];
 
     useEffect(() => {
@@ -88,7 +88,7 @@ export const SelectProject = forwardRef<HTMLInputElement, Props>(
             ref={ref}
             className={cn(
               "h-9 w-full rounded-md bg-muted px-3 pr-8 text-sm outline-none",
-              open || !selected ? "text-muted-foreground" : "text-foreground"
+              open || !selected ? "text-muted-foreground" : "text-foreground",
             )}
             placeholder="Projekt suchen..."
             value={open ? search : (selected?.name ?? "")}
@@ -114,7 +114,7 @@ export const SelectProject = forwardRef<HTMLInputElement, Props>(
                   type="button"
                   className={cn(
                     "w-full text-left px-3 py-2 text-sm flex items-center justify-between",
-                    idx === highlightedIndex && "bg-accent"
+                    idx === highlightedIndex && "bg-accent",
                   )}
                   onClick={() => select(project._id)}
                   onMouseEnter={() => setHighlightedIndex(idx)}
@@ -123,7 +123,7 @@ export const SelectProject = forwardRef<HTMLInputElement, Props>(
                   <Check
                     className={cn(
                       "h-4 w-4",
-                      value === project._id ? "opacity-100" : "opacity-0"
+                      value === project._id ? "opacity-100" : "opacity-0",
                     )}
                   />
                 </button>
@@ -150,5 +150,5 @@ export const SelectProject = forwardRef<HTMLInputElement, Props>(
         />
       </>
     );
-  }
+  },
 );

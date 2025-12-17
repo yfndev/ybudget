@@ -53,7 +53,8 @@ export function VolunteerAllowanceFormUI({
     confirmed: false,
   });
 
-  const update = (field: Partial<typeof form>) => setForm((prev) => ({ ...prev, ...field }));
+  const update = (field: Partial<typeof form>) =>
+    setForm((prev) => ({ ...prev, ...field }));
 
   useEffect(() => setIsDesktop(window.innerWidth >= 768), []);
 
@@ -104,7 +105,9 @@ export function VolunteerAllowanceFormUI({
       <div className="w-[200px]">
         <SelectProject
           value={projectId || ""}
-          onValueChange={(value) => setProjectId(value ? (value as Id<"projects">) : null)}
+          onValueChange={(value) =>
+            setProjectId(value ? (value as Id<"projects">) : null)
+          }
         />
       </div>
 
@@ -131,7 +134,9 @@ export function VolunteerAllowanceFormUI({
             <Label>PLZ *</Label>
             <Input
               value={form.plz}
-              onChange={(e) => update({ plz: e.target.value.replace(/\D/g, "") })}
+              onChange={(e) =>
+                update({ plz: e.target.value.replace(/\D/g, "") })
+              }
               placeholder="12345"
               inputMode="numeric"
               maxLength={5}
@@ -202,7 +207,9 @@ export function VolunteerAllowanceFormUI({
           <Checkbox
             id="confirm"
             checked={form.confirmed}
-            onCheckedChange={(checked) => update({ confirmed: checked === true })}
+            onCheckedChange={(checked) =>
+              update({ confirmed: checked === true })
+            }
           />
           <Label htmlFor="confirm" className="text-sm leading-relaxed">
             Ich erkläre, dass die Steuerbefreiung nach § 3 Nr. 26a EStG für

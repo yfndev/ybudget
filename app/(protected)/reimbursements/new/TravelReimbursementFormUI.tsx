@@ -26,7 +26,10 @@ import { ReceiptUpload } from "./ReceiptUpload";
 
 type BankDetails = { iban: string; bic: string; accountHolder: string };
 type CostType = NonNullable<Doc<"receipts">["costType"]>;
-type Receipt = Omit<Doc<"receipts">, "_id" | "_creationTime" | "reimbursementId"> & { costType: CostType };
+type Receipt = Omit<
+  Doc<"receipts">,
+  "_id" | "_creationTime" | "reimbursementId"
+> & { costType: CostType };
 
 const LABELS: Record<CostType, string> = {
   car: "PKW",
@@ -69,36 +72,56 @@ export function TravelReimbursementFormUI({
     mealRate: 0,
   });
 
-  const update = (field: Partial<typeof travel>) => setTravel((prev) => ({ ...prev, ...field }));
+  const update = (field: Partial<typeof travel>) =>
+    setTravel((prev) => ({ ...prev, ...field }));
 
-  const hasReceipt = (type: CostType) => receipts.some((receipt) => receipt.costType === type);
+  const hasReceipt = (type: CostType) =>
+    receipts.some((receipt) => receipt.costType === type);
 
   const toggleType = (type: CostType) => {
     if (hasReceipt(type)) {
-      return setReceipts(receipts.filter((receipt) => receipt.costType !== type));
+      return setReceipts(
+        receipts.filter((receipt) => receipt.costType !== type),
+      );
     }
-    setReceipts([...receipts, {
-      costType: type,
-      receiptNumber: `${type.toUpperCase()}-001`,
-      receiptDate: travel.startDate,
-      companyName: "",
-      description: "",
-      netAmount: 0,
-      taxRate: 0,
-      grossAmount: 0,
-      fileStorageId: "" as Id<"_storage">,
-      kilometers: type === "car" ? 0 : undefined,
-    }]);
+    setReceipts([
+      ...receipts,
+      {
+        costType: type,
+        receiptNumber: `${type.toUpperCase()}-001`,
+        receiptDate: travel.startDate,
+        companyName: "",
+        description: "",
+        netAmount: 0,
+        taxRate: 0,
+        grossAmount: 0,
+        fileStorageId: "" as Id<"_storage">,
+        kilometers: type === "car" ? 0 : undefined,
+      },
+    ]);
   };
 
   const updateReceipt = (type: CostType, updates: Partial<Receipt>) =>
-    setReceipts(receipts.map((receipt) => (receipt.costType === type ? { ...receipt, ...updates } : receipt)));
+    setReceipts(
+      receipts.map((receipt) =>
+        receipt.costType === type ? { ...receipt, ...updates } : receipt,
+      ),
+    );
 
-  const hasBasicInfo = travel.destination && travel.purpose && travel.startDate && travel.endDate;
+  const hasBasicInfo =
+    travel.destination && travel.purpose && travel.startDate && travel.endDate;
   const mealTotal = travel.mealDays * travel.mealRate;
-  const total = receipts.reduce((sum, receipt) => sum + receipt.grossAmount, 0) + mealTotal;
-  const allComplete = receipts.every((receipt) => receipt.grossAmount > 0 && receipt.fileStorageId && receipt.companyName);
-  const canSubmit = hasBasicInfo && (receipts.length > 0 || mealTotal > 0) && (receipts.length === 0 || allComplete) && projectId;
+  const total =
+    receipts.reduce((sum, receipt) => sum + receipt.grossAmount, 0) + mealTotal;
+  const allComplete = receipts.every(
+    (receipt) =>
+      receipt.grossAmount > 0 && receipt.fileStorageId && receipt.companyName,
+  );
+  const canSubmit =
+    hasBasicInfo &&
+    (receipts.length > 0 || mealTotal > 0) &&
+    (receipts.length === 0 || allComplete) &&
+    projectId;
 
   const handleSubmit = async () => {
     if (!projectId) return toast.error("Bitte ein Projekt auswählen");
@@ -124,7 +147,9 @@ export function TravelReimbursementFormUI({
       <div className="w-[200px]">
         <SelectProject
           value={projectId || ""}
-          onValueChange={(value) => setProjectId(value ? (value as Id<"projects">) : null)}
+          onValueChange={(value) =>
+            setProjectId(value ? (value as Id<"projects">) : null)
+          }
         />
       </div>
 
@@ -168,7 +193,9 @@ export function TravelReimbursementFormUI({
               <Checkbox
                 id="international"
                 checked={travel.isInternational}
-                onCheckedChange={(checked) => update({ isInternational: checked === true })}
+                onCheckedChange={(checked) =>
+                  update({ isInternational: checked === true })
+                }
               />
               <Label htmlFor="international" className="font-normal">
                 Auslandsreise
@@ -222,7 +249,9 @@ export function TravelReimbursementFormUI({
                   <Input
                     value={receipt.companyName}
                     onChange={(e) =>
-                      updateReceipt(receipt.costType, { companyName: e.target.value })
+                      updateReceipt(receipt.costType, {
+                        companyName: e.target.value,
+                      })
                     }
                     placeholder={PLACEHOLDERS[receipt.costType]}
                   />
@@ -236,7 +265,10 @@ export function TravelReimbursementFormUI({
                         min={0}
                         value={receipt.kilometers || ""}
                         onChange={(e) => {
-                          const km = Math.max(0, Math.floor(parseFloat(e.target.value) || 0));
+                          const km = Math.max(
+                            0,
+                            Math.floor(parseFloat(e.target.value) || 0),
+                          );
                           const amount = Math.round(km * 0.3 * 100) / 100;
                           updateReceipt(receipt.costType, {
                             kilometers: km,
@@ -265,8 +297,14 @@ export function TravelReimbursementFormUI({
                       min={0}
                       value={receipt.grossAmount || ""}
                       onChange={(e) => {
-                        const amount = Math.max(0, parseFloat(e.target.value) || 0);
-                        updateReceipt(receipt.costType, { grossAmount: amount, netAmount: amount });
+                        const amount = Math.max(
+                          0,
+                          parseFloat(e.target.value) || 0,
+                        );
+                        updateReceipt(receipt.costType, {
+                          grossAmount: amount,
+                          netAmount: amount,
+                        });
                       }}
                       placeholder="0.00"
                     />
@@ -298,7 +336,9 @@ export function TravelReimbursementFormUI({
                   step="0.5"
                   min={0}
                   value={travel.mealDays || ""}
-                  onChange={(e) => update({ mealDays: parseFloat(e.target.value) || 0 })}
+                  onChange={(e) =>
+                    update({ mealDays: parseFloat(e.target.value) || 0 })
+                  }
                   placeholder="z.B. 2.5"
                 />
               </div>
@@ -306,7 +346,9 @@ export function TravelReimbursementFormUI({
                 <Label>Tagessatz (€)</Label>
                 <Select
                   value={travel.mealRate ? String(travel.mealRate) : ""}
-                  onValueChange={(value) => update({ mealRate: parseFloat(value) || 0 })}
+                  onValueChange={(value) =>
+                    update({ mealRate: parseFloat(value) || 0 })
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Auswählen" />
@@ -344,7 +386,9 @@ export function TravelReimbursementFormUI({
                   className="flex items-center justify-between px-3 bg-gray-50 border rounded-md"
                 >
                   <div className="flex items-center gap-8 flex-1">
-                    <span className="font-semibold">{LABELS[receipt.costType]}</span>
+                    <span className="font-semibold">
+                      {LABELS[receipt.costType]}
+                    </span>
                     {receipt.costType === "car" && (
                       <span className="text-sm text-muted-foreground">
                         {receipt.kilometers} km × 0,30€

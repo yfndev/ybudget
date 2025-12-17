@@ -74,7 +74,11 @@ export function ReceiptUpload({ onUploadComplete, storageId }: Props) {
         className="border rounded-lg p-4 relative group cursor-pointer"
         onClick={() => inputRef.current?.click()}
       >
-        <img src={previewUrl} alt="Beleg" className="max-h-48 mx-auto rounded" />
+        <img
+          src={previewUrl}
+          alt="Beleg"
+          className="max-h-48 mx-auto rounded"
+        />
         <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
           <div className="text-white text-center">
             <Upload className="size-8 mx-auto mb-2" />
@@ -106,7 +110,9 @@ export function ReceiptUpload({ onUploadComplete, storageId }: Props) {
           <div className="p-4 rounded-full bg-primary/10">
             <Upload className="size-8 text-primary" />
           </div>
-          <p className="font-medium">Klicke hier oder ziehe deine Datei herein</p>
+          <p className="font-medium">
+            Klicke hier oder ziehe deine Datei herein
+          </p>
           <p className="text-sm text-muted-foreground">
             JPG, PNG, HEIC oder PDF (max. 10 MB)
           </p>

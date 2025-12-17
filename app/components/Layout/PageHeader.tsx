@@ -82,10 +82,7 @@ export function PageHeader({
 
   return (
     <>
-      <header
-        className="flex h-12 sm:h-16 items-center"
-        id="tour-page-header"
-      >
+      <header className="flex h-12 sm:h-16 items-center" id="tour-page-header">
         <div className="flex w-full items-center gap-2">
           <SidebarTrigger className="-ml-1" />
           <Separator

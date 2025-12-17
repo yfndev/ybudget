@@ -19,24 +19,38 @@ export default function ProjectDetailPage() {
   const [isTransferOpen, setIsTransferOpen] = useState(false);
 
   const project = useQuery(api.projects.queries.getProjectById, { projectId });
-  const { results: allTransactions, status, loadMore } = usePaginatedQuery(
+  const {
+    results: allTransactions,
+    status,
+    loadMore,
+  } = usePaginatedQuery(
     api.transactions.queries.getPaginatedTransactions,
     { projectId },
-    { initialNumItems: 50 }
+    { initialNumItems: 50 },
   );
 
   const transactions = useMemo(
     () => filterTransactionsByDateRange(allTransactions, selectedDateRange),
-    [allTransactions, selectedDateRange]
+    [allTransactions, selectedDateRange],
   );
-  const budgets = useMemo(() => calculateBudget(allTransactions ?? []), [allTransactions]);
+  const budgets = useMemo(
+    () => calculateBudget(allTransactions ?? []),
+    [allTransactions],
+  );
 
-  const updateTransaction = useMutation(api.transactions.functions.updateTransaction);
-  const deleteTransaction = useMutation(api.transactions.functions.deleteExpectedTransaction);
+  const updateTransaction = useMutation(
+    api.transactions.functions.updateTransaction,
+  );
+  const deleteTransaction = useMutation(
+    api.transactions.functions.deleteExpectedTransaction,
+  );
 
   const handleUpdate = async (id: string, field: string, value: unknown) => {
     try {
-      await updateTransaction({ transactionId: id as Id<"transactions">, [field]: value });
+      await updateTransaction({
+        transactionId: id as Id<"transactions">,
+        [field]: value,
+      });
       toast.success("Transaktion aktualisiert");
     } catch {
       toast.error("Fehler beim Aktualisieren");

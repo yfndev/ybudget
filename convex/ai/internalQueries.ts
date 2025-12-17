@@ -11,11 +11,18 @@ export const getTransactions = internalQuery({
   handler: async (ctx, args) => {
     const allTransactions = await ctx.db
       .query("transactions")
-      .withIndex("by_organization", (q) => q.eq("organizationId", args.organizationId))
+      .withIndex("by_organization", (q) =>
+        q.eq("organizationId", args.organizationId),
+      )
       .collect();
 
     const transactions = allTransactions.filter((t) => !t.isArchived);
-    const filtered = await filterByProjectAccess(ctx, args.userId, args.organizationId, transactions);
+    const filtered = await filterByProjectAccess(
+      ctx,
+      args.userId,
+      args.organizationId,
+      transactions,
+    );
     return addProjectAndCategoryNames(ctx, filtered);
   },
 });
@@ -33,23 +40,31 @@ export const getReimbursements = internalQuery({
       isAdmin
         ? ctx.db
             .query("reimbursements")
-            .withIndex("by_organization", (q) => q.eq("organizationId", args.organizationId))
+            .withIndex("by_organization", (q) =>
+              q.eq("organizationId", args.organizationId),
+            )
             .collect()
         : ctx.db
             .query("reimbursements")
             .withIndex("by_organization_and_createdBy", (q) =>
-              q.eq("organizationId", args.organizationId).eq("createdBy", args.userId),
+              q
+                .eq("organizationId", args.organizationId)
+                .eq("createdBy", args.userId),
             )
             .collect(),
       isAdmin
         ? ctx.db
             .query("volunteerAllowance")
-            .withIndex("by_organization", (q) => q.eq("organizationId", args.organizationId))
+            .withIndex("by_organization", (q) =>
+              q.eq("organizationId", args.organizationId),
+            )
             .collect()
         : ctx.db
             .query("volunteerAllowance")
             .withIndex("by_organization_and_createdBy", (q) =>
-              q.eq("organizationId", args.organizationId).eq("createdBy", args.userId),
+              q
+                .eq("organizationId", args.organizationId)
+                .eq("createdBy", args.userId),
             )
             .collect(),
     ]);
@@ -63,8 +78,12 @@ export const getReimbursements = internalQuery({
       Promise.all(projectIds.map((id) => ctx.db.get(id))),
     ]);
 
-    const creatorMap = new Map(creators.filter(Boolean).map((c) => [c!._id, c!.name]));
-    const projectMap = new Map(projects.filter(Boolean).map((p) => [p!._id, p!.name]));
+    const creatorMap = new Map(
+      creators.filter(Boolean).map((c) => [c!._id, c!.name]),
+    );
+    const projectMap = new Map(
+      projects.filter(Boolean).map((p) => [p!._id, p!.name]),
+    );
 
     const reimbursementResults = reimbursements.map((r) => ({
       ...r,

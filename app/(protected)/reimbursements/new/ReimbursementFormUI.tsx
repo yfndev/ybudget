@@ -25,7 +25,10 @@ import toast from "react-hot-toast";
 import { ReceiptUpload } from "./ReceiptUpload";
 
 type BankDetails = { iban: string; bic: string; accountHolder: string };
-type Receipt = Omit<Doc<"receipts">, "_id" | "_creationTime" | "reimbursementId" | "costType" | "kilometers">;
+type Receipt = Omit<
+  Doc<"receipts">,
+  "_id" | "_creationTime" | "reimbursementId" | "costType" | "kilometers"
+>;
 
 const toNet = (gross: number, tax: number) => gross / (1 + tax / 100);
 
@@ -51,13 +54,30 @@ export function ReimbursementFormUI({
   });
 
   const net = draft.gross ? toNet(draft.gross, draft.tax) : 0;
-  const totalGross = receipts.reduce((sum, receipt) => sum + receipt.grossAmount, 0);
-  const totalNet = receipts.reduce((sum, receipt) => sum + receipt.netAmount, 0);
+  const totalGross = receipts.reduce(
+    (sum, receipt) => sum + receipt.grossAmount,
+    0,
+  );
+  const totalNet = receipts.reduce(
+    (sum, receipt) => sum + receipt.netAmount,
+    0,
+  );
   const taxByRate = (rate: number) =>
-    receipts.filter((receipt) => receipt.taxRate === rate).reduce((sum, receipt) => sum + receipt.grossAmount - receipt.netAmount, 0);
+    receipts
+      .filter((receipt) => receipt.taxRate === rate)
+      .reduce(
+        (sum, receipt) => sum + receipt.grossAmount - receipt.netAmount,
+        0,
+      );
 
   const addReceipt = () => {
-    if (!draft.number || !draft.company || !draft.gross || !draft.file || !draft.date) {
+    if (
+      !draft.number ||
+      !draft.company ||
+      !draft.gross ||
+      !draft.file ||
+      !draft.date
+    ) {
       return toast.error("Bitte Pflichtfelder ausfüllen");
     }
     setReceipts([
@@ -97,7 +117,9 @@ export function ReimbursementFormUI({
       <div className="w-[200px]">
         <SelectProject
           value={projectId || ""}
-          onValueChange={(value) => setProjectId(value ? (value as Id<"projects">) : null)}
+          onValueChange={(value) =>
+            setProjectId(value ? (value as Id<"projects">) : null)
+          }
         />
       </div>
 
@@ -157,7 +179,9 @@ export function ReimbursementFormUI({
             <Label>Wie viel MwSt.?</Label>
             <Select
               value={String(draft.tax)}
-              onValueChange={(value) => setDraft({ ...draft, tax: parseInt(value) })}
+              onValueChange={(value) =>
+                setDraft({ ...draft, tax: parseInt(value) })
+              }
             >
               <SelectTrigger>
                 <SelectValue />
@@ -216,11 +240,15 @@ export function ReimbursementFormUI({
                   </span>
                 </div>
                 <div className="flex items-center gap-4">
-                  <span className="font-semibold">{receipt.grossAmount.toFixed(2)} €</span>
+                  <span className="font-semibold">
+                    {receipt.grossAmount.toFixed(2)} €
+                  </span>
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => setReceipts(receipts.filter((_, idx) => idx !== index))}
+                    onClick={() =>
+                      setReceipts(receipts.filter((_, idx) => idx !== index))
+                    }
                     className="hover:bg-destructive/10 hover:text-destructive"
                   >
                     <Trash2 className="size-4" />
