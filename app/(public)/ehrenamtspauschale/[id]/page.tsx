@@ -16,16 +16,14 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 
 export default function ExternalEhrenamtspauschalePage() {
-  const { token } = useParams<{ token: string }>();
+  const { id } = useParams<{ id: Id<"volunteerAllowance"> }>();
 
-  const tokenData = useQuery(api.volunteerAllowance.queries.validateToken, {
-    token,
-  });
+  const linkData = useQuery(api.volunteerAllowance.queries.validateLink, { id });
   const generateUploadUrl = useMutation(
-    api.volunteerAllowance.functions.generatePublicUploadUrl,
+    api.volunteerAllowance.functions.generatePublicUploadUrl
   );
   const submitExternal = useMutation(
-    api.volunteerAllowance.functions.submitExternal,
+    api.volunteerAllowance.functions.submitExternal
   );
 
   const [signatureStorageId, setSignatureStorageId] =
@@ -53,15 +51,15 @@ export default function ExternalEhrenamtspauschalePage() {
   };
 
   if (
-    tokenData?.valid &&
+    linkData?.valid &&
     !form.activityDescription &&
-    tokenData.activityDescription
+    linkData.activityDescription
   ) {
     setForm((prev) => ({
       ...prev,
-      activityDescription: tokenData.activityDescription || "",
-      startDate: tokenData.startDate || "",
-      endDate: tokenData.endDate || "",
+      activityDescription: linkData.activityDescription || "",
+      startDate: linkData.startDate || "",
+      endDate: linkData.endDate || "",
     }));
   }
 
@@ -91,7 +89,7 @@ export default function ExternalEhrenamtspauschalePage() {
     setIsSubmitting(true);
     try {
       await submitExternal({
-        token,
+        id,
         amount,
         iban: form.iban,
         bic: form.bic,
@@ -108,14 +106,14 @@ export default function ExternalEhrenamtspauschalePage() {
       setSubmitted(true);
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Fehler beim Einreichen",
+        error instanceof Error ? error.message : "Fehler beim Einreichen"
       );
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  if (!tokenData) {
+  if (!linkData) {
     return (
       <div className="flex min-h-svh items-center justify-center">
         <Loader2 className="size-8 animate-spin text-muted-foreground" />
@@ -123,13 +121,13 @@ export default function ExternalEhrenamtspauschalePage() {
     );
   }
 
-  if (!tokenData.valid) {
+  if (!linkData.valid) {
     return (
       <div className="flex min-h-svh items-center justify-center p-8">
         <div className="text-center max-w-md">
           <AlertCircle className="size-16 text-destructive mx-auto mb-4" />
           <h1 className="text-2xl font-bold mb-2">Link ungültig</h1>
-          <p className="text-muted-foreground">{tokenData.error}</p>
+          <p className="text-muted-foreground">{linkData.error}</p>
         </div>
       </div>
     );
@@ -156,7 +154,7 @@ export default function ExternalEhrenamtspauschalePage() {
         <div className="text-center">
           <h1 className="text-2xl font-bold">Ehrenamtspauschale</h1>
           <p className="text-muted-foreground mt-2">
-            {tokenData.organizationName} - {tokenData.projectName}
+            {linkData.organizationName} - {linkData.projectName}
           </p>
         </div>
 
@@ -167,7 +165,9 @@ export default function ExternalEhrenamtspauschalePage() {
               <Label>Name *</Label>
               <Input
                 value={form.volunteerName}
-                onChange={(e) => updateField("volunteerName", e.target.value)}
+                onChange={(event) =>
+                  updateField("volunteerName", event.target.value)
+                }
                 placeholder="Vor- und Nachname"
               />
             </div>
@@ -175,7 +175,9 @@ export default function ExternalEhrenamtspauschalePage() {
               <Label>Straße und Hausnummer *</Label>
               <Input
                 value={form.volunteerStreet}
-                onChange={(e) => updateField("volunteerStreet", e.target.value)}
+                onChange={(event) =>
+                  updateField("volunteerStreet", event.target.value)
+                }
                 placeholder="Musterstraße 123"
               />
             </div>
@@ -183,7 +185,9 @@ export default function ExternalEhrenamtspauschalePage() {
               <Label>PLZ *</Label>
               <Input
                 value={form.volunteerPlz}
-                onChange={(e) => updateField("volunteerPlz", e.target.value)}
+                onChange={(event) =>
+                  updateField("volunteerPlz", event.target.value)
+                }
                 placeholder="12345"
               />
             </div>
@@ -191,7 +195,9 @@ export default function ExternalEhrenamtspauschalePage() {
               <Label>Ort *</Label>
               <Input
                 value={form.volunteerCity}
-                onChange={(e) => updateField("volunteerCity", e.target.value)}
+                onChange={(event) =>
+                  updateField("volunteerCity", event.target.value)
+                }
                 placeholder="Musterstadt"
               />
             </div>
@@ -204,8 +210,8 @@ export default function ExternalEhrenamtspauschalePage() {
             <Label>Beschreibung der nebenberuflichen Tätigkeit *</Label>
             <Textarea
               value={form.activityDescription}
-              onChange={(e) =>
-                updateField("activityDescription", e.target.value)
+              onChange={(event) =>
+                updateField("activityDescription", event.target.value)
               }
               placeholder="z.B. Übungsleiter, Jugendarbeit, Vorstandstätigkeit"
               rows={3}
@@ -218,7 +224,9 @@ export default function ExternalEhrenamtspauschalePage() {
               <Input
                 type="date"
                 value={form.startDate}
-                onChange={(e) => updateField("startDate", e.target.value)}
+                onChange={(event) =>
+                  updateField("startDate", event.target.value)
+                }
               />
             </div>
             <div>
@@ -226,7 +234,7 @@ export default function ExternalEhrenamtspauschalePage() {
               <Input
                 type="date"
                 value={form.endDate}
-                onChange={(e) => updateField("endDate", e.target.value)}
+                onChange={(event) => updateField("endDate", event.target.value)}
               />
             </div>
           </div>
@@ -241,7 +249,7 @@ export default function ExternalEhrenamtspauschalePage() {
               step="0.01"
               max="840"
               value={form.amount}
-              onChange={(e) => updateField("amount", e.target.value)}
+              onChange={(event) => updateField("amount", event.target.value)}
               placeholder="0,00"
             />
           </div>
@@ -254,7 +262,9 @@ export default function ExternalEhrenamtspauschalePage() {
               <Label>Kontoinhaber *</Label>
               <Input
                 value={form.accountHolder}
-                onChange={(e) => updateField("accountHolder", e.target.value)}
+                onChange={(event) =>
+                  updateField("accountHolder", event.target.value)
+                }
                 placeholder="Max Mustermann"
               />
             </div>
@@ -262,7 +272,7 @@ export default function ExternalEhrenamtspauschalePage() {
               <Label>IBAN *</Label>
               <Input
                 value={form.iban}
-                onChange={(e) => updateField("iban", e.target.value)}
+                onChange={(event) => updateField("iban", event.target.value)}
                 placeholder="DE89 3704 0044 0532 0130 00"
                 className="font-mono"
               />
@@ -271,7 +281,7 @@ export default function ExternalEhrenamtspauschalePage() {
               <Label>BIC *</Label>
               <Input
                 value={form.bic}
-                onChange={(e) => updateField("bic", e.target.value)}
+                onChange={(event) => updateField("bic", event.target.value)}
                 placeholder="COBADEFFXXX"
                 className="font-mono"
               />
@@ -306,7 +316,7 @@ export default function ExternalEhrenamtspauschalePage() {
           <SignatureCanvas
             onUploadComplete={setSignatureStorageId}
             storageId={signatureStorageId || undefined}
-            generateUploadUrl={() => generateUploadUrl({ token })}
+            generateUploadUrl={() => generateUploadUrl({ id })}
           />
         </div>
 

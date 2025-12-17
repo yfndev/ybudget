@@ -132,8 +132,8 @@ export function ProjectNav({ id }: { id?: string }) {
     try {
       await archiveProject({ projectId });
       toast.success("Projekt archiviert");
-    } catch {
-      toast.error("Fehler beim Archivieren");
+    } catch (error) {
+      toast.error("Du darfst dieses Projekt nicht archivieren");
     }
   };
 

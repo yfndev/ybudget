@@ -14,6 +14,12 @@ type BankDetails = { iban: string; bic: string; accountHolder: string };
 const IBAN_REGEX = /^[A-Z]{2}[0-9]{2}[A-Z0-9]{4}[0-9]{7}([A-Z0-9]?){0,16}$/;
 const BIC_REGEX = /^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/;
 
+const formatIban = (iban: string) =>
+  iban
+    .replace(/\s/g, "")
+    .replace(/(.{4})/g, "$1 ")
+    .trim();
+
 interface Props {
   value: BankDetails;
   onChange: (value: BankDetails) => void;
@@ -58,8 +64,8 @@ export function BankDetailsEditor({ value, onChange }: Props) {
               IBAN
             </Label>
             <Input
-              value={value.iban}
-              onChange={(e) => update("iban", e.target.value)}
+              value={formatIban(value.iban)}
+              onChange={(e) => update("iban", e.target.value.replace(/\s/g, ""))}
               disabled={!editing}
               placeholder="DE12 3456 7890 0000 0000 00"
               className="font-mono"

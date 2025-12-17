@@ -6,8 +6,6 @@ import { TransferDialog } from "@/components/Dialogs/TransferDialog";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { calculateBudget } from "@/lib/calculations/budgetCalculations";
-import { filterTransactionsByDateRange } from "@/lib/calculations/transactionFilters";
-import { useDateRange } from "@/lib/contexts/DateRangeContext";
 import { useMutation, usePaginatedQuery, useQuery } from "convex/react";
 import { useParams } from "next/navigation";
 import { useMemo, useState } from "react";
@@ -15,12 +13,11 @@ import toast from "react-hot-toast";
 
 export default function ProjectDetailPage() {
   const { projectId } = useParams<{ projectId: Id<"projects"> }>();
-  const { selectedDateRange } = useDateRange();
   const [isTransferOpen, setIsTransferOpen] = useState(false);
 
   const project = useQuery(api.projects.queries.getProjectById, { projectId });
   const {
-    results: allTransactions,
+    results: transactions,
     status,
     loadMore,
   } = usePaginatedQuery(
@@ -29,13 +26,9 @@ export default function ProjectDetailPage() {
     { initialNumItems: 50 }
   );
 
-  const transactions = useMemo(
-    () => filterTransactionsByDateRange(allTransactions, selectedDateRange),
-    [allTransactions, selectedDateRange]
-  );
   const budgets = useMemo(
-    () => calculateBudget(allTransactions ?? []),
-    [allTransactions]
+    () => calculateBudget(transactions ?? []),
+    [transactions]
   );
 
   const updateTransaction = useMutation(

@@ -59,6 +59,7 @@ export const getUnassignedProcessedTransactions = query({
         (t) =>
           !t.isArchived &&
           !t.splitFromTransactionId &&
+          !t.transferId &&
           (!t.projectId || !t.categoryId || (t.amount > 0 && !t.donorId)),
       )
       .sort((a, b) => b.date - a.date);

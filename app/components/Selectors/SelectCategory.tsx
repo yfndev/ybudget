@@ -163,7 +163,7 @@ export function SelectCategory({ value, onValueChange }: Props) {
         createPortal(
           <div
             ref={dropdownRef}
-            className="fixed bg-background border rounded-md shadow-lg z-60 flex w-fit"
+            className="fixed bg-background border rounded-md shadow-lg z-100 flex w-fit"
             style={{ top: dropdownPosition.top, left: dropdownPosition.left }}
           >
             <div className="w-52 shrink-0 border-r bg-muted/30 overflow-y-auto max-h-80">

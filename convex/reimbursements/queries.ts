@@ -52,6 +52,20 @@ export const getFileUrl = query({
   },
 });
 
+export const getFileMetadata = query({
+  args: { storageId: v.id("_storage") },
+  handler: async (ctx, args) => {
+    const [url, metadata] = await Promise.all([
+      ctx.storage.getUrl(args.storageId),
+      ctx.db.system.get(args.storageId),
+    ]);
+    return {
+      url,
+      contentType: metadata?.contentType,
+    };
+  },
+});
+
 export const getAllReimbursements = query({
   handler: async (ctx) => {
     const user = await getCurrentUser(ctx);

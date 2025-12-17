@@ -25,7 +25,7 @@ type Props = {
 };
 
 export function ShareAllowanceModal({ open, onClose }: Props) {
-  const createToken = useMutation(api.volunteerAllowance.functions.createToken);
+  const createLink = useMutation(api.volunteerAllowance.functions.createLink);
 
   const [projectId, setProjectId] = useState<Id<"projects"> | null>(null);
   const [activityDescription, setActivityDescription] = useState("");
@@ -46,14 +46,14 @@ export function ShareAllowanceModal({ open, onClose }: Props) {
 
     setIsGenerating(true);
     try {
-      const token = await createToken({
+      const id = await createLink({
         projectId,
         activityDescription: activityDescription || undefined,
         startDate: startDate || undefined,
         endDate: endDate || undefined,
       });
       await navigator.clipboard.writeText(
-        `${window.location.origin}/ehrenamtspauschale/${token}`,
+        `${window.location.origin}/ehrenamtspauschale/${id}`,
       );
       toast.success("Link kopiert");
       reset();

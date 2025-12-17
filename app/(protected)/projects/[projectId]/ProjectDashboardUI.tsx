@@ -34,7 +34,7 @@ export function ProjectDashboardUI({
 }: Props) {
   return (
     <div>
-      <PageHeader title={project.name} showBackButton showRangeCalendar />
+      <PageHeader title={project.name} showBackButton />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
         <BudgetCard

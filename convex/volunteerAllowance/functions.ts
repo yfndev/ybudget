@@ -56,7 +56,7 @@ export const create = mutation({
   },
 });
 
-export const createToken = mutation({
+export const createLink = mutation({
   args: {
     projectId: v.id("projects"),
     activityDescription: v.optional(v.string()),
@@ -65,9 +65,8 @@ export const createToken = mutation({
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
-    const token = crypto.randomUUID();
 
-    await ctx.db.insert("volunteerAllowance", {
+    const id = await ctx.db.insert("volunteerAllowance", {
       organizationId: user.organizationId,
       projectId: args.projectId,
       amount: 0,
@@ -83,34 +82,25 @@ export const createToken = mutation({
       volunteerStreet: "",
       volunteerPlz: "",
       volunteerCity: "",
-      token,
-      expiresAt: Date.now() + 7 * 24 * 60 * 60 * 1000,
     });
 
-    return token;
+    return id;
   },
 });
 
 export const generatePublicUploadUrl = mutation({
-  args: { token: v.string() },
+  args: { id: v.id("volunteerAllowance") },
   handler: async (ctx, args) => {
-    const doc = await ctx.db
-      .query("volunteerAllowance")
-      .withIndex("by_token", (q) => q.eq("token", args.token))
-      .first();
-
-    if (!doc) throw new Error("Invalid link");
-    if (doc.expiresAt && doc.expiresAt < Date.now())
-      throw new Error("Link expired");
-    if (doc.usedAt) throw new Error("Link already used");
-
+    const doc = await ctx.db.get(args.id);
+    if (!doc) throw new Error("Ungültiger Link");
+    if (doc.signatureStorageId) throw new Error("Bereits ausgefüllt");
     return ctx.storage.generateUploadUrl();
   },
 });
 
 export const submitExternal = mutation({
   args: {
-    token: v.string(),
+    id: v.id("volunteerAllowance"),
     amount: v.number(),
     iban: v.string(),
     bic: v.string(),
@@ -125,21 +115,12 @@ export const submitExternal = mutation({
     signatureStorageId: v.id("_storage"),
   },
   handler: async (ctx, args) => {
-    const doc = await ctx.db
-      .query("volunteerAllowance")
-      .withIndex("by_token", (q) => q.eq("token", args.token))
-      .first();
+    const doc = await ctx.db.get(args.id);
+    if (!doc) throw new Error("Ungültiger Link");
+    if (doc.signatureStorageId) throw new Error("Bereits ausgefüllt");
+    if (args.amount > 840) throw new Error("Maximal 840€ erlaubt");
 
-    if (!doc) throw new Error("Invalid link");
-    if (doc.expiresAt && doc.expiresAt < Date.now())
-      throw new Error("Link expired");
-    if (doc.usedAt) throw new Error("Link already used");
-
-    if (args.amount > 840) {
-      throw new Error("Volunteer allowance cannot exceed 840€");
-    }
-
-    await ctx.db.patch(doc._id, {
+    await ctx.db.patch(args.id, {
       amount: args.amount,
       iban: args.iban,
       bic: args.bic,
@@ -152,7 +133,6 @@ export const submitExternal = mutation({
       volunteerPlz: args.volunteerPlz,
       volunteerCity: args.volunteerCity,
       signatureStorageId: args.signatureStorageId,
-      usedAt: Date.now(),
     });
 
     await addLog(
@@ -160,7 +140,7 @@ export const submitExternal = mutation({
       doc.organizationId,
       doc.createdBy,
       "volunteerAllowance.create",
-      doc._id,
+      args.id,
       `extern ${args.amount}€`,
     );
   },

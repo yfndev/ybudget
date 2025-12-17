@@ -2,19 +2,13 @@ import { v } from "convex/values";
 import { query } from "../_generated/server";
 import { getCurrentUser } from "../users/getCurrentUser";
 
-export const validateToken = query({
-  args: { token: v.string() },
+export const validateLink = query({
+  args: { id: v.id("volunteerAllowance") },
   handler: async (ctx, args) => {
-    const doc = await ctx.db
-      .query("volunteerAllowance")
-      .withIndex("by_token", (q) => q.eq("token", args.token))
-      .first();
-
-    if (!doc) return { valid: false, error: "Invalid link" } as const;
-    if (doc.expiresAt && doc.expiresAt < Date.now())
-      return { valid: false, error: "Link expired" } as const;
-    if (doc.usedAt)
-      return { valid: false, error: "Link already used" } as const;
+    const doc = await ctx.db.get(args.id);
+    if (!doc) return { valid: false, error: "Ungültiger Link" } as const;
+    if (doc.signatureStorageId)
+      return { valid: false, error: "Bereits ausgefüllt" } as const;
 
     const [organization, project] = await Promise.all([
       ctx.db.get(doc.organizationId),
@@ -55,10 +49,10 @@ export const getAll = query({
           .order("desc")
           .collect();
 
-    const completed = items.filter((i) => !i.token || i.usedAt);
+    const completed = items.filter((item) => item.signatureStorageId);
 
-    const creatorIds = [...new Set(completed.map((i) => i.createdBy))];
-    const projectIds = [...new Set(completed.map((i) => i.projectId))];
+    const creatorIds = [...new Set(completed.map((item) => item.createdBy))];
+    const projectIds = [...new Set(completed.map((item) => item.projectId))];
 
     const [organization, creators, projects] = await Promise.all([
       ctx.db.get(user.organizationId),
@@ -67,10 +61,10 @@ export const getAll = query({
     ]);
 
     const creatorMap = new Map(
-      creators.filter(Boolean).map((c) => [c!._id, c!.name]),
+      creators.filter(Boolean).map((creator) => [creator!._id, creator!.name]),
     );
     const projectMap = new Map(
-      projects.filter(Boolean).map((p) => [p!._id, p!.name]),
+      projects.filter(Boolean).map((project) => [project!._id, project!.name]),
     );
 
     return completed.map((item) => ({

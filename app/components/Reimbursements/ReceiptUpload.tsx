@@ -8,7 +8,7 @@ import {
   isValidFileType,
 } from "@/lib/fileHandlers/fileConversion";
 import { useMutation, useQuery } from "convex/react";
-import { Loader2, Upload } from "lucide-react";
+import { FileText, Loader2, Upload } from "lucide-react";
 import { useRef, useState } from "react";
 import toast from "react-hot-toast";
 
@@ -19,13 +19,14 @@ interface Props {
 
 export function ReceiptUpload({ onUploadComplete, storageId }: Props) {
   const [isUploading, setIsUploading] = useState(false);
+  const [isPdf, setIsPdf] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const generateUploadUrl = useMutation(
-    api.reimbursements.functions.generateUploadUrl,
+    api.reimbursements.functions.generateUploadUrl
   );
   const previewUrl = useQuery(
     api.reimbursements.queries.getFileUrl,
-    storageId ? { storageId } : "skip",
+    storageId ? { storageId } : "skip"
   );
 
   const handleFile = async (file: File) => {
@@ -33,6 +34,8 @@ export function ReceiptUpload({ onUploadComplete, storageId }: Props) {
       return toast.error("Nur JPG, PNG, HEIC und PDF erlaubt");
     }
 
+    const fileIsPdf = file.type === "application/pdf";
+    setIsPdf(fileIsPdf);
     setIsUploading(true);
     try {
       const convertedFile = await convertToJPG(file);
@@ -51,7 +54,7 @@ export function ReceiptUpload({ onUploadComplete, storageId }: Props) {
       toast.error(
         error instanceof FileConversionError
           ? error.message
-          : "Upload fehlgeschlagen",
+          : "Upload fehlgeschlagen"
       );
     } finally {
       setIsUploading(false);
@@ -68,17 +71,24 @@ export function ReceiptUpload({ onUploadComplete, storageId }: Props) {
     />
   );
 
-  if (previewUrl) {
+  if (previewUrl || isPdf) {
     return (
       <div
         className="border rounded-lg p-4 relative group cursor-pointer"
         onClick={() => inputRef.current?.click()}
       >
-        <img
-          src={previewUrl}
-          alt="Beleg"
-          className="max-h-48 mx-auto rounded"
-        />
+        {isPdf ? (
+          <div className="flex flex-col items-center gap-2 py-4">
+            <FileText className="size-16 text-muted-foreground" />
+            <p className="text-sm text-muted-foreground">PDF hochgeladen</p>
+          </div>
+        ) : (
+          <img
+            src={previewUrl ?? ""}
+            alt="Beleg"
+            className="max-h-48 mx-auto rounded"
+          />
+        )}
         <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
           <div className="text-white text-center">
             <Upload className="size-8 mx-auto mb-2" />
