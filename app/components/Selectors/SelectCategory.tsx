@@ -66,7 +66,7 @@ export function SelectCategory({ value, onValueChange }: Props) {
       );
       if (itemIndex >= 0) setActiveItemIndex(itemIndex);
     }
-  }, [open, grouped, value]);
+  }, [open]);
 
   const close = () => {
     setOpen(false);

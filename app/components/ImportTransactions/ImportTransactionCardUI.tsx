@@ -38,7 +38,7 @@ export function ImportTransactionCardUI({
   const isIncome = transaction.amount > 0;
 
   return (
-    <Card className="w-full max-w-xl p-8 border shadow-sm flex flex-col">
+    <Card className="w-full max-w-xl p-8 border shadow-sm flex flex-col overflow-visible">
       <div className="mb-8">
         <div className="flex items-start justify-between mb-6">
           <div className="flex-1">
