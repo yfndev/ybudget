@@ -5,15 +5,19 @@ erDiagram
     organizations {
         string name
         string domain
-        string createdBy
+        id createdBy FK
     }
 
     users {
         string name
         string email
+        string firstName
+        string lastName
         id organizationId FK
         enum role
         string iban
+        string bic
+        string accountHolder
     }
 
     projects {
@@ -21,7 +25,7 @@ erDiagram
         id organizationId FK
         id parentId FK
         boolean isArchived
-        string createdBy
+        id createdBy FK
     }
 
     transactions {
@@ -36,6 +40,9 @@ erDiagram
         string counterparty
         enum status
         enum importSource
+        id splitFromTransactionId FK
+        string transferId
+        boolean isArchived
     }
 
     categories {
@@ -68,16 +75,25 @@ erDiagram
         id createdBy FK
         number amount
         enum type
-        enum status
+        boolean isApproved
         string iban
+        string bic
+        string accountHolder
+        string rejectionNote
     }
 
     receipts {
         id reimbursementId FK
         id fileStorageId FK
         string receiptNumber
-        number grossAmount
+        string receiptDate
+        string companyName
+        string description
+        number netAmount
         number taxRate
+        number grossAmount
+        enum costType
+        number kilometers
     }
 
     travelDetails {
@@ -85,14 +101,20 @@ erDiagram
         string startDate
         string endDate
         string destination
+        string purpose
         boolean isInternational
+        number mealAllowanceDays
+        number mealAllowanceDailyBudget
     }
 
     payments {
         id organizationId FK
         enum tier
         enum status
+        string stripeSessionId
+        string stripeCustomerId
         string stripeSubscriptionId
+        number paidAt
     }
 
     logs {
@@ -100,6 +122,7 @@ erDiagram
         id userId FK
         string action
         string entityId
+        string details
     }
 
     volunteerAllowance {
@@ -109,10 +132,18 @@ erDiagram
         number amount
         boolean isApproved
         string iban
+        string bic
+        string accountHolder
         string volunteerName
+        string volunteerStreet
+        string volunteerPlz
+        string volunteerCity
         string activityDescription
         string startDate
         string endDate
+        id signatureStorageId FK
+        string token
+        number expiresAt
     }
 
     signatureTokens {
@@ -121,6 +152,7 @@ erDiagram
         id createdBy FK
         number expiresAt
         id signatureStorageId FK
+        number usedAt
     }
 
     organizations ||--o{ users : "has"
@@ -131,6 +163,7 @@ erDiagram
     organizations ||--o{ reimbursements : "has"
     organizations ||--o{ payments : "has"
     organizations ||--o{ logs : "has"
+    organizations ||--o{ volunteerAllowance : "has"
 
     users ||--o{ transactions : "imports"
     users ||--o{ reimbursements : "submits"
@@ -138,19 +171,17 @@ erDiagram
     users ||--o{ donors : "creates"
     users ||--o{ teams : "creates"
     users ||--o{ categories : "creates"
+    users ||--o{ volunteerAllowance : "submits"
+    users ||--o{ signatureTokens : "creates"
+    users ||--o{ projects : "creates"
 
     projects ||--o{ transactions : "contains"
     projects ||--o{ reimbursements : "has"
+    projects ||--o{ volunteerAllowance : "has"
 
     donors ||--o{ transactions : "funds"
-
     categories ||--o{ transactions : "classifies"
 
     reimbursements ||--o{ receipts : "has"
     reimbursements ||--o| travelDetails : "has"
-
-    organizations ||--o{ volunteerAllowance : "has"
-    projects ||--o{ volunteerAllowance : "has"
-    users ||--o{ volunteerAllowance : "submits"
-    users ||--o{ signatureTokens : "creates"
 ```

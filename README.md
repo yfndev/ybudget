@@ -1,29 +1,29 @@
-# YBudget 💰
+# YBudget
 
-> Open-source budget management for german associations.
+> Open-source budget management for German associations.
 
-YBudget helps german (non profit) associations manage their budgets when Excel gets too complicated. It is built by [Joël Heil Escobar](https://www.linkedin.com/in/joel-heil-escobar) as a [CODE University](https://code.berlin/) Capstone project. The initial idea came when the [Young Founders Network e.V.](https://youngfounders.network) got into desperate need of such a solution.
+YBudget helps German (non-profit) associations manage their budgets when Excel gets too complicated. Built by [Joël Heil Escobar](https://www.linkedin.com/in/joel-heil-escobar) as a [CODE University](https://code.berlin/) Capstone project. The initial idea came when [Young Founders Network e.V.](https://youngfounders.network) needed such a solution.
 
 **The problem?**
-Most budget tools are too expensive or too complex for associations to use. While Excel is flexible, it is also plenty of work keeping track of all the expenses that go in and out.
+Most budget tools are too expensive or too complex for associations. Excel is flexible but keeping track of all expenses is plenty of work.
 
 **Our solution?**
-Simple, affordable, intuitive and open-source.
+Simple, affordable, intuitive, and open-source.
 
 ## Features
 
-- 📊 **Dashboard & Charts:** Visualize cashflow with income, expenses, and balance trends
-- 💳 **Transaction Import:** Import CSV from Sparkasse, Volksbank, & Moss
-- 🔄 **Budget Transfers:** Move budgets between projects when plans change
-- 🎯 **Project Organization:** Assign expenses to projects, see remaining budgets at a glance
-- 🧾 **Reimbursements:** Submit expense and travel reimbursements with receipt uploads
-- 🎁 **Volunteer Allowance:** "Ehrenamtspauschale" forms with shareable links for external signatures
-- 🤖 **AI Assistant:** Chat with your budget data (admin/lead only) to get transactions, todos in form of expected transactions and open reimbursements via natural language
-- 👥 **Team Management:** Organize members into teams with project access control
-- 📤 **Donor Export:** Export transactions by donor to CSV
-- ✉️ **Email Invitations:** Invite team members via email (powered by Resend)
-- 🎓 **Guided Onboarding:** Interactive tour for new users
-- 📝 **Audit Logs:** Track all actions for transparency and compliance
+- **Dashboard & Charts:** Visualize cashflow with income, expenses, and balance trends
+- **Transaction Import:** Import CSV from Sparkasse, Volksbank, & Moss
+- **Budget Transfers:** Move budgets between projects when plans change
+- **Project Organization:** Assign expenses to projects, see remaining budgets
+- **Reimbursements:** Submit expense and travel reimbursements with receipt uploads
+- **Volunteer Allowance:** "Ehrenamtspauschale" forms with shareable links for external signatures
+- **AI Assistant:** Chat with your budget data (admin/lead only)
+- **Team Management:** Organize members into teams with project access control
+- **Donor Export:** Export transactions by donor to CSV
+- **Email Invitations:** Invite team members via email (powered by Resend)
+- **Guided Onboarding:** Interactive tour for new users
+- **Audit Logs:** Track all actions for transparency and compliance
 
 ## Tech Stack
 
@@ -64,7 +64,7 @@ npx convex dev  # Creates .env.local with CONVEX_DEPLOYMENT and NEXT_PUBLIC_CONV
 npx @convex-dev/auth
 ```
 
-### 3. Set Up Google OAuth to get auth working
+### 3. Set Up Google OAuth
 
 1. Go to [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
 2. Create OAuth 2.0 Client ID (Web application)
@@ -73,8 +73,7 @@ npx @convex-dev/auth
 
 ### 4. Configure Environment Variables
 
-Set in Convex Dashboard → Settings → Environment Variables
-or via CLI:
+Set in Convex Dashboard → Settings → Environment Variables or via CLI:
 
 ```bash
 npx convex env set AUTH_GOOGLE_ID "your-google-client-id"
@@ -93,7 +92,7 @@ npx convex env set STRIPE_WEBHOOKS_SECRET "whsec_..."
 pnpm dev
 ```
 
-You are welcome to test the csv functionality with our [test file](docs/exampleTransactions.csv)
+Test CSV functionality with the [example file](docs/exampleTransactions.csv).
 
 ### 6. Deploy
 
@@ -106,27 +105,25 @@ Update `SITE_URL` to your production URL after deploying.
 
 ## Contributing
 
-We're building a tool to support NGOs on their mission by making budgeting as easy as possible. Would be awesome to have you on board and ship ideas with us 🙌
-
-**This is how you contribute:**
+We're building a tool to support NGOs by making budgeting as easy as possible.
 
 1. Fork the repo
-2. Clone your fork locally (`git clone https://github.com/joelheile/ybudget.git`)
+2. Clone your fork locally
 3. Create a feature branch (`git checkout -b feat/amazing-feature`)
 4. Make and commit your changes
 5. Push to your fork (`git push origin feat/amazing-feature`)
 6. Open a Pull Request
 
 **Ideas, feedback, or questions?**
-📧 [team@ybudget.de](mailto:team@ybudget.de) | 🐛 [Open an issue](https://github.com/joelheile/ybudget/issues)
+[team@ybudget.de](mailto:team@ybudget.de) | [Open an issue](https://github.com/joelheile/ybudget/issues)
 
 ## Testing
 
-Through using vitest, the project got a 100% test coverage on lines, functions and ~96% on branch for unit and integration tests.
+100% test coverage on lines and functions, ~96% on branches for unit and integration tests.
 
 ```bash
 pnpm vitest run              # Unit & integration tests
-pnpm vitest run --coverage   # Get test coverage report
+pnpm vitest run --coverage   # Test coverage report
 pnpm exec playwright test    # E2E tests
 ```
 
@@ -142,4 +139,4 @@ Found an issue? Email team@ybudget.de
 
 ---
 
-Built with ❤️ by the Young Founders Network team
+Built with ❤️ in Berlin
