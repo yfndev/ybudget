@@ -6,9 +6,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import type { Doc, Id } from "@/convex/_generated/dataModel";
 import { formatCurrency } from "@/lib/formatters/formatCurrency";
-import { useRef } from "react";
 
-interface ImportTransactionCardUIProps {
+interface Props {
   transaction: Doc<"transactions">;
   currentIndex: number;
   totalCount: number;
@@ -22,7 +21,7 @@ interface ImportTransactionCardUIProps {
   onSplitIncomeChange: (splitIncome: boolean) => void;
 }
 
-export const ImportTransactionCardUI = ({
+export function ImportTransactionCardUI({
   transaction,
   currentIndex,
   totalCount,
@@ -34,13 +33,7 @@ export const ImportTransactionCardUI = ({
   onCategoryChange,
   onDonorChange,
   onSplitIncomeChange,
-}: ImportTransactionCardUIProps) => {
-  const categoryRef = useRef<HTMLInputElement>(null);
-  const donorRef = useRef<HTMLInputElement>(null);
-
-  const focusCategory = () => setTimeout(() => categoryRef.current?.focus(), 0);
-  const focusDonor = () => setTimeout(() => donorRef.current?.focus(), 0);
-
+}: Props) {
   const isExpense = transaction.amount < 0;
   const isIncome = transaction.amount > 0;
 
@@ -65,17 +58,13 @@ export const ImportTransactionCardUI = ({
 
         <div className="flex items-baseline gap-16 pt-4">
           <div>
-            <div className="text-xs text-muted-foreground uppercase mb-1">
-              Betrag
-            </div>
+            <div className="text-xs text-muted-foreground uppercase mb-1">Betrag</div>
             <div className="text-base font-semibold tabular-nums">
               {formatCurrency(transaction.amount)}
             </div>
           </div>
           <div>
-            <div className="text-xs text-muted-foreground uppercase mb-1">
-              Datum
-            </div>
+            <div className="text-xs text-muted-foreground uppercase mb-1">Datum</div>
             <div className="text-base font-semibold">
               {new Date(transaction.date).toLocaleDateString("de-DE")}
             </div>
@@ -87,60 +76,37 @@ export const ImportTransactionCardUI = ({
         {!splitIncome && (
           <div className="flex flex-col gap-2">
             <Label className="text-sm font-semibold">Projekt</Label>
-            <SelectProject
-              value={projectId}
-              onValueChange={(v) => {
-                onProjectChange(v);
-                focusCategory();
-              }}
-              onTabPressed={focusCategory}
-            />
+            <SelectProject value={projectId} onValueChange={onProjectChange} />
           </div>
         )}
 
         {splitIncome && (
           <div className="p-3 bg-muted/30 rounded-lg border border-muted text-sm text-muted-foreground">
-            Projekt wird nicht zugewiesen, da Budget auf Departments aufgeteilt
-            wird
+            Projekt wird nicht zugewiesen, da Budget auf Departments aufgeteilt wird
           </div>
         )}
 
         <div className="flex flex-col gap-2">
           <Label className="text-sm font-semibold">Kategorie</Label>
-          <SelectCategory
-            ref={categoryRef}
-            value={categoryId}
-            onValueChange={(v) => {
-              onCategoryChange(v);
-              focusDonor();
-            }}
-            onTabPressed={focusDonor}
-          />
+          <SelectCategory value={categoryId} onValueChange={onCategoryChange} />
         </div>
 
         {isIncome && (
           <div className="flex flex-col gap-2">
             <Label className="text-sm font-semibold">Förderer</Label>
-            <SelectDonor
-              ref={donorRef}
-              value={donorId}
-              onValueChange={onDonorChange}
-            />
+            <SelectDonor value={donorId} onValueChange={onDonorChange} />
           </div>
         )}
 
         {isExpense && (
           <div className="flex flex-col gap-2">
             <Label className="flex flex-col">
-              <span className="text-sm font-semibold">
-                Projektförderer wählen
-              </span>
+              <span className="text-sm font-semibold">Projektförderer wählen</span>
               <span className="text-muted-foreground font-normal">
                 (nur wenn Mittelverwendungsnachweis erforderlich)
               </span>
             </Label>
             <SelectDonor
-              ref={donorRef}
               value={donorId}
               onValueChange={onDonorChange}
               projectId={projectId as Id<"projects"> | undefined}
@@ -153,13 +119,9 @@ export const ImportTransactionCardUI = ({
             <Checkbox
               id="splitIncome"
               checked={splitIncome}
-              onCheckedChange={(checked) =>
-                onSplitIncomeChange(checked === true)
-              }
+              onCheckedChange={(checked) => onSplitIncomeChange(checked === true)}
             />
-            <Label htmlFor="splitIncome">
-              Einnahme auf Departments aufteilen
-            </Label>
+            <Label htmlFor="splitIncome">Einnahme auf Departments aufteilen</Label>
           </div>
         )}
       </div>
@@ -173,4 +135,4 @@ export const ImportTransactionCardUI = ({
       </div>
     </Card>
   );
-};
+}
