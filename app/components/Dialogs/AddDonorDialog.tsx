@@ -111,8 +111,8 @@ export function AddDonorDialog({ open, onOpenChange, onDonorCreated }: Props) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="donation">Spende</SelectItem>
-                <SelectItem value="sponsoring">Sponsoring</SelectItem>
+                <SelectItem value="donation">Spender</SelectItem>
+                <SelectItem value="sponsoring">Sponsor</SelectItem>
               </SelectContent>
             </Select>
           </div>
