@@ -1,6 +1,6 @@
 "use client";
 
-import DonorCard from "@/components/Donors/DonorCard";
+import { DonorCard } from "@/components/Donors/DonorCard";
 import { PageHeader } from "@/components/Layout/PageHeader";
 import { api } from "@/convex/_generated/api";
 import { Doc } from "@/convex/_generated/dataModel";

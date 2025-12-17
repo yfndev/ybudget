@@ -19,17 +19,17 @@ import { useMutation } from "convex/react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
-interface CreateProjectDialogProps {
+interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onProjectCreated?: (projectId: string) => void;
 }
 
-export function CreateProjectDialog({
+export  function CreateProjectDialog({
   open,
   onOpenChange,
   onProjectCreated,
-}: CreateProjectDialogProps) {
+}: Props) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [parentId, setParentId] = useState("");

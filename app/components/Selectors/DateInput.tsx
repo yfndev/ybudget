@@ -39,7 +39,14 @@ function displayToIso(display: string): string {
   const monthNum = parseInt(month, 10);
   const yearNum = parseInt(year, 10);
 
-  if (dayNum < 1 || dayNum > 31 || monthNum < 1 || monthNum > 12 || yearNum < 2000 || yearNum > 2100) {
+  if (
+    dayNum < 1 ||
+    dayNum > 31 ||
+    monthNum < 1 ||
+    monthNum > 12 ||
+    yearNum < 2000 ||
+    yearNum > 2100
+  ) {
     return "";
   }
 
@@ -53,7 +60,13 @@ function formatWhileTyping(input: string): string {
   return `${digits.slice(0, 2)}.${digits.slice(2, 4)}.${digits.slice(4, 8)}`;
 }
 
-export function DateInput({ value, onChange, placeholder = "TT.MM.JJJJ", className, id }: Props) {
+export function DateInput({
+  value,
+  onChange,
+  placeholder = "TT.MM.JJJJ",
+  className,
+  id,
+}: Props) {
   const [displayValue, setDisplayValue] = useState(() => isoToDisplay(value));
   const [isFocused, setIsFocused] = useState(false);
 

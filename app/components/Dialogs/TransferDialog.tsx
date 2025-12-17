@@ -15,13 +15,11 @@ import toast from "react-hot-toast";
 import { AmountInput } from "../Selectors/AmountInput";
 import { SelectProject } from "../Selectors/SelectProject";
 
-export default function TransferDialog({
-  open,
-  onOpenChange,
-}: {
+interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}) {
+}
+export function TransferDialog({ open, onOpenChange }: Props) {
   const [sendingProjectId, setSendingProjectId] =
     useState<Id<"projects"> | null>(null);
   const [receivingProjectId, setReceivingProjectId] =

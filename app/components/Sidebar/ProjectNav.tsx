@@ -124,7 +124,9 @@ export function ProjectNav({ id }: { id?: string }) {
       )}
       <SidebarMenu>
         {parentProjects.map((project) => {
-          const children = projects.filter((proj) => proj.parentId === project._id);
+          const children = projects.filter(
+            (proj) => proj.parentId === project._id
+          );
           const isActive = pathname === `/projects/${project._id}`;
           const isEditing = editingId === project._id;
 

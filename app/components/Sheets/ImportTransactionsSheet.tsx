@@ -27,15 +27,12 @@ import toast from "react-hot-toast";
 
 type ImportSource = "moss" | "sparkasse" | "volksbank";
 
-interface ImportTransactionsSheetProps {
+interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export function ImportTransactionsSheet({
-  open,
-  onOpenChange,
-}: ImportTransactionsSheetProps) {
+export function ImportTransactionsSheet({ open, onOpenChange }: Props) {
   const [csvData, setCsvData] = useState<Record<string, string>[]>([]);
   const [importSource, setImportSource] = useState<ImportSource | "">("");
   const [isDragging, setIsDragging] = useState(false);
@@ -43,16 +40,18 @@ export function ImportTransactionsSheet({
 
   const allTransactions = useQuery(
     api.transactions.queries.getAllTransactions,
-    {},
+    {}
   );
   const addTransaction = useMutation(
-    api.transactions.functions.createImportedTransaction,
+    api.transactions.functions.createImportedTransaction
   );
 
   const existingIds = useMemo(() => {
     if (!allTransactions) return undefined;
     return new Set(
-      allTransactions.map((transaction) => transaction.importedTransactionId).filter(Boolean),
+      allTransactions
+        .map((transaction) => transaction.importedTransactionId)
+        .filter(Boolean)
     );
   }, [allTransactions]);
 
@@ -82,7 +81,7 @@ export function ImportTransactionsSheet({
 
     const skipped = csvData.length - newTransactions.length;
     const toastId = toast.loading(
-      `Importiere 0/${newTransactions.length} Transaktionen...`,
+      `Importiere 0/${newTransactions.length} Transaktionen...`
     );
 
     try {
@@ -99,13 +98,13 @@ export function ImportTransactionsSheet({
         });
         toast.loading(
           `Importiere ${index + 1}/${newTransactions.length} Transaktionen...`,
-          { id: toastId },
+          { id: toastId }
         );
       }
 
       toast.success(
         `${newTransactions.length} neue Transaktionen importiert, ${skipped} Duplikate übersprungen`,
-        { id: toastId },
+        { id: toastId }
       );
       router.push("/import");
       setCsvData([]);

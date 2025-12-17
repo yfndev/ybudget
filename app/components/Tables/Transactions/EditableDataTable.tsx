@@ -30,7 +30,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 
-interface EditableDataTableProps<T> {
+interface Props<T> {
   columns: ColumnDef<T>[];
   data: T[];
   onUpdate?: (rowId: string, field: string, value: any) => Promise<void>;
@@ -51,7 +51,7 @@ export function EditableDataTable<T extends { _id: string }>({
   onDelete,
   paginationStatus,
   loadMore,
-}: EditableDataTableProps<T>) {
+}: Props<T>) {
   const [sorting, setSorting] = useState<SortingState>([
     { id: "date", desc: true },
   ]);
@@ -151,7 +151,7 @@ export function EditableDataTable<T extends { _id: string }>({
                   <TableHead key={header.id}>
                     {flexRender(
                       header.column.columnDef.header,
-                      header.getContext(),
+                      header.getContext()
                     )}
                   </TableHead>
                 ))}

@@ -24,7 +24,7 @@ import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-interface PageHeaderProps {
+interface Props {
   title?: string;
   subtitle?: string;
   showBackButton?: boolean;
@@ -38,7 +38,7 @@ export function PageHeader({
   showBackButton = false,
   backUrl,
   showRangeCalendar = false,
-}: PageHeaderProps) {
+}: Props) {
   const router = useRouter();
   const isAdmin = useIsAdmin();
   const [isExpenseOpen, setIsExpenseOpen] = useState(false);

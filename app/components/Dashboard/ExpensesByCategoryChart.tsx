@@ -13,12 +13,12 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
-import { useDateRange } from "@/lib/contexts/DateRangeContext";
-import { formatCurrency } from "@/lib/formatters/formatCurrency";
 import {
   filterTransactionsByDateRange,
   type EnrichedTransaction,
 } from "@/lib/calculations/transactionFilters";
+import { useDateRange } from "@/lib/contexts/DateRangeContext";
+import { formatCurrency } from "@/lib/formatters/formatCurrency";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
 import { Cell, Pie, PieChart } from "recharts";
@@ -31,17 +31,13 @@ const CHART_COLORS = [
   "var(--chart-5)",
 ];
 
-interface ExpensesByCategoryChartProps {
-  transactions: EnrichedTransaction[] | undefined;
-}
-
 function aggregateByCategory(transactions: EnrichedTransaction[]) {
   const byCategory = new Map<string, number>();
 
-  for (const t of transactions) {
-    if (t.amount >= 0) continue;
-    const name = t.categoryName ?? "Nicht kategorisiert";
-    byCategory.set(name, (byCategory.get(name) ?? 0) + Math.abs(t.amount));
+  for (const tx of transactions) {
+    if (tx.amount >= 0) continue;
+    const name = tx.categoryName ?? "Nicht kategorisiert";
+    byCategory.set(name, (byCategory.get(name) ?? 0) + Math.abs(tx.amount));
   }
 
   return Array.from(byCategory.entries())
@@ -49,28 +45,31 @@ function aggregateByCategory(transactions: EnrichedTransaction[]) {
     .sort((a, b) => b.value - a.value);
 }
 
-function buildChartConfig(data: { name: string }[]): ChartConfig {
+function buildChartConfig(data: Array<{ name: string }>): ChartConfig {
   return Object.fromEntries(
-    data.map((item, i) => [
+    data.map((item, index) => [
       item.name,
-      { label: item.name, color: CHART_COLORS[i % CHART_COLORS.length] },
-    ]),
+      { label: item.name, color: CHART_COLORS[index % CHART_COLORS.length] },
+    ])
   );
 }
 
-export function ExpensesByCategoryChart({
-  transactions,
-}: ExpensesByCategoryChartProps) {
+interface Props {
+  transactions: EnrichedTransaction[] | undefined;
+}
+
+export function ExpensesByCategoryChart({ transactions }: Props) {
   const { selectedDateRange } = useDateRange();
+  const { from, to } = selectedDateRange;
 
   const filtered = filterTransactionsByDateRange(
     transactions,
-    selectedDateRange,
+    selectedDateRange
   );
   const data = filtered ? aggregateByCategory(filtered) : [];
   const chartConfig = buildChartConfig(data);
 
-  const dateRangeText = `${format(selectedDateRange.from, "d. MMM yyyy", { locale: de })} - ${format(selectedDateRange.to, "d. MMM yyyy", { locale: de })}`;
+  const dateRangeText = `${format(from, "d. MMM yyyy", { locale: de })} - ${format(to, "d. MMM yyyy", { locale: de })}`;
 
   if (transactions === undefined) {
     return (

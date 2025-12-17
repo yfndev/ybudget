@@ -30,17 +30,17 @@ type TaxSphere =
   | "purpose-operations"
   | "commercial-operations";
 
-interface AddDonorDialogProps {
+interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onDonorCreated?: (donorId: string) => void;
 }
 
-export const AddDonorDialog = ({
+export function AddDonorDialog({
   open,
   onOpenChange,
   onDonorCreated,
-}: AddDonorDialogProps) => {
+}: Props) {
   const [name, setName] = useState("");
   const [type, setType] = useState<"donation" | "sponsoring">("donation");
   const [onlyNonProfit, setOnlyNonProfit] = useState(false);
@@ -147,4 +147,4 @@ export const AddDonorDialog = ({
       </DialogContent>
     </Dialog>
   );
-};
+}

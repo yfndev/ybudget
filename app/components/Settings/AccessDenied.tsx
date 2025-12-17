@@ -1,7 +1,11 @@
-import { Shield } from "lucide-react";
 import { PageHeader } from "@/components/Layout/PageHeader";
+import { Shield } from "lucide-react";
 
-export function AccessDenied({ title }: { title: string }) {
+interface Props {
+  title: string;
+}
+
+export function AccessDenied({ title }: Props) {
   return (
     <div>
       <PageHeader title={title} />

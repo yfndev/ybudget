@@ -14,13 +14,11 @@ type BankDetails = { iban: string; bic: string; accountHolder: string };
 const IBAN_REGEX = /^[A-Z]{2}[0-9]{2}[A-Z0-9]{4}[0-9]{7}([A-Z0-9]?){0,16}$/;
 const BIC_REGEX = /^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/;
 
-export function BankDetailsEditor({
-  value,
-  onChange,
-}: {
+interface Props {
   value: BankDetails;
   onChange: (value: BankDetails) => void;
-}) {
+}
+export function BankDetailsEditor({ value, onChange }: Props) {
   const [editing, setEditing] = useState(false);
   const save = useMutation(api.users.functions.updateBankDetails);
 

@@ -15,19 +15,17 @@ import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
-export const OnboardingDialog = ({
-  open,
-  onOpenChange,
-}: {
+interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}) => {
+}
+export function OnboardingDialog({ open, onOpenChange }: Props) {
   const [name, setName] = useState("");
 
   const orgCheck = useQuery(api.organizations.queries.getOrganizationByDomain);
 
   const initializeOrganization = useMutation(
-    api.organizations.functions.initializeOrganization,
+    api.organizations.functions.initializeOrganization
   );
 
   const isJoiningExisting = orgCheck?.exists === true;
@@ -100,4 +98,4 @@ export const OnboardingDialog = ({
       </DialogContent>
     </Dialog>
   );
-};
+}

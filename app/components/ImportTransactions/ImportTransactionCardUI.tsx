@@ -58,13 +58,17 @@ export function ImportTransactionCardUI({
 
         <div className="flex items-baseline gap-16 pt-4">
           <div>
-            <div className="text-xs text-muted-foreground uppercase mb-1">Betrag</div>
+            <div className="text-xs text-muted-foreground uppercase mb-1">
+              Betrag
+            </div>
             <div className="text-base font-semibold tabular-nums">
               {formatCurrency(transaction.amount)}
             </div>
           </div>
           <div>
-            <div className="text-xs text-muted-foreground uppercase mb-1">Datum</div>
+            <div className="text-xs text-muted-foreground uppercase mb-1">
+              Datum
+            </div>
             <div className="text-base font-semibold">
               {new Date(transaction.date).toLocaleDateString("de-DE")}
             </div>
@@ -82,7 +86,8 @@ export function ImportTransactionCardUI({
 
         {splitIncome && (
           <div className="p-3 bg-muted/30 rounded-lg border border-muted text-sm text-muted-foreground">
-            Projekt wird nicht zugewiesen, da Budget auf Departments aufgeteilt wird
+            Projekt wird nicht zugewiesen, da Budget auf Departments aufgeteilt
+            wird
           </div>
         )}
 
@@ -101,7 +106,9 @@ export function ImportTransactionCardUI({
         {isExpense && (
           <div className="flex flex-col gap-2">
             <Label className="flex flex-col">
-              <span className="text-sm font-semibold">Projektförderer wählen</span>
+              <span className="text-sm font-semibold">
+                Projektförderer wählen
+              </span>
               <span className="text-muted-foreground font-normal">
                 (nur wenn Mittelverwendungsnachweis erforderlich)
               </span>
@@ -119,9 +126,13 @@ export function ImportTransactionCardUI({
             <Checkbox
               id="splitIncome"
               checked={splitIncome}
-              onCheckedChange={(checked) => onSplitIncomeChange(checked === true)}
+              onCheckedChange={(checked) =>
+                onSplitIncomeChange(checked === true)
+              }
             />
-            <Label htmlFor="splitIncome">Einnahme auf Departments aufteilen</Label>
+            <Label htmlFor="splitIncome">
+              Einnahme auf Departments aufteilen
+            </Label>
           </div>
         )}
       </div>
