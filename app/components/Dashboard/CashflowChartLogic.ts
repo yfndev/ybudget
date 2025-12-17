@@ -92,21 +92,21 @@ function determineTimeSlots(from: Date, to: Date): TimeSlot[] {
 
 function sumIncome(transactions: Doc<"transactions">[]): number {
   return transactions.reduce(
-    (sum, t) => sum + (t.amount > 0 ? t.amount : 0),
+    (total, transaction) => total + (transaction.amount > 0 ? transaction.amount : 0),
     0,
   );
 }
 
 function sumExpenses(transactions: Doc<"transactions">[]): number {
   return transactions.reduce(
-    (sum, t) => sum + (t.amount < 0 ? Math.abs(t.amount) : 0),
+    (total, transaction) => total + (transaction.amount < 0 ? Math.abs(transaction.amount) : 0),
     0,
   );
 }
 
 function aggregateTransactions(transactions: Doc<"transactions">[]) {
-  const processed = transactions.filter((t) => t.status === "processed");
-  const expected = transactions.filter((t) => t.status === "expected");
+  const processed = transactions.filter((transaction) => transaction.status === "processed");
+  const expected = transactions.filter((transaction) => transaction.status === "expected");
 
   return {
     processedIncome: sumIncome(processed),
@@ -122,7 +122,7 @@ function calculateBalance(
   endTime: number,
 ): number {
   return transactions.reduce(
-    (balance, t) => (t.date < endTime ? balance + t.amount : balance),
+    (balance, transaction) => (transaction.date < endTime ? balance + transaction.amount : balance),
     startBalance,
   );
 }
@@ -134,8 +134,8 @@ export function buildCashflowData(
   to: Date,
 ): CashflowDataPoint[] {
   const filtered = transactions
-    .filter((t) => {
-      const date = new Date(t.date);
+    .filter((transaction) => {
+      const date = new Date(transaction.date);
       return date >= from && date <= to;
     })
     .sort((a, b) => a.date - b.date);
@@ -144,7 +144,7 @@ export function buildCashflowData(
     const start = slot.start.getTime();
     const end = slot.end.getTime();
     const slotTransactions = filtered.filter(
-      (t) => t.date >= start && t.date < end,
+      (transaction) => transaction.date >= start && transaction.date < end,
     );
     const totals = aggregateTransactions(slotTransactions);
     const balance = calculateBalance(filtered, startBalance, end);
@@ -166,8 +166,8 @@ export function calculateStartBalance(
 ): number {
   if (!transactions) return 0;
   return transactions
-    .filter((t) => t.status === "processed")
-    .reduce((sum, t) => sum + t.amount, 0);
+    .filter((transaction) => transaction.status === "processed")
+    .reduce((total, transaction) => total + transaction.amount, 0);
 }
 
 function getTickStep(maxValue: number): number {

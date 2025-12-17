@@ -36,7 +36,7 @@ export default function UserRow({ user, onRoleChange, isAdmin }: UserRowProps) {
   const addTeamMember = useMutation(api.teams.functions.addTeamMember);
   const removeTeamMember = useMutation(api.teams.functions.removeTeamMember);
 
-  const assignedTeamIds = new Set(userTeams?.map((t) => t.teamId));
+  const assignedTeamIds = new Set(userTeams?.map((team) => team.teamId));
 
   const handleToggleTeam = async (teamId: Id<"teams">) => {
     try {

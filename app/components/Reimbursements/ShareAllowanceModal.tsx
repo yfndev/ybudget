@@ -79,8 +79,8 @@ export function ShareAllowanceModal({ open, onClose }: Props) {
             <Label>Projekt</Label>
             <SelectProject
               value={projectId || ""}
-              onValueChange={(v) =>
-                setProjectId(v ? (v as Id<"projects">) : null)
+              onValueChange={(value) =>
+                setProjectId(value ? (value as Id<"projects">) : null)
               }
             />
           </div>

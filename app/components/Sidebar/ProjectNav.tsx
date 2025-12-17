@@ -92,7 +92,7 @@ export function ProjectNav({ id }: { id?: string }) {
     );
   }
 
-  const parentProjects = projects.filter((p) => !p.parentId);
+  const parentProjects = projects.filter((project) => !project.parentId);
   const countText =
     projectLimits && !projectLimits.isPremium
       ? `(${projectLimits.currentProjects}/${projectLimits.maxProjects})`
@@ -124,7 +124,7 @@ export function ProjectNav({ id }: { id?: string }) {
       )}
       <SidebarMenu>
         {parentProjects.map((project) => {
-          const children = projects.filter((p) => p.parentId === project._id);
+          const children = projects.filter((proj) => proj.parentId === project._id);
           const isActive = pathname === `/projects/${project._id}`;
           const isEditing = editingId === project._id;
 

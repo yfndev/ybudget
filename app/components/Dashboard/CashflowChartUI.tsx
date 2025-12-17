@@ -87,7 +87,7 @@ export function CashflowChartUI({
     ? filterTransactionsBeforeDate(
         sourceTransactions,
         getPastEndDate(selectedDateRange.from),
-        (t) => t.status === "processed",
+        (transaction) => transaction.status === "processed",
       )
     : undefined;
 
