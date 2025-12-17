@@ -45,6 +45,15 @@ Data flows through Convex for real-time sync. Every query is scoped by `organiza
 
 **[Database Schema](docs/schema.md)** - Full ER diagram with all tables and relationships
 
+### Money handling logic 💸
+
+Transactions are categorized by status for budget calculations:
+
+- **Processed**: Imported bank transactions. Count towards project balance (Kontostand).
+- **Expected**: Planned transactions. Do NOT count towards balance and are shown separately as expected income/expenses.
+- **Split**: Portions of income split across projects. Treated as processed and therefore count towards balance.
+- **Transfer**: Internal budget moves between projects and also count towards balance.
+
 ## Self-Hosting
 
 **Prerequisites:** Node.js 20+, pnpm, [Convex account](https://www.convex.dev/)
