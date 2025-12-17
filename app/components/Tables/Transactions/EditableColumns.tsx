@@ -114,7 +114,7 @@ const baseColumns = [
           <div className="pl-2">
             <EditableDateCell
               value={row.getValue("date")}
-              onSave={(v) => onUpdate("date", v)}
+              onSave={(value) => onUpdate("date", value)}
             />
           </div>
         );
@@ -131,7 +131,7 @@ const baseColumns = [
         return (
           <EditableProjectCell
             value={row.original.projectId}
-            onSave={(v) => onUpdate("projectId", v)}
+            onSave={(value) => onUpdate("projectId", value)}
           />
         );
       }
@@ -151,7 +151,7 @@ const baseColumns = [
         return (
           <EditableTextareaCell
             value={description}
-            onSave={(v) => onUpdate("description", v)}
+            onSave={(value) => onUpdate("description", value)}
           />
         );
       }
@@ -173,7 +173,7 @@ const baseColumns = [
         return (
           <EditableCategoryCell
             value={row.original.categoryId}
-            onSave={(v) => onUpdate("categoryId", v)}
+            onSave={(value) => onUpdate("categoryId", value)}
           />
         );
       }
@@ -197,7 +197,7 @@ const baseColumns = [
           <div className="flex justify-end pr-2">
             <EditableAmountCell
               value={amount}
-              onSave={(v) => onUpdate("amount", v)}
+              onSave={(value) => onUpdate("amount", value)}
             />
           </div>
         );
@@ -237,5 +237,5 @@ const baseColumns = [
 export const editableColumns = baseColumns;
 
 export const editableColumnsWithoutProject = baseColumns.filter(
-  (col) => col.accessorKey !== "projectName",
+  (column) => column.accessorKey !== "projectName",
 );

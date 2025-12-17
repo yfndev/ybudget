@@ -52,7 +52,7 @@ export function ImportTransactionsSheet({
   const existingIds = useMemo(() => {
     if (!allTransactions) return undefined;
     return new Set(
-      allTransactions.map((t) => t.importedTransactionId).filter(Boolean),
+      allTransactions.map((transaction) => transaction.importedTransactionId).filter(Boolean),
     );
   }, [allTransactions]);
 
@@ -86,8 +86,8 @@ export function ImportTransactionsSheet({
     );
 
     try {
-      for (let i = 0; i < newTransactions.length; i++) {
-        const mapped = mapCSVRow(newTransactions[i], importSource);
+      for (let index = 0; index < newTransactions.length; index++) {
+        const mapped = mapCSVRow(newTransactions[index], importSource);
         await addTransaction({
           date: mapped.date,
           amount: mapped.amount,
@@ -98,7 +98,7 @@ export function ImportTransactionsSheet({
           accountName: mapped.accountName,
         });
         toast.loading(
-          `Importiere ${i + 1}/${newTransactions.length} Transaktionen...`,
+          `Importiere ${index + 1}/${newTransactions.length} Transaktionen...`,
           { id: toastId },
         );
       }

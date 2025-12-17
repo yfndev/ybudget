@@ -250,10 +250,10 @@ function TableContent({
   if (isLoading) {
     return (
       <>
-        {[1, 2, 3, 4, 5].map((i) => (
-          <TableRow key={i}>
-            {columns.map((_, j) => (
-              <TableCell key={j}>
+        {[1, 2, 3, 4, 5].map((rowIndex) => (
+          <TableRow key={rowIndex}>
+            {columns.map((_, colIndex) => (
+              <TableCell key={colIndex}>
                 <Skeleton className="h-4 w-full" />
               </TableCell>
             ))}
