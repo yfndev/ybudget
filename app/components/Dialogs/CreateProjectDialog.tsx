@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { useMutation } from "convex/react";
@@ -31,14 +30,12 @@ export function CreateProjectDialog({
   onProjectCreated,
 }: Props) {
   const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
   const [parentId, setParentId] = useState("");
 
   const addProject = useMutation(api.projects.functions.createProject);
 
   const resetForm = () => {
     setName("");
-    setDescription("");
     setParentId("");
   };
 
@@ -48,7 +45,6 @@ export function CreateProjectDialog({
     try {
       const projectId = await addProject({
         name: name.trim(),
-        description: description.trim() || undefined,
         parentId: parentId ? (parentId as Id<"projects">) : undefined,
       });
 
@@ -84,19 +80,7 @@ export function CreateProjectDialog({
           </div>
 
           <div className="flex flex-col gap-2">
-            <Label htmlFor="project-description">Beschreibung</Label>
-            <Textarea
-              id="project-description"
-              placeholder="Beschreibe es..."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={3}
-              className="resize-none"
-            />
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <Label>Übergeordnetes Projekt/Department wählen</Label>
+            <Label>Department/übergeordnetes Projekt wählen</Label>
             <SelectProject value={parentId} onValueChange={setParentId} />
           </div>
         </div>
