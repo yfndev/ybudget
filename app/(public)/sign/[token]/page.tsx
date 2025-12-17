@@ -10,27 +10,15 @@ import SignaturePad from "react-signature-canvas";
 import toast from "react-hot-toast";
 
 export default function SignaturePage() {
-  const params = useParams();
-  const token = params.token as string;
+  const { token } = useParams<{ token: string }>();
 
-  const tokenData = useQuery(
-    api.volunteerAllowance.queries.validateSignatureToken,
-    { token },
-  );
-  const generateUploadUrl = useMutation(
-    api.volunteerAllowance.functions.generateSignatureUploadUrl,
-  );
-  const submitSignature = useMutation(
-    api.volunteerAllowance.functions.submitSignature,
-  );
+  const tokenData = useQuery(api.volunteerAllowance.queries.validateSignatureToken, { token });
+  const generateUploadUrl = useMutation(api.volunteerAllowance.functions.generateSignatureUploadUrl);
+  const submitSignature = useMutation(api.volunteerAllowance.functions.submitSignature);
 
   const sigRef = useRef<SignaturePad>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-
-  const handleClear = () => {
-    sigRef.current?.clear();
-  };
 
   const handleSave = async () => {
     if (!sigRef.current || sigRef.current.isEmpty()) {
@@ -118,7 +106,7 @@ export default function SignaturePage() {
           variant="outline"
           size="lg"
           className="flex-1 h-14"
-          onClick={handleClear}
+          onClick={() => sigRef.current?.clear()}
         >
           <RotateCcw className="size-5 mr-2" />
           Löschen
