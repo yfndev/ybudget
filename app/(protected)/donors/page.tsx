@@ -17,7 +17,7 @@ export default function DonorsPage() {
 
       <div className="space-y-6">
         <p className="text-muted-foreground">
-          Verwalte deine Förderer und verfolge deren finanzielle Beiträge
+          Verwalte deine Förderer und tracke deren finanzielle Beiträge
         </p>
 
         {donors?.length === 0 ? (
