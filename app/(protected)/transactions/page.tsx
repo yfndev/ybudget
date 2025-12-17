@@ -4,7 +4,7 @@ import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { useDateRange } from "@/lib/contexts/DateRangeContext";
 import { useMutation, usePaginatedQuery } from "convex/react";
-import TransactionsOverviewUI from "./TransactionsOverviewUI";
+import TransactionsOverviewUI from "./TransactionsPageUI";
 
 const TRANSACTIONS_PER_PAGE = 50;
 

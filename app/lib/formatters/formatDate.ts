@@ -4,3 +4,4 @@ export function formatDate(
   if (!date) return "";
   return new Date(date).toLocaleDateString("de-DE");
 }
+

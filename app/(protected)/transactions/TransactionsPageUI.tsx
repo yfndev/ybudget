@@ -8,7 +8,7 @@ import { formatDate } from "@/lib/formatters/formatDate";
 import type { PaginationStatus } from "convex/react";
 import type { DateRange } from "react-day-picker";
 
-interface TransactionsPageUIProps {
+interface Props {
   selectedDateRange: DateRange;
   transactions: EnrichedTransaction[];
   status: PaginationStatus;
@@ -16,19 +16,19 @@ interface TransactionsPageUIProps {
   onUpdateTransaction: (
     rowId: string,
     field: string,
-    value: any,
+    value: any
   ) => Promise<void>;
   onDeleteTransaction: (rowId: string) => Promise<void>;
 }
 
-export default function TransactionsOverviewUI({
+export default function TransactionsPageUI({
   selectedDateRange,
   transactions,
   status,
   loadMore,
   onUpdateTransaction,
   onDeleteTransaction,
-}: TransactionsPageUIProps) {
+}: Props) {
   const fromDate = formatDate(selectedDateRange.from);
   const toDate = formatDate(selectedDateRange.to);
 
