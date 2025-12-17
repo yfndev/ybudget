@@ -8,10 +8,10 @@ import { api } from "@/convex/_generated/api";
 import { calculateBudget } from "@/lib/calculations/budgetCalculations";
 import { useQuery } from "convex/react";
 
-export default function Dashboard() {
+export default function DashboardPage() {
   const transactions = useQuery(
     api.transactions.queries.getAllTransactions,
-    {},
+    {}
   );
   const { currentBalance, expectedIncome, expectedExpenses, availableBudget } =
     calculateBudget(transactions ?? []);
