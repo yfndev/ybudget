@@ -17,6 +17,8 @@ Simple, affordable, intuitive and open-source.
 - 🔄 **Budget Transfers:** Move budgets between projects when plans change
 - 🎯 **Project Organization:** Assign expenses to projects, see remaining budgets at a glance
 - 🧾 **Reimbursements:** Submit expense and travel reimbursements with receipt uploads
+- 🎁 **Volunteer Allowance:** "Ehrenamtspauschale" forms with shareable links for external signatures
+- 🤖 **AI Assistant:** Chat with your budget data (admin/lead only) to get transactions, todos in form of expected transactions and open reimbursements via natural language
 - 👥 **Team Management:** Organize members into teams with project access control
 - 📤 **Donor Export:** Export transactions by donor to CSV
 - ✉️ **Email Invitations:** Invite team members via email (powered by Resend)
@@ -50,30 +52,19 @@ Data flows through Convex for real-time sync. Every query is scoped by `organiza
 ### 1. Clone & Install
 
 ```bash
-git clone https://github.com/yourusername/ybudget.git
+git clone https://github.com/joelheile/ybudget.git
 cd ybudget
 pnpm install
 npx convex dev  # Creates .env.local with CONVEX_DEPLOYMENT and NEXT_PUBLIC_CONVEX_URL
 ```
 
-### 2. Generate JWT Keys
-
-Run this script and copy the output:
+### 2. Initialize Auth
 
 ```bash
-node -e "
-const { generateKeyPair, exportPKCS8, exportJWK } = require('jose');
-(async () => {
-  const keys = await generateKeyPair('RS256', { extractable: true });
-  const privateKey = await exportPKCS8(keys.privateKey);
-  const publicKey = await exportJWK(keys.publicKey);
-  console.log('JWT_PRIVATE_KEY=\"' + privateKey.trimEnd().replace(/\n/g, ' ') + '\"');
-  console.log('JWKS=' + JSON.stringify({ keys: [{ use: 'sig', ...publicKey }] }));
-})();
-"
+npx @convex-dev/auth
 ```
 
-### 3. Set Up Google OAuth
+### 3. Set Up Google OAuth to get auth working
 
 1. Go to [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
 2. Create OAuth 2.0 Client ID (Web application)
@@ -82,16 +73,15 @@ const { generateKeyPair, exportPKCS8, exportJWK } = require('jose');
 
 ### 4. Configure Environment Variables
 
-Set in Convex Dashboard → Settings → Environment Variables, or via CLI:
+Set in Convex Dashboard → Settings → Environment Variables
+or via CLI:
 
 ```bash
 npx convex env set AUTH_GOOGLE_ID "your-google-client-id"
 npx convex env set AUTH_GOOGLE_SECRET "your-google-client-secret"
-npx convex env set JWT_PRIVATE_KEY "-----BEGIN PRIVATE KEY----- ..."
-npx convex env set JWKS '{"keys":[...]}'
-npx convex env set SITE_URL "http://localhost:3000"
 
 # Optional
+npx convex env set OPENAI_API_KEY "sk_proj_"
 npx convex env set RESEND_API_KEY "re_..."
 npx convex env set STRIPE_KEY "sk_test_..."
 npx convex env set STRIPE_WEBHOOKS_SECRET "whsec_..."
@@ -102,6 +92,8 @@ npx convex env set STRIPE_WEBHOOKS_SECRET "whsec_..."
 ```bash
 pnpm dev
 ```
+
+You are welcome to test the csv functionality with our [test file](docs/exampleTransactions.csv)
 
 ### 6. Deploy
 
@@ -119,7 +111,7 @@ We're building a tool to support NGOs on their mission by making budgeting as ea
 **This is how you contribute:**
 
 1. Fork the repo
-2. Clone your fork locally (`git clone https://github.com/YOUR-USERNAME/ybudget.git`)
+2. Clone your fork locally (`git clone https://github.com/joelheile/ybudget.git`)
 3. Create a feature branch (`git checkout -b feat/amazing-feature`)
 4. Make and commit your changes
 5. Push to your fork (`git push origin feat/amazing-feature`)
@@ -144,7 +136,7 @@ GitHub Actions runs both test suites on every push and PR.
 
 OAuth 2.0, role-based access control, organizational data isolation, encrypted at rest.
 
-**[Security Details](security/Security.md)** | **[Threat Model](security/ThreatModel.md)**
+**[Security Details](docs/Security.md)** | **[Threat Model](docs/ThreatModel.md)**
 
 Found an issue? Email team@ybudget.de
 

@@ -1,12 +1,15 @@
 "use client";
 
-import DonorCard from "@/components/Donors/DonorCard";
+import { DonorCard } from "@/components/Donors/DonorCard";
 import { PageHeader } from "@/components/Layout/PageHeader";
 import { api } from "@/convex/_generated/api";
-import { useQuery } from "convex-helpers/react/cache";
+import { Doc } from "@/convex/_generated/dataModel";
+import { useQuery } from "convex/react";
 
 export default function DonorsPage() {
-  const donors = useQuery(api.donors.queries.getAllDonors);
+  const donors = useQuery(api.donors.queries.getAllDonors) as
+    | Doc<"donors">[]
+    | undefined;
 
   return (
     <div>
@@ -14,7 +17,7 @@ export default function DonorsPage() {
 
       <div className="space-y-6">
         <p className="text-muted-foreground">
-          Verwalte deine Förderer und verfolge deren finanzielle Beiträge
+          Verwalte deine Förderer und tracke deren finanzielle Beiträge
         </p>
 
         {donors?.length === 0 ? (

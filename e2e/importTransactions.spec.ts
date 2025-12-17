@@ -60,7 +60,9 @@ test.describe
 
     await page.getByRole("textbox", { name: "Projekt suchen..." }).click();
     await page.getByRole("button", { name: "Test Projekt" }).click();
-    await page.getByRole("textbox", { name: "Kategorie suchen..." }).fill("Spende");
+    await page
+      .getByRole("textbox", { name: "Kategorie suchen..." })
+      .fill("Spende");
     await page.locator("body > div").last().getByText("Spenden").click();
     await page
       .getByRole("textbox", { name: "Förderer suchen..." })
@@ -78,7 +80,9 @@ test.describe
 
     await page.getByRole("textbox", { name: "Projekt suchen..." }).click();
     await page.getByRole("button", { name: "Test Projekt" }).click();
-    await page.getByRole("textbox", { name: "Kategorie suchen..." }).fill("Spende");
+    await page
+      .getByRole("textbox", { name: "Kategorie suchen..." })
+      .fill("Spende");
     await page.locator("body > div").last().getByText("Spenden").click();
     await page
       .getByRole("textbox", { name: "Förderer suchen..." })

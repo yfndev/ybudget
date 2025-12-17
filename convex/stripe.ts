@@ -5,9 +5,11 @@ import Stripe from "stripe";
 import { api, internal } from "./_generated/api";
 import { action, internalAction } from "./_generated/server";
 
-const stripe = new Stripe(process.env.STRIPE_KEY!, {
-  apiVersion: "2025-10-29.clover",
-});
+const getStripe = () => {
+  return new Stripe(process.env.STRIPE_KEY!, {
+    apiVersion: "2025-10-29.clover",
+  });
+};
 
 const getTiers = () => {
   const isProduction = process.env.STRIPE_KEY!.startsWith("sk_live_");
@@ -37,7 +39,7 @@ export const pay = action({
     );
     const priceId = getTiers()[args.tier];
 
-    const session = await stripe.checkout.sessions.create({
+    const session = await getStripe().checkout.sessions.create({
       line_items: [{ price: priceId, quantity: 1 }],
       customer_email: user.email,
       metadata: { userId: user._id },
@@ -84,7 +86,7 @@ export const createCustomerPortalSession = action({
     }
 
     const domain = process.env.HOSTING_URL ?? "http://localhost:3000";
-    const session = await stripe.billingPortal.sessions.create({
+    const session = await getStripe().billingPortal.sessions.create({
       customer: payment.stripeCustomerId,
       return_url: `${domain}/dashboard`,
     });
@@ -99,7 +101,7 @@ export const fulfill = internalAction({
     const webhookSecret = process.env.STRIPE_WEBHOOKS_SECRET!;
 
     try {
-      const event = stripe.webhooks.constructEvent(
+      const event = getStripe().webhooks.constructEvent(
         payload,
         signature,
         webhookSecret,

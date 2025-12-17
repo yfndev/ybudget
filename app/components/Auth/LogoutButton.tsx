@@ -2,7 +2,7 @@
 
 import { useAuthActions } from "@convex-dev/auth/react";
 
-export function SignOut({ children }: { children: React.ReactNode }) {
+export function LogoutButton({ children }: { children: React.ReactNode }) {
   const { signOut } = useAuthActions();
 
   const handleSignOut = async (e: React.MouseEvent) => {

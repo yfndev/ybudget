@@ -3,19 +3,18 @@
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { useDateRange } from "@/lib/contexts/DateRangeContext";
-import { usePaginatedQuery } from "convex-helpers/react/cache";
-import { useMutation } from "convex/react";
-import TransactionsOverviewUI from "./TransactionsOverviewUI";
+import { useMutation, usePaginatedQuery } from "convex/react";
+import { TransactionsPageUI } from "./TransactionsPageUI";
 
 const TRANSACTIONS_PER_PAGE = 50;
 
-export default function Transactions() {
+export default function TransactionsPage() {
   const { selectedDateRange } = useDateRange();
   const updateTransaction = useMutation(
-    api.transactions.functions.updateTransaction,
+    api.transactions.functions.updateTransaction
   );
   const deleteTransaction = useMutation(
-    api.transactions.functions.deleteExpectedTransaction,
+    api.transactions.functions.deleteExpectedTransaction
   );
 
   const { results, status, loadMore } = usePaginatedQuery(
@@ -24,11 +23,11 @@ export default function Transactions() {
       startDate: selectedDateRange?.from?.getTime(),
       endDate: selectedDateRange?.to?.getTime(),
     },
-    { initialNumItems: TRANSACTIONS_PER_PAGE },
+    { initialNumItems: TRANSACTIONS_PER_PAGE }
   );
 
   return (
-    <TransactionsOverviewUI
+    <TransactionsPageUI
       selectedDateRange={selectedDateRange}
       transactions={results ?? []}
       status={status}

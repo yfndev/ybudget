@@ -1,5 +1,17 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "@/components/ui/sidebar";
+import { api } from "@/convex/_generated/api";
+import { useQuery } from "convex/react";
 import {
   Coins,
   HelpCircle,
@@ -12,29 +24,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useOnborda } from "onborda";
-
-import { Button } from "@/components/ui/button";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@/components/ui/sidebar";
-import { api } from "@/convex/_generated/api";
-import { useQuery } from "convex-helpers/react/cache";
-import { MainNav } from "./MainNav";
+import { MainNav, type NavItem } from "./MainNav";
 import { ProjectNav } from "./ProjectNav";
 import { NavUser } from "./UserNav";
 
-const NAV_ITEMS = [
+const NAV_ITEMS: Array<NavItem & { adminOnly?: boolean }> = [
   { name: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { name: "Transaktionen", url: "/transactions", icon: SquareCheckBig },
   { name: "Import", url: "/import", icon: Upload, adminOnly: true },
   { name: "Förderer", url: "/donors", icon: Users },
-  { name: "Auslagenerstattung", url: "/reimbursement", icon: Coins },
+  { name: "Erstattungen", url: "/reimbursements", icon: Coins },
 ];
 
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {

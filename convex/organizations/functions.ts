@@ -1,13 +1,16 @@
+import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { mutation } from "../_generated/server";
-import { getCurrentUser } from "../users/getCurrentUser";
 
 export const initializeOrganization = mutation({
   args: {
     organizationName: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const user = await getCurrentUser(ctx);
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Unauthorized user");
+    const user = await ctx.db.get(userId);
+    if (!user) throw new Error("User not found");
 
     if (user.organizationId) {
       return { organizationId: user.organizationId, isNew: false };

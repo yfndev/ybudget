@@ -2,17 +2,17 @@ import type { Doc } from "@/convex/_generated/dataModel";
 import { formatCurrency } from "@/lib/formatters/formatCurrency";
 import { formatDate } from "@/lib/formatters/formatDate";
 
-interface ExpectedTransactionMatchesUIProps {
+interface Props {
   expectedTransactions: Doc<"transactions">[];
   selectedMatch: string | null;
   onSelect: (id: string) => void;
 }
 
-export const ExpectedTransactionMatchesUI = ({
+export function ExpectedTransactionMatchesUI({
   expectedTransactions,
   selectedMatch,
   onSelect,
-}: ExpectedTransactionMatchesUIProps) => {
+}: Props) {
   if (!expectedTransactions.length) {
     return (
       <div>
@@ -63,4 +63,4 @@ export const ExpectedTransactionMatchesUI = ({
       })}
     </div>
   );
-};
+}

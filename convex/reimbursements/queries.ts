@@ -75,28 +75,40 @@ export const getAllReimbursements = query({
           .order("desc")
           .collect();
 
-    return await Promise.all(
-      reimbursements.map(async (r) => {
-        const [creator, project, travelDetails] = await Promise.all([
-          ctx.db.get(r.createdBy),
-          ctx.db.get(r.projectId),
-          r.type === "travel"
-            ? ctx.db
-                .query("travelDetails")
-                .withIndex("by_reimbursement", (q) =>
-                  q.eq("reimbursementId", r._id),
-                )
-                .first()
-            : null,
-        ]);
+    const creatorIds = [...new Set(reimbursements.map((r) => r.createdBy))];
+    const projectIds = [...new Set(reimbursements.map((r) => r.projectId))];
+    const travelReimbursementIds = reimbursements
+      .filter((r) => r.type === "travel")
+      .map((r) => r._id);
 
-        return {
-          ...r,
-          creatorName: creator?.name || "Unknown",
-          projectName: project?.name || "Unbekanntes Projekt",
-          travelDetails,
-        };
-      }),
+    const [creators, projects, travelDetailsList] = await Promise.all([
+      Promise.all(creatorIds.map((id) => ctx.db.get(id))),
+      Promise.all(projectIds.map((id) => ctx.db.get(id))),
+      Promise.all(
+        travelReimbursementIds.map((id) =>
+          ctx.db
+            .query("travelDetails")
+            .withIndex("by_reimbursement", (q) => q.eq("reimbursementId", id))
+            .first(),
+        ),
+      ),
+    ]);
+
+    const creatorMap = new Map(
+      creators.filter(Boolean).map((c) => [c!._id, c!.name]),
     );
+    const projectMap = new Map(
+      projects.filter(Boolean).map((p) => [p!._id, p!.name]),
+    );
+    const travelMap = new Map(
+      travelDetailsList.filter(Boolean).map((t) => [t!.reimbursementId, t!]),
+    );
+
+    return reimbursements.map((r) => ({
+      ...r,
+      creatorName: creatorMap.get(r.createdBy) || "Unknown",
+      projectName: projectMap.get(r.projectId) || "Unbekanntes Projekt",
+      travelDetails: travelMap.get(r._id),
+    }));
   },
 });

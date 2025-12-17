@@ -18,8 +18,7 @@ import {
 } from "@/components/ui/sheet";
 import { api } from "@/convex/_generated/api";
 import { mapCSVRow } from "@/lib/bankImportMapping/csvMappers";
-import { useQuery } from "convex-helpers/react/cache";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Papa from "papaparse";
@@ -28,15 +27,12 @@ import toast from "react-hot-toast";
 
 type ImportSource = "moss" | "sparkasse" | "volksbank";
 
-interface ImportTransactionsSheetProps {
+interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export function ImportTransactionsSheet({
-  open,
-  onOpenChange,
-}: ImportTransactionsSheetProps) {
+export function ImportTransactionsSheet({ open, onOpenChange }: Props) {
   const [csvData, setCsvData] = useState<Record<string, string>[]>([]);
   const [importSource, setImportSource] = useState<ImportSource | "">("");
   const [isDragging, setIsDragging] = useState(false);
@@ -53,7 +49,9 @@ export function ImportTransactionsSheet({
   const existingIds = useMemo(() => {
     if (!allTransactions) return undefined;
     return new Set(
-      allTransactions.map((t) => t.importedTransactionId).filter(Boolean),
+      allTransactions
+        .map((transaction) => transaction.importedTransactionId)
+        .filter(Boolean),
     );
   }, [allTransactions]);
 
@@ -87,8 +85,8 @@ export function ImportTransactionsSheet({
     );
 
     try {
-      for (let i = 0; i < newTransactions.length; i++) {
-        const mapped = mapCSVRow(newTransactions[i], importSource);
+      for (let index = 0; index < newTransactions.length; index++) {
+        const mapped = mapCSVRow(newTransactions[index], importSource);
         await addTransaction({
           date: mapped.date,
           amount: mapped.amount,
@@ -99,7 +97,7 @@ export function ImportTransactionsSheet({
           accountName: mapped.accountName,
         });
         toast.loading(
-          `Importiere ${i + 1}/${newTransactions.length} Transaktionen...`,
+          `Importiere ${index + 1}/${newTransactions.length} Transaktionen...`,
           { id: toastId },
         );
       }

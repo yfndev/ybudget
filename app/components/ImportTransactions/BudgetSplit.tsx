@@ -5,17 +5,14 @@ import { useState } from "react";
 import { AmountInput } from "../Selectors/AmountInput";
 import { Label } from "../ui/label";
 
-interface BudgetSplitProps {
+interface Props {
   totalAmount: number;
   onBudgetsChange: (
     budgets: Array<{ projectId: string; amount: number }>,
   ) => void;
 }
 
-export default function BudgetSplit({
-  totalAmount,
-  onBudgetsChange,
-}: BudgetSplitProps) {
+export function BudgetSplit({ totalAmount, onBudgetsChange }: Props) {
   const [budgetInputs, setBudgetInputs] = useState<Record<string, string>>({});
   const departments = useQuery(api.projects.queries.getDepartments);
 

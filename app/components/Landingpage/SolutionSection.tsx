@@ -63,7 +63,31 @@ const features = [
       "Team- und Projektzugriffskontrolle",
       "Interaktives Onboarding für neue Nutzer",
     ],
-    screenshot: "/screenshots/Dashboard Overview.png",
+    screenshot: "/screenshots/Invite.png",
+  },
+  {
+    side: "right",
+    title: "Ehrenamtspauschale ohne Papierkram",
+    description:
+      "Erstelle Links für Ehrenamtliche, die ihre Pauschale direkt digital einreichen können – inklusive Unterschrift vom Handy.",
+    bullets: [
+      "Teilbare Links für externe Einreichungen",
+      "Mobile Unterschrift per QR-Code",
+      "Automatische Validierung",
+    ],
+    screenshot: "/screenshots/Ehrenamtspauschale.png",
+  },
+  {
+    side: "left",
+    title: "KI-Assistent für dein Budget",
+    description:
+      "Frag deinen Finanzassistenten nach Insights und lass dir komplexe Auswertungen erklären.",
+    bullets: [
+      "Natürliche Sprache statt Formulare",
+      "Budget Insights auf Knopfdruck",
+      "Aktionen direkt aus dem Chat",
+    ],
+    screenshot: "/screenshots/AI.png",
   },
 ];
 

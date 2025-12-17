@@ -102,6 +102,27 @@ erDiagram
         string entityId
     }
 
+    volunteerAllowance {
+        id organizationId FK
+        id projectId FK
+        id createdBy FK
+        number amount
+        boolean isApproved
+        string iban
+        string volunteerName
+        string activityDescription
+        string startDate
+        string endDate
+    }
+
+    signatureTokens {
+        string token
+        id organizationId FK
+        id createdBy FK
+        number expiresAt
+        id signatureStorageId FK
+    }
+
     organizations ||--o{ users : "has"
     organizations ||--o{ projects : "has"
     organizations ||--o{ transactions : "has"
@@ -127,4 +148,9 @@ erDiagram
 
     reimbursements ||--o{ receipts : "has"
     reimbursements ||--o| travelDetails : "has"
+
+    organizations ||--o{ volunteerAllowance : "has"
+    projects ||--o{ volunteerAllowance : "has"
+    users ||--o{ volunteerAllowance : "submits"
+    users ||--o{ signatureTokens : "creates"
 ```

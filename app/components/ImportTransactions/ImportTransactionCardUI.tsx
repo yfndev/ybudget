@@ -6,9 +6,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import type { Doc, Id } from "@/convex/_generated/dataModel";
 import { formatCurrency } from "@/lib/formatters/formatCurrency";
-import { useRef } from "react";
 
-interface ImportTransactionCardUIProps {
+interface Props {
   transaction: Doc<"transactions">;
   currentIndex: number;
   totalCount: number;
@@ -22,7 +21,7 @@ interface ImportTransactionCardUIProps {
   onSplitIncomeChange: (splitIncome: boolean) => void;
 }
 
-export const ImportTransactionCardUI = ({
+export function ImportTransactionCardUI({
   transaction,
   currentIndex,
   totalCount,
@@ -34,13 +33,7 @@ export const ImportTransactionCardUI = ({
   onCategoryChange,
   onDonorChange,
   onSplitIncomeChange,
-}: ImportTransactionCardUIProps) => {
-  const categoryRef = useRef<HTMLInputElement>(null);
-  const donorRef = useRef<HTMLInputElement>(null);
-
-  const focusCategory = () => setTimeout(() => categoryRef.current?.focus(), 0);
-  const focusDonor = () => setTimeout(() => donorRef.current?.focus(), 0);
-
+}: Props) {
   const isExpense = transaction.amount < 0;
   const isIncome = transaction.amount > 0;
 
@@ -87,14 +80,7 @@ export const ImportTransactionCardUI = ({
         {!splitIncome && (
           <div className="flex flex-col gap-2">
             <Label className="text-sm font-semibold">Projekt</Label>
-            <SelectProject
-              value={projectId}
-              onValueChange={(v) => {
-                onProjectChange(v);
-                focusCategory();
-              }}
-              onTabPressed={focusCategory}
-            />
+            <SelectProject value={projectId} onValueChange={onProjectChange} />
           </div>
         )}
 
@@ -107,25 +93,13 @@ export const ImportTransactionCardUI = ({
 
         <div className="flex flex-col gap-2">
           <Label className="text-sm font-semibold">Kategorie</Label>
-          <SelectCategory
-            ref={categoryRef}
-            value={categoryId}
-            onValueChange={(v) => {
-              onCategoryChange(v);
-              focusDonor();
-            }}
-            onTabPressed={focusDonor}
-          />
+          <SelectCategory value={categoryId} onValueChange={onCategoryChange} />
         </div>
 
         {isIncome && (
           <div className="flex flex-col gap-2">
             <Label className="text-sm font-semibold">Förderer</Label>
-            <SelectDonor
-              ref={donorRef}
-              value={donorId}
-              onValueChange={onDonorChange}
-            />
+            <SelectDonor value={donorId} onValueChange={onDonorChange} />
           </div>
         )}
 
@@ -140,7 +114,6 @@ export const ImportTransactionCardUI = ({
               </span>
             </Label>
             <SelectDonor
-              ref={donorRef}
               value={donorId}
               onValueChange={onDonorChange}
               projectId={projectId as Id<"projects"> | undefined}
@@ -173,4 +146,4 @@ export const ImportTransactionCardUI = ({
       </div>
     </Card>
   );
-};
+}

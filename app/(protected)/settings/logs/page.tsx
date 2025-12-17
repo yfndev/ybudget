@@ -11,16 +11,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { api } from "@/convex/_generated/api";
+import { formatDateTime } from "@/lib/formatters/formatDateTime";
 import { useIsAdmin } from "@/lib/hooks/useCurrentUserRole";
 import { useQuery } from "convex/react";
 import { ScrollText } from "lucide-react";
-
-function formatTimestamp(timestamp: number) {
-  return new Intl.DateTimeFormat("de-DE", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(new Date(timestamp));
-}
 
 export default function LogsPage() {
   const logs = useQuery(api.logs.queries.getLogs);
@@ -59,7 +53,7 @@ export default function LogsPage() {
             {logs.map((log) => (
               <TableRow key={log._id}>
                 <TableCell className="whitespace-nowrap text-sm text-muted-foreground">
-                  {formatTimestamp(log._creationTime)}
+                  {formatDateTime(log._creationTime)}
                 </TableCell>
                 <TableCell>{log.action}</TableCell>
                 <TableCell className="text-sm text-muted-foreground">

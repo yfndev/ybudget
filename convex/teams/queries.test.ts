@@ -57,3 +57,30 @@ test("return empty if user not in any team", async () => {
 
   expect(teams).toHaveLength(0);
 });
+
+test("return null for team from different organization", async () => {
+  const t = convexTest(schema, modules);
+  const { userId, teamId } = await setupTestData(t);
+
+  const otherOrgId = await t.run((ctx) =>
+    ctx.db.insert("organizations", {
+      name: "Other Org",
+      domain: "other.com",
+      createdBy: userId,
+    }),
+  );
+
+  const otherUserId = await t.run((ctx) =>
+    ctx.db.insert("users", {
+      email: "other@other.com",
+      organizationId: otherOrgId,
+      role: "admin",
+    }),
+  );
+
+  const team = await t
+    .withIdentity({ subject: otherUserId })
+    .query(api.teams.queries.getTeam, { teamId });
+
+  expect(team).toBeNull();
+});

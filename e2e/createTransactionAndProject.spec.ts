@@ -69,8 +69,12 @@ test("create and delete transaction", async ({ page, context }) => {
     .fill("Test Beschreibung");
   await page.getByRole("textbox", { name: "Projekt suchen..." }).click();
   await page.getByRole("button", { name: "Test Projekt" }).click();
-  await page.getByRole("textbox", { name: "Kategorie suchen..." }).fill("Spenden");
-  await page.getByRole("textbox", { name: "Kategorie suchen..." }).press("Enter");
+  await page
+    .getByRole("textbox", { name: "Kategorie suchen..." })
+    .fill("Spenden");
+  await page
+    .getByRole("textbox", { name: "Kategorie suchen..." })
+    .press("Enter");
   await page.getByRole("textbox", { name: "Förderer suchen..." }).click();
   await page.getByRole("button", { name: "Test Fördererdonation" }).click();
   await page.getByRole("button", { name: "Ausgabe planen" }).click();
