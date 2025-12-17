@@ -70,14 +70,17 @@ export function SelectCategory({ value, onValueChange }: Props) {
   };
 
   const handleOpen = () => {
-    if (inputRef.current) {
-      const rect = inputRef.current.getBoundingClientRect();
-      setDropdownPosition({
-        top: rect.bottom + window.scrollY + 4,
-        left: rect.left + window.scrollX,
-      });
-    }
+    if (open) return;
     setOpen(true);
+  };
+
+  useEffect(() => {
+    if (!open || !inputRef.current) return;
+    const rect = inputRef.current.getBoundingClientRect();
+    setDropdownPosition({
+      top: rect.bottom + window.scrollY + 4,
+      left: rect.left + window.scrollX,
+    });
     const groupIndex = grouped.findIndex(
       (group) =>
         group.parent._id === value ||
@@ -90,7 +93,7 @@ export function SelectCategory({ value, onValueChange }: Props) {
       );
       setActiveItemIndex(Math.max(0, itemIndex));
     }
-  };
+  }, [open, grouped, value]);
 
   const handleSelect = (id: Id<"categories">) => {
     onValueChange(id);
