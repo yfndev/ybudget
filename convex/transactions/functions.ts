@@ -235,8 +235,17 @@ async function getReservesProjectId(
     )
     .first();
 
-  if (!reserves) throw new Error("Reserves project not found");
-  return reserves._id;
+  if (reserves) return reserves._id;
+
+  const org = await ctx.db.get(organizationId);
+  if (!org) throw new Error("Organization not found");
+
+  return await ctx.db.insert("projects", {
+    name: "Rücklagen",
+    organizationId,
+    isArchived: false,
+    createdBy: org.createdBy,
+  });
 }
 
 export const transferMoney = mutation({
