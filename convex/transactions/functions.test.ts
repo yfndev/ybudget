@@ -468,7 +468,7 @@ test("split transaction without remaining amount creates exact splits", async ()
   expect(splits).toHaveLength(2);
 });
 
-test("split throws when reserves (Rücklagen) project is missing", async () => {
+test("split auto-creates reserves (Rücklagen) project when missing", async () => {
   const t = convexTest(schema, modules);
   const { organizationId, userId, projectId } = await setupTestData(t);
 
@@ -492,12 +492,18 @@ test("split throws when reserves (Rücklagen) project is missing", async () => {
     }),
   );
 
-  await expect(
-    t
-      .withIdentity({ subject: userId })
-      .mutation(api.transactions.functions.splitTransaction, {
-        transactionId: originalId,
-        splits: [{ projectId, amount: 300 }],
-      }),
-  ).rejects.toThrow("Reserves project not found");
+  await t
+    .withIdentity({ subject: userId })
+    .mutation(api.transactions.functions.splitTransaction, {
+      transactionId: originalId,
+      splits: [{ projectId, amount: 300 }],
+    });
+
+  const newReservesProject = await t.run((ctx) =>
+    ctx.db
+      .query("projects")
+      .filter((q) => q.eq(q.field("name"), "Rücklagen"))
+      .first(),
+  );
+  expect(newReservesProject).not.toBeNull();
 });

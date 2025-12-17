@@ -96,8 +96,9 @@ test("calculate income using getDonorById", async () => {
     .withIdentity({ subject: userId })
     .query(api.donors.queries.getDonorById, { donorId });
 
-  expect(donor?.committedIncome).toBe(500);
+  expect(donor?.committedIncome).toBe(800);
   expect(donor?.paidIncome).toBe(300);
+  expect(donor?.openIncome).toBe(500);
 });
 
 test("throw error when no donor is found by id", async () => {
