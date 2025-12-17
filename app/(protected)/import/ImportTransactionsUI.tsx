@@ -21,11 +21,11 @@ interface ImportTransactionsUIProps {
   handleExpectedTransactionSelect: (id: string) => void;
   onSplitIncomeChange: (splitIncome: boolean) => void;
   onBudgetsChange: (
-    budgets: Array<{ projectId: string; amount: number }>,
+    budgets: Array<{ projectId: string; amount: number }>
   ) => void;
 }
 
-export const ImportTransactionsUI = ({
+export default function ImportTransactionsUI({
   current,
   index,
   totalCount,
@@ -41,7 +41,10 @@ export const ImportTransactionsUI = ({
   handleExpectedTransactionSelect,
   onSplitIncomeChange,
   onBudgetsChange,
-}: ImportTransactionsUIProps) => {
+}: ImportTransactionsUIProps) {
+  const hasMatches = expectedTransactions.length > 0;
+  const showBudgetSplit = splitIncome && current && current.amount > 0;
+
   if (totalCount === 0) {
     return (
       <div id="tour-import-page">
@@ -55,8 +58,6 @@ export const ImportTransactionsUI = ({
       </div>
     );
   }
-
-  const hasMatches = expectedTransactions.length > 0;
 
   return (
     <div id="tour-import-page">
@@ -99,7 +100,7 @@ export const ImportTransactionsUI = ({
               />
             )}
           </div>
-          {splitIncome && current && current.amount > 0 && (
+          {showBudgetSplit && (
             <div className="w-full max-w-md">
               <BudgetSplit
                 totalAmount={current.amount}
@@ -111,4 +112,4 @@ export const ImportTransactionsUI = ({
       </div>
     </div>
   );
-};
+}
