@@ -1,56 +1,28 @@
 "use client";
 
+
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/convex/_generated/api";
 import { cn } from "@/lib/utils";
 import { useUIMessages } from "@convex-dev/agent/react";
 import { useMutation } from "convex/react";
-import { Bot, MessageCircle, Send } from "lucide-react";
+import { Bot, Send } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import LoadingDots from "./LoadingDots";
+import RenderAIText from "./renderAIText";
 
 const STARTERS = [
   "Was waren die 10 größten Ausgaben dieses Jahr?",
   "Liste alle offenen Posten auf",
   "Liste alle offenen Erstattungen auf",
 ];
-
-function renderText(text: string) {
-  const parts = text.split(/(\*\*[^*]+\*\*)/g);
-  return parts.map((part, i) => {
-    if (part.startsWith("**") && part.endsWith("**")) {
-      return <strong key={i}>{part.slice(2, -2)}</strong>;
-    }
-    return part;
-  });
-}
-
-function LoadingDots({ size = "md" }: { size?: "sm" | "md" }) {
-  const dotSize = size === "sm" ? "w-1 h-1" : "w-1.5 h-1.5";
-  return (
-    <div className="flex gap-0.5">
-      <span
-        className={cn(
-          dotSize,
-          "bg-current rounded-full animate-bounce [animation-delay:-0.3s]",
-        )}
-      />
-      <span
-        className={cn(
-          dotSize,
-          "bg-current rounded-full animate-bounce [animation-delay:-0.15s]",
-        )}
-      />
-      <span className={cn(dotSize, "bg-current rounded-full animate-bounce")} />
-    </div>
-  );
-}
 
 export function ChatOverlay({
   open,
@@ -67,10 +39,10 @@ export function ChatOverlay({
   const { results: messages } = useUIMessages(
     api.ai.queries.listMessages,
     threadId ? { threadId } : "skip",
-    { initialNumItems: 50, stream: true },
+    { initialNumItems: 50, stream: true }
   );
 
-  const isStreaming = messages.some((m) => m.status === "streaming");
+  const isStreaming = messages.some((msg) => msg.status === "streaming");
 
   useEffect(() => {
     scrollRef.current?.scrollTo(0, scrollRef.current.scrollHeight);
@@ -126,28 +98,34 @@ export function ChatOverlay({
             )}
 
             {messages
-              .filter((msg) => msg.role === "user" || msg.role === "assistant")
-              .map((msg) => (
+              .filter(
+                (message) =>
+                  message.role === "user" || message.role === "assistant"
+              )
+              .map((message) => (
                 <div
-                  key={msg.key}
-                  className={cn("flex", msg.role === "user" && "justify-end")}
+                  key={message.key}
+                  className={cn(
+                    "flex",
+                    message.role === "user" && "justify-end"
+                  )}
                 >
                   <div
                     className={cn(
                       "rounded-lg px-4 py-2 max-w-[80%]",
-                      msg.role === "user"
+                      message.role === "user"
                         ? "bg-primary text-primary-foreground"
-                        : "bg-muted",
+                        : "bg-muted"
                     )}
                   >
-                    {msg.text ? (
+                    {message.text ? (
                       <p className="text-sm whitespace-pre-wrap">
-                        {renderText(msg.text)}
-                        {msg.status === "streaming" && (
+                        {RenderAIText(message.text)}
+                        {message.status === "streaming" && (
                           <span className="animate-pulse">▊</span>
                         )}
                       </p>
-                    ) : msg.status === "streaming" ? (
+                    ) : message.status === "streaming" ? (
                       <LoadingDots />
                     ) : null}
                   </div>
@@ -190,22 +168,5 @@ export function ChatOverlay({
         </form>
       </SheetContent>
     </Sheet>
-  );
-}
-
-export function ChatTrigger() {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <>
-      <Button
-        onClick={() => setOpen(true)}
-        className="fixed bottom-4 right-4 h-9 w-9 rounded-lg shadow-lg z-50"
-        size="icon"
-      >
-        <MessageCircle className="h-6 w-6" />
-      </Button>
-      <ChatOverlay open={open} onOpenChange={setOpen} />
-    </>
   );
 }
