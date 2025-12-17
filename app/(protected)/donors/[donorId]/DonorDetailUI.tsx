@@ -4,8 +4,8 @@ import { PageHeader } from "@/components/Layout/PageHeader";
 import { editableColumnsWithoutProject } from "@/components/Tables/Transactions/EditableColumns";
 import { EditableDataTable } from "@/components/Tables/Transactions/EditableDataTable";
 import { Button } from "@/components/ui/button";
-import { Doc } from "@/convex/_generated/dataModel";
-import { PaginationStatus } from "convex/react";
+import type { Doc } from "@/convex/_generated/dataModel";
+import type { PaginationStatus } from "convex/react";
 import { CSVLink } from "react-csv";
 
 interface DonorDetailUIProps {
@@ -16,9 +16,9 @@ interface DonorDetailUIProps {
     totalExpenses: number;
   };
   transactions: Doc<"transactions">[];
-  handleUpdate: (rowId: string, field: string, value: any) => Promise<void>;
-  handleDelete: (rowId: string) => Promise<void>;
   status: PaginationStatus;
+  onUpdate: (rowId: string, field: string, value: unknown) => Promise<void>;
+  onDelete: (rowId: string) => Promise<void>;
 }
 
 const csvHeaders = [
@@ -33,9 +33,9 @@ const csvHeaders = [
 export default function DonorDetailUI({
   donor,
   transactions,
-  handleUpdate,
-  handleDelete,
   status,
+  onUpdate,
+  onDelete,
 }: DonorDetailUIProps) {
   const csvData = transactions.map((t) => ({
     date: new Date(t.date).toISOString(),
@@ -51,14 +51,11 @@ export default function DonorDetailUI({
       <PageHeader
         title={donor.name}
         subtitle={donorTypeLabels[donor.type] ?? donor.type}
-        showBackButton={true}
+        showBackButton
         backUrl="/donors"
       />
 
-      <div
-        className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6"
-        id="tour-donor-budget"
-      >
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6" id="tour-donor-budget">
         <BudgetCard title="Zugesagt" amount={donor.committedIncome} />
         <BudgetCard title="Bezahlt" amount={donor.paidIncome} />
         <BudgetCard title="Offen" amount={donor.openIncome} />
@@ -68,21 +65,15 @@ export default function DonorDetailUI({
       <div className="mt-6" id="tour-donor-transactions">
         <div className="flex flex-row justify-between">
           <h2 className="text-xl font-semibold mb-4">Transaktionen</h2>
-          <CSVLink
-            data={csvData}
-            filename={`${donor.name}-transactions.csv`}
-            headers={csvHeaders}
-          >
-            <Button variant="outline" size="sm">
-              Download CSV
-            </Button>
+          <CSVLink data={csvData} filename={`${donor.name}-transactions.csv`} headers={csvHeaders}>
+            <Button variant="outline" size="sm">Download CSV</Button>
           </CSVLink>
         </div>
         <EditableDataTable
           columns={editableColumnsWithoutProject}
           data={transactions}
-          onUpdate={handleUpdate}
-          onDelete={handleDelete}
+          onUpdate={onUpdate}
+          onDelete={onDelete}
           paginationStatus={status}
         />
       </div>
