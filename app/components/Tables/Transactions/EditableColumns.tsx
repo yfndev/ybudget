@@ -244,14 +244,13 @@ const baseColumns = [
     header: "Status",
     cell: ({ row }: any) => {
       const status = row.getValue("status");
-      const isBudget =
-        !!row.original.splitFromTransactionId || !!row.original.transferId;
-      const label = isBudget
+      const isTransfer = !!row.original.transferId;
+      const label = isTransfer
         ? "Budget"
         : status === "expected"
           ? "Geplant"
           : "Abgerechnet";
-      const variant = isBudget
+      const variant = isTransfer
         ? "outline"
         : status === "processed"
           ? "default"
