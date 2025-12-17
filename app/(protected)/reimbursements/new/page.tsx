@@ -5,9 +5,9 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
 import { useState } from "react";
-import { ReimbursementFormUI } from "./ReimbursementFormUI";
-import { TravelReimbursementFormUI } from "./TravelReimbursementFormUI";
-import { VolunteerAllowanceFormUI } from "./VolunteerAllowanceFormUI";
+import { ReimbursementFormUI } from "../../../components/Reimbursements/ReimbursementFormUI";
+import { TravelReimbursementFormUI } from "../../../components/Reimbursements/TravelReimbursementFormUI";
+import { VolunteerAllowanceFormUI } from "../../../components/Reimbursements/VolunteerAllowanceFormUI";
 
 type ReimbursementType = "expense" | "travel" | "volunteerAllowance";
 

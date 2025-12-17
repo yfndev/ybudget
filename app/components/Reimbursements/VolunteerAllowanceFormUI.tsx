@@ -1,11 +1,11 @@
 "use client";
 
 import { BankDetailsEditor } from "@/components/BankDetailsEditor";
+import { ShareSignatureModal } from "@/components/Reimbursements/ShareSignatureModal";
+import { SignatureCanvas } from "@/components/Reimbursements/SignatureCanvas";
 import { AmountInput } from "@/components/Selectors/AmountInput";
 import { DateInput } from "@/components/Selectors/DateInput";
 import { SelectProject } from "@/components/Selectors/SelectProject";
-import { ShareSignatureModal } from "@/components/Signature/ShareSignatureModal";
-import { SignatureCanvas } from "@/components/Signature/SignatureCanvas";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -31,7 +31,7 @@ export function VolunteerAllowanceFormUI({
   const currentUser = useQuery(api.users.queries.getCurrentUserProfile);
   const submit = useMutation(api.volunteerAllowance.functions.create);
   const createToken = useMutation(
-    api.volunteerAllowance.functions.createSignatureToken,
+    api.volunteerAllowance.functions.createSignatureToken
   );
 
   const [projectId, setProjectId] = useState<Id<"projects"> | null>(null);

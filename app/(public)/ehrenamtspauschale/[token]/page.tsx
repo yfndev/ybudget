@@ -1,6 +1,6 @@
 "use client";
 
-import { SignatureCanvas } from "@/components/Signature/SignatureCanvas";
+import { SignatureCanvas } from "@/components/Reimbursements/SignatureCanvas";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -23,10 +23,10 @@ export default function ExternalEhrenamtspauschalePage() {
     token,
   });
   const generateUploadUrl = useMutation(
-    api.volunteerAllowance.functions.generatePublicUploadUrl,
+    api.volunteerAllowance.functions.generatePublicUploadUrl
   );
   const submitExternal = useMutation(
-    api.volunteerAllowance.functions.submitExternal,
+    api.volunteerAllowance.functions.submitExternal
   );
 
   const [signatureStorageId, setSignatureStorageId] =
@@ -118,7 +118,7 @@ export default function ExternalEhrenamtspauschalePage() {
       setSubmitted(true);
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Fehler beim Einreichen",
+        error instanceof Error ? error.message : "Fehler beim Einreichen"
       );
     } finally {
       setIsSubmitting(false);
