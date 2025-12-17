@@ -1,7 +1,7 @@
 import { PageHeader } from "@/components/Layout/PageHeader";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export const ImportTransactionsSkeleton = () => {
+export default function ImportTransactionsSkeleton() {
   return (
     <div id="tour-import-page">
       <PageHeader title="Transaktionen zuordnen" />
@@ -48,4 +48,4 @@ export const ImportTransactionsSkeleton = () => {
       </div>
     </div>
   );
-};
+}
