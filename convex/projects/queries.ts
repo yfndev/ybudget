@@ -10,18 +10,19 @@ export const getAllProjects = query({
     const userId = await getAuthUserId(ctx);
     if (!userId) return [];
 
-    const user = await getCurrentUser(ctx);
+    const user = await ctx.db.get(userId);
+    if (!user?.organizationId) return [];
+
+    const organizationId = user.organizationId;
     const accessibleIds = await getUserAccessibleProjectIds(
       ctx,
       user._id,
-      user.organizationId,
+      organizationId,
     );
 
     const projects = await ctx.db
       .query("projects")
-      .withIndex("by_organization", (q) =>
-        q.eq("organizationId", user.organizationId),
-      )
+      .withIndex("by_organization", (q) => q.eq("organizationId", organizationId))
       .collect();
 
     return projects.filter(

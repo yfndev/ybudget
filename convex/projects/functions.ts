@@ -9,7 +9,6 @@ const FREE_TIER_LIMIT = 10;
 export const createProject = mutation({
   args: {
     name: v.string(),
-    description: v.optional(v.string()),
     parentId: v.optional(v.id("projects")),
   },
   handler: async (ctx, args) => {
@@ -41,7 +40,6 @@ export const createProject = mutation({
 
     const projectId = await ctx.db.insert("projects", {
       name: args.name,
-      description: args.description,
       organizationId: user.organizationId,
       parentId: args.parentId,
       isArchived: false,

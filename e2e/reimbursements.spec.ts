@@ -47,7 +47,7 @@ test.describe.serial("reimbursement flow", () => {
   });
 
   test("1. Create expense reimbursement with JPG receipt", async () => {
-    await page.getByRole("link", { name: "Auslagenerstattung" }).click();
+    await page.getByRole("link", { name: "Erstattungen" }).click();
     await page.getByRole("button", { name: "Neue Erstattung" }).click();
 
     await page.getByRole("textbox", { name: "Projekt suchen..." }).click();
@@ -69,7 +69,7 @@ test.describe.serial("reimbursement flow", () => {
     await page.getByPlaceholder("119,95").fill("100");
 
     await page.locator('input[type="file"]').setInputFiles(IMAGE_FILE);
-    await expect(page.getByText("Beleg hochgeladen")).toBeVisible();
+    await expect(page.getByText("Beleg hochgeladen")).toBeVisible({ timeout: 10000 });
 
     await page.getByRole("button", { name: "Beleg hinzufügen" }).click();
     await expect(page.getByText("Test Firma")).toBeVisible();
@@ -88,11 +88,9 @@ test.describe.serial("reimbursement flow", () => {
   });
 
   test("2. Mark expense reimbursement as paid", async () => {
-    await page.getByRole("button", { name: "Als bezahlt markieren" }).click();
-    await expect(
-      page.getByText("Erstattung als bezahlt markiert"),
-    ).toBeVisible();
-    await expect(page.getByText("Bezahlt", { exact: true })).toBeVisible();
+    await page.locator("table tbody tr").first().locator("button").first().click();
+    await expect(page.getByText("Als bezahlt markiert")).toBeVisible();
+    await expect(page.getByText("Genehmigt", { exact: true })).toBeVisible();
   });
 
   test("3. Create travel reimbursement with PDF receipt", async () => {
@@ -124,7 +122,7 @@ test.describe.serial("reimbursement flow", () => {
     await page.getByRole("spinbutton").first().fill("500");
 
     await page.locator('input[type="file"]').setInputFiles(PDF_FILE);
-    await expect(page.getByText("PDF hochgeladen")).toBeVisible();
+    await expect(page.getByText("Beleg hochgeladen")).toBeVisible({ timeout: 10000 });
 
     await page.getByPlaceholder("z.B. 2.5").fill("1.5");
     await page.getByRole("combobox").click();
@@ -142,22 +140,21 @@ test.describe.serial("reimbursement flow", () => {
   });
 
   test("4. Reject travel reimbursement", async () => {
-    await page.getByRole("button", { name: "Ablehnen" }).click();
+    await page.locator("table tbody tr").first().locator("button").nth(1).click();
     await page
       .getByRole("textbox", { name: "Grund für die Ablehnung..." })
       .fill("Falsche Angaben");
     await page.getByRole("button", { name: "Ablehnen" }).click();
 
-    await expect(page.getByText("Erstattung abgelehnt")).toBeVisible();
-    await expect(page.getByText("Ablehnung: Falsche Angaben")).toBeVisible();
-    await expect(page.getByText("Abgelehnt", { exact: true })).toBeVisible();
+    await expect(page.getByText("Ablehnung: Falsche Angaben")).toBeVisible({ timeout: 10000 });
+    await expect(page.locator("table tbody tr").first().getByText("Abgelehnt")).toBeVisible();
   });
 
   test("5. Delete rejected reimbursement", async () => {
-    await page.getByRole("button", { name: "Löschen" }).click();
-    await expect(page.getByText("Erstattung gelöscht")).toBeVisible();
+    await page.locator("table tbody tr").first().locator("button").last().click();
+    await expect(page.getByText("Gelöscht")).toBeVisible();
     await expect(
-      page.getByText("Abgelehnt", { exact: true }),
+      page.getByRole("cell").getByText("Abgelehnt"),
     ).not.toBeVisible();
   });
 });

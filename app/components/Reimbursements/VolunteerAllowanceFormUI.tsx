@@ -92,7 +92,7 @@ export function VolunteerAllowanceFormUI({ defaultBankDetails }: Props) {
       signatureStorageId: signature!,
     });
     toast.success("Ehrenamtspauschale eingereicht");
-    router.push("/reimbursement");
+    router.push("/reimbursements");
   };
 
   const openModal = async () => {

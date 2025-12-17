@@ -1,11 +1,16 @@
+import { getAuthUserId } from "@convex-dev/auth/server";
 import { query } from "../_generated/server";
-import { getCurrentUser } from "../users/getCurrentUser";
 
 export const getOrganizationByDomain = query({
   args: {},
   handler: async (ctx) => {
-    const user = await getCurrentUser(ctx);
-    const domain = user.email?.split("@")[1];
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return { exists: false };
+
+    const user = await ctx.db.get(userId);
+    if (!user?.email) return { exists: false };
+
+    const domain = user.email.split("@")[1];
     if (!domain) return { exists: false };
 
     const organization = await ctx.db

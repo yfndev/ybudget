@@ -109,7 +109,7 @@ export function ReimbursementFormUI({ defaultBankDetails }: Props) {
     if (!projectId) return toast.error("Bitte ein Projekt auswählen");
     await submit({ projectId, amount: totalGross, ...bank, receipts });
     toast.success("Erstattung eingereicht");
-    router.push("/reimbursement");
+    router.push("/reimbursements");
   };
 
   return (

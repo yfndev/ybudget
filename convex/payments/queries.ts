@@ -1,17 +1,19 @@
+import { getAuthUserId } from "@convex-dev/auth/server";
 import { query } from "../_generated/server";
-import { getCurrentUser } from "../users/getCurrentUser";
 
 export const getActivePayment = query({
   args: {},
   handler: async (ctx) => {
-    const user = await getCurrentUser(ctx);
-    if (!user.organizationId) return null;
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return null;
 
+    const user = await ctx.db.get(userId);
+    if (!user?.organizationId) return null;
+
+    const organizationId = user.organizationId;
     return await ctx.db
       .query("payments")
-      .withIndex("by_organization", (q) =>
-        q.eq("organizationId", user.organizationId),
-      )
+      .withIndex("by_organization", (q) => q.eq("organizationId", organizationId))
       .filter((q) => q.eq(q.field("status"), "completed"))
       .first();
   },

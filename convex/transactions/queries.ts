@@ -1,3 +1,4 @@
+import { getAuthUserId } from "@convex-dev/auth/server";
 import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
 import { query } from "../_generated/server";
@@ -10,29 +11,30 @@ export const getAllTransactions = query({
     projectId: v.optional(v.id("projects")),
   },
   handler: async (ctx, args) => {
-    const user = await getCurrentUser(ctx);
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return [];
 
-    const query = args.projectId
+    const user = await ctx.db.get(userId);
+    if (!user?.organizationId) return [];
+
+    const organizationId = user.organizationId;
+    const txQuery = args.projectId
       ? ctx.db
           .query("transactions")
           .withIndex("by_organization_project", (q) =>
-            q
-              .eq("organizationId", user.organizationId)
-              .eq("projectId", args.projectId),
+            q.eq("organizationId", organizationId).eq("projectId", args.projectId),
           )
       : ctx.db
           .query("transactions")
-          .withIndex("by_organization", (q) =>
-            q.eq("organizationId", user.organizationId),
-          );
+          .withIndex("by_organization", (q) => q.eq("organizationId", organizationId));
 
-    const allTransactions = await query.collect();
+    const allTransactions = await txQuery.collect();
     const transactions = allTransactions.filter((t) => !t.isArchived);
 
     const filtered = await filterByProjectAccess(
       ctx,
       user._id,
-      user.organizationId,
+      organizationId,
       transactions,
     );
 

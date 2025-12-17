@@ -139,7 +139,7 @@ export function TravelReimbursementFormUI({ defaultBankDetails }: Props) {
       receipts,
     });
     toast.success("Reisekostenerstattung eingereicht");
-    router.push("/reimbursement");
+    router.push("/reimbursements");
   };
 
   return (
