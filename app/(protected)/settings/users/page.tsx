@@ -4,7 +4,7 @@ import { CreateTeamDialog } from "@/components/Dialogs/CreateTeamDialog";
 import { InviteUserDialog } from "@/components/Dialogs/InviteUserDialog";
 import { PageHeader } from "@/components/Layout/PageHeader";
 import { AccessDenied } from "@/components/Settings/AccessDenied";
-import UserRow from "@/components/Tables/UserTable/UserRow";
+import { UserRow } from "@/components/Tables/Users/UserRow";
 import { Button } from "@/components/ui/button";
 import {
   Table,

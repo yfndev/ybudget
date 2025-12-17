@@ -1,7 +1,7 @@
 "use client";
 
-import { useAuthActions } from "@convex-dev/auth/react";
 import { Button } from "@/components/ui/button";
+import { useAuthActions } from "@convex-dev/auth/react";
 import Image from "next/image";
 
 export function LoginForm() {
@@ -45,14 +45,14 @@ export function LoginForm() {
       </Button>
 
       <p className="text-xs text-muted-foreground">
-        Durch das Anmelden stimmst du unseren{" "}
+        Durch das Anmelden stimmst du unseren
         <a href="#" className="underline hover:text-foreground">
           Nutzungsbedingungen
-        </a>{" "}
-        und{" "}
+        </a>
+        und
         <a href="#" className="underline hover:text-foreground">
           Datenschutzrichtlinien
-        </a>{" "}
+        </a>
         zu.
       </p>
     </div>

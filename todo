@@ -2,8 +2,6 @@ Tests
 
 **todo**
 
-- [ ] test setup with cloning
-
 **archive (latest on top):**
 
 ---
@@ -23,6 +21,9 @@ Tests
 
 ---
 
+- [x] send ehrenamtspauschale via link
+- [x] test setup with cloning
+- [x] Pull information about the volunteer allowance ("Ehrenamtspauschale") from the user profile and display a link to forms for users who are not logged in
 - [x] check if Readme is up to date and gives all information to install program
 - [x] add import e2e test but without import logic, just adding it, splitting it and making sure they are correctly there
 - [x] check budgets implementation and if it really works what i had intended

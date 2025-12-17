@@ -54,7 +54,6 @@ export const seedTestTransactions = mutation({
     const project = await ctx.db.insert("projects", {
       organizationId,
       name: "Test Projekt",
-      description: "",
       isArchived: false,
       createdBy: userId,
     });

@@ -21,7 +21,7 @@ test("create (standard) reimbursement", async () => {
 
   const reimbursement = await t.run((ctx) => ctx.db.get(reimbursementId));
   expect(reimbursement?.type).toBe("expense");
-  expect(reimbursement?.status).toBe("pending");
+  expect(reimbursement?.isApproved).toBe(false);
 });
 
 test("create travel reimbursement", async () => {
@@ -81,7 +81,7 @@ test("mark reimbursement as paid", async () => {
     .mutation(api.reimbursements.functions.markAsPaid, { reimbursementId });
 
   const reimbursement = await t.run((ctx) => ctx.db.get(reimbursementId));
-  expect(reimbursement?.status).toBe("paid");
+  expect(reimbursement?.isApproved).toBe(true);
 });
 
 test("reject reimbursement", async () => {
@@ -92,11 +92,11 @@ test("reject reimbursement", async () => {
     .withIdentity({ subject: userId })
     .mutation(api.reimbursements.functions.rejectReimbursement, {
       reimbursementId,
-      adminNote: "Missing receipt",
+      rejectionNote: "Missing receipt",
     });
 
   const reimbursement = await t.run((ctx) => ctx.db.get(reimbursementId));
-  expect(reimbursement?.status).toBe("rejected");
+  expect(reimbursement?.rejectionNote).toBe("Missing receipt");
 });
 
 test("generate upload url", async () => {
@@ -135,6 +135,22 @@ test("throw error if trying to mark non existent reimbursement as paid", async (
     t
       .withIdentity({ subject: userId })
       .mutation(api.reimbursements.functions.markAsPaid, { reimbursementId }),
+  ).rejects.toThrow("Reimbursement not found");
+});
+
+test("throw error if trying to reject non existent reimbursement", async () => {
+  const t = convexTest(schema, modules);
+  const { userId, reimbursementId } = await setupTestData(t);
+
+  await t.run((ctx) => ctx.db.delete(reimbursementId));
+
+  await expect(
+    t
+      .withIdentity({ subject: userId })
+      .mutation(api.reimbursements.functions.rejectReimbursement, {
+        reimbursementId,
+        rejectionNote: "Test",
+      }),
   ).rejects.toThrow("Reimbursement not found");
 });
 

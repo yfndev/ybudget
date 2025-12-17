@@ -8,21 +8,18 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { api } from "@/convex/_generated/api";
 import { useMutation } from "convex/react";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { Input } from "@/components/ui/input";
 
-interface InviteUserDialogProps {
+interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export function InviteUserDialog({
-  open,
-  onOpenChange,
-}: InviteUserDialogProps) {
+export function InviteUserDialog({ open, onOpenChange }: Props) {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
 
@@ -51,7 +48,7 @@ export function InviteUserDialog({
         <div className="space-y-6 py-4">
           <div className="space-y-2">
             <label className="text-sm font-medium">
-              Wenn möchtest du einladen?
+              Wen möchtest du einladen?
             </label>
             <Input
               value={name}

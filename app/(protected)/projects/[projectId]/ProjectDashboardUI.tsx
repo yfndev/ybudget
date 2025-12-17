@@ -1,12 +1,12 @@
-import BudgetCard from "@/components/Dashboard/BudgetCard";
+import { BudgetCard } from "@/components/Dashboard/BudgetCard";
 import { PageHeader } from "@/components/Layout/PageHeader";
-import { editableColumnsWithoutProject } from "@/components/Tables/TransactionTable/EditableColumns";
-import { EditableDataTable } from "@/components/Tables/TransactionTable/EditableDataTable";
+import { editableColumnsWithoutProject } from "@/components/Tables/Transactions/EditableColumns";
+import { EditableDataTable } from "@/components/Tables/Transactions/EditableDataTable";
 import { Button } from "@/components/ui/button";
 import type { Doc } from "@/convex/_generated/dataModel";
 import type { PaginationStatus } from "convex/react";
 
-interface ProjectDashboardUIProps {
+interface Props {
   project: Doc<"projects">;
   transactions: Doc<"transactions">[];
   budgets: {
@@ -17,12 +17,12 @@ interface ProjectDashboardUIProps {
   };
   status: PaginationStatus;
   loadMore: (numItems: number) => void;
-  onUpdate: (transactionId: string, field: string, value: any) => Promise<void>;
-  onDelete: (transactionId: string) => Promise<void>;
-  openTransfer: () => void;
+  onUpdate: (id: string, field: string, value: unknown) => Promise<void>;
+  onDelete: (id: string) => Promise<void>;
+  onOpenTransfer: () => void;
 }
 
-export default function ProjectDashboardUI({
+export function ProjectDashboardUI({
   project,
   transactions,
   budgets,
@@ -30,11 +30,11 @@ export default function ProjectDashboardUI({
   loadMore,
   onUpdate,
   onDelete,
-  openTransfer,
-}: ProjectDashboardUIProps) {
+  onOpenTransfer,
+}: Props) {
   return (
     <div>
-      <PageHeader title={project.name} showBackButton showRangeCalendar />
+      <PageHeader title={project.name} showBackButton />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
         <BudgetCard
@@ -45,28 +45,26 @@ export default function ProjectDashboardUI({
         <BudgetCard
           title="Budget für Ausgaben"
           amount={budgets.availableBudget}
-          description="Auf dem Konto + kommt rein - muss bezahlt werden"
+          description="Kontostand + geplante Einnahmen - geplante Ausgaben"
         />
         <BudgetCard
           title="Muss noch bezahlt werden"
           amount={budgets.expectedExpenses}
-          description="Rechnungen und Zusagen die noch von uns bezahlt werden müssen"
+          description="Geplante Ausgaben, die noch nicht überwiesen wurden"
         />
         <BudgetCard
           title="Kommt noch rein"
           amount={budgets.expectedIncome}
-          description="Zugesagtes Geld das noch nicht überwiesen wurde"
+          description="Geplante Einnahmen die noch nicht eingetroffen wurden"
         />
       </div>
 
       <div className="mt-4 lg:mt-6">
         <div className="flex flex-row justify-between my-4">
-          <h2 className="text-xl font-semibold ">Transaktionen</h2>
-          <div className="flex gap-2 items-center">
-            <Button variant="outline" onClick={openTransfer}>
-              Geld übertragen
-            </Button>
-          </div>
+          <h2 className="text-xl font-semibold">Transaktionen</h2>
+          <Button variant="outline" onClick={onOpenTransfer}>
+            Geld übertragen
+          </Button>
         </div>
         <EditableDataTable
           columns={editableColumnsWithoutProject}

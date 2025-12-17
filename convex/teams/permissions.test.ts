@@ -114,3 +114,44 @@ test("filters transactions by project access", async () => {
 
   expect(transactions).toHaveLength(1);
 });
+
+test("non-admin cannot access project not in their team", async () => {
+  const t = convexTest(schema, modules);
+  const { organizationId, userId } = await setupTestData(t);
+
+  const memberUserId = await t.run((ctx) =>
+    ctx.db.insert("users", {
+      email: "member@test.com",
+      organizationId,
+      role: "member",
+    }),
+  );
+
+  const unassignedProjectId = await t.run((ctx) =>
+    ctx.db.insert("projects", {
+      name: "Unassigned Project",
+      organizationId,
+      isArchived: false,
+      createdBy: userId,
+    }),
+  );
+
+  await t.run((ctx) =>
+    ctx.db.insert("transactions", {
+      organizationId,
+      projectId: unassignedProjectId,
+      date: Date.now(),
+      amount: 100,
+      description: "Test",
+      counterparty: "Test",
+      status: "processed",
+      importedBy: userId,
+    }),
+  );
+
+  const transactions = await t
+    .withIdentity({ subject: memberUserId })
+    .query(api.transactions.queries.getAllTransactions, {});
+
+  expect(transactions).toHaveLength(0);
+});

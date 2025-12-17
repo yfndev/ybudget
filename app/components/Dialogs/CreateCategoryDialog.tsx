@@ -29,13 +29,12 @@ type Taxsphere =
   | "purpose-operations"
   | "commercial-operations";
 
-export function CreateCategoryDialog({
-  open,
-  onOpenChange,
-}: {
+interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}) {
+}
+
+export function CreateCategoryDialog({ open, onOpenChange }: Props) {
   const [name, setName] = useState("");
   const [taxsphere, setTaxsphere] = useState<Taxsphere>("non-profit");
   const [parentId, setParentId] = useState<Id<"categories"> | undefined>();
@@ -106,7 +105,7 @@ export function CreateCategoryDialog({
 
           <div className="flex flex-col gap-2">
             <Label htmlFor="parent">
-              Übergeordnete Kategorie{" "}
+              Übergeordnete Kategorie
               <span className="text-muted-foreground font-normal">
                 (optional, für Unterkategorien)
               </span>

@@ -14,11 +14,16 @@ export default function TestAuthPage() {
   const [name, setName] = useState("Test User");
   const [status, setStatus] = useState("");
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setStatus("Authenticating...");
-    signIn("testing", { email, name })
-      .then(() => router.push("/dashboard"))
-      .catch((error) => setStatus(`Error: ${error.message}`));
+    try {
+      await signIn("testing", { email, name });
+      router.push("/dashboard");
+    } catch (error) {
+      setStatus(
+        `Error: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
+    }
   };
 
   return (

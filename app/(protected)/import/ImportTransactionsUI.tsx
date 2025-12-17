@@ -1,11 +1,11 @@
-import BudgetSplit from "@/components/ImportTransactions/BudgetSplit";
+import { BudgetSplit } from "@/components/ImportTransactions/BudgetSplit";
 import { ExpectedTransactionMatchesUI } from "@/components/ImportTransactions/ExpectedTransactionMatchesUI";
 import { ImportTransactionCardUI } from "@/components/ImportTransactions/ImportTransactionCardUI";
 import { PageHeader } from "@/components/Layout/PageHeader";
 import { Progress } from "@/components/ui/progress";
 import type { Doc } from "@/convex/_generated/dataModel";
 
-interface ImportTransactionsUIProps {
+interface Props {
   current: Doc<"transactions"> | null;
   index: number;
   totalCount: number;
@@ -19,13 +19,13 @@ interface ImportTransactionsUIProps {
   setCategoryId: (value: string) => void;
   setDonorId: (value: string) => void;
   handleExpectedTransactionSelect: (id: string) => void;
-  onSplitIncomeChange: (splitIncome: boolean) => void;
+  onSplitIncomeChange: (value: boolean) => void;
   onBudgetsChange: (
     budgets: Array<{ projectId: string; amount: number }>,
   ) => void;
 }
 
-export const ImportTransactionsUI = ({
+export function ImportTransactionsUI({
   current,
   index,
   totalCount,
@@ -41,7 +41,10 @@ export const ImportTransactionsUI = ({
   handleExpectedTransactionSelect,
   onSplitIncomeChange,
   onBudgetsChange,
-}: ImportTransactionsUIProps) => {
+}: Props) {
+  const hasMatches = expectedTransactions.length > 0;
+  const showBudgetSplit = splitIncome && current && current.amount > 0;
+
   if (totalCount === 0) {
     return (
       <div id="tour-import-page">
@@ -55,8 +58,6 @@ export const ImportTransactionsUI = ({
       </div>
     );
   }
-
-  const hasMatches = expectedTransactions.length > 0;
 
   return (
     <div id="tour-import-page">
@@ -99,7 +100,7 @@ export const ImportTransactionsUI = ({
               />
             )}
           </div>
-          {splitIncome && current && current.amount > 0 && (
+          {showBudgetSplit && (
             <div className="w-full max-w-md">
               <BudgetSplit
                 totalAmount={current.amount}
@@ -111,4 +112,4 @@ export const ImportTransactionsUI = ({
       </div>
     </div>
   );
-};
+}

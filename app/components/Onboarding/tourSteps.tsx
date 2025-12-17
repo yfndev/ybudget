@@ -53,19 +53,19 @@ export const tourSteps = [
             </p>
             <ul className="space-y-1 text-sm">
               <li>
-                <kbd className="px-1 py-0.5 bg-muted rounded text-xs">⌘E</kbd>{" "}
+                <kbd className="px-1 py-0.5 bg-muted rounded text-xs">⌘E</kbd>
                 Ausgabe planen
               </li>
               <li>
-                <kbd className="px-1 py-0.5 bg-muted rounded text-xs">⌘I</kbd>{" "}
+                <kbd className="px-1 py-0.5 bg-muted rounded text-xs">⌘I</kbd>
                 Einnahme planen
               </li>
               <li>
-                <kbd className="px-1 py-0.5 bg-muted rounded text-xs">⇧⌘P</kbd>{" "}
+                <kbd className="px-1 py-0.5 bg-muted rounded text-xs">⇧⌘P</kbd>
                 Projekt erstellen
               </li>
               <li>
-                <kbd className="px-1 py-0.5 bg-muted rounded text-xs">⇧⌘F</kbd>{" "}
+                <kbd className="px-1 py-0.5 bg-muted rounded text-xs">⇧⌘F</kbd>
                 Förderer hinzufügen
               </li>
             </ul>

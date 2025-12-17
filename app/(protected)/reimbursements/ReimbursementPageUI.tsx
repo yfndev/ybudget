@@ -1,0 +1,218 @@
+"use client";
+
+import { PageHeader } from "@/components/Layout/PageHeader";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Table,
+  TableBody,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Textarea } from "@/components/ui/textarea";
+import type { Doc, Id } from "@/convex/_generated/dataModel";
+import { Plus, Share2 } from "lucide-react";
+import { ReimbursementRow } from "../../components/Tables/Reimbursements/ReimbursementRow";
+
+type Reimbursement = Doc<"reimbursements"> & {
+  creatorName: string;
+  projectName: string;
+  travelDetails?: Doc<"travelDetails">;
+};
+
+type Allowance = Doc<"volunteerAllowance"> & {
+  creatorName: string;
+  projectName: string;
+  organizationName: string;
+};
+
+type RejectDialog = {
+  open: boolean;
+  type: "reimbursement" | "allowance";
+  id: Id<"reimbursements"> | Id<"volunteerAllowance"> | null;
+  note: string;
+};
+
+interface Props {
+  isAdmin: boolean;
+  isLoading: boolean;
+  reimbursements: Reimbursement[];
+  allowances: Allowance[];
+  rejectDialog: RejectDialog;
+  onNewClick: () => void;
+  onShareClick: () => void;
+  onRowClick: (id: Id<"reimbursements">) => void;
+  onApproveReimbursement: (id: Id<"reimbursements">) => void;
+  onApproveAllowance: (id: Id<"volunteerAllowance">) => void;
+  onOpenRejectDialog: (
+    type: "reimbursement" | "allowance",
+    id: Id<"reimbursements"> | Id<"volunteerAllowance">,
+  ) => void;
+  onRejectDialogChange: (dialog: RejectDialog) => void;
+  onReject: () => void;
+  onDownloadReimbursement: (id: Id<"reimbursements">) => void;
+  onDownloadAllowance: (allowance: Allowance) => void;
+  onDeleteReimbursement: (id: Id<"reimbursements">) => void;
+  onDeleteAllowance: (id: Id<"volunteerAllowance">) => void;
+}
+
+export function ReimbursementPageUI({
+  isAdmin,
+  isLoading,
+  reimbursements,
+  allowances,
+  rejectDialog,
+  onNewClick,
+  onShareClick,
+  onRowClick,
+  onApproveReimbursement,
+  onApproveAllowance,
+  onOpenRejectDialog,
+  onRejectDialogChange,
+  onReject,
+  onDownloadReimbursement,
+  onDownloadAllowance,
+  onDeleteReimbursement,
+  onDeleteAllowance,
+}: Props) {
+  const isEmpty = reimbursements.length === 0 && allowances.length === 0;
+
+  return (
+    <div className="flex flex-col w-full h-screen">
+      <PageHeader title="Erstattungen" />
+
+      <div className="flex justify-end gap-2 mb-4">
+        <Button variant="secondary" onClick={onNewClick}>
+          <Plus className="h-4 w-4 mr-2" />
+          Neue Erstattung
+        </Button>
+        <Button variant="secondary" onClick={onShareClick}>
+          <Share2 className="h-4 w-4 mr-2" />
+          Ehrenamtspauschale
+        </Button>
+      </div>
+
+      <div className="rounded-lg border bg-card">
+        {isLoading ? (
+          <div className="p-6 space-y-3">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="h-12 bg-muted animate-pulse rounded" />
+            ))}
+          </div>
+        ) : isEmpty ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">
+              Keine Erstattungen gefunden.
+            </p>
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[30px]" />
+                <TableHead>Datum</TableHead>
+                <TableHead>Projekt</TableHead>
+                <TableHead>Beschreibung</TableHead>
+                {isAdmin && <TableHead>Ersteller</TableHead>}
+                <TableHead className="text-right">Betrag</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right" />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {reimbursements.map((item) => (
+                <ReimbursementRow
+                  key={item._id}
+                  item={item}
+                  isAdmin={isAdmin}
+                  description={
+                    item.type === "travel" ? (
+                      <div>
+                        <span>Reisekostenerstattung</span>
+                        {item.travelDetails?.destination && (
+                          <span className="block text-xs">
+                            {item.travelDetails.destination}
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      "Auslagenerstattung"
+                    )
+                  }
+                  onClick={() => onRowClick(item._id)}
+                  onApprove={() => onApproveReimbursement(item._id)}
+                  onReject={() => onOpenRejectDialog("reimbursement", item._id)}
+                  onDownload={() => onDownloadReimbursement(item._id)}
+                  onDelete={() => onDeleteReimbursement(item._id)}
+                />
+              ))}
+
+              {allowances.map((item) => (
+                <ReimbursementRow
+                  key={item._id}
+                  item={item}
+                  isAdmin={isAdmin}
+                  description={
+                    <div>
+                      <span>Ehrenamtspauschale</span>
+                      <span className="block text-xs">
+                        {item.volunteerName}
+                      </span>
+                    </div>
+                  }
+                  onApprove={() => onApproveAllowance(item._id)}
+                  onReject={() => onOpenRejectDialog("allowance", item._id)}
+                  onDownload={() => onDownloadAllowance(item)}
+                  onDelete={() => onDeleteAllowance(item._id)}
+                />
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </div>
+
+      <Dialog
+        open={rejectDialog.open}
+        onOpenChange={(open) => onRejectDialogChange({ ...rejectDialog, open })}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Ablehnen</DialogTitle>
+            <DialogDescription>
+              Bitte gib einen Grund für die Ablehnung ein.
+            </DialogDescription>
+          </DialogHeader>
+          <Textarea
+            value={rejectDialog.note}
+            onChange={(e) =>
+              onRejectDialogChange({ ...rejectDialog, note: e.target.value })
+            }
+            placeholder="Grund für die Ablehnung..."
+            rows={4}
+          />
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() =>
+                onRejectDialogChange({ ...rejectDialog, open: false })
+              }
+            >
+              Abbrechen
+            </Button>
+            <Button onClick={onReject} disabled={!rejectDialog.note}>
+              Ablehnen
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}

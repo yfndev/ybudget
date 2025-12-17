@@ -4,7 +4,7 @@ import { CreateProjectDialog } from "@/components/Dialogs/CreateProjectDialog";
 import { CreateTeamDialog } from "@/components/Dialogs/CreateTeamDialog";
 import { PageHeader } from "@/components/Layout/PageHeader";
 import { AccessDenied } from "@/components/Settings/AccessDenied";
-import TeamRow from "@/components/Tables/TeamTable/TeamRow";
+import { TeamRow } from "@/components/Tables/Teams/TeamRow";
 import { Button } from "@/components/ui/button";
 import {
   Table,

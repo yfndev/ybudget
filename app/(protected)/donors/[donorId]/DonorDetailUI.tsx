@@ -1,16 +1,14 @@
-import BudgetCard from "@/components/Dashboard/BudgetCard";
+import { BudgetCard } from "@/components/Dashboard/BudgetCard";
 import { donorTypeLabels } from "@/components/Donors/DonorCard";
 import { PageHeader } from "@/components/Layout/PageHeader";
-import { editableColumnsWithoutProject } from "@/components/Tables/TransactionTable/EditableColumns";
-import { EditableDataTable } from "@/components/Tables/TransactionTable/EditableDataTable";
+import { editableColumnsWithoutProject } from "@/components/Tables/Transactions/EditableColumns";
+import { EditableDataTable } from "@/components/Tables/Transactions/EditableDataTable";
 import { Button } from "@/components/ui/button";
-import { api } from "@/convex/_generated/api";
-import { Doc, Id } from "@/convex/_generated/dataModel";
-import { useQuery } from "convex-helpers/react/cache";
-import { PaginationStatus } from "convex/react";
+import type { Doc } from "@/convex/_generated/dataModel";
+import type { PaginationStatus } from "convex/react";
 import { CSVLink } from "react-csv";
 
-interface DonorDetailUIProps {
+interface Props {
   donor: Doc<"donors"> & {
     committedIncome: number;
     paidIncome: number;
@@ -18,10 +16,11 @@ interface DonorDetailUIProps {
     totalExpenses: number;
   };
   transactions: Doc<"transactions">[];
-  handleUpdate: (rowId: string, field: string, value: any) => Promise<void>;
-  handleDelete: (rowId: string) => Promise<void>;
   status: PaginationStatus;
+  onUpdate: (rowId: string, field: string, value: unknown) => Promise<void>;
+  onDelete: (rowId: string) => Promise<void>;
 }
+
 const csvHeaders = [
   { label: "Datum", key: "date" },
   { label: "Betrag", key: "amount" },
@@ -31,33 +30,28 @@ const csvHeaders = [
   { label: "Status", key: "status" },
 ];
 
-export default function DonorDetailUI({
+export function DonorDetailUI({
   donor,
   transactions,
-  handleUpdate,
-  handleDelete,
   status,
-}: DonorDetailUIProps) {
-  const donorTransactions = useQuery(api.donors.queries.getDonorTransactions, {
-    donorId: donor._id as Id<"donors">,
-  });
-
-  const csvData =
-    donorTransactions?.map((t) => ({
-      date: new Date(t.date).toISOString(),
-      amount: t.amount,
-      description: t.description,
-      counterparty: t.counterparty,
-      accountName: t.accountName,
-      status: t.status,
-    })) ?? [];
+  onUpdate,
+  onDelete,
+}: Props) {
+  const csvData = transactions.map((transaction) => ({
+    date: new Date(transaction.date).toISOString(),
+    amount: transaction.amount,
+    description: transaction.description,
+    counterparty: transaction.counterparty,
+    accountName: transaction.accountName ?? "",
+    status: transaction.status,
+  }));
 
   return (
     <div>
       <PageHeader
         title={donor.name}
         subtitle={donorTypeLabels[donor.type] ?? donor.type}
-        showBackButton={true}
+        showBackButton
         backUrl="/donors"
       />
 
@@ -87,8 +81,8 @@ export default function DonorDetailUI({
         <EditableDataTable
           columns={editableColumnsWithoutProject}
           data={transactions}
-          onUpdate={handleUpdate}
-          onDelete={handleDelete}
+          onUpdate={onUpdate}
+          onDelete={onDelete}
           paginationStatus={status}
         />
       </div>

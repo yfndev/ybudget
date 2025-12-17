@@ -1,9 +1,10 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
-import { forwardRef, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
-interface DateInputProps {
+interface Props {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
@@ -11,18 +12,18 @@ interface DateInputProps {
   id?: string;
 }
 
-function formatDisplayDate(iso: string): string {
+function isoToDisplay(iso: string): string {
   if (!iso) return "";
   const [year, month, day] = iso.split("-");
   if (!year || !month || !day) return "";
   return `${day}.${month}.${year}`;
 }
 
-function parseToIso(display: string): string {
+function displayToIso(display: string): string {
   const parts = display.split(".");
   if (parts.length !== 3) return "";
 
-  let [dayStr, monthStr, yearStr] = parts;
+  const [dayStr, monthStr, yearStr] = parts;
   if (!dayStr || !monthStr || !yearStr) return "";
 
   const day = dayStr.padStart(2, "0");
@@ -34,71 +35,77 @@ function parseToIso(display: string): string {
     year = twoDigit <= 50 ? `20${yearStr.padStart(2, "0")}` : `19${yearStr}`;
   }
 
-  const d = parseInt(day, 10);
-  const m = parseInt(month, 10);
-  const y = parseInt(year, 10);
-  const currentYear = new Date().getFullYear();
+  const dayNum = parseInt(day, 10);
+  const monthNum = parseInt(month, 10);
+  const yearNum = parseInt(year, 10);
 
-  if (d < 1 || d > 31 || m < 1 || m > 12 || y < 2000 || y > currentYear)
+  if (
+    dayNum < 1 ||
+    dayNum > 31 ||
+    monthNum < 1 ||
+    monthNum > 12 ||
+    yearNum < 2000 ||
+    yearNum > 2100
+  ) {
     return "";
+  }
 
   return `${year}-${month}-${day}`;
 }
 
-function formatAsUserTypes(input: string): string {
-  return input.replace(/[^\d.]/g, "");
+function formatWhileTyping(input: string): string {
+  const digits = input.replace(/\D/g, "");
+  if (digits.length <= 2) return digits;
+  if (digits.length <= 4) return `${digits.slice(0, 2)}.${digits.slice(2)}`;
+  return `${digits.slice(0, 2)}.${digits.slice(2, 4)}.${digits.slice(4, 8)}`;
 }
 
-export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(
-  ({ value, onChange, placeholder = "TT.MM.JJJJ", className, id }, ref) => {
-    const [displayValue, setDisplayValue] = useState(() =>
-      formatDisplayDate(value),
-    );
-    const [isFocused, setIsFocused] = useState(false);
+export function DateInput({
+  value,
+  onChange,
+  placeholder = "TT.MM.JJJJ",
+  className,
+  id,
+}: Props) {
+  const [displayValue, setDisplayValue] = useState(() => isoToDisplay(value));
+  const [isFocused, setIsFocused] = useState(false);
 
-    useEffect(() => {
-      if (!isFocused) {
-        setDisplayValue(formatDisplayDate(value));
-      }
-    }, [value, isFocused]);
+  useEffect(() => {
+    if (!isFocused) {
+      setDisplayValue(isoToDisplay(value));
+    }
+  }, [value, isFocused]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const raw = e.target.value;
-      const formatted = formatAsUserTypes(raw);
-      setDisplayValue(formatted);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value;
+    setDisplayValue(formatWhileTyping(raw));
+    if (raw === "") onChange("");
+  };
 
-      if (raw === "") {
-        onChange("");
-      }
-    };
+  const handleBlur = () => {
+    setIsFocused(false);
+    const iso = displayToIso(displayValue);
+    if (iso) {
+      setDisplayValue(isoToDisplay(iso));
+      onChange(iso);
+    } else if (displayValue && displayValue.replace(/\D/g, "").length > 0) {
+      toast.error("Ungültiges Datum");
+      setDisplayValue(isoToDisplay(value));
+    }
+  };
 
-    const handleBlur = () => {
-      setIsFocused(false);
-      const iso = parseToIso(displayValue);
-      if (iso) {
-        setDisplayValue(formatDisplayDate(iso));
-        onChange(iso);
-      } else if (displayValue && displayValue.replace(/\D/g, "").length > 0) {
-        setDisplayValue(formatDisplayDate(value));
-      }
-    };
-
-    return (
-      <Input
-        ref={ref}
-        id={id}
-        type="text"
-        inputMode="numeric"
-        value={displayValue}
-        onChange={handleChange}
-        onFocus={() => setIsFocused(true)}
-        onBlur={handleBlur}
-        placeholder={placeholder}
-        className={className}
-        maxLength={10}
-      />
-    );
-  },
-);
-
-DateInput.displayName = "DateInput";
+  return (
+    <Input
+      id={id}
+      type="text"
+      inputMode="numeric"
+      value={displayValue}
+      onChange={handleChange}
+      onFocus={() => setIsFocused(true)}
+      onBlur={handleBlur}
+      placeholder={placeholder}
+      className={className}
+      maxLength={10}
+    />
+  );
+}

@@ -1,4 +1,3 @@
-import { Card } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/formatters/formatCurrency";
 
 interface BudgetCardTypes {
@@ -7,22 +6,16 @@ interface BudgetCardTypes {
   description?: string;
 }
 
-const BudgetCard = ({ title, amount, description }: BudgetCardTypes) => {
+export function BudgetCard({ title, amount, description }: BudgetCardTypes) {
   return (
-    <Card className="w-full p-4">
-      <div className="flex justify-between items-start">
-        <div className="flex flex-col">
-          <h3 className="text-base font-semibold">{title}</h3>
-          {description && (
-            <p className="text-xs text-muted-foreground mt-1">{description}</p>
-          )}
-        </div>
-      </div>
-      <div className="mt-auto">
-        <span className="text-3xl font-semibold">{formatCurrency(amount)}</span>
-      </div>
-    </Card>
+    <div className="border rounded-lg w-full p-3 sm:p-4 flex flex-col h-full">
+      <h3 className="text-sm sm:text-base font-semibold">{title}</h3>
+      <p className="text-xs text-muted-foreground hidden sm:block sm:min-h-[2.5rem]">
+        {description}
+      </p>
+      <span className="text-xl sm:text-2xl lg:text-3xl font-semibold mt-auto">
+        {formatCurrency(amount)}
+      </span>
+    </div>
   );
-};
-
-export default BudgetCard;
+}

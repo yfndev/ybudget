@@ -1,18 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import {
-  ChevronsUpDown,
-  CreditCard,
-  Handshake,
-  LogOut,
-  ScrollText,
-  Users,
-} from "lucide-react";
-import { useAction, useQuery } from "convex/react";
-
-import { SignOut } from "@/components/Auth/LogoutButton";
 import { Paywall } from "@/components/Payment/Paywall";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -33,6 +20,41 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/convex/_generated/api";
 import type { Doc } from "@/convex/_generated/dataModel";
+import { useAction, useQuery } from "convex/react";
+import {
+  ChevronsUpDown,
+  CreditCard,
+  Handshake,
+  ScrollText,
+  Users,
+} from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+import { LogoutButton } from "../Auth/LogoutButton";
+
+function UserAvatar({ user }: { user: Doc<"users"> }) {
+  return (
+    <Avatar className="h-8 w-8 rounded-lg">
+      <AvatarImage
+        src={user.image}
+        alt={user.name}
+        referrerPolicy="no-referrer"
+      />
+      <AvatarFallback className="rounded-lg">
+        {user.name?.charAt(0).toUpperCase()}
+      </AvatarFallback>
+    </Avatar>
+  );
+}
+
+function UserInfo({ user }: { user: Doc<"users"> }) {
+  return (
+    <div className="grid flex-1 text-left text-sm leading-tight">
+      <span className="truncate font-medium">{user.name}</span>
+      <span className="truncate text-xs">{user.email}</span>
+    </div>
+  );
+}
 
 export function NavUser({ user }: { user: Doc<"users"> | null | undefined }) {
   const [paywallOpen, setPaywallOpen] = useState(false);
@@ -49,9 +71,8 @@ export function NavUser({ user }: { user: Doc<"users"> | null | undefined }) {
     try {
       const portalUrl = await createPortalSession();
       window.location.href = portalUrl;
-    } catch (err) {
+    } catch {
       setIsLoadingPortal(false);
-      console.error("Failed to create portal session: " + err);
     }
   };
 
@@ -82,20 +103,8 @@ export function NavUser({ user }: { user: Doc<"users"> | null | undefined }) {
                 size="lg"
                 className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
               >
-                <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage
-                    src={user.image}
-                    alt={user.name}
-                    referrerPolicy="no-referrer"
-                  />
-                  <AvatarFallback className="rounded-lg">
-                    {user.name?.charAt(0).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.name}</span>
-                  <span className="truncate text-xs">{user.email}</span>
-                </div>
+                <UserAvatar user={user} />
+                <UserInfo user={user} />
                 <ChevronsUpDown className="ml-auto size-4" />
               </SidebarMenuButton>
             </DropdownMenuTrigger>
@@ -107,20 +116,8 @@ export function NavUser({ user }: { user: Doc<"users"> | null | undefined }) {
             >
               <DropdownMenuLabel className="p-0 font-normal">
                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                  <Avatar className="h-8 w-8 rounded-lg">
-                    <AvatarImage
-                      src={user.image}
-                      alt={user.name}
-                      referrerPolicy="no-referrer"
-                    />
-                    <AvatarFallback className="rounded-lg">
-                      {user.name?.charAt(0).toUpperCase() ?? ""}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-medium">{user.name}</span>
-                    <span className="truncate text-xs">{user.email}</span>
-                  </div>
+                  <UserAvatar user={user} />
+                  <UserInfo user={user} />
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
@@ -164,8 +161,7 @@ export function NavUser({ user }: { user: Doc<"users"> | null | undefined }) {
                 </>
               )}
               <DropdownMenuItem>
-                <LogOut />
-                <SignOut>Abmelden</SignOut>
+                <LogoutButton>Abmelden</LogoutButton>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
