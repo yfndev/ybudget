@@ -19,21 +19,37 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import type { EnrichedTransaction } from "@/lib/calculations/transactionFilters";
 import {
+  type Cell,
   type ColumnDef,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
+  type Row,
   type SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 
-interface Props<T> {
-  columns: ColumnDef<T>[];
-  data: T[];
-  onUpdate?: (rowId: string, field: string, value: any) => Promise<void>;
+type TableRow = Row<EnrichedTransaction>;
+type TableCell = Cell<EnrichedTransaction, unknown>;
+
+export interface TableMeta {
+  editingRows: Set<string>;
+  setEditingRows: React.Dispatch<React.SetStateAction<Set<string>>>;
+  onUpdate: (rowId: string, field: string, value: unknown) => Promise<void>;
+  onSave: (rowId: string) => void;
+  onStopEditing: (rowId: string) => void;
+  onDelete: (rowId: string) => void;
+  isUpdating: boolean;
+}
+
+interface Props {
+  columns: ColumnDef<EnrichedTransaction>[];
+  data: EnrichedTransaction[];
+  onUpdate?: (rowId: string, field: string, value: unknown) => Promise<void>;
   onDelete?: (rowId: string) => Promise<void>;
   paginationStatus?:
     | "Loading"
@@ -44,14 +60,14 @@ interface Props<T> {
   loadMore?: () => void;
 }
 
-export function EditableDataTable<T extends { _id: string }>({
+export function EditableDataTable({
   columns,
   data,
   onUpdate,
   onDelete,
   paginationStatus,
   loadMore,
-}: Props<T>) {
+}: Props) {
   const [sorting, setSorting] = useState<SortingState>([
     { id: "date", desc: true },
   ]);
@@ -77,7 +93,7 @@ export function EditableDataTable<T extends { _id: string }>({
     });
   };
 
-  const handleUpdate = async (rowId: string, field: string, value: any) => {
+  const handleUpdate = async (rowId: string, field: string, value: unknown) => {
     if (!onUpdate) return;
     setIsUpdating(true);
     try {
@@ -161,7 +177,7 @@ export function EditableDataTable<T extends { _id: string }>({
           <TableBody>
             <TableContent
               rows={rows}
-              columns={columns}
+              columnCount={columns.length}
               isLoading={isLoading}
               hasNextPage={hasNextPage}
               scrollRef={scrollRef}
@@ -198,23 +214,25 @@ export function EditableDataTable<T extends { _id: string }>({
   );
 }
 
-function TableContent({
-  rows,
-  columns,
-  isLoading,
-  hasNextPage,
-  scrollRef,
-  editingRows,
-  onStartEditing,
-}: {
-  rows: any[];
-  columns: any[];
+interface TableContentProps {
+  rows: TableRow[];
+  columnCount: number;
   isLoading: boolean;
   hasNextPage: boolean;
   scrollRef: React.RefObject<HTMLTableRowElement | null>;
   editingRows: Set<string>;
   onStartEditing: (rowId: string) => void;
-}) {
+}
+
+function TableContent({
+  rows,
+  columnCount,
+  isLoading,
+  hasNextPage,
+  scrollRef,
+  editingRows,
+  onStartEditing,
+}: TableContentProps) {
   if (rows.length > 0) {
     return (
       <>
@@ -228,7 +246,7 @@ function TableContent({
               onDoubleClick={() => !isEditing && onStartEditing(rowId)}
               className={isEditing ? "" : "cursor-pointer"}
             >
-              {row.getVisibleCells().map((cell: any) => (
+              {row.getVisibleCells().map((cell: TableCell) => (
                 <TableCell key={cell.id}>
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </TableCell>
@@ -238,7 +256,7 @@ function TableContent({
         })}
         {hasNextPage && (
           <TableRow ref={scrollRef}>
-            <TableCell colSpan={columns.length} className="h-16 text-center">
+            <TableCell colSpan={columnCount} className="h-16 text-center">
               {isLoading ? "Lade mehr..." : ""}
             </TableCell>
           </TableRow>
@@ -252,7 +270,7 @@ function TableContent({
       <>
         {[1, 2, 3, 4, 5].map((rowIndex) => (
           <TableRow key={rowIndex}>
-            {columns.map((_, colIndex) => (
+            {Array.from({ length: columnCount }).map((_, colIndex) => (
               <TableCell key={colIndex}>
                 <Skeleton className="h-4 w-full" />
               </TableCell>
@@ -265,7 +283,7 @@ function TableContent({
 
   return (
     <TableRow>
-      <TableCell colSpan={columns.length} className="h-24 text-center">
+      <TableCell colSpan={columnCount} className="h-24 text-center">
         Keine Ergebnisse
       </TableCell>
     </TableRow>
