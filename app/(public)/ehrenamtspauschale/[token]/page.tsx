@@ -16,21 +16,13 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 
 export default function ExternalEhrenamtspauschalePage() {
-  const params = useParams();
-  const token = params.token as string;
+  const { token } = useParams<{ token: string }>();
 
-  const tokenData = useQuery(api.volunteerAllowance.queries.validateToken, {
-    token,
-  });
-  const generateUploadUrl = useMutation(
-    api.volunteerAllowance.functions.generatePublicUploadUrl
-  );
-  const submitExternal = useMutation(
-    api.volunteerAllowance.functions.submitExternal
-  );
+  const tokenData = useQuery(api.volunteerAllowance.queries.validateToken, { token });
+  const generateUploadUrl = useMutation(api.volunteerAllowance.functions.generatePublicUploadUrl);
+  const submitExternal = useMutation(api.volunteerAllowance.functions.submitExternal);
 
-  const [signatureStorageId, setSignatureStorageId] =
-    useState<Id<"_storage"> | null>(null);
+  const [signatureStorageId, setSignatureStorageId] = useState<Id<"_storage"> | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -49,11 +41,11 @@ export default function ExternalEhrenamtspauschalePage() {
     confirmation: false,
   });
 
-  if (
-    tokenData?.valid &&
-    !form.activityDescription &&
-    tokenData.activityDescription
-  ) {
+  const updateField = (field: string, value: string | boolean) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  if (tokenData?.valid && !form.activityDescription && tokenData.activityDescription) {
     setForm((prev) => ({
       ...prev,
       activityDescription: tokenData.activityDescription || "",
@@ -63,40 +55,18 @@ export default function ExternalEhrenamtspauschalePage() {
   }
 
   const handleSubmit = async () => {
-    if (
-      !form.volunteerName ||
-      !form.volunteerStreet ||
-      !form.volunteerPlz ||
-      !form.volunteerCity
-    ) {
-      toast.error("Bitte alle persönlichen Daten ausfüllen");
-      return;
+    if (!form.volunteerName || !form.volunteerStreet || !form.volunteerPlz || !form.volunteerCity) {
+      return toast.error("Bitte alle persönlichen Daten ausfüllen");
     }
     if (!form.activityDescription || !form.startDate || !form.endDate) {
-      toast.error("Bitte Tätigkeit und Zeitraum angeben");
-      return;
+      return toast.error("Bitte Tätigkeit und Zeitraum angeben");
     }
     const amount = parseFloat(form.amount);
-    if (!amount || amount <= 0) {
-      toast.error("Bitte einen gültigen Betrag eingeben");
-      return;
-    }
-    if (amount > 840) {
-      toast.error("Ehrenamtspauschale darf 840€ nicht überschreiten");
-      return;
-    }
-    if (!form.iban || !form.bic || !form.accountHolder) {
-      toast.error("Bitte Bankdaten ausfüllen");
-      return;
-    }
-    if (!form.confirmation) {
-      toast.error("Bitte die Bestätigung ankreuzen");
-      return;
-    }
-    if (!signatureStorageId) {
-      toast.error("Bitte unterschreiben");
-      return;
-    }
+    if (!amount || amount <= 0) return toast.error("Bitte einen gültigen Betrag eingeben");
+    if (amount > 840) return toast.error("Ehrenamtspauschale darf 840€ nicht überschreiten");
+    if (!form.iban || !form.bic || !form.accountHolder) return toast.error("Bitte Bankdaten ausfüllen");
+    if (!form.confirmation) return toast.error("Bitte die Bestätigung ankreuzen");
+    if (!signatureStorageId) return toast.error("Bitte unterschreiben");
 
     setIsSubmitting(true);
     try {
@@ -117,9 +87,7 @@ export default function ExternalEhrenamtspauschalePage() {
       });
       setSubmitted(true);
     } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Fehler beim Einreichen"
-      );
+      toast.error(error instanceof Error ? error.message : "Fehler beim Einreichen");
     } finally {
       setIsSubmitting(false);
     }
@@ -152,8 +120,8 @@ export default function ExternalEhrenamtspauschalePage() {
           <CheckCircle2 className="size-16 text-green-500 mx-auto mb-4" />
           <h1 className="text-2xl font-bold mb-2">Erfolgreich eingereicht</h1>
           <p className="text-muted-foreground">
-            Deine Ehrenamtspauschale wurde erfolgreich eingereicht. Du kannst
-            dieses Fenster jetzt schließen.
+            Deine Ehrenamtspauschale wurde erfolgreich eingereicht. Du kannst dieses Fenster jetzt
+            schließen.
           </p>
         </div>
       </div>
@@ -177,9 +145,7 @@ export default function ExternalEhrenamtspauschalePage() {
               <Label>Name *</Label>
               <Input
                 value={form.volunteerName}
-                onChange={(e) =>
-                  setForm({ ...form, volunteerName: e.target.value })
-                }
+                onChange={(e) => updateField("volunteerName", e.target.value)}
                 placeholder="Vor- und Nachname"
               />
             </div>
@@ -187,9 +153,7 @@ export default function ExternalEhrenamtspauschalePage() {
               <Label>Straße und Hausnummer *</Label>
               <Input
                 value={form.volunteerStreet}
-                onChange={(e) =>
-                  setForm({ ...form, volunteerStreet: e.target.value })
-                }
+                onChange={(e) => updateField("volunteerStreet", e.target.value)}
                 placeholder="Musterstraße 123"
               />
             </div>
@@ -197,9 +161,7 @@ export default function ExternalEhrenamtspauschalePage() {
               <Label>PLZ *</Label>
               <Input
                 value={form.volunteerPlz}
-                onChange={(e) =>
-                  setForm({ ...form, volunteerPlz: e.target.value })
-                }
+                onChange={(e) => updateField("volunteerPlz", e.target.value)}
                 placeholder="12345"
               />
             </div>
@@ -207,9 +169,7 @@ export default function ExternalEhrenamtspauschalePage() {
               <Label>Ort *</Label>
               <Input
                 value={form.volunteerCity}
-                onChange={(e) =>
-                  setForm({ ...form, volunteerCity: e.target.value })
-                }
+                onChange={(e) => updateField("volunteerCity", e.target.value)}
                 placeholder="Musterstadt"
               />
             </div>
@@ -222,9 +182,7 @@ export default function ExternalEhrenamtspauschalePage() {
             <Label>Beschreibung der nebenberuflichen Tätigkeit *</Label>
             <Textarea
               value={form.activityDescription}
-              onChange={(e) =>
-                setForm({ ...form, activityDescription: e.target.value })
-              }
+              onChange={(e) => updateField("activityDescription", e.target.value)}
               placeholder="z.B. Übungsleiter, Jugendarbeit, Vorstandstätigkeit"
               rows={3}
               className="resize-none"
@@ -236,9 +194,7 @@ export default function ExternalEhrenamtspauschalePage() {
               <Input
                 type="date"
                 value={form.startDate}
-                onChange={(e) =>
-                  setForm({ ...form, startDate: e.target.value })
-                }
+                onChange={(e) => updateField("startDate", e.target.value)}
               />
             </div>
             <div>
@@ -246,7 +202,7 @@ export default function ExternalEhrenamtspauschalePage() {
               <Input
                 type="date"
                 value={form.endDate}
-                onChange={(e) => setForm({ ...form, endDate: e.target.value })}
+                onChange={(e) => updateField("endDate", e.target.value)}
               />
             </div>
           </div>
@@ -261,7 +217,7 @@ export default function ExternalEhrenamtspauschalePage() {
               step="0.01"
               max="840"
               value={form.amount}
-              onChange={(e) => setForm({ ...form, amount: e.target.value })}
+              onChange={(e) => updateField("amount", e.target.value)}
               placeholder="0,00"
             />
           </div>
@@ -274,9 +230,7 @@ export default function ExternalEhrenamtspauschalePage() {
               <Label>Kontoinhaber *</Label>
               <Input
                 value={form.accountHolder}
-                onChange={(e) =>
-                  setForm({ ...form, accountHolder: e.target.value })
-                }
+                onChange={(e) => updateField("accountHolder", e.target.value)}
                 placeholder="Max Mustermann"
               />
             </div>
@@ -284,7 +238,7 @@ export default function ExternalEhrenamtspauschalePage() {
               <Label>IBAN *</Label>
               <Input
                 value={form.iban}
-                onChange={(e) => setForm({ ...form, iban: e.target.value })}
+                onChange={(e) => updateField("iban", e.target.value)}
                 placeholder="DE89 3704 0044 0532 0130 00"
                 className="font-mono"
               />
@@ -293,7 +247,7 @@ export default function ExternalEhrenamtspauschalePage() {
               <Label>BIC *</Label>
               <Input
                 value={form.bic}
-                onChange={(e) => setForm({ ...form, bic: e.target.value })}
+                onChange={(e) => updateField("bic", e.target.value)}
                 placeholder="COBADEFFXXX"
                 className="font-mono"
               />
@@ -309,16 +263,13 @@ export default function ExternalEhrenamtspauschalePage() {
             <Checkbox
               id="confirmation"
               checked={form.confirmation}
-              onCheckedChange={(checked) =>
-                setForm({ ...form, confirmation: checked === true })
-              }
+              onCheckedChange={(checked) => updateField("confirmation", checked === true)}
             />
             <Label htmlFor="confirmation" className="text-sm leading-relaxed">
-              Ich erkläre, dass die Steuerbefreiung nach § 3 Nr. 26a EStG für
-              nebenberufliche ehrenamtliche Tätigkeit in voller Höhe von 840,00
-              Euro in Anspruch genommen werden kann. Sollte sich im Lauf des
-              Jahres eine Änderung ergeben, informiere ich hierüber unverzüglich
-              den Verein.
+              Ich erkläre, dass die Steuerbefreiung nach § 3 Nr. 26a EStG für nebenberufliche
+              ehrenamtliche Tätigkeit in voller Höhe von 840,00 Euro in Anspruch genommen werden
+              kann. Sollte sich im Lauf des Jahres eine Änderung ergeben, informiere ich hierüber
+              unverzüglich den Verein.
             </Label>
           </div>
         </div>
@@ -338,9 +289,7 @@ export default function ExternalEhrenamtspauschalePage() {
           size="lg"
           disabled={isSubmitting}
         >
-          {isSubmitting ? (
-            <Loader2 className="size-5 animate-spin mr-2" />
-          ) : null}
+          {isSubmitting && <Loader2 className="size-5 animate-spin mr-2" />}
           Einreichen
         </Button>
       </div>
