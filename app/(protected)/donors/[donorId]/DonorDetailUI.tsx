@@ -1,4 +1,4 @@
-import BudgetCard from "@/components/Dashboard/BudgetCard";
+import { BudgetCard } from "@/components/Dashboard/BudgetCard";
 import { donorTypeLabels } from "@/components/Donors/DonorCard";
 import { PageHeader } from "@/components/Layout/PageHeader";
 import { editableColumnsWithoutProject } from "@/components/Tables/Transactions/EditableColumns";
@@ -30,7 +30,7 @@ const csvHeaders = [
   { label: "Status", key: "status" },
 ];
 
-export default function DonorDetailUI({
+export function DonorDetailUI({
   donor,
   transactions,
   status,

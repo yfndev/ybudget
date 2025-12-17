@@ -1,4 +1,4 @@
-import BudgetCard from "@/components/Dashboard/BudgetCard";
+import { BudgetCard } from "@/components/Dashboard/BudgetCard";
 import { PageHeader } from "@/components/Layout/PageHeader";
 import { editableColumnsWithoutProject } from "@/components/Tables/Transactions/EditableColumns";
 import { EditableDataTable } from "@/components/Tables/Transactions/EditableDataTable";

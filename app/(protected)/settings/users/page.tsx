@@ -4,7 +4,7 @@ import { CreateTeamDialog } from "@/components/Dialogs/CreateTeamDialog";
 import { InviteUserDialog } from "@/components/Dialogs/InviteUserDialog";
 import { PageHeader } from "@/components/Layout/PageHeader";
 import { AccessDenied } from "@/components/Settings/AccessDenied";
-import UserRow from "@/components/Tables/Users/UserRow";
+import { UserRow } from "@/components/Tables/Users/UserRow";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -36,7 +36,7 @@ export default function UsersPage() {
       toast.success("Rolle erfolgreich aktualisiert");
     } catch (error) {
       toast.error(
-        "Fehler beim Aktualisieren der Rolle. Mindestens ein Admin ist erforderlich.",
+        "Fehler beim Aktualisieren der Rolle. Mindestens ein Admin ist erforderlich."
       );
     }
   };

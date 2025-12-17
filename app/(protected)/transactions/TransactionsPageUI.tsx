@@ -13,11 +13,15 @@ interface Props {
   transactions: EnrichedTransaction[];
   status: PaginationStatus;
   loadMore: () => void;
-  onUpdateTransaction: (rowId: string, field: string, value: unknown) => Promise<void>;
+  onUpdateTransaction: (
+    rowId: string,
+    field: string,
+    value: unknown
+  ) => Promise<void>;
   onDeleteTransaction: (rowId: string) => Promise<void>;
 }
 
-export default function TransactionsPageUI({
+export function TransactionsPageUI({
   selectedDateRange,
   transactions,
   status,
@@ -29,7 +33,8 @@ export default function TransactionsPageUI({
     <div className="flex flex-col w-full h-screen">
       <PageHeader title="Transaktionen" showRangeCalendar />
       <div className="text-sm text-muted-foreground pb-4">
-        {formatDate(selectedDateRange.from)} - {formatDate(selectedDateRange.to)}
+        {formatDate(selectedDateRange.from)} -{" "}
+        {formatDate(selectedDateRange.to)}
       </div>
       <div id="tour-transactions-table">
         <EditableDataTable

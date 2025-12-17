@@ -64,7 +64,7 @@ interface Props {
   onDeleteAllowance: (id: Id<"volunteerAllowance">) => void;
 }
 
-export default function ReimbursementPageUI({
+export  function ReimbursementPageUI({
   isAdmin,
   isLoading,
   reimbursements,

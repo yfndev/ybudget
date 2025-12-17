@@ -4,8 +4,8 @@ import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { useMutation, usePaginatedQuery, useQuery } from "convex/react";
 import { useParams } from "next/navigation";
-import DonorDetailSkeleton from "./DonorDetailSkeleton";
-import DonorDetailUI from "./DonorDetailUI";
+import { DonorDetailSkeleton } from "./DonorDetailSkeleton";
+import { DonorDetailUI } from "./DonorDetailUI";
 
 export default function DonorDetailPage() {
   const { donorId } = useParams<{ donorId: Id<"donors"> }>();
@@ -14,14 +14,14 @@ export default function DonorDetailPage() {
   const { results: transactions, status } = usePaginatedQuery(
     api.transactions.queries.getPaginatedTransactions,
     { donorId },
-    { initialNumItems: 50 },
+    { initialNumItems: 50 }
   );
 
   const updateTransaction = useMutation(
-    api.transactions.functions.updateTransaction,
+    api.transactions.functions.updateTransaction
   );
   const deleteTransaction = useMutation(
-    api.transactions.functions.deleteExpectedTransaction,
+    api.transactions.functions.deleteExpectedTransaction
   );
 
   const handleUpdate = async (rowId: string, field: string, value: unknown) => {

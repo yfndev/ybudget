@@ -9,7 +9,7 @@ const BudgetCardSkeleton = () => (
   </div>
 );
 
-export default function ProjectDashboardSkeleton() {
+export function ProjectDashboardSkeleton() {
   return (
     <div>
       <PageHeader title="" showBackButton />
