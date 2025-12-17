@@ -30,7 +30,7 @@ export const AmountInput = forwardRef<
       onTabPressed,
       onKeyDown,
     },
-    ref,
+    ref
   ) => {
     const valueColor = value ? "text-foreground" : "text-muted-foreground";
 
@@ -64,7 +64,7 @@ export const AmountInput = forwardRef<
         </InputGroupAddon>
       </InputGroup>
     );
-  },
+  }
 );
 
 AmountInput.displayName = "AmountInput";

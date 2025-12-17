@@ -53,8 +53,7 @@ export function VolunteerAllowanceFormUI({
     confirmed: false,
   });
 
-  const set = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) =>
-    setForm((f) => ({ ...f, [key]: value }));
+  const update = (field: Partial<typeof form>) => setForm((prev) => ({ ...prev, ...field }));
 
   useEffect(() => setIsDesktop(window.innerWidth >= 768), []);
 
@@ -64,9 +63,9 @@ export function VolunteerAllowanceFormUI({
       return "Bitte alle persönlichen Daten ausfüllen";
     if (!form.activity || !form.startDate || !form.endDate)
       return "Bitte Tätigkeit und Zeitraum angeben";
-    const amt = parseFloat(form.amount.replace(",", "."));
-    if (!amt || amt <= 0) return "Bitte einen gültigen Betrag eingeben";
-    if (amt > 840) return "Ehrenamtspauschale darf 840€ nicht überschreiten";
+    const amount = parseFloat(form.amount.replace(",", "."));
+    if (!amount || amount <= 0) return "Bitte einen gültigen Betrag eingeben";
+    if (amount > 840) return "Ehrenamtspauschale darf 840€ nicht überschreiten";
     if (!form.confirmed) return "Bitte die Bestätigung ankreuzen";
     if (!signature) return "Bitte unterschreiben";
     if (!bank.iban || !bank.bic || !bank.accountHolder)
@@ -105,7 +104,7 @@ export function VolunteerAllowanceFormUI({
       <div className="w-[200px]">
         <SelectProject
           value={projectId || ""}
-          onValueChange={(v) => setProjectId(v ? (v as Id<"projects">) : null)}
+          onValueChange={(value) => setProjectId(value ? (value as Id<"projects">) : null)}
         />
       </div>
 
@@ -116,7 +115,7 @@ export function VolunteerAllowanceFormUI({
             <Label>Name *</Label>
             <Input
               value={form.name}
-              onChange={(e) => set("name", e.target.value)}
+              onChange={(e) => update({ name: e.target.value })}
               placeholder="Vor- und Nachname"
             />
           </div>
@@ -124,7 +123,7 @@ export function VolunteerAllowanceFormUI({
             <Label>Straße und Hausnummer *</Label>
             <Input
               value={form.street}
-              onChange={(e) => set("street", e.target.value)}
+              onChange={(e) => update({ street: e.target.value })}
               placeholder="Musterstraße 123"
             />
           </div>
@@ -132,7 +131,7 @@ export function VolunteerAllowanceFormUI({
             <Label>PLZ *</Label>
             <Input
               value={form.plz}
-              onChange={(e) => set("plz", e.target.value.replace(/\D/g, ""))}
+              onChange={(e) => update({ plz: e.target.value.replace(/\D/g, "") })}
               placeholder="12345"
               inputMode="numeric"
               maxLength={5}
@@ -142,7 +141,7 @@ export function VolunteerAllowanceFormUI({
             <Label>Ort *</Label>
             <Input
               value={form.city}
-              onChange={(e) => set("city", e.target.value)}
+              onChange={(e) => update({ city: e.target.value })}
               placeholder="Musterstadt"
             />
           </div>
@@ -155,7 +154,7 @@ export function VolunteerAllowanceFormUI({
           <Label>Beschreibung der nebenberuflichen Tätigkeit *</Label>
           <Textarea
             value={form.activity}
-            onChange={(e) => set("activity", e.target.value)}
+            onChange={(e) => update({ activity: e.target.value })}
             placeholder="z.B. Übungsleiter, Jugendarbeit, Vorstandstätigkeit"
             rows={3}
             className="resize-none"
@@ -166,14 +165,14 @@ export function VolunteerAllowanceFormUI({
             <Label>Von *</Label>
             <DateInput
               value={form.startDate}
-              onChange={(v) => set("startDate", v)}
+              onChange={(value) => update({ startDate: value })}
             />
           </div>
           <div>
             <Label>Bis *</Label>
             <DateInput
               value={form.endDate}
-              onChange={(v) => set("endDate", v)}
+              onChange={(value) => update({ endDate: value })}
             />
           </div>
         </div>
@@ -185,9 +184,9 @@ export function VolunteerAllowanceFormUI({
           <Label>Betrag in Euro (max. 840€) *</Label>
           <AmountInput
             value={form.amount}
-            onChange={(v) => {
-              if (parseFloat(v.replace(",", ".")) > 840) return;
-              set("amount", v);
+            onChange={(value) => {
+              if (parseFloat(value.replace(",", ".")) > 840) return;
+              update({ amount: value });
             }}
           />
         </div>
@@ -203,7 +202,7 @@ export function VolunteerAllowanceFormUI({
           <Checkbox
             id="confirm"
             checked={form.confirmed}
-            onCheckedChange={(c) => set("confirmed", c === true)}
+            onCheckedChange={(checked) => update({ confirmed: checked === true })}
           />
           <Label htmlFor="confirm" className="text-sm leading-relaxed">
             Ich erkläre, dass die Steuerbefreiung nach § 3 Nr. 26a EStG für

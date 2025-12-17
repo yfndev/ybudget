@@ -16,7 +16,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/convex/_generated/api";
-import type { Id } from "@/convex/_generated/dataModel";
+import type { Doc, Id } from "@/convex/_generated/dataModel";
 import { useMutation } from "convex/react";
 import { Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -25,17 +25,7 @@ import toast from "react-hot-toast";
 import { ReceiptUpload } from "./ReceiptUpload";
 
 type BankDetails = { iban: string; bic: string; accountHolder: string };
-
-type Receipt = {
-  receiptNumber: string;
-  receiptDate: string;
-  companyName: string;
-  description: string;
-  netAmount: number;
-  taxRate: number;
-  grossAmount: number;
-  fileStorageId: Id<"_storage">;
-};
+type Receipt = Omit<Doc<"receipts">, "_id" | "_creationTime" | "reimbursementId" | "costType" | "kilometers">;
 
 const toNet = (gross: number, tax: number) => gross / (1 + tax / 100);
 
@@ -61,23 +51,13 @@ export function ReimbursementFormUI({
   });
 
   const net = draft.gross ? toNet(draft.gross, draft.tax) : 0;
-  const totalGross = receipts.reduce((s, r) => s + r.grossAmount, 0);
-  const totalNet = receipts.reduce((s, r) => s + r.netAmount, 0);
-  const tax7 = receipts
-    .filter((r) => r.taxRate === 7)
-    .reduce((s, r) => s + r.grossAmount - r.netAmount, 0);
-  const tax19 = receipts
-    .filter((r) => r.taxRate === 19)
-    .reduce((s, r) => s + r.grossAmount - r.netAmount, 0);
+  const totalGross = receipts.reduce((sum, receipt) => sum + receipt.grossAmount, 0);
+  const totalNet = receipts.reduce((sum, receipt) => sum + receipt.netAmount, 0);
+  const taxByRate = (rate: number) =>
+    receipts.filter((receipt) => receipt.taxRate === rate).reduce((sum, receipt) => sum + receipt.grossAmount - receipt.netAmount, 0);
 
   const addReceipt = () => {
-    if (
-      !draft.number ||
-      !draft.company ||
-      !draft.gross ||
-      !draft.file ||
-      !draft.date
-    ) {
+    if (!draft.number || !draft.company || !draft.gross || !draft.file || !draft.date) {
       return toast.error("Bitte Pflichtfelder ausfüllen");
     }
     setReceipts([
@@ -117,7 +97,7 @@ export function ReimbursementFormUI({
       <div className="w-[200px]">
         <SelectProject
           value={projectId || ""}
-          onValueChange={(v) => setProjectId(v ? (v as Id<"projects">) : null)}
+          onValueChange={(value) => setProjectId(value ? (value as Id<"projects">) : null)}
         />
       </div>
 
@@ -158,7 +138,7 @@ export function ReimbursementFormUI({
             <Label>Datum *</Label>
             <DateInput
               value={draft.date}
-              onChange={(v) => setDraft({ ...draft, date: v })}
+              onChange={(value) => setDraft({ ...draft, date: value })}
             />
           </div>
           <div>
@@ -177,7 +157,7 @@ export function ReimbursementFormUI({
             <Label>Wie viel MwSt.?</Label>
             <Select
               value={String(draft.tax)}
-              onValueChange={(v) => setDraft({ ...draft, tax: parseInt(v) })}
+              onValueChange={(value) => setDraft({ ...draft, tax: parseInt(value) })}
             >
               <SelectTrigger>
                 <SelectValue />
@@ -224,27 +204,23 @@ export function ReimbursementFormUI({
           <BankDetailsEditor value={bank} onChange={setBank} />
 
           <div className="space-y-3">
-            {receipts.map((r, i) => (
+            {receipts.map((receipt, index) => (
               <div
-                key={i}
+                key={index}
                 className="flex items-center justify-between px-3 bg-gray-50 border rounded-md"
               >
                 <div className="flex items-center gap-8 flex-1">
-                  <span className="font-semibold">{r.companyName}</span>
+                  <span className="font-semibold">{receipt.companyName}</span>
                   <span className="text-sm text-muted-foreground">
-                    {r.description || "Keine Beschreibung"}
+                    {receipt.description || "Keine Beschreibung"}
                   </span>
                 </div>
                 <div className="flex items-center gap-4">
-                  <span className="font-semibold">
-                    {r.grossAmount.toFixed(2)} €
-                  </span>
+                  <span className="font-semibold">{receipt.grossAmount.toFixed(2)} €</span>
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() =>
-                      setReceipts(receipts.filter((_, j) => j !== i))
-                    }
+                    onClick={() => setReceipts(receipts.filter((_, idx) => idx !== index))}
                     className="hover:bg-destructive/10 hover:text-destructive"
                   >
                     <Trash2 className="size-4" />
@@ -259,16 +235,16 @@ export function ReimbursementFormUI({
               <span className="text-muted-foreground">Netto gesamt</span>
               <span>{totalNet.toFixed(2)} €</span>
             </div>
-            {tax7 > 0 && (
+            {taxByRate(7) > 0 && (
               <div className="flex justify-between">
                 <span className="text-muted-foreground">UST 7% gesamt</span>
-                <span>{tax7.toFixed(2)} €</span>
+                <span>{taxByRate(7).toFixed(2)} €</span>
               </div>
             )}
-            {tax19 > 0 && (
+            {taxByRate(19) > 0 && (
               <div className="flex justify-between">
                 <span className="text-muted-foreground">UST 19% gesamt</span>
-                <span>{tax19.toFixed(2)} €</span>
+                <span>{taxByRate(19).toFixed(2)} €</span>
               </div>
             )}
             <Separator className="my-4" />

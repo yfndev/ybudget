@@ -24,53 +24,54 @@ export function BankDetailsEditor({
   const [editing, setEditing] = useState(false);
   const save = useMutation(api.users.functions.updateBankDetails);
 
-  const validate = () => {
-    const iban = value.iban.replace(/\s/g, "").toUpperCase();
-    const bic = value.bic.replace(/\s/g, "").toUpperCase();
-    if (!value.accountHolder) return "Bitte Kontoinhaber eingeben";
-    if (!IBAN_REGEX.test(iban)) return "Ungültige IBAN";
-    if (!BIC_REGEX.test(bic)) return "Ungültige BIC";
-    return null;
-  };
-
   const toggle = async () => {
     if (editing) {
-      const error = validate();
-      if (error) return toast.error(error);
+      const iban = value.iban.replace(/\s/g, "").toUpperCase();
+      const bic = value.bic.replace(/\s/g, "").toUpperCase();
+      if (!value.accountHolder) return toast.error("Bitte Kontoinhaber eingeben");
+      if (!IBAN_REGEX.test(iban)) return toast.error("Ungültige IBAN");
+      if (!BIC_REGEX.test(bic)) return toast.error("Ungültige BIC");
       await save(value);
     }
     setEditing(!editing);
   };
 
-  const field = (
-    key: keyof BankDetails,
-    label: string,
-    placeholder?: string,
-    mono?: boolean,
-  ) => (
-    <div>
-      <Label className="text-xs text-muted-foreground uppercase">{label}</Label>
-      <Input
-        value={value[key]}
-        onChange={(e) => onChange({ ...value, [key]: e.target.value })}
-        disabled={!editing}
-        placeholder={placeholder}
-        className={mono ? "font-mono" : undefined}
-      />
-    </div>
-  );
+  const update = (key: keyof BankDetails, val: string) =>
+    onChange({ ...value, [key]: val });
 
   return (
     <div className="space-y-4">
       <h2 className="text-lg font-medium">Bankverbindung</h2>
       <div className="flex items-end gap-4">
-        <div
-          className="grid gap-4 flex-1"
-          style={{ gridTemplateColumns: "1fr 2fr 1fr" }}
-        >
-          {field("accountHolder", "Kontoinhaber")}
-          {field("iban", "IBAN", "DE89 3704 0044 0532 0130 00", true)}
-          {field("bic", "BIC", "COBADEFFXXX", true)}
+        <div className="grid grid-cols-[1fr_2fr_1fr] gap-4 flex-1">
+          <div>
+            <Label className="text-xs text-muted-foreground uppercase">Kontoinhaber</Label>
+            <Input
+              value={value.accountHolder}
+              onChange={(e) => update("accountHolder", e.target.value)}
+              disabled={!editing}
+            />
+          </div>
+          <div>
+            <Label className="text-xs text-muted-foreground uppercase">IBAN</Label>
+            <Input
+              value={value.iban}
+              onChange={(e) => update("iban", e.target.value)}
+              disabled={!editing}
+              placeholder="DE12 3456 7890 0000 0000 00"
+              className="font-mono"
+            />
+          </div>
+          <div>
+            <Label className="text-xs text-muted-foreground uppercase">BIC</Label>
+            <Input
+              value={value.bic}
+              onChange={(e) => update("bic", e.target.value)}
+              disabled={!editing}
+              placeholder="COBADEFFXXX"
+              className="font-mono"
+            />
+          </div>
         </div>
         <Button
           variant={editing ? "default" : "outline"}

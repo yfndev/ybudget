@@ -1,4 +1,29 @@
-import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
+import { PDFDocument, PDFEmbeddedPage, PDFImage, rgb, StandardFonts } from "pdf-lib";
+
+type EmbedResult =
+  | { draw: PDFEmbeddedPage; width: number; height: number }
+  | { image: PDFImage; width: number; height: number }
+  | null;
+
+async function embedFile(pdfDoc: PDFDocument, bytes: Uint8Array): Promise<EmbedResult> {
+  try {
+    const pdf = await PDFDocument.load(bytes);
+    const [page] = await pdfDoc.embedPdf(pdf, [0]);
+    return { draw: page, width: page.width, height: page.height };
+  } catch {}
+
+  try {
+    const image = await pdfDoc.embedJpg(bytes);
+    return { image, width: image.width, height: image.height };
+  } catch {}
+
+  try {
+    const image = await pdfDoc.embedPng(bytes);
+    return { image, width: image.width, height: image.height };
+  } catch {}
+
+  return null;
+}
 
 export async function generateReimbursementPDF(
   reimbursement: any,
@@ -126,38 +151,17 @@ export async function generateReimbursementPDF(
     try {
       const res = await fetch(r.fileUrl);
       const bytes = new Uint8Array(await res.arrayBuffer());
+      const maxWidth = WIDTH - 2 * M;
 
-      try {
-        const receiptPdf = await PDFDocument.load(bytes);
-        const [embeddedPage] = await pdfDoc.embedPdf(receiptPdf, [0]);
-        const { width, height } = embeddedPage;
-        const scale = Math.min((WIDTH - 2 * M) / width, imageHeight / height);
-        page.drawPage(embeddedPage, {
-          x: M,
-          y: M,
-          xScale: scale,
-          yScale: scale,
-        });
-      } catch {
-        let image;
-        try {
-          image = await pdfDoc.embedJpg(bytes);
-        } catch {
-          try {
-            image = await pdfDoc.embedPng(bytes);
-          } catch {
-            continue;
-          }
-        }
+      const embedded = await embedFile(pdfDoc, bytes);
+      if (!embedded) continue;
 
-        const { width, height } = image;
-        const scale = Math.min((WIDTH - 2 * M) / width, imageHeight / height);
-        page.drawImage(image, {
-          x: M,
-          y: M,
-          width: width * scale,
-          height: height * scale,
-        });
+      const scale = Math.min(maxWidth / embedded.width, imageHeight / embedded.height);
+
+      if ("draw" in embedded) {
+        page.drawPage(embedded.draw, { x: M, y: M, xScale: scale, yScale: scale });
+      } else {
+        page.drawImage(embedded.image, { x: M, y: M, width: embedded.width * scale, height: embedded.height * scale });
       }
     } catch {}
   }

@@ -33,11 +33,16 @@ export function ShareAllowanceModal({ open, onClose }: Props) {
   const [endDate, setEndDate] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
 
+  const reset = () => {
+    setProjectId(null);
+    setActivityDescription("");
+    setStartDate("");
+    setEndDate("");
+    onClose();
+  };
+
   const handleGenerate = async () => {
-    if (!projectId) {
-      toast.error("Bitte ein Projekt auswählen");
-      return;
-    }
+    if (!projectId) return toast.error("Bitte ein Projekt auswählen");
 
     setIsGenerating(true);
     try {
@@ -47,14 +52,9 @@ export function ShareAllowanceModal({ open, onClose }: Props) {
         startDate: startDate || undefined,
         endDate: endDate || undefined,
       });
-      const shareUrl = `${window.location.origin}/ehrenamtspauschale/${token}`;
-      await navigator.clipboard.writeText(shareUrl);
+      await navigator.clipboard.writeText(`${window.location.origin}/ehrenamtspauschale/${token}`);
       toast.success("Link kopiert");
-      setProjectId(null);
-      setActivityDescription("");
-      setStartDate("");
-      setEndDate("");
-      onClose();
+      reset();
     } catch {
       toast.error("Fehler beim Erstellen des Links");
     } finally {
@@ -62,16 +62,8 @@ export function ShareAllowanceModal({ open, onClose }: Props) {
     }
   };
 
-  const handleClose = () => {
-    setProjectId(null);
-    setActivityDescription("");
-    setStartDate("");
-    setEndDate("");
-    onClose();
-  };
-
   return (
-    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
+    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && reset()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Ehrenamtspauschale Link teilen</DialogTitle>

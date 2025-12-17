@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { api } from "@/convex/_generated/api";
-import type { Id } from "@/convex/_generated/dataModel";
+import type { Doc, Id } from "@/convex/_generated/dataModel";
 import { useMutation } from "convex/react";
 import { Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -25,20 +25,8 @@ import toast from "react-hot-toast";
 import { ReceiptUpload } from "./ReceiptUpload";
 
 type BankDetails = { iban: string; bic: string; accountHolder: string };
-type CostType = "car" | "train" | "flight" | "taxi" | "bus" | "accommodation";
-
-type Receipt = {
-  costType: CostType;
-  receiptNumber: string;
-  receiptDate: string;
-  companyName: string;
-  description: string;
-  netAmount: number;
-  taxRate: number;
-  grossAmount: number;
-  fileStorageId: Id<"_storage">;
-  kilometers?: number;
-};
+type CostType = NonNullable<Doc<"receipts">["costType"]>;
+type Receipt = Omit<Doc<"receipts">, "_id" | "_creationTime" | "reimbursementId"> & { costType: CostType };
 
 const LABELS: Record<CostType, string> = {
   car: "PKW",
@@ -81,54 +69,36 @@ export function TravelReimbursementFormUI({
     mealRate: 0,
   });
 
-  const set = <K extends keyof typeof travel>(
-    key: K,
-    value: (typeof travel)[K],
-  ) => setTravel((t) => ({ ...t, [key]: value }));
+  const update = (field: Partial<typeof travel>) => setTravel((prev) => ({ ...prev, ...field }));
 
-  const hasReceipt = (type: CostType) =>
-    receipts.some((r) => r.costType === type);
+  const hasReceipt = (type: CostType) => receipts.some((receipt) => receipt.costType === type);
 
   const toggleType = (type: CostType) => {
     if (hasReceipt(type)) {
-      setReceipts(receipts.filter((r) => r.costType !== type));
-      return;
+      return setReceipts(receipts.filter((receipt) => receipt.costType !== type));
     }
-    setReceipts([
-      ...receipts,
-      {
-        costType: type,
-        receiptNumber: `${type.toUpperCase()}-001`,
-        receiptDate: travel.startDate,
-        companyName: "",
-        description: "",
-        netAmount: 0,
-        taxRate: 0,
-        grossAmount: 0,
-        fileStorageId: "" as Id<"_storage">,
-        kilometers: type === "car" ? 0 : undefined,
-      },
-    ]);
+    setReceipts([...receipts, {
+      costType: type,
+      receiptNumber: `${type.toUpperCase()}-001`,
+      receiptDate: travel.startDate,
+      companyName: "",
+      description: "",
+      netAmount: 0,
+      taxRate: 0,
+      grossAmount: 0,
+      fileStorageId: "" as Id<"_storage">,
+      kilometers: type === "car" ? 0 : undefined,
+    }]);
   };
 
   const updateReceipt = (type: CostType, updates: Partial<Receipt>) =>
-    setReceipts(
-      receipts.map((r) => (r.costType === type ? { ...r, ...updates } : r)),
-    );
+    setReceipts(receipts.map((receipt) => (receipt.costType === type ? { ...receipt, ...updates } : receipt)));
 
-  const hasBasicInfo =
-    travel.destination && travel.purpose && travel.startDate && travel.endDate;
-  const receiptsTotal = receipts.reduce((sum, r) => sum + r.grossAmount, 0);
+  const hasBasicInfo = travel.destination && travel.purpose && travel.startDate && travel.endDate;
   const mealTotal = travel.mealDays * travel.mealRate;
-  const total = receiptsTotal + mealTotal;
-  const allComplete = receipts.every(
-    (r) => r.grossAmount > 0 && r.fileStorageId && r.companyName,
-  );
-  const canSubmit =
-    hasBasicInfo &&
-    (receipts.length > 0 || mealTotal > 0) &&
-    (receipts.length === 0 || allComplete) &&
-    projectId;
+  const total = receipts.reduce((sum, receipt) => sum + receipt.grossAmount, 0) + mealTotal;
+  const allComplete = receipts.every((receipt) => receipt.grossAmount > 0 && receipt.fileStorageId && receipt.companyName);
+  const canSubmit = hasBasicInfo && (receipts.length > 0 || mealTotal > 0) && (receipts.length === 0 || allComplete) && projectId;
 
   const handleSubmit = async () => {
     if (!projectId) return toast.error("Bitte ein Projekt auswählen");
@@ -154,7 +124,7 @@ export function TravelReimbursementFormUI({
       <div className="w-[200px]">
         <SelectProject
           value={projectId || ""}
-          onValueChange={(v) => setProjectId(v ? (v as Id<"projects">) : null)}
+          onValueChange={(value) => setProjectId(value ? (value as Id<"projects">) : null)}
         />
       </div>
 
@@ -165,7 +135,7 @@ export function TravelReimbursementFormUI({
             <Label>Reiseziel *</Label>
             <Input
               value={travel.destination}
-              onChange={(e) => set("destination", e.target.value)}
+              onChange={(e) => update({ destination: e.target.value })}
               placeholder="z.B. München, Berlin"
             />
           </div>
@@ -173,7 +143,7 @@ export function TravelReimbursementFormUI({
             <Label>Reisezweck *</Label>
             <Input
               value={travel.purpose}
-              onChange={(e) => set("purpose", e.target.value)}
+              onChange={(e) => update({ purpose: e.target.value })}
               placeholder="z.B. Kundentermin, Konferenz"
             />
           </div>
@@ -183,14 +153,14 @@ export function TravelReimbursementFormUI({
             <Label>Reisebeginn *</Label>
             <DateInput
               value={travel.startDate}
-              onChange={(v) => set("startDate", v)}
+              onChange={(value) => update({ startDate: value })}
             />
           </div>
           <div>
             <Label>Reiseende *</Label>
             <DateInput
               value={travel.endDate}
-              onChange={(v) => set("endDate", v)}
+              onChange={(value) => update({ endDate: value })}
             />
           </div>
           <div className="col-span-2 flex items-end pb-2">
@@ -198,7 +168,7 @@ export function TravelReimbursementFormUI({
               <Checkbox
                 id="international"
                 checked={travel.isInternational}
-                onCheckedChange={(c) => set("isInternational", c === true)}
+                onCheckedChange={(checked) => update({ isInternational: checked === true })}
               />
               <Label htmlFor="international" className="font-normal">
                 Auslandsreise
@@ -252,9 +222,7 @@ export function TravelReimbursementFormUI({
                   <Input
                     value={receipt.companyName}
                     onChange={(e) =>
-                      updateReceipt(receipt.costType, {
-                        companyName: e.target.value,
-                      })
+                      updateReceipt(receipt.costType, { companyName: e.target.value })
                     }
                     placeholder={PLACEHOLDERS[receipt.costType]}
                   />
@@ -268,10 +236,7 @@ export function TravelReimbursementFormUI({
                         min={0}
                         value={receipt.kilometers || ""}
                         onChange={(e) => {
-                          const km = Math.max(
-                            0,
-                            Math.floor(parseFloat(e.target.value) || 0),
-                          );
+                          const km = Math.max(0, Math.floor(parseFloat(e.target.value) || 0));
                           const amount = Math.round(km * 0.3 * 100) / 100;
                           updateReceipt(receipt.costType, {
                             kilometers: km,
@@ -300,14 +265,8 @@ export function TravelReimbursementFormUI({
                       min={0}
                       value={receipt.grossAmount || ""}
                       onChange={(e) => {
-                        const amount = Math.max(
-                          0,
-                          parseFloat(e.target.value) || 0,
-                        );
-                        updateReceipt(receipt.costType, {
-                          grossAmount: amount,
-                          netAmount: amount,
-                        });
+                        const amount = Math.max(0, parseFloat(e.target.value) || 0);
+                        updateReceipt(receipt.costType, { grossAmount: amount, netAmount: amount });
                       }}
                       placeholder="0.00"
                     />
@@ -339,9 +298,7 @@ export function TravelReimbursementFormUI({
                   step="0.5"
                   min={0}
                   value={travel.mealDays || ""}
-                  onChange={(e) =>
-                    set("mealDays", parseFloat(e.target.value) || 0)
-                  }
+                  onChange={(e) => update({ mealDays: parseFloat(e.target.value) || 0 })}
                   placeholder="z.B. 2.5"
                 />
               </div>
@@ -349,7 +306,7 @@ export function TravelReimbursementFormUI({
                 <Label>Tagessatz (€)</Label>
                 <Select
                   value={travel.mealRate ? String(travel.mealRate) : ""}
-                  onValueChange={(v) => set("mealRate", parseFloat(v) || 0)}
+                  onValueChange={(value) => update({ mealRate: parseFloat(value) || 0 })}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Auswählen" />
@@ -380,22 +337,22 @@ export function TravelReimbursementFormUI({
 
           <div className="space-y-3">
             {receipts
-              .filter((r) => r.grossAmount > 0)
-              .map((r) => (
+              .filter((receipt) => receipt.grossAmount > 0)
+              .map((receipt) => (
                 <div
-                  key={r.costType}
+                  key={receipt.costType}
                   className="flex items-center justify-between px-3 bg-gray-50 border rounded-md"
                 >
                   <div className="flex items-center gap-8 flex-1">
-                    <span className="font-semibold">{LABELS[r.costType]}</span>
-                    {r.costType === "car" && (
+                    <span className="font-semibold">{LABELS[receipt.costType]}</span>
+                    {receipt.costType === "car" && (
                       <span className="text-sm text-muted-foreground">
-                        {r.kilometers} km × 0,30€
+                        {receipt.kilometers} km × 0,30€
                       </span>
                     )}
                   </div>
                   <span className="font-semibold">
-                    {r.grossAmount.toFixed(2)} €
+                    {receipt.grossAmount.toFixed(2)} €
                   </span>
                 </div>
               ))}

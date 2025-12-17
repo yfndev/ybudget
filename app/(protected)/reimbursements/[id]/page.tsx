@@ -51,14 +51,10 @@ export default function ReimbursementDetailPage() {
     );
   }
 
-  const totalNet = receipts.reduce((sum, r) => sum + r.netAmount, 0);
-  const totalTax7 = receipts
-    .filter((r) => r.taxRate === 7)
-    .reduce((sum, r) => sum + (r.grossAmount - r.netAmount), 0);
-  const totalTax19 = receipts
-    .filter((r) => r.taxRate === 19)
-    .reduce((sum, r) => sum + (r.grossAmount - r.netAmount), 0);
-  const totalGross = receipts.reduce((sum, r) => sum + r.grossAmount, 0);
+  const totalNet = receipts.reduce((sum, receipt) => sum + receipt.netAmount, 0);
+  const totalGross = receipts.reduce((sum, receipt) => sum + receipt.grossAmount, 0);
+  const taxByRate = (rate: number) =>
+    receipts.filter((receipt) => receipt.taxRate === rate).reduce((sum, receipt) => sum + receipt.grossAmount - receipt.netAmount, 0);
 
   const statusLabel = reimbursement.isApproved ? "Genehmigt" : "Ausstehend";
   const statusVariant = reimbursement.isApproved ? "default" : "secondary";
@@ -141,24 +137,18 @@ export default function ReimbursementDetailPage() {
                   <div>
                     <p className="font-semibold">{receipt.companyName}</p>
                     <p className="text-sm text-muted-foreground">
-                      Beleg-Nr. {receipt.receiptNumber} •{" "}
-                      {formatDate(receipt.receiptDate)}
+                      Beleg-Nr. {receipt.receiptNumber} • {formatDate(receipt.receiptDate)}
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="font-semibold">
-                      {formatCurrency(receipt.grossAmount)}
-                    </p>
+                    <p className="font-semibold">{formatCurrency(receipt.grossAmount)}</p>
                     <p className="text-sm text-muted-foreground">
-                      {formatCurrency(receipt.netAmount)} netto +{" "}
-                      {receipt.taxRate}% USt
+                      {formatCurrency(receipt.netAmount)} netto + {receipt.taxRate}% USt
                     </p>
                   </div>
                 </div>
                 {receipt.description && (
-                  <p className="text-sm text-muted-foreground">
-                    {receipt.description}
-                  </p>
+                  <p className="text-sm text-muted-foreground">{receipt.description}</p>
                 )}
                 {receipt.costType && (
                   <div className="flex items-center gap-2">
@@ -182,16 +172,16 @@ export default function ReimbursementDetailPage() {
             <span className="text-muted-foreground">Netto gesamt</span>
             <span>{formatCurrency(totalNet)}</span>
           </div>
-          {totalTax7 > 0 && (
+          {taxByRate(7) > 0 && (
             <div className="flex justify-between">
               <span className="text-muted-foreground">USt 7%</span>
-              <span>{formatCurrency(totalTax7)}</span>
+              <span>{formatCurrency(taxByRate(7))}</span>
             </div>
           )}
-          {totalTax19 > 0 && (
+          {taxByRate(19) > 0 && (
             <div className="flex justify-between">
               <span className="text-muted-foreground">USt 19%</span>
-              <span>{formatCurrency(totalTax19)}</span>
+              <span>{formatCurrency(taxByRate(19))}</span>
             </div>
           )}
           <Separator />

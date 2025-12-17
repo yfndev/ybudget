@@ -29,7 +29,7 @@ export default function ReimbursementFormPage() {
       <div className="max-w-4xl mx-auto p-6">
         <Tabs
           value={type}
-          onValueChange={(v) => setType(v as ReimbursementType)}
+          onValueChange={(value) => setType(value as ReimbursementType)}
         >
           <TabsList>
             <TabsTrigger value="expense">Auslagenerstattung</TabsTrigger>
