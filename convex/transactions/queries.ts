@@ -74,7 +74,9 @@ export const getOldestTransactionDate = query({
       )
       .collect();
 
-    const withProject = transactions.filter((t) => t.projectId && !t.isArchived);
+    const withProject = transactions.filter(
+      (t) => t.projectId && !t.isArchived,
+    );
     if (withProject.length === 0) return Date.now();
 
     return Math.min(...withProject.map((t) => t.date));
@@ -97,7 +99,9 @@ export const getMatchingRecommendations = query({
       : ctx.db
           .query("transactions")
           .withIndex("by_organization_status", (q) =>
-            q.eq("organizationId", user.organizationId).eq("status", "expected"),
+            q
+              .eq("organizationId", user.organizationId)
+              .eq("status", "expected"),
           );
 
     const allTransactions = await query.collect();

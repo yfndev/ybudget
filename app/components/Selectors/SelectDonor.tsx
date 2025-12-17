@@ -25,18 +25,20 @@ export const SelectDonor = forwardRef<HTMLInputElement, SelectDonorProps>(
 
     const allDonors = useQuery(
       api.donors.queries.getAllDonors,
-      projectId ? "skip" : {}
+      projectId ? "skip" : {},
     );
     const projectDonors = useQuery(
       api.donors.queries.getDonorsByProject,
-      projectId ? { projectId } : "skip"
+      projectId ? { projectId } : "skip",
     );
     const donors = projectId ? projectDonors : allDonors;
 
-    const selectedDonor = donors?.find((donor) => donor._id.toString() === value);
+    const selectedDonor = donors?.find(
+      (donor) => donor._id.toString() === value,
+    );
     const filtered =
       donors?.filter((donor) =>
-        donor.name.toLowerCase().includes(search.toLowerCase())
+        donor.name.toLowerCase().includes(search.toLowerCase()),
       ) ?? [];
 
     useEffect(() => {
@@ -103,7 +105,7 @@ export const SelectDonor = forwardRef<HTMLInputElement, SelectDonorProps>(
               "h-9 w-full rounded-md bg-muted px-3 pr-8 text-sm outline-none",
               open || !selectedDonor
                 ? "text-muted-foreground"
-                : "text-foreground"
+                : "text-foreground",
             )}
             placeholder="Förderer suchen..."
             value={open ? search : (selectedDonor?.name ?? "")}
@@ -129,7 +131,7 @@ export const SelectDonor = forwardRef<HTMLInputElement, SelectDonorProps>(
                   type="button"
                   className={cn(
                     "w-full text-left px-3 py-2 text-sm flex items-center justify-between",
-                    idx === highlightedIndex && "bg-accent"
+                    idx === highlightedIndex && "bg-accent",
                   )}
                   onClick={() => handleSelect(donor._id.toString())}
                   onMouseEnter={() => setHighlightedIndex(idx)}
@@ -145,7 +147,7 @@ export const SelectDonor = forwardRef<HTMLInputElement, SelectDonorProps>(
                       "h-4 w-4",
                       value === donor._id.toString()
                         ? "opacity-100"
-                        : "opacity-0"
+                        : "opacity-0",
                     )}
                   />
                 </button>
@@ -172,5 +174,5 @@ export const SelectDonor = forwardRef<HTMLInputElement, SelectDonorProps>(
         />
       </>
     );
-  }
+  },
 );

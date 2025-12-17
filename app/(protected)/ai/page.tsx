@@ -19,7 +19,7 @@ export default function AIPage() {
   const { results: messages } = useUIMessages(
     api.ai.queries.listMessages,
     threadId ? { threadId } : "skip",
-    { initialNumItems: 50, stream: true }
+    { initialNumItems: 50, stream: true },
   );
 
   const isStreaming = messages.some((m) => m.status === "streaming");

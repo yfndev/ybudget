@@ -2,9 +2,16 @@ import { openai } from "@ai-sdk/openai";
 import { Agent } from "@convex-dev/agent";
 import { components } from "../_generated/api";
 import { Id } from "../_generated/dataModel";
-import { getOpenItems, getOpenReimbursements, getRecentTransactions } from "./tools";
+import {
+  getOpenItems,
+  getOpenReimbursements,
+  getRecentTransactions,
+} from "./tools";
 
-export const budgetAgent = new Agent<{ userId: Id<"users">; organizationId: Id<"organizations"> }>(components.agent, {
+export const budgetAgent = new Agent<{
+  userId: Id<"users">;
+  organizationId: Id<"organizations">;
+}>(components.agent, {
   name: "Budget Assistant",
   languageModel: openai("gpt-4o-mini"),
   instructions: `

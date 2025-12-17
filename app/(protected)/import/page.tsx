@@ -20,13 +20,13 @@ export default function ImportTransactionsPage() {
   >([]);
 
   const transactions = useQuery(
-    api.transactions.queries.getUnassignedProcessedTransactions
+    api.transactions.queries.getUnassignedProcessedTransactions,
   );
   const updateTransaction = useMutation(
-    api.transactions.functions.updateTransaction
+    api.transactions.functions.updateTransaction,
   );
   const splitTransaction = useMutation(
-    api.transactions.functions.splitTransaction
+    api.transactions.functions.splitTransaction,
   );
 
   const current = transactions?.[index] ?? null;
@@ -36,7 +36,7 @@ export default function ImportTransactionsPage() {
     api.transactions.queries.getMatchingRecommendations,
     current
       ? { projectId: projectId ? (projectId as Id<"projects">) : undefined }
-      : "skip"
+      : "skip",
   ) ?? []) as Doc<"transactions">[];
 
   useEffect(() => {

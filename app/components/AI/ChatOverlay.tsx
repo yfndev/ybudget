@@ -38,13 +38,13 @@ function LoadingDots({ size = "md" }: { size?: "sm" | "md" }) {
       <span
         className={cn(
           dotSize,
-          "bg-current rounded-full animate-bounce [animation-delay:-0.3s]"
+          "bg-current rounded-full animate-bounce [animation-delay:-0.3s]",
         )}
       />
       <span
         className={cn(
           dotSize,
-          "bg-current rounded-full animate-bounce [animation-delay:-0.15s]"
+          "bg-current rounded-full animate-bounce [animation-delay:-0.15s]",
         )}
       />
       <span className={cn(dotSize, "bg-current rounded-full animate-bounce")} />
@@ -67,7 +67,7 @@ export function ChatOverlay({
   const { results: messages } = useUIMessages(
     api.ai.queries.listMessages,
     threadId ? { threadId } : "skip",
-    { initialNumItems: 50, stream: true }
+    { initialNumItems: 50, stream: true },
   );
 
   const isStreaming = messages.some((m) => m.status === "streaming");
@@ -137,7 +137,7 @@ export function ChatOverlay({
                       "rounded-lg px-4 py-2 max-w-[80%]",
                       msg.role === "user"
                         ? "bg-primary text-primary-foreground"
-                        : "bg-muted"
+                        : "bg-muted",
                     )}
                   >
                     {msg.text ? (

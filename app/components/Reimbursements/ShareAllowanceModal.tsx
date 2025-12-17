@@ -52,7 +52,9 @@ export function ShareAllowanceModal({ open, onClose }: Props) {
         startDate: startDate || undefined,
         endDate: endDate || undefined,
       });
-      await navigator.clipboard.writeText(`${window.location.origin}/ehrenamtspauschale/${token}`);
+      await navigator.clipboard.writeText(
+        `${window.location.origin}/ehrenamtspauschale/${token}`,
+      );
       toast.success("Link kopiert");
       reset();
     } catch {

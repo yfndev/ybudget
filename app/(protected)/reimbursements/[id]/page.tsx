@@ -51,10 +51,21 @@ export default function ReimbursementDetailPage() {
     );
   }
 
-  const totalNet = receipts.reduce((sum, receipt) => sum + receipt.netAmount, 0);
-  const totalGross = receipts.reduce((sum, receipt) => sum + receipt.grossAmount, 0);
+  const totalNet = receipts.reduce(
+    (sum, receipt) => sum + receipt.netAmount,
+    0,
+  );
+  const totalGross = receipts.reduce(
+    (sum, receipt) => sum + receipt.grossAmount,
+    0,
+  );
   const taxByRate = (rate: number) =>
-    receipts.filter((receipt) => receipt.taxRate === rate).reduce((sum, receipt) => sum + receipt.grossAmount - receipt.netAmount, 0);
+    receipts
+      .filter((receipt) => receipt.taxRate === rate)
+      .reduce(
+        (sum, receipt) => sum + receipt.grossAmount - receipt.netAmount,
+        0,
+      );
 
   const statusLabel = reimbursement.isApproved ? "Genehmigt" : "Ausstehend";
   const statusVariant = reimbursement.isApproved ? "default" : "secondary";
@@ -137,18 +148,24 @@ export default function ReimbursementDetailPage() {
                   <div>
                     <p className="font-semibold">{receipt.companyName}</p>
                     <p className="text-sm text-muted-foreground">
-                      Beleg-Nr. {receipt.receiptNumber} • {formatDate(receipt.receiptDate)}
+                      Beleg-Nr. {receipt.receiptNumber} •{" "}
+                      {formatDate(receipt.receiptDate)}
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="font-semibold">{formatCurrency(receipt.grossAmount)}</p>
+                    <p className="font-semibold">
+                      {formatCurrency(receipt.grossAmount)}
+                    </p>
                     <p className="text-sm text-muted-foreground">
-                      {formatCurrency(receipt.netAmount)} netto + {receipt.taxRate}% USt
+                      {formatCurrency(receipt.netAmount)} netto +{" "}
+                      {receipt.taxRate}% USt
                     </p>
                   </div>
                 </div>
                 {receipt.description && (
-                  <p className="text-sm text-muted-foreground">{receipt.description}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {receipt.description}
+                  </p>
                 )}
                 {receipt.costType && (
                   <div className="flex items-center gap-2">

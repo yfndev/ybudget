@@ -11,9 +11,17 @@ const BudgetCardSkeleton = () => (
 export default function DonorDetailSkeleton() {
   return (
     <div>
-      <PageHeader title="Lädt..." subtitle="" showBackButton backUrl="/donors" />
+      <PageHeader
+        title="Lädt..."
+        subtitle=""
+        showBackButton
+        backUrl="/donors"
+      />
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6" id="tour-donor-budget">
+      <div
+        className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6"
+        id="tour-donor-budget"
+      >
         <BudgetCardSkeleton />
         <BudgetCardSkeleton />
         <BudgetCardSkeleton />

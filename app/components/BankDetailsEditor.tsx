@@ -28,7 +28,8 @@ export function BankDetailsEditor({
     if (editing) {
       const iban = value.iban.replace(/\s/g, "").toUpperCase();
       const bic = value.bic.replace(/\s/g, "").toUpperCase();
-      if (!value.accountHolder) return toast.error("Bitte Kontoinhaber eingeben");
+      if (!value.accountHolder)
+        return toast.error("Bitte Kontoinhaber eingeben");
       if (!IBAN_REGEX.test(iban)) return toast.error("Ungültige IBAN");
       if (!BIC_REGEX.test(bic)) return toast.error("Ungültige BIC");
       await save(value);
@@ -45,7 +46,9 @@ export function BankDetailsEditor({
       <div className="flex items-end gap-4">
         <div className="grid grid-cols-[1fr_2fr_1fr] gap-4 flex-1">
           <div>
-            <Label className="text-xs text-muted-foreground uppercase">Kontoinhaber</Label>
+            <Label className="text-xs text-muted-foreground uppercase">
+              Kontoinhaber
+            </Label>
             <Input
               value={value.accountHolder}
               onChange={(e) => update("accountHolder", e.target.value)}
@@ -53,7 +56,9 @@ export function BankDetailsEditor({
             />
           </div>
           <div>
-            <Label className="text-xs text-muted-foreground uppercase">IBAN</Label>
+            <Label className="text-xs text-muted-foreground uppercase">
+              IBAN
+            </Label>
             <Input
               value={value.iban}
               onChange={(e) => update("iban", e.target.value)}
@@ -63,7 +68,9 @@ export function BankDetailsEditor({
             />
           </div>
           <div>
-            <Label className="text-xs text-muted-foreground uppercase">BIC</Label>
+            <Label className="text-xs text-muted-foreground uppercase">
+              BIC
+            </Label>
             <Input
               value={value.bic}
               onChange={(e) => update("bic", e.target.value)}
