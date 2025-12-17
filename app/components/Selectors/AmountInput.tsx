@@ -34,7 +34,12 @@ export function AmountInput({
         inputMode="decimal"
         placeholder="0,00"
         value={value}
-        onChange={(e) => onChange(e.target.value.replace(/[^\d,]/g, ""))}
+        onChange={(e) => {
+          const raw = e.target.value.replace(/[^\d,]/g, "");
+          const [integer, decimal] = raw.split(",");
+          const limited = decimal !== undefined ? `${integer},${decimal.slice(0, 2)}` : raw;
+          onChange(limited);
+        }}
         autoFocus={autoFocus}
       />
       <InputGroupAddon align="inline-end">

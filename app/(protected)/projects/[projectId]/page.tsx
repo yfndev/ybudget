@@ -68,7 +68,11 @@ export default function ProjectDetailPage() {
         onDelete={handleDelete}
         onOpenTransfer={() => setIsTransferOpen(true)}
       />
-      <TransferDialog open={isTransferOpen} onOpenChange={setIsTransferOpen} />
+      <TransferDialog
+        open={isTransferOpen}
+        onOpenChange={setIsTransferOpen}
+        fromProjectId={projectId}
+      />
     </>
   );
 }

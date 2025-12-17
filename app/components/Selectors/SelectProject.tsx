@@ -11,9 +11,10 @@ import { useEffect, useRef, useState } from "react";
 interface Props {
   value: string;
   onValueChange: (value: string) => void;
+  autoFocus?: boolean;
 }
 
-export function SelectProject({ value, onValueChange }: Props) {
+export function SelectProject({ value, onValueChange, autoFocus }: Props) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [highlightedIndex, setHighlightedIndex] = useState(0);
@@ -41,6 +42,12 @@ export function SelectProject({ value, onValueChange }: Props) {
   }, [open]);
 
   useEffect(() => setHighlightedIndex(0), [search]);
+
+  useEffect(() => {
+    if (autoFocus) {
+      inputRef.current?.focus();
+    }
+  }, [autoFocus]);
 
   const close = () => {
     setOpen(false);
