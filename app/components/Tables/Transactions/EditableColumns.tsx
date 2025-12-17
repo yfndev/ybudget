@@ -2,8 +2,10 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import type { EnrichedTransaction } from "@/lib/calculations/transactionFilters";
 import { formatCurrency } from "@/lib/formatters/formatCurrency";
 import { formatDate } from "@/lib/formatters/formatDate";
+import type { Column, Row, Table } from "@tanstack/react-table";
 import { ArrowUpDown, Check, Pencil, Trash2, X } from "lucide-react";
 import {
   EditableAmountCell,
@@ -12,8 +14,13 @@ import {
   EditableProjectCell,
   EditableTextareaCell,
 } from "./EditableCells";
+import type { TableMeta } from "./EditableDataTable";
 
-function SortableHeader({ column, label }: { column: any; label: string }) {
+type TransactionRow = Row<EnrichedTransaction>;
+type TransactionTable = Table<EnrichedTransaction>;
+type TransactionColumn = Column<EnrichedTransaction>;
+
+function SortableHeader({ column, label }: { column: TransactionColumn; label: string }) {
   return (
     <Button
       variant="ghost"
@@ -26,10 +33,11 @@ function SortableHeader({ column, label }: { column: any; label: string }) {
   );
 }
 
-function ActionsCell({ row, table }: { row: any; table: any }) {
+function ActionsCell({ row, table }: { row: TransactionRow; table: TransactionTable }) {
+  const meta = table.options.meta as TableMeta | undefined;
   const rowId = row.original._id;
   const isPlanned = row.original.status === "expected";
-  const isEditing = table.options.meta?.editingRows?.has(rowId);
+  const isEditing = meta?.editingRows?.has(rowId);
 
   if (isEditing) {
     return (
@@ -37,7 +45,7 @@ function ActionsCell({ row, table }: { row: any; table: any }) {
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => table.options.meta?.onSave(rowId)}
+          onClick={() => meta?.onSave(rowId)}
           className="h-8 w-8 p-0 text-green-500 hover:text-green-600"
         >
           <Check className="h-4 w-4" />
@@ -45,7 +53,7 @@ function ActionsCell({ row, table }: { row: any; table: any }) {
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => table.options.meta?.onStopEditing(rowId)}
+          onClick={() => meta?.onStopEditing(rowId)}
           className="h-8 w-8 p-0 text-red-400 hover:text-red-500"
         >
           <X className="h-4 w-4" />
@@ -54,7 +62,7 @@ function ActionsCell({ row, table }: { row: any; table: any }) {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => table.options.meta?.onDelete(rowId)}
+            onClick={() => meta?.onDelete(rowId)}
             className="h-8 w-8 p-0 text-gray-400 hover:text-red-500"
           >
             <Trash2 className="h-4 w-4" />
@@ -70,7 +78,7 @@ function ActionsCell({ row, table }: { row: any; table: any }) {
         variant="ghost"
         size="sm"
         onClick={() =>
-          table.options.meta?.setEditingRows((prev: Set<string>) =>
+          meta?.setEditingRows((prev: Set<string>) =>
             new Set(prev).add(rowId),
           )
         }
@@ -82,12 +90,13 @@ function ActionsCell({ row, table }: { row: any; table: any }) {
   );
 }
 
-function getEditState(row: any, table: any) {
+function getEditState(row: TransactionRow, table: TransactionTable) {
+  const meta = table.options.meta as TableMeta | undefined;
   const rowId = row.original._id;
   const isPlanned = row.original.status === "expected";
-  const isEditing = table.options.meta?.editingRows?.has(rowId);
-  const onUpdate = (field: string, value: any) =>
-    table.options.meta?.onUpdate(rowId, field, value);
+  const isEditing = meta?.editingRows?.has(rowId);
+  const onUpdate = (field: string, value: unknown) =>
+    meta?.onUpdate(rowId, field, value);
   return { rowId, isPlanned, isEditing, onUpdate };
 }
 
