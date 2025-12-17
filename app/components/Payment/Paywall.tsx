@@ -12,12 +12,12 @@ import { api } from "@/convex/_generated/api";
 import { useAction, useQuery } from "convex/react";
 import { useState } from "react";
 
-interface PaywallProps {
+interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export function Paywall({ open, onOpenChange }: PaywallProps) {
+export function Paywall({ open, onOpenChange }: Props) {
   const [isLoading, setIsLoading] = useState(false);
   const initializePayment = useAction(api.stripe.pay);
   const user = useQuery(api.users.queries.getCurrentUserProfile);

@@ -30,15 +30,15 @@ interface TimeSlot {
   label: string;
 }
 
+type Transaction = Doc<"transactions">;
+
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
-function isMonthlyRange(from: Date, to: Date): boolean {
-  return (
-    differenceInMonths(to, from) >= 11 || differenceInDays(to, from) >= 335
-  );
+export function isMonthlyRange(from: Date, to: Date): boolean {
+  return differenceInMonths(to, from) >= 11 || differenceInDays(to, from) >= 335;
 }
 
-function isWeeklyRange(from: Date, to: Date): boolean {
+export function isWeeklyRange(from: Date, to: Date): boolean {
   return differenceInMonths(to, from) >= 3 || differenceInDays(to, from) > 90;
 }
 
@@ -57,7 +57,7 @@ function createMonthTimeSlots(from: Date, to: Date): TimeSlot[] {
 function createWeekTimeSlots(from: Date, to: Date): TimeSlot[] {
   const weekStart = startOfWeek(from, { weekStartsOn: 1 });
   const totalWeeks = Math.ceil((to.getTime() - weekStart.getTime()) / WEEK_MS);
-  const slots: TimeSlot[] = [];
+  const slots: Array<TimeSlot> = [];
 
   for (let index = 0; index <= totalWeeks; index++) {
     const weekDate = addWeeks(weekStart, index);
@@ -90,64 +90,51 @@ function determineTimeSlots(from: Date, to: Date): TimeSlot[] {
   return createDayTimeSlots(from, to);
 }
 
-function sumIncome(transactions: Doc<"transactions">[]): number {
-  return transactions.reduce(
-    (total, transaction) => total + (transaction.amount > 0 ? transaction.amount : 0),
-    0,
-  );
+function sumBySign(transactions: Transaction[], positive: boolean): number {
+  return transactions.reduce((total, tx) => {
+    if (positive && tx.amount > 0) return total + tx.amount;
+    if (!positive && tx.amount < 0) return total + Math.abs(tx.amount);
+    return total;
+  }, 0);
 }
 
-function sumExpenses(transactions: Doc<"transactions">[]): number {
-  return transactions.reduce(
-    (total, transaction) => total + (transaction.amount < 0 ? Math.abs(transaction.amount) : 0),
-    0,
-  );
-}
-
-function aggregateTransactions(transactions: Doc<"transactions">[]) {
-  const processed = transactions.filter((transaction) => transaction.status === "processed");
-  const expected = transactions.filter((transaction) => transaction.status === "expected");
+function aggregateTransactions(transactions: Transaction[]) {
+  const processed = transactions.filter((tx) => tx.status === "processed");
+  const expected = transactions.filter((tx) => tx.status === "expected");
 
   return {
-    processedIncome: sumIncome(processed),
-    expectedIncome: sumIncome(expected),
-    processedExpenses: sumExpenses(processed),
-    expectedExpenses: sumExpenses(expected),
+    processedIncome: sumBySign(processed, true),
+    expectedIncome: sumBySign(expected, true),
+    processedExpenses: sumBySign(processed, false),
+    expectedExpenses: sumBySign(expected, false),
   };
 }
 
-function calculateBalance(
-  transactions: Doc<"transactions">[],
-  startBalance: number,
-  endTime: number,
-): number {
+function calculateBalance(transactions: Transaction[], startBalance: number, endTime: number): number {
   return transactions.reduce(
-    (balance, transaction) => (transaction.date < endTime ? balance + transaction.amount : balance),
+    (balance, tx) => (tx.date < endTime ? balance + tx.amount : balance),
     startBalance,
   );
 }
 
 export function buildCashflowData(
-  transactions: Doc<"transactions">[],
+  transactions: Transaction[],
   startBalance: number,
   from: Date,
   to: Date,
 ): CashflowDataPoint[] {
+  const fromTime = from.getTime();
+  const toTime = to.getTime();
+
   const filtered = transactions
-    .filter((transaction) => {
-      const date = new Date(transaction.date);
-      return date >= from && date <= to;
-    })
+    .filter((tx) => tx.date >= fromTime && tx.date <= toTime)
     .sort((a, b) => a.date - b.date);
 
   return determineTimeSlots(from, to).map((slot) => {
     const start = slot.start.getTime();
     const end = slot.end.getTime();
-    const slotTransactions = filtered.filter(
-      (transaction) => transaction.date >= start && transaction.date < end,
-    );
+    const slotTransactions = filtered.filter((tx) => tx.date >= start && tx.date < end);
     const totals = aggregateTransactions(slotTransactions);
-    const balance = calculateBalance(filtered, startBalance, end);
 
     return {
       date: slot.label,
@@ -155,19 +142,17 @@ export function buildCashflowData(
       expectedIncome: totals.expectedIncome,
       actualExpenses: -totals.processedExpenses,
       expectedExpenses: -totals.expectedExpenses,
-      balance,
+      balance: calculateBalance(filtered, startBalance, end),
       timestamp: start,
     };
   });
 }
 
-export function calculateStartBalance(
-  transactions: Doc<"transactions">[] | undefined,
-): number {
+export function calculateStartBalance(transactions: Transaction[] | undefined): number {
   if (!transactions) return 0;
   return transactions
-    .filter((transaction) => transaction.status === "processed")
-    .reduce((total, transaction) => total + transaction.amount, 0);
+    .filter((tx) => tx.status === "processed")
+    .reduce((total, tx) => total + tx.amount, 0);
 }
 
 function getTickStep(maxValue: number): number {
@@ -185,17 +170,12 @@ function getTickStep(maxValue: number): number {
 function findMaxBarValue(dataPoints: CashflowDataPoint[]): number {
   return dataPoints.reduce((max, point) => {
     const totalIncome = Math.abs(point.actualIncome + point.expectedIncome);
-    const totalExpenses = Math.abs(
-      point.actualExpenses + point.expectedExpenses,
-    );
+    const totalExpenses = Math.abs(point.actualExpenses + point.expectedExpenses);
     return Math.max(max, totalIncome, totalExpenses);
   }, 0);
 }
 
-function findBalanceRange(dataPoints: CashflowDataPoint[]): {
-  min: number;
-  max: number;
-} {
+function findBalanceRange(dataPoints: CashflowDataPoint[]): { min: number; max: number } {
   if (dataPoints.length === 0) return { min: 0, max: 0 };
 
   return dataPoints.reduce(
@@ -207,43 +187,27 @@ function findBalanceRange(dataPoints: CashflowDataPoint[]): {
   );
 }
 
-export function calculateAxisConfig(
-  dataPoints: CashflowDataPoint[],
-  from: Date,
-  to: Date,
-) {
+export function calculateAxisConfig(dataPoints: CashflowDataPoint[], from: Date, to: Date) {
   const maxBarValue = findMaxBarValue(dataPoints);
   const balanceRange = findBalanceRange(dataPoints);
-  const maxValue = Math.max(
-    maxBarValue,
-    Math.abs(balanceRange.min),
-    Math.abs(balanceRange.max),
-  );
+  const maxValue = Math.max(maxBarValue, Math.abs(balanceRange.min), Math.abs(balanceRange.max));
 
   const step = getTickStep(maxValue);
   const roundedMax = Math.ceil(maxValue / step) * step;
 
-  const yAxisTicks: number[] = [];
+  const yAxisTicks: Array<number> = [];
   for (let tick = -roundedMax; tick <= roundedMax; tick += step) {
     yAxisTicks.push(tick);
   }
 
   const isLongTimeSlot = isMonthlyRange(from, to);
-
-  let xAxisInterval = 0;
-  if (!isLongTimeSlot) {
-    const count = dataPoints.length - 1;
-    xAxisInterval = Math.max(
-      0,
-      Math.floor(count / (isWeeklyRange(from, to) ? 12 : 10)),
-    );
-  }
+  const count = dataPoints.length - 1;
+  const xAxisInterval = isLongTimeSlot ? 0 : Math.max(0, Math.floor(count / (isWeeklyRange(from, to) ? 12 : 10)));
 
   return {
     xAxisInterval,
     yAxisTicks,
     roundedMaxBarValue: roundedMax,
-    maxBarValue,
     isLongTimeSlot,
     isManyDataPoints: dataPoints.length > 31,
   };

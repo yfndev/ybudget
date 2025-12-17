@@ -20,7 +20,7 @@ const Stat = ({ label, value }: { label: string; value: number }) => (
   </div>
 );
 
-export default function DonorCard({ donorId }: { donorId: Id<"donors"> }) {
+export function DonorCard({ donorId }: { donorId: Id<"donors"> }) {
   const donor = useQuery(api.donors.queries.getDonorById, { donorId });
 
   if (!donor) {

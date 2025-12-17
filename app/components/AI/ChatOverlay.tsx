@@ -1,6 +1,5 @@
 "use client";
 
-
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -15,8 +14,8 @@ import { useUIMessages } from "@convex-dev/agent/react";
 import { useMutation } from "convex/react";
 import { Bot, Send } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import LoadingDots from "./LoadingDots";
-import RenderAIText from "./renderAIText";
+import { LoadingDots } from "./LoadingDots";
+import { RenderAIText } from "./RenderAIText";
 
 const STARTERS = [
   "Was waren die 10 größten Ausgaben dieses Jahr?",
@@ -24,13 +23,12 @@ const STARTERS = [
   "Liste alle offenen Erstattungen auf",
 ];
 
-export function ChatOverlay({
-  open,
-  onOpenChange,
-}: {
+interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}) {
+}
+
+export function ChatOverlay({ open, onOpenChange }: Props) {
   const [threadId, setThreadId] = useState<string | null>(null);
   const [input, setInput] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);

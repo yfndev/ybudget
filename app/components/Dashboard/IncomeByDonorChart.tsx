@@ -13,12 +13,12 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
-import { useDateRange } from "@/lib/contexts/DateRangeContext";
-import { formatCurrency } from "@/lib/formatters/formatCurrency";
 import {
   filterTransactionsByDateRange,
   type EnrichedTransaction,
 } from "@/lib/calculations/transactionFilters";
+import { useDateRange } from "@/lib/contexts/DateRangeContext";
+import { formatCurrency } from "@/lib/formatters/formatCurrency";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
 import { Bar, BarChart, XAxis, YAxis } from "recharts";
@@ -26,10 +26,10 @@ import { Bar, BarChart, XAxis, YAxis } from "recharts";
 function aggregateByDonor(transactions: EnrichedTransaction[]) {
   const byDonor = new Map<string, number>();
 
-  for (const t of transactions) {
-    if (t.amount <= 0) continue;
-    const name = t.donorName ?? "Ohne Förderer";
-    byDonor.set(name, (byDonor.get(name) ?? 0) + t.amount);
+  for (const tx of transactions) {
+    if (tx.amount <= 0) continue;
+    const name = tx.donorName ?? "Ohne Förderer";
+    byDonor.set(name, (byDonor.get(name) ?? 0) + tx.amount);
   }
 
   return Array.from(byDonor.entries())
@@ -41,20 +41,21 @@ const chartConfig = {
   value: { label: "Einnahmen", color: "var(--chart-1)" },
 } satisfies ChartConfig;
 
-interface IncomeByDonorChartProps {
+interface Props {
   transactions: EnrichedTransaction[] | undefined;
 }
 
-export function IncomeByDonorChart({ transactions }: IncomeByDonorChartProps) {
+export function IncomeByDonorChart({ transactions }: Props) {
   const { selectedDateRange } = useDateRange();
+  const { from, to } = selectedDateRange;
 
   const filtered = filterTransactionsByDateRange(
     transactions,
-    selectedDateRange,
+    selectedDateRange
   );
   const data = filtered ? aggregateByDonor(filtered) : [];
 
-  const dateRangeText = `${format(selectedDateRange.from, "d. MMM yyyy", { locale: de })} - ${format(selectedDateRange.to, "d. MMM yyyy", { locale: de })}`;
+  const dateRangeText = `${format(from, "d. MMM yyyy", { locale: de })} - ${format(to, "d. MMM yyyy", { locale: de })}`;
 
   if (transactions === undefined) {
     return (

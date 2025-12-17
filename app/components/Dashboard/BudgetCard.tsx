@@ -6,7 +6,7 @@ interface BudgetCardTypes {
   description?: string;
 }
 
-const BudgetCard = ({ title, amount, description }: BudgetCardTypes) => {
+export function BudgetCard({ title, amount, description }: BudgetCardTypes) {
   return (
     <div className="border rounded-lg w-full p-3 sm:p-4 flex flex-col h-full">
       <h3 className="text-sm sm:text-base font-semibold">{title}</h3>
@@ -18,6 +18,4 @@ const BudgetCard = ({ title, amount, description }: BudgetCardTypes) => {
       </span>
     </div>
   );
-};
-
-export default BudgetCard;
+}

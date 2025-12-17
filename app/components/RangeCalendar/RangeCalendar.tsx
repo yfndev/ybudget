@@ -25,20 +25,17 @@ interface DateRange {
   to: Date;
 }
 
-interface RangeCalendarProps {
+interface Props {
   selectedDateRange: DateRange;
   onDateRangeChange: (dateRange: DateRange) => void;
 }
 
-const RangeCalendar = ({
-  selectedDateRange,
-  onDateRangeChange,
-}: RangeCalendarProps) => {
+export function RangeCalendar({ selectedDateRange, onDateRangeChange }: Props) {
   const today = new Date();
   const [month, setMonth] = useState(today);
   const oldestDate = useQuery(
     api.transactions.queries.getOldestTransactionDate,
-    {},
+    {}
   );
 
   const presets: Array<{ key: string; label: string; range: DateRange }> = [
@@ -123,6 +120,6 @@ const RangeCalendar = ({
       </CardFooter>
     </Card>
   );
-};
+}
 
 export default RangeCalendar;

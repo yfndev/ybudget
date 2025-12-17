@@ -32,11 +32,11 @@ type Receipt = Omit<
 
 const toNet = (gross: number, tax: number) => gross / (1 + tax / 100);
 
-export function ReimbursementFormUI({
-  defaultBankDetails,
-}: {
+interface Props {
   defaultBankDetails: BankDetails;
-}) {
+}
+
+export function ReimbursementFormUI({ defaultBankDetails }: Props) {
   const router = useRouter();
   const submit = useMutation(api.reimbursements.functions.createReimbursement);
 
@@ -56,18 +56,18 @@ export function ReimbursementFormUI({
   const net = draft.gross ? toNet(draft.gross, draft.tax) : 0;
   const totalGross = receipts.reduce(
     (sum, receipt) => sum + receipt.grossAmount,
-    0,
+    0
   );
   const totalNet = receipts.reduce(
     (sum, receipt) => sum + receipt.netAmount,
-    0,
+    0
   );
   const taxByRate = (rate: number) =>
     receipts
       .filter((receipt) => receipt.taxRate === rate)
       .reduce(
         (sum, receipt) => sum + receipt.grossAmount - receipt.netAmount,
-        0,
+        0
       );
 
   const addReceipt = () => {

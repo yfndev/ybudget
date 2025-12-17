@@ -22,11 +22,11 @@ import toast from "react-hot-toast";
 
 type BankDetails = { iban: string; bic: string; accountHolder: string };
 
-export function VolunteerAllowanceFormUI({
-  defaultBankDetails,
-}: {
+interface Props {
   defaultBankDetails: BankDetails;
-}) {
+}
+
+export function VolunteerAllowanceFormUI({ defaultBankDetails }: Props) {
   const router = useRouter();
   const currentUser = useQuery(api.users.queries.getCurrentUserProfile);
   const submit = useMutation(api.volunteerAllowance.functions.create);

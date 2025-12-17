@@ -14,13 +14,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";
 import { useState } from "react";
 
-interface EditableCellProps {
+interface Props {
   value: any;
   onSave: (value: any) => void;
   displayValue?: string;
 }
 
-export function EditableAmountCell({ value, onSave }: EditableCellProps) {
+export function EditableAmountCell({ value, onSave }: Props) {
   const [editValue, setEditValue] = useState(Math.abs(value || 0).toString());
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,7 +46,7 @@ export function EditableAmountCell({ value, onSave }: EditableCellProps) {
 export function EditableDateCell({ value, onSave }: EditableCellProps) {
   const dateValue = value ? new Date(value) : null;
   const [editValue, setEditValue] = useState(
-    dateValue ? format(dateValue, "yyyy-MM-dd") : "",
+    dateValue ? format(dateValue, "yyyy-MM-dd") : ""
   );
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

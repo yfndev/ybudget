@@ -29,13 +29,12 @@ type Taxsphere =
   | "purpose-operations"
   | "commercial-operations";
 
-export function CreateCategoryDialog({
-  open,
-  onOpenChange,
-}: {
+interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}) {
+}
+
+export  function CreateCategoryDialog({ open, onOpenChange }: Props) {
   const [name, setName] = useState("");
   const [taxsphere, setTaxsphere] = useState<Taxsphere>("non-profit");
   const [parentId, setParentId] = useState<Id<"categories"> | undefined>();

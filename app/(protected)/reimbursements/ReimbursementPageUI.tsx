@@ -41,7 +41,7 @@ type RejectDialog = {
   note: string;
 };
 
-interface ReimbursementPageUIProps {
+interface Props {
   isAdmin: boolean;
   isLoading: boolean;
   reimbursements: Reimbursement[];
@@ -54,7 +54,7 @@ interface ReimbursementPageUIProps {
   onApproveAllowance: (id: Id<"volunteerAllowance">) => void;
   onOpenRejectDialog: (
     type: "reimbursement" | "allowance",
-    id: Id<"reimbursements"> | Id<"volunteerAllowance">,
+    id: Id<"reimbursements"> | Id<"volunteerAllowance">
   ) => void;
   onRejectDialogChange: (dialog: RejectDialog) => void;
   onReject: () => void;
@@ -82,7 +82,7 @@ export default function ReimbursementPageUI({
   onDownloadAllowance,
   onDeleteReimbursement,
   onDeleteAllowance,
-}: ReimbursementPageUIProps) {
+}: Props) {
   const isEmpty = reimbursements.length === 0 && allowances.length === 0;
 
   return (

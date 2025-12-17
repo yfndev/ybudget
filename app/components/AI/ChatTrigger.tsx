@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Button } from "../ui/button";
 import { ChatOverlay } from "./ChatOverlay";
 
-export default function ChatTrigger() {
+export function ChatTrigger() {
   const [open, setOpen] = useState(false);
 
   return (

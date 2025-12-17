@@ -16,7 +16,7 @@ import { useMutation, useQuery } from "convex/react";
 import { Shield } from "lucide-react";
 import { toast } from "react-hot-toast";
 
-interface UserRowProps {
+interface Props {
   user: {
     _id: Id<"users">;
     name?: string;
@@ -28,7 +28,7 @@ interface UserRowProps {
   isAdmin: boolean;
 }
 
-export default function UserRow({ user, onRoleChange, isAdmin }: UserRowProps) {
+export function UserRow({ user, onRoleChange, isAdmin }: Props) {
   const allTeams = useQuery(api.teams.queries.getAllTeams);
   const userTeams = useQuery(api.teams.queries.getUserTeams, {
     userId: user._id,
