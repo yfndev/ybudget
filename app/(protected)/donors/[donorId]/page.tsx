@@ -14,14 +14,14 @@ export default function DonorDetailPage() {
   const { results: transactions, status } = usePaginatedQuery(
     api.transactions.queries.getPaginatedTransactions,
     { donorId },
-    { initialNumItems: 50 }
+    { initialNumItems: 50 },
   );
 
   const updateTransaction = useMutation(
-    api.transactions.functions.updateTransaction
+    api.transactions.functions.updateTransaction,
   );
   const deleteTransaction = useMutation(
-    api.transactions.functions.deleteExpectedTransaction
+    api.transactions.functions.deleteExpectedTransaction,
   );
 
   const handleUpdate = async (rowId: string, field: string, value: unknown) => {

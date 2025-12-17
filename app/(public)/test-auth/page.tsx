@@ -20,7 +20,9 @@ export default function TestAuthPage() {
       await signIn("testing", { email, name });
       router.push("/dashboard");
     } catch (error) {
-      setStatus(`Error: ${error instanceof Error ? error.message : "Unknown error"}`);
+      setStatus(
+        `Error: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     }
   };
 

@@ -54,7 +54,7 @@ interface Props {
   onApproveAllowance: (id: Id<"volunteerAllowance">) => void;
   onOpenRejectDialog: (
     type: "reimbursement" | "allowance",
-    id: Id<"reimbursements"> | Id<"volunteerAllowance">
+    id: Id<"reimbursements"> | Id<"volunteerAllowance">,
   ) => void;
   onRejectDialogChange: (dialog: RejectDialog) => void;
   onReject: () => void;
@@ -64,7 +64,7 @@ interface Props {
   onDeleteAllowance: (id: Id<"volunteerAllowance">) => void;
 }
 
-export  function ReimbursementPageUI({
+export function ReimbursementPageUI({
   isAdmin,
   isLoading,
   reimbursements,

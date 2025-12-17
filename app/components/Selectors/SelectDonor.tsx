@@ -24,18 +24,18 @@ export function SelectDonor({ value, onValueChange, projectId }: Props) {
 
   const allDonors = useQuery(
     api.donors.queries.getAllDonors,
-    projectId ? "skip" : {}
+    projectId ? "skip" : {},
   );
   const projectDonors = useQuery(
     api.donors.queries.getDonorsByProject,
-    projectId ? { projectId } : "skip"
+    projectId ? { projectId } : "skip",
   );
   const donors = projectId ? projectDonors : allDonors;
 
   const selected = donors?.find((donor) => donor._id === value);
   const filtered =
     donors?.filter((donor) =>
-      donor.name.toLowerCase().includes(search.toLowerCase())
+      donor.name.toLowerCase().includes(search.toLowerCase()),
     ) ?? [];
 
   useEffect(() => {
@@ -78,7 +78,7 @@ export function SelectDonor({ value, onValueChange, projectId }: Props) {
     if (e.key === "ArrowUp" && open) {
       e.preventDefault();
       setHighlightedIndex(
-        (current) => (current - 1 + filtered.length) % filtered.length
+        (current) => (current - 1 + filtered.length) % filtered.length,
       );
       return;
     }
@@ -98,7 +98,7 @@ export function SelectDonor({ value, onValueChange, projectId }: Props) {
           ref={inputRef}
           className={cn(
             "h-9 w-full rounded-md bg-muted px-3 pr-8 text-sm outline-none",
-            open || !selected ? "text-muted-foreground" : "text-foreground"
+            open || !selected ? "text-muted-foreground" : "text-foreground",
           )}
           placeholder="Förderer suchen..."
           value={open ? search : (selected?.name ?? "")}
@@ -124,7 +124,7 @@ export function SelectDonor({ value, onValueChange, projectId }: Props) {
                 type="button"
                 className={cn(
                   "w-full text-left px-3 py-2 text-sm flex items-center justify-between",
-                  index === highlightedIndex && "bg-accent"
+                  index === highlightedIndex && "bg-accent",
                 )}
                 onClick={() => handleSelect(donor._id)}
                 onMouseEnter={() => setHighlightedIndex(index)}

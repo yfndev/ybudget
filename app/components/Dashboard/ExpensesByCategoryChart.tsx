@@ -50,7 +50,7 @@ function buildChartConfig(data: Array<{ name: string }>): ChartConfig {
     data.map((item, index) => [
       item.name,
       { label: item.name, color: CHART_COLORS[index % CHART_COLORS.length] },
-    ])
+    ]),
   );
 }
 
@@ -64,7 +64,7 @@ export function ExpensesByCategoryChart({ transactions }: Props) {
 
   const filtered = filterTransactionsByDateRange(
     transactions,
-    selectedDateRange
+    selectedDateRange,
   );
   const data = filtered ? aggregateByCategory(filtered) : [];
   const chartConfig = buildChartConfig(data);

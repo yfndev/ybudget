@@ -35,7 +35,9 @@ export function TransactionSheet({ type, open, onOpenChange }: Props) {
   const [project, setProject] = useState("");
   const [donor, setDonor] = useState("");
 
-  const addTransaction = useMutation(api.transactions.functions.createExpectedTransaction);
+  const addTransaction = useMutation(
+    api.transactions.functions.createExpectedTransaction,
+  );
 
   const isExpense = type === "expense";
   const isFormValid = amount && project && counterparty && category && date;
@@ -68,12 +70,16 @@ export function TransactionSheet({ type, open, onOpenChange }: Props) {
         status: "expected",
         donorId: donor ? (donor as Id<"donors">) : undefined,
       });
-      toast.success(isExpense ? "Ausgabe gespeichert!" : "Einnahme gespeichert!");
+      toast.success(
+        isExpense ? "Ausgabe gespeichert!" : "Einnahme gespeichert!",
+      );
       onOpenChange(false);
     } catch (error) {
       const message = error instanceof Error ? error.message : "";
       if (message.includes("cannot be used for category")) {
-        toast.error("Der Förderer kann nicht für diese Kategorie verwendet werden.");
+        toast.error(
+          "Der Förderer kann nicht für diese Kategorie verwendet werden.",
+        );
       } else {
         toast.error("Fehler beim Speichern");
       }
@@ -109,7 +115,9 @@ export function TransactionSheet({ type, open, onOpenChange }: Props) {
 
         <div className="flex-1 flex flex-col gap-6 px-6 py-4">
           <div className="flex flex-col gap-3">
-            <Label htmlFor="amount" className="text-base">Wie viel?</Label>
+            <Label htmlFor="amount" className="text-base">
+              Wie viel?
+            </Label>
             <AmountInput value={amount} onChange={setAmount} autoFocus />
           </div>
 
@@ -119,10 +127,14 @@ export function TransactionSheet({ type, open, onOpenChange }: Props) {
           </div>
 
           <div className="flex flex-col gap-2">
-            <Label htmlFor="counterparty">{isExpense ? "Empfänger" : "Von"}</Label>
+            <Label htmlFor="counterparty">
+              {isExpense ? "Empfänger" : "Von"}
+            </Label>
             <Input
               id="counterparty"
-              placeholder={isExpense ? "z.B. Lieferant, Firma..." : "z.B. Kunde, Firma..."}
+              placeholder={
+                isExpense ? "z.B. Lieferant, Firma..." : "z.B. Kunde, Firma..."
+              }
               value={counterparty}
               onChange={(e) => setCounterparty(e.target.value)}
             />
@@ -132,7 +144,9 @@ export function TransactionSheet({ type, open, onOpenChange }: Props) {
             <Label htmlFor="description">Beschreibung</Label>
             <Textarea
               id="description"
-              placeholder={isExpense ? "Details zur Ausgabe..." : "Details zur Einnahme..."}
+              placeholder={
+                isExpense ? "Details zur Ausgabe..." : "Details zur Einnahme..."
+              }
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               className="min-h-[80px] resize-none"
@@ -164,7 +178,10 @@ export function TransactionSheet({ type, open, onOpenChange }: Props) {
             {isExpense ? "Ausgabe planen" : "Einnahme erfassen"}
           </Button>
           <p className="text-xs text-muted-foreground text-center">
-            oder <kbd className="bg-muted px-1.5 py-0.5 rounded text-xs">⌘ Enter</kbd>
+            oder{" "}
+            <kbd className="bg-muted px-1.5 py-0.5 rounded text-xs">
+              ⌘ Enter
+            </kbd>
           </p>
         </div>
       </SheetContent>

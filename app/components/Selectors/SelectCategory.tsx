@@ -76,12 +76,12 @@ export function SelectCategory({ value, onValueChange }: Props) {
     const groupIndex = grouped.findIndex(
       (group) =>
         group.parent._id === value ||
-        group.children.some((child) => child._id === value)
+        group.children.some((child) => child._id === value),
     );
     setActiveGroupIndex(Math.max(0, groupIndex));
     if (groupIndex >= 0) {
       const itemIndex = grouped[groupIndex].children.findIndex(
-        (child) => child._id === value
+        (child) => child._id === value,
       );
       setActiveItemIndex(Math.max(0, itemIndex));
     }
@@ -107,7 +107,7 @@ export function SelectCategory({ value, onValueChange }: Props) {
       e.preventDefault();
       setActiveItemIndex(
         (current) =>
-          (current - 1 + activeChildren.length) % activeChildren.length
+          (current - 1 + activeChildren.length) % activeChildren.length,
       );
       return;
     }
@@ -122,7 +122,7 @@ export function SelectCategory({ value, onValueChange }: Props) {
     if (e.key === "ArrowLeft" && open) {
       e.preventDefault();
       setActiveGroupIndex(
-        (current) => (current - 1 + filtered.length) % filtered.length
+        (current) => (current - 1 + filtered.length) % filtered.length,
       );
       setActiveItemIndex(0);
       return;
@@ -145,7 +145,7 @@ export function SelectCategory({ value, onValueChange }: Props) {
         ref={inputRef}
         className={cn(
           "h-9 w-full rounded-md bg-muted px-3 pr-8 text-sm outline-none",
-          open || !selected ? "text-muted-foreground" : "text-foreground"
+          open || !selected ? "text-muted-foreground" : "text-foreground",
         )}
         placeholder="Kategorie suchen..."
         value={open ? search : (selected?.name ?? "")}
@@ -173,7 +173,7 @@ export function SelectCategory({ value, onValueChange }: Props) {
                   type="button"
                   className={cn(
                     "w-full text-left px-4 py-3 text-sm font-semibold hover:bg-accent/50",
-                    index === activeGroupIndex && "bg-accent"
+                    index === activeGroupIndex && "bg-accent",
                   )}
                   onMouseEnter={() => {
                     setActiveGroupIndex(index);
@@ -193,7 +193,7 @@ export function SelectCategory({ value, onValueChange }: Props) {
                     "w-full text-left px-3 py-2 hover:bg-accent",
                     index === activeItemIndex && "bg-accent",
                     value === item._id && "bg-accent/50",
-                    isTaxWarning(item) && "bg-red-50"
+                    isTaxWarning(item) && "bg-red-50",
                   )}
                   onClick={() => handleSelect(item._id)}
                   onMouseEnter={() => setActiveItemIndex(index)}
@@ -208,7 +208,7 @@ export function SelectCategory({ value, onValueChange }: Props) {
               ))}
             </div>
           </div>,
-          document.body
+          document.body,
         )}
     </div>
   );
@@ -224,7 +224,7 @@ function groupCategories(categories: Category[]): CategoryGroup[] {
 
 function filterGroups(
   groups: CategoryGroup[],
-  search: string
+  search: string,
 ): CategoryGroup[] {
   if (!search) return groups;
   const term = search.toLowerCase();
@@ -234,7 +234,7 @@ function filterGroups(
     .map((group) => ({
       parent: group.parent,
       children: group.children.filter(
-        (child) => matches(child.name) || matches(group.parent.name)
+        (child) => matches(child.name) || matches(group.parent.name),
       ),
     }))
     .filter((group) => group.children.length > 0 || matches(group.parent.name));

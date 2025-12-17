@@ -35,7 +35,7 @@ export function RangeCalendar({ selectedDateRange, onDateRangeChange }: Props) {
   const [month, setMonth] = useState(today);
   const oldestDate = useQuery(
     api.transactions.queries.getOldestTransactionDate,
-    {}
+    {},
   );
 
   const presets: Array<{ key: string; label: string; range: DateRange }> = [

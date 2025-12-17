@@ -34,7 +34,7 @@ export function ShareSignatureModal({
 
   const tokenData = useQuery(
     api.volunteerAllowance.queries.getSignatureToken,
-    open ? { token } : "skip"
+    open ? { token } : "skip",
   );
 
   useEffect(() => {

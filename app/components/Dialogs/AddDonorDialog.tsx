@@ -36,11 +36,7 @@ interface Props {
   onDonorCreated?: (donorId: string) => void;
 }
 
-export function AddDonorDialog({
-  open,
-  onOpenChange,
-  onDonorCreated,
-}: Props) {
+export function AddDonorDialog({ open, onOpenChange, onDonorCreated }: Props) {
   const [name, setName] = useState("");
   const [type, setType] = useState<"donation" | "sponsoring">("donation");
   const [onlyNonProfit, setOnlyNonProfit] = useState(false);

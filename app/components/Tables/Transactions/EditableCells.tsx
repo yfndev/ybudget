@@ -50,7 +50,7 @@ export function EditableAmountCell({ value, onSave }: EditableNumberCellProps) {
 export function EditableDateCell({ value, onSave }: EditableNumberCellProps) {
   const dateValue = value ? new Date(value) : null;
   const [editValue, setEditValue] = useState(
-    dateValue ? format(dateValue, "yyyy-MM-dd") : ""
+    dateValue ? format(dateValue, "yyyy-MM-dd") : "",
   );
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

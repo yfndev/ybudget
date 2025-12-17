@@ -51,7 +51,7 @@ const chartConfig = {
 
 function formatTooltipLabel(
   _: string,
-  payload: Array<{ payload?: { timestamp?: number } }>
+  payload: Array<{ payload?: { timestamp?: number } }>,
 ) {
   const timestamp = payload?.[0]?.payload?.timestamp;
   if (!timestamp) return "";
@@ -76,7 +76,7 @@ export function CashflowChartUI({ transactions: providedTransactions }: Props) {
 
   const allTransactionsQuery = useQuery(
     api.transactions.queries.getAllTransactions,
-    providedTransactions ? "skip" : {}
+    providedTransactions ? "skip" : {},
   );
 
   const sourceTransactions = providedTransactions || allTransactionsQuery;
@@ -88,7 +88,7 @@ export function CashflowChartUI({ transactions: providedTransactions }: Props) {
     ? filterTransactionsBeforeDate(
         sourceTransactions,
         getPastEndDate(from),
-        (tx) => tx.status === "processed"
+        (tx) => tx.status === "processed",
       )
     : undefined;
 

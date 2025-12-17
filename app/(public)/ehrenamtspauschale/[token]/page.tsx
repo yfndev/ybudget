@@ -18,11 +18,18 @@ import toast from "react-hot-toast";
 export default function ExternalEhrenamtspauschalePage() {
   const { token } = useParams<{ token: string }>();
 
-  const tokenData = useQuery(api.volunteerAllowance.queries.validateToken, { token });
-  const generateUploadUrl = useMutation(api.volunteerAllowance.functions.generatePublicUploadUrl);
-  const submitExternal = useMutation(api.volunteerAllowance.functions.submitExternal);
+  const tokenData = useQuery(api.volunteerAllowance.queries.validateToken, {
+    token,
+  });
+  const generateUploadUrl = useMutation(
+    api.volunteerAllowance.functions.generatePublicUploadUrl,
+  );
+  const submitExternal = useMutation(
+    api.volunteerAllowance.functions.submitExternal,
+  );
 
-  const [signatureStorageId, setSignatureStorageId] = useState<Id<"_storage"> | null>(null);
+  const [signatureStorageId, setSignatureStorageId] =
+    useState<Id<"_storage"> | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -45,7 +52,11 @@ export default function ExternalEhrenamtspauschalePage() {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
-  if (tokenData?.valid && !form.activityDescription && tokenData.activityDescription) {
+  if (
+    tokenData?.valid &&
+    !form.activityDescription &&
+    tokenData.activityDescription
+  ) {
     setForm((prev) => ({
       ...prev,
       activityDescription: tokenData.activityDescription || "",
@@ -55,17 +66,26 @@ export default function ExternalEhrenamtspauschalePage() {
   }
 
   const handleSubmit = async () => {
-    if (!form.volunteerName || !form.volunteerStreet || !form.volunteerPlz || !form.volunteerCity) {
+    if (
+      !form.volunteerName ||
+      !form.volunteerStreet ||
+      !form.volunteerPlz ||
+      !form.volunteerCity
+    ) {
       return toast.error("Bitte alle persönlichen Daten ausfüllen");
     }
     if (!form.activityDescription || !form.startDate || !form.endDate) {
       return toast.error("Bitte Tätigkeit und Zeitraum angeben");
     }
     const amount = parseFloat(form.amount);
-    if (!amount || amount <= 0) return toast.error("Bitte einen gültigen Betrag eingeben");
-    if (amount > 840) return toast.error("Ehrenamtspauschale darf 840€ nicht überschreiten");
-    if (!form.iban || !form.bic || !form.accountHolder) return toast.error("Bitte Bankdaten ausfüllen");
-    if (!form.confirmation) return toast.error("Bitte die Bestätigung ankreuzen");
+    if (!amount || amount <= 0)
+      return toast.error("Bitte einen gültigen Betrag eingeben");
+    if (amount > 840)
+      return toast.error("Ehrenamtspauschale darf 840€ nicht überschreiten");
+    if (!form.iban || !form.bic || !form.accountHolder)
+      return toast.error("Bitte Bankdaten ausfüllen");
+    if (!form.confirmation)
+      return toast.error("Bitte die Bestätigung ankreuzen");
     if (!signatureStorageId) return toast.error("Bitte unterschreiben");
 
     setIsSubmitting(true);
@@ -87,7 +107,9 @@ export default function ExternalEhrenamtspauschalePage() {
       });
       setSubmitted(true);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Fehler beim Einreichen");
+      toast.error(
+        error instanceof Error ? error.message : "Fehler beim Einreichen",
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -120,8 +142,8 @@ export default function ExternalEhrenamtspauschalePage() {
           <CheckCircle2 className="size-16 text-green-500 mx-auto mb-4" />
           <h1 className="text-2xl font-bold mb-2">Erfolgreich eingereicht</h1>
           <p className="text-muted-foreground">
-            Deine Ehrenamtspauschale wurde erfolgreich eingereicht. Du kannst dieses Fenster jetzt
-            schließen.
+            Deine Ehrenamtspauschale wurde erfolgreich eingereicht. Du kannst
+            dieses Fenster jetzt schließen.
           </p>
         </div>
       </div>
@@ -182,7 +204,9 @@ export default function ExternalEhrenamtspauschalePage() {
             <Label>Beschreibung der nebenberuflichen Tätigkeit *</Label>
             <Textarea
               value={form.activityDescription}
-              onChange={(e) => updateField("activityDescription", e.target.value)}
+              onChange={(e) =>
+                updateField("activityDescription", e.target.value)
+              }
               placeholder="z.B. Übungsleiter, Jugendarbeit, Vorstandstätigkeit"
               rows={3}
               className="resize-none"
@@ -263,13 +287,16 @@ export default function ExternalEhrenamtspauschalePage() {
             <Checkbox
               id="confirmation"
               checked={form.confirmation}
-              onCheckedChange={(checked) => updateField("confirmation", checked === true)}
+              onCheckedChange={(checked) =>
+                updateField("confirmation", checked === true)
+              }
             />
             <Label htmlFor="confirmation" className="text-sm leading-relaxed">
-              Ich erkläre, dass die Steuerbefreiung nach § 3 Nr. 26a EStG für nebenberufliche
-              ehrenamtliche Tätigkeit in voller Höhe von 840,00 Euro in Anspruch genommen werden
-              kann. Sollte sich im Lauf des Jahres eine Änderung ergeben, informiere ich hierüber
-              unverzüglich den Verein.
+              Ich erkläre, dass die Steuerbefreiung nach § 3 Nr. 26a EStG für
+              nebenberufliche ehrenamtliche Tätigkeit in voller Höhe von 840,00
+              Euro in Anspruch genommen werden kann. Sollte sich im Lauf des
+              Jahres eine Änderung ergeben, informiere ich hierüber unverzüglich
+              den Verein.
             </Label>
           </div>
         </div>

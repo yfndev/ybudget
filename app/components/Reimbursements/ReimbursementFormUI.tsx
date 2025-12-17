@@ -56,18 +56,18 @@ export function ReimbursementFormUI({ defaultBankDetails }: Props) {
   const net = draft.gross ? toNet(draft.gross, draft.tax) : 0;
   const totalGross = receipts.reduce(
     (sum, receipt) => sum + receipt.grossAmount,
-    0
+    0,
   );
   const totalNet = receipts.reduce(
     (sum, receipt) => sum + receipt.netAmount,
-    0
+    0,
   );
   const taxByRate = (rate: number) =>
     receipts
       .filter((receipt) => receipt.taxRate === rate)
       .reduce(
         (sum, receipt) => sum + receipt.grossAmount - receipt.netAmount,
-        0
+        0,
       );
 
   const addReceipt = () => {

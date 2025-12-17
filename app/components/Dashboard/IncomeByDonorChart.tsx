@@ -51,7 +51,7 @@ export function IncomeByDonorChart({ transactions }: Props) {
 
   const filtered = filterTransactionsByDateRange(
     transactions,
-    selectedDateRange
+    selectedDateRange,
   );
   const data = filtered ? aggregateByDonor(filtered) : [];
 

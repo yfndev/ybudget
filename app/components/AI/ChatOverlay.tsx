@@ -37,7 +37,7 @@ export function ChatOverlay({ open, onOpenChange }: Props) {
   const { results: messages } = useUIMessages(
     api.ai.queries.listMessages,
     threadId ? { threadId } : "skip",
-    { initialNumItems: 50, stream: true }
+    { initialNumItems: 50, stream: true },
   );
 
   const isStreaming = messages.some((msg) => msg.status === "streaming");
@@ -98,14 +98,14 @@ export function ChatOverlay({ open, onOpenChange }: Props) {
             {messages
               .filter(
                 (message) =>
-                  message.role === "user" || message.role === "assistant"
+                  message.role === "user" || message.role === "assistant",
               )
               .map((message) => (
                 <div
                   key={message.key}
                   className={cn(
                     "flex",
-                    message.role === "user" && "justify-end"
+                    message.role === "user" && "justify-end",
                   )}
                 >
                   <div
@@ -113,7 +113,7 @@ export function ChatOverlay({ open, onOpenChange }: Props) {
                       "rounded-lg px-4 py-2 max-w-[80%]",
                       message.role === "user"
                         ? "bg-primary text-primary-foreground"
-                        : "bg-muted"
+                        : "bg-muted",
                     )}
                   >
                     {message.text ? (

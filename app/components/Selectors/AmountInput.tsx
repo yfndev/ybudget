@@ -14,7 +14,12 @@ interface Props {
   id?: string;
 }
 
-export function AmountInput({ value, onChange, autoFocus, id = "amount" }: Props) {
+export function AmountInput({
+  value,
+  onChange,
+  autoFocus,
+  id = "amount",
+}: Props) {
   const textColor = value ? "text-foreground" : "text-muted-foreground";
 
   return (

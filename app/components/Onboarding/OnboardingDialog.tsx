@@ -25,7 +25,7 @@ export function OnboardingDialog({ open, onOpenChange }: Props) {
   const orgCheck = useQuery(api.organizations.queries.getOrganizationByDomain);
 
   const initializeOrganization = useMutation(
-    api.organizations.functions.initializeOrganization
+    api.organizations.functions.initializeOrganization,
   );
 
   const isJoiningExisting = orgCheck?.exists === true;

@@ -53,18 +53,18 @@ export default function ReimbursementDetailPage() {
 
   const totalNet = receipts.reduce(
     (sum, receipt) => sum + receipt.netAmount,
-    0
+    0,
   );
   const totalGross = receipts.reduce(
     (sum, receipt) => sum + receipt.grossAmount,
-    0
+    0,
   );
   const taxByRate = (rate: number) =>
     receipts
       .filter((receipt) => receipt.taxRate === rate)
       .reduce(
         (sum, receipt) => sum + receipt.grossAmount - receipt.netAmount,
-        0
+        0,
       );
 
   const statusLabel = reimbursement.isApproved ? "Genehmigt" : "Ausstehend";

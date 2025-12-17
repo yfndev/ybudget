@@ -12,9 +12,16 @@ import toast from "react-hot-toast";
 export default function SignaturePage() {
   const { token } = useParams<{ token: string }>();
 
-  const tokenData = useQuery(api.volunteerAllowance.queries.validateSignatureToken, { token });
-  const generateUploadUrl = useMutation(api.volunteerAllowance.functions.generateSignatureUploadUrl);
-  const submitSignature = useMutation(api.volunteerAllowance.functions.submitSignature);
+  const tokenData = useQuery(
+    api.volunteerAllowance.queries.validateSignatureToken,
+    { token },
+  );
+  const generateUploadUrl = useMutation(
+    api.volunteerAllowance.functions.generateSignatureUploadUrl,
+  );
+  const submitSignature = useMutation(
+    api.volunteerAllowance.functions.submitSignature,
+  );
 
   const sigRef = useRef<SignaturePad>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);

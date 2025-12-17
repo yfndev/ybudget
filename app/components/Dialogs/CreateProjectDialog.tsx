@@ -25,7 +25,7 @@ interface Props {
   onProjectCreated?: (projectId: string) => void;
 }
 
-export  function CreateProjectDialog({
+export function CreateProjectDialog({
   open,
   onOpenChange,
   onProjectCreated,

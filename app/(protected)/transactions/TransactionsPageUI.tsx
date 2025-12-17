@@ -16,7 +16,7 @@ interface Props {
   onUpdateTransaction: (
     rowId: string,
     field: string,
-    value: unknown
+    value: unknown,
   ) => Promise<void>;
   onDeleteTransaction: (rowId: string) => Promise<void>;
 }

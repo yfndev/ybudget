@@ -34,7 +34,7 @@ interface Props {
   onOpenChange: (open: boolean) => void;
 }
 
-export  function CreateCategoryDialog({ open, onOpenChange }: Props) {
+export function CreateCategoryDialog({ open, onOpenChange }: Props) {
   const [name, setName] = useState("");
   const [taxsphere, setTaxsphere] = useState<Taxsphere>("non-profit");
   const [parentId, setParentId] = useState<Id<"categories"> | undefined>();
@@ -43,7 +43,7 @@ export  function CreateCategoryDialog({ open, onOpenChange }: Props) {
   const createCategory = useMutation(api.categories.functions.createCategory);
 
   const parentCategories = categories?.filter(
-    (category: Doc<"categories">) => !category.parentId
+    (category: Doc<"categories">) => !category.parentId,
   );
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -114,7 +114,7 @@ export  function CreateCategoryDialog({ open, onOpenChange }: Props) {
               value={parentId || "none"}
               onValueChange={(value) =>
                 setParentId(
-                  value === "none" ? undefined : (value as Id<"categories">)
+                  value === "none" ? undefined : (value as Id<"categories">),
                 )
               }
             >

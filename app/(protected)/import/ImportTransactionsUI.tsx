@@ -21,7 +21,7 @@ interface Props {
   handleExpectedTransactionSelect: (id: string) => void;
   onSplitIncomeChange: (value: boolean) => void;
   onBudgetsChange: (
-    budgets: Array<{ projectId: string; amount: number }>
+    budgets: Array<{ projectId: string; amount: number }>,
   ) => void;
 }
 
