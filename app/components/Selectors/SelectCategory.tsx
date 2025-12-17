@@ -71,9 +71,10 @@ export const SelectCategory = forwardRef<HTMLInputElement, SelectCategoryProps>(
       if (!open) return;
       const handleClickOutside = (event: MouseEvent) => {
         const target = event.target as Node;
-        const clickedInContainer = containerRef.current?.contains(target);
-        const clickedInDropdown = dropdownRef.current?.contains(target);
-        if (!clickedInContainer && !clickedInDropdown) {
+        if (
+          !containerRef.current?.contains(target) &&
+          !dropdownRef.current?.contains(target)
+        ) {
           setOpen(false);
           setSearch("");
         }
