@@ -5,7 +5,7 @@ import { PageHeader } from "@/components/Layout/PageHeader";
 import { Progress } from "@/components/ui/progress";
 import type { Doc } from "@/convex/_generated/dataModel";
 
-interface ImportTransactionsUIProps {
+interface Props {
   current: Doc<"transactions"> | null;
   index: number;
   totalCount: number;
@@ -19,10 +19,8 @@ interface ImportTransactionsUIProps {
   setCategoryId: (value: string) => void;
   setDonorId: (value: string) => void;
   handleExpectedTransactionSelect: (id: string) => void;
-  onSplitIncomeChange: (splitIncome: boolean) => void;
-  onBudgetsChange: (
-    budgets: Array<{ projectId: string; amount: number }>
-  ) => void;
+  onSplitIncomeChange: (value: boolean) => void;
+  onBudgetsChange: (budgets: Array<{ projectId: string; amount: number }>) => void;
 }
 
 export default function ImportTransactionsUI({
@@ -41,7 +39,7 @@ export default function ImportTransactionsUI({
   handleExpectedTransactionSelect,
   onSplitIncomeChange,
   onBudgetsChange,
-}: ImportTransactionsUIProps) {
+}: Props) {
   const hasMatches = expectedTransactions.length > 0;
   const showBudgetSplit = splitIncome && current && current.amount > 0;
 
@@ -65,14 +63,9 @@ export default function ImportTransactionsUI({
       <div className="flex mt-8 justify-center" id="tour-import-progress">
         <Progress className="w-3/4" value={((index + 1) / totalCount) * 100} />
       </div>
-      <div
-        className={`flex flex-col mt-12 gap-8 ${hasMatches ? "lg:flex-row" : "items-center"}`}
-      >
+      <div className={`flex flex-col mt-12 gap-8 ${hasMatches ? "lg:flex-row" : "items-center"}`}>
         {hasMatches && (
-          <div
-            id="tour-expected-matches"
-            className="lg:w-72 shrink-0 order-2 lg:order-1"
-          >
+          <div id="tour-expected-matches" className="lg:w-72 shrink-0 order-2 lg:order-1">
             <ExpectedTransactionMatchesUI
               expectedTransactions={expectedTransactions}
               selectedMatch={selectedMatch}
@@ -80,9 +73,7 @@ export default function ImportTransactionsUI({
             />
           </div>
         )}
-        <div
-          className={`flex flex-col xl:flex-row items-start gap-8 order-1 lg:order-2 ${hasMatches ? "flex-1" : "w-full justify-center"}`}
-        >
+        <div className={`flex flex-col xl:flex-row items-start gap-8 order-1 lg:order-2 ${hasMatches ? "flex-1" : "w-full justify-center"}`}>
           <div id="tour-import-card" className="w-full max-w-xl">
             {current && (
               <ImportTransactionCardUI
@@ -102,10 +93,7 @@ export default function ImportTransactionsUI({
           </div>
           {showBudgetSplit && (
             <div className="w-full max-w-md">
-              <BudgetSplit
-                totalAmount={current.amount}
-                onBudgetsChange={onBudgetsChange}
-              />
+              <BudgetSplit totalAmount={current.amount} onBudgetsChange={onBudgetsChange} />
             </div>
           )}
         </div>

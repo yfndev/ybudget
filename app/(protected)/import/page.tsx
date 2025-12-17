@@ -1,7 +1,7 @@
 "use client";
 
-import { ImportTransactionsSkeleton } from "@/(protected)/import/ImportTransactionsSkeleton";
-import { ImportTransactionsUI } from "@/(protected)/import/ImportTransactionsUI";
+import ImportTransactionsSkeleton from "@/(protected)/import/ImportTransactionsSkeleton";
+import ImportTransactionsUI from "@/(protected)/import/ImportTransactionsUI";
 import { api } from "@/convex/_generated/api";
 import type { Doc, Id } from "@/convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
