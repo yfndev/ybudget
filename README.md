@@ -93,6 +93,8 @@ npx convex env set STRIPE_WEBHOOKS_SECRET "whsec_..."
 pnpm dev
 ```
 
+You are welcome to test the csv functionality with our [test file](docs/exampleTransactions.csv)
+
 ### 6. Deploy
 
 ```bash
