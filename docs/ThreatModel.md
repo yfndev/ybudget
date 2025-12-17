@@ -29,7 +29,7 @@ The Convex backend is where our business logic (queries & mutations) lives in a 
 
 The database is the single source of truth and gets the highest level of protection. Organization scoped queries, type-safe operations and logging in Convex keep it secure.
 
-![Data Flow Diagram](/security/Data%20Flow%20Diagram.png)
+![Data Flow Diagram](/docs/Data%20Flow%20Diagram.png)
 _(Diagram was created in FigJam)_
 
 ## Trust Boundary Analysis using STRIDE

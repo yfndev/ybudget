@@ -134,7 +134,7 @@ GitHub Actions runs both test suites on every push and PR.
 
 OAuth 2.0, role-based access control, organizational data isolation, encrypted at rest.
 
-**[Security Details](security/Security.md)** | **[Threat Model](security/ThreatModel.md)**
+**[Security Details](docs/Security.md)** | **[Threat Model](docs/ThreatModel.md)**
 
 Found an issue? Email team@ybudget.de
 
