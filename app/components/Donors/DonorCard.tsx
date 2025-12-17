@@ -13,14 +13,15 @@ export const donorTypeLabels: Record<string, string> = {
   sponsoring: "Sponsoring",
 };
 
-interface DonorCardProps {
-  donorId: Id<"donors">;
-}
+const Stat = ({ label, value }: { label: string; value: number }) => (
+  <div>
+    <div className="text-xs text-muted-foreground">{label}</div>
+    <div className="text-sm font-semibold">{formatCurrency(value)}</div>
+  </div>
+);
 
-export default function DonorCard({ donorId }: DonorCardProps) {
-  const donor = useQuery(api.donors.queries.getDonorById, {
-    donorId,
-  });
+export default function DonorCard({ donorId }: { donorId: Id<"donors"> }) {
+  const donor = useQuery(api.donors.queries.getDonorById, { donorId });
 
   if (!donor) {
     return (
@@ -36,45 +37,28 @@ export default function DonorCard({ donorId }: DonorCardProps) {
       : 0;
 
   return (
-    <Card className="w-full p-4 cursor-pointer hover:bg-muted transition-colors">
-      <Link href={`/donors/${donorId}`}>
-        <div className="space-y-3">
-          <div className="flex justify-between items-center">
-            <div>
-              <h3 className="text-xl font-semibold">{donor.name}</h3>
-              <span className="text-xs text-muted-foreground capitalize">
-                {donorTypeLabels[donor.type] ?? donor.type}
-              </span>
-            </div>
-            <span className="text-sm font-medium text-muted-foreground">
-              {Math.round(progress)}%
+    <Link href={`/donors/${donorId}`}>
+      <Card className="w-full p-4 cursor-pointer hover:bg-muted transition-colors">
+        <div className="flex justify-between items-center">
+          <div>
+            <h3 className="text-xl font-semibold">{donor.name}</h3>
+            <span className="text-xs text-muted-foreground capitalize">
+              {donorTypeLabels[donor.type] ?? donor.type}
             </span>
           </div>
-
-          <Progress value={progress} className="h-2" />
-
-          <div className="grid grid-cols-3 gap-2">
-            <div>
-              <div className="text-xs text-muted-foreground">Zugesagt</div>
-              <div className="text-sm font-semibold">
-                {formatCurrency(donor.committedIncome)}
-              </div>
-            </div>
-            <div>
-              <div className="text-xs text-muted-foreground">Bezahlt</div>
-              <div className="text-sm font-semibold">
-                {formatCurrency(donor.paidIncome)}
-              </div>
-            </div>
-            <div>
-              <div className="text-xs text-muted-foreground">Offen</div>
-              <div className="text-sm font-semibold">
-                {formatCurrency(donor.openIncome)}
-              </div>
-            </div>
-          </div>
+          <span className="text-sm font-medium text-muted-foreground">
+            {Math.round(progress)}%
+          </span>
         </div>
-      </Link>
-    </Card>
+
+        <Progress value={progress} className="h-2" />
+
+        <div className="grid grid-cols-3 gap-2">
+          <Stat label="Zugesagt" value={donor.committedIncome} />
+          <Stat label="Bezahlt" value={donor.paidIncome} />
+          <Stat label="Offen" value={donor.openIncome} />
+        </div>
+      </Card>
+    </Link>
   );
 }
