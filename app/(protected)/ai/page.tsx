@@ -1,51 +1,14 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { useMutation } from "convex/react";
-import { useUIMessages, useSmoothText } from "@convex-dev/agent/react";
-import { api } from "@/convex/_generated/api";
+import MessageBubble from "@/components/AI/MessageBubble";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
-import { Send, Bot, User } from "lucide-react";
-import { cn } from "@/lib/utils";
-
-function MessageBubble({
-  role,
-  text,
-  isStreaming,
-}: {
-  role: "user" | "assistant";
-  text: string;
-  isStreaming?: boolean;
-}) {
-  const [smoothText] = useSmoothText(text, {
-    startStreaming: isStreaming ?? false,
-  });
-
-  const isUser = role === "user";
-
-  return (
-    <div className={cn("flex gap-3", isUser && "flex-row-reverse")}>
-      <div
-        className={cn(
-          "flex h-8 w-8 shrink-0 items-center justify-center rounded-full",
-          isUser ? "bg-primary text-primary-foreground" : "bg-muted",
-        )}
-      >
-        {isUser ? <User className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
-      </div>
-      <div
-        className={cn(
-          "rounded-lg px-4 py-2 max-w-[80%]",
-          isUser ? "bg-primary text-primary-foreground" : "bg-muted",
-        )}
-      >
-        <p className="text-sm whitespace-pre-wrap">{smoothText || text}</p>
-      </div>
-    </div>
-  );
-}
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { api } from "@/convex/_generated/api";
+import { useUIMessages } from "@convex-dev/agent/react";
+import { useMutation } from "convex/react";
+import { Bot, Send } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 export default function AIPage() {
   const [threadId, setThreadId] = useState<string | null>(null);
@@ -56,7 +19,7 @@ export default function AIPage() {
   const { results: messages } = useUIMessages(
     api.ai.queries.listMessages,
     threadId ? { threadId } : "skip",
-    { initialNumItems: 50, stream: true },
+    { initialNumItems: 50, stream: true }
   );
 
   const isStreaming = messages.some((m) => m.status === "streaming");
@@ -80,6 +43,12 @@ export default function AIPage() {
     if (!threadId) setThreadId(newThreadId);
   };
 
+  const startPrompts = [
+    "Wie ist meine aktuelle Bilanz?",
+    "Welche Projekte habe ich?",
+    "Erkläre mir die Steuersphären",
+  ];
+
   return (
     <div className="flex flex-col h-[calc(100vh-8rem)]">
       <div className="flex items-center gap-2 mb-4">
@@ -101,18 +70,14 @@ export default function AIPage() {
                   deinen Finanzen.
                 </p>
                 <div className="mt-6 flex flex-wrap justify-center gap-2">
-                  {[
-                    "Wie ist meine aktuelle Bilanz?",
-                    "Welche Projekte habe ich?",
-                    "Erkläre mir die Steuersphären",
-                  ].map((suggestion) => (
+                  {startPrompts.map((prompt) => (
                     <Button
-                      key={suggestion}
+                      key={prompt}
                       variant="outline"
                       size="sm"
-                      onClick={() => setInput(suggestion)}
+                      onClick={() => setInput(prompt)}
                     >
-                      {suggestion}
+                      {prompt}
                     </Button>
                   ))}
                 </div>
