@@ -30,11 +30,8 @@ export const SelectProject = forwardRef<HTMLInputElement, Props>(
 
     useEffect(() => {
       if (!open) return;
-      const handler = (event: MouseEvent) => {
-        if (
-          containerRef.current &&
-          !containerRef.current.contains(event.target as Node)
-        ) {
+      const handler = (e: MouseEvent) => {
+        if (!containerRef.current?.contains(e.target as Node)) {
           close();
         }
       };
@@ -54,35 +51,31 @@ export const SelectProject = forwardRef<HTMLInputElement, Props>(
       close();
     };
 
-    const handleKeyDown = (event: React.KeyboardEvent) => {
-      if (event.key === "Escape") return close();
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+      if (e.key === "Escape") return close();
 
-      if (event.key === "ArrowDown") {
-        event.preventDefault();
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
         if (!open) return setOpen(true);
-        setHighlightedIndex((index) =>
-          index < filtered.length - 1 ? index + 1 : 0
-        );
+        setHighlightedIndex((idx) => (idx < filtered.length - 1 ? idx + 1 : 0));
         return;
       }
 
-      if (event.key === "ArrowUp" && open) {
-        event.preventDefault();
-        setHighlightedIndex((index) =>
-          index > 0 ? index - 1 : filtered.length - 1
-        );
+      if (e.key === "ArrowUp" && open) {
+        e.preventDefault();
+        setHighlightedIndex((idx) => (idx > 0 ? idx - 1 : filtered.length - 1));
         return;
       }
 
-      if (event.key === "Enter") {
-        event.preventDefault();
+      if (e.key === "Enter") {
+        e.preventDefault();
         if (open && filtered[highlightedIndex])
           return select(filtered[highlightedIndex]._id);
         if (!open) return setOpen(true);
       }
 
-      if (event.key === "Tab" && open) {
-        event.preventDefault();
+      if (e.key === "Tab" && open) {
+        e.preventDefault();
         close();
         onTabPressed?.();
       }
@@ -99,8 +92,8 @@ export const SelectProject = forwardRef<HTMLInputElement, Props>(
             )}
             placeholder="Projekt suchen..."
             value={open ? search : (selected?.name ?? "")}
-            onChange={(event) => {
-              setSearch(event.target.value);
+            onChange={(e) => {
+              setSearch(e.target.value);
               setOpen(true);
             }}
             onFocus={() => setOpen(true)}
