@@ -1,20 +1,19 @@
 "use client";
 
-import type { LucideIcon } from "lucide-react";
-import Link from "next/link";
-
 import {
   SidebarGroup,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import type { LucideIcon } from "lucide-react";
+import Link from "next/link";
 
-type NavItem = {
+export interface NavItem {
   name: string;
   url: string;
   icon: LucideIcon;
-};
+}
 
 export function MainNav({ items, id }: { items: NavItem[]; id?: string }) {
   return (

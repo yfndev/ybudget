@@ -1,7 +1,7 @@
 import { PageHeader } from "@/components/Layout/PageHeader";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export default function ImportTransactionsSkeleton() {
+export function ImportTransactionsSkeleton() {
   return (
     <div id="tour-import-page">
       <PageHeader title="Transaktionen zuordnen" />

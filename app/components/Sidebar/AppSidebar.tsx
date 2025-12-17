@@ -1,18 +1,5 @@
 "use client";
 
-import {
-  Coins,
-  HelpCircle,
-  LayoutDashboard,
-  SquareCheckBig,
-  Upload,
-  Users,
-} from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useOnborda } from "onborda";
-
 import { Button } from "@/components/ui/button";
 import {
   Sidebar,
@@ -25,11 +12,23 @@ import {
 } from "@/components/ui/sidebar";
 import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
-import { MainNav } from "./MainNav";
+import {
+  Coins,
+  HelpCircle,
+  LayoutDashboard,
+  SquareCheckBig,
+  Upload,
+  Users,
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useOnborda } from "onborda";
+import { MainNav, type NavItem } from "./MainNav";
 import { ProjectNav } from "./ProjectNav";
 import { NavUser } from "./UserNav";
 
-const NAV_ITEMS = [
+const NAV_ITEMS: Array<NavItem & { adminOnly?: boolean }> = [
   { name: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { name: "Transaktionen", url: "/transactions", icon: SquareCheckBig },
   { name: "Import", url: "/import", icon: Upload, adminOnly: true },

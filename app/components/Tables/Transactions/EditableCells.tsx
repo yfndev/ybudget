@@ -14,13 +14,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";
 import { useState } from "react";
 
-interface Props {
-  value: any;
-  onSave: (value: any) => void;
-  displayValue?: string;
+interface EditableNumberCellProps {
+  value: number;
+  onSave: (value: number) => void;
 }
 
-export function EditableAmountCell({ value, onSave }: Props) {
+interface EditableStringCellProps {
+  value: string;
+  onSave: (value: string) => void;
+}
+
+export function EditableAmountCell({ value, onSave }: EditableNumberCellProps) {
   const [editValue, setEditValue] = useState(Math.abs(value || 0).toString());
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,7 +47,7 @@ export function EditableAmountCell({ value, onSave }: Props) {
   );
 }
 
-export function EditableDateCell({ value, onSave }: EditableCellProps) {
+export function EditableDateCell({ value, onSave }: EditableNumberCellProps) {
   const dateValue = value ? new Date(value) : null;
   const [editValue, setEditValue] = useState(
     dateValue ? format(dateValue, "yyyy-MM-dd") : ""
@@ -70,7 +74,10 @@ export function EditableDateCell({ value, onSave }: EditableCellProps) {
   );
 }
 
-export function EditableTextareaCell({ value, onSave }: EditableCellProps) {
+export function EditableTextareaCell({
+  value,
+  onSave,
+}: EditableStringCellProps) {
   return (
     <Textarea
       defaultValue={value || ""}
@@ -81,8 +88,8 @@ export function EditableTextareaCell({ value, onSave }: EditableCellProps) {
   );
 }
 
-interface EditableSelectCellProps extends EditableCellProps {
-  options: { value: string; label: string }[];
+interface EditableSelectCellProps extends EditableStringCellProps {
+  options: Array<{ value: string; label: string }>;
 }
 
 export function EditableSelectCell({
@@ -106,10 +113,16 @@ export function EditableSelectCell({
   );
 }
 
-export function EditableProjectCell({ value, onSave }: EditableCellProps) {
+export function EditableProjectCell({
+  value,
+  onSave,
+}: EditableStringCellProps) {
   return <SelectProject value={value} onValueChange={onSave} />;
 }
 
-export function EditableCategoryCell({ value, onSave }: EditableCellProps) {
+export function EditableCategoryCell({
+  value,
+  onSave,
+}: EditableStringCellProps) {
   return <SelectCategory value={value} onValueChange={onSave} />;
 }

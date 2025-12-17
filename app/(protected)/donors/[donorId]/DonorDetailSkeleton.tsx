@@ -8,7 +8,7 @@ const BudgetCardSkeleton = () => (
   </div>
 );
 
-export default function DonorDetailSkeleton() {
+export function DonorDetailSkeleton() {
   return (
     <div>
       <PageHeader

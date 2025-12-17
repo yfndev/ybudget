@@ -1,5 +1,5 @@
 "use client";
-import BudgetCard from "@/components/Dashboard/BudgetCard";
+import { BudgetCard } from "@/components/Dashboard/BudgetCard";
 import { CashflowChartUI } from "@/components/Dashboard/CashflowChartUI";
 import { ExpensesByCategoryChart } from "@/components/Dashboard/ExpensesByCategoryChart";
 import { IncomeByDonorChart } from "@/components/Dashboard/IncomeByDonorChart";
@@ -11,7 +11,7 @@ import { useQuery } from "convex/react";
 export default function DashboardPage() {
   const transactions = useQuery(
     api.transactions.queries.getAllTransactions,
-    {},
+    {}
   );
   const { currentBalance, expectedIncome, expectedExpenses, availableBudget } =
     calculateBudget(transactions ?? []);
