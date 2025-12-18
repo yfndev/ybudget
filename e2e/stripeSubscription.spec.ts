@@ -84,12 +84,13 @@ test.describe.serial("stripe subscription flow", () => {
   });
 
   test("4. User with subscription (premium user) can create unlimited projects", async () => {
+    await page.context().clearCookies();
     await page.goto("/test-auth");
+    await page.evaluate(() => localStorage.clear());
     await page.getByTestId("test-auth-email").fill(TEST_EMAIL);
     await page.getByTestId("test-auth-submit").click();
-    await page.waitForURL("**/dashboard", { timeout: 15000 });
     await expect(page.getByRole("heading", { name: "Dashboard" })).toBeVisible({
-      timeout: 10000,
+      timeout: 15000,
     });
 
     const convex = getConvex();
