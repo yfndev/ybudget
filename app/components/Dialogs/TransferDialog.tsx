@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -64,6 +65,10 @@ export function TransferDialog({ open, onOpenChange, fromProjectId }: Props) {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Geld übertragen</DialogTitle>
+          <DialogDescription>
+            (nur auf dem Konto verfügbare Gelder können übertragen werden; keine
+            geplanten Einnahmen)
+          </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <div className="space-y-2">
