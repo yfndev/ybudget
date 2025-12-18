@@ -5,23 +5,10 @@ import { ExpensesByCategoryChart } from "@/components/Dashboard/ExpensesByCatego
 import { IncomeByDonorChart } from "@/components/Dashboard/IncomeByDonorChart";
 import { PageHeader } from "@/components/Layout/PageHeader";
 import { api } from "@/convex/_generated/api";
-import { useDateRange } from "@/lib/DateRangeContext";
 import { calculateBudget } from "@/lib/budgetCalculations";
 import { useQuery } from "convex/react";
-import { useEffect } from "react";
 
 export default function DashboardPage() {
-  const { selectedDateRange, setSelectedDateRange } = useDateRange();
-
-  useEffect(() => {
-    if (selectedDateRange === null) {
-      const now = new Date();
-      const from = new Date(now.getFullYear(), now.getMonth() - 2, 1);
-      const to = new Date(now.getFullYear(), now.getMonth() + 2, 0);
-      setSelectedDateRange({ from, to });
-    }
-  }, []);
-
   const transactions = useQuery(
     api.transactions.queries.getAllTransactions,
     {}

@@ -338,6 +338,52 @@ test("get matching recommendations for import when project is set (filter)", asy
   expect(recommendations.length).toBeGreaterThanOrEqual(1);
 });
 
+test("get matching recommendations filters by expense type", async () => {
+  const t = convexTest(schema, modules);
+  const { organizationId, userId, projectId } = await setupTestData(t);
+
+  await t.run((ctx) =>
+    ctx.db.insert("transactions", {
+      organizationId,
+      projectId,
+      date: Date.now(),
+      amount: -100,
+      description: "Expected expense",
+      counterparty: "Test",
+      status: "expected",
+      importedBy: userId,
+    }),
+  );
+
+  await t.run((ctx) =>
+    ctx.db.insert("transactions", {
+      organizationId,
+      projectId,
+      date: Date.now(),
+      amount: 200,
+      description: "Expected income",
+      counterparty: "Test",
+      status: "expected",
+      importedBy: userId,
+    }),
+  );
+
+  const expenseRecommendations = await t
+    .withIdentity({ subject: userId })
+    .query(api.transactions.queries.getMatchingRecommendations, {
+      isExpense: true,
+    });
+
+  const incomeRecommendations = await t
+    .withIdentity({ subject: userId })
+    .query(api.transactions.queries.getMatchingRecommendations, {
+      isExpense: false,
+    });
+
+  expect(expenseRecommendations.every((tx) => tx.amount < 0)).toBe(true);
+  expect(incomeRecommendations.every((tx) => tx.amount > 0)).toBe(true);
+});
+
 test("filter out archived and split transactions when using unassigned processed transactions", async () => {
   const t = convexTest(schema, modules);
   const { organizationId, userId } = await setupTestData(t);
