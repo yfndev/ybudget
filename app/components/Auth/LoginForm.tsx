@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { useAuthActions } from "@convex-dev/auth/react";
 import Image from "next/image";
+import Link from "next/link";
 
 export function LoginForm() {
   const { signIn } = useAuthActions();
@@ -12,8 +13,8 @@ export function LoginForm() {
       <Image
         src="/LoginIllustration.svg"
         alt="YBudget"
-        width={280}
-        height={280}
+        width={350}
+        height={350}
         priority
       />
       <div className="space-y-3">
@@ -46,14 +47,13 @@ export function LoginForm() {
 
       <p className="text-xs text-muted-foreground">
         Durch das Anmelden stimmst du unseren{" "}
-        <a href="#" className="underline hover:text-foreground">
-          Nutzungsbedingungen
-        </a>{" "}
-        und{" "}
-        <a href="#" className="underline hover:text-foreground">
+        <Link href="/datenschutz" className="underline hover:text-foreground">
           Datenschutzrichtlinien
-        </a>{" "}
-        zu.
+        </Link>{" "}
+        zu.{" "}
+        <Link href="/impressum" className="underline hover:text-foreground">
+          Impressum
+        </Link>
       </p>
     </div>
   );

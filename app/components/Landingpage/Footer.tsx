@@ -19,8 +19,8 @@ const footerLinks = {
   company: [
     { name: "Über uns", href: "#about" },
     { name: "Kontakt", href: "#contact" },
-    { name: "Impressum", href: "#impressum" },
-    { name: "Datenschutz", href: "#privacy" },
+    { name: "Impressum", href: "/impressum" },
+    { name: "Datenschutz", href: "/datenschutz" },
   ],
   community: [
     { name: "Young Founders Network", href: "#yfn" },
