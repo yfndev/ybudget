@@ -188,11 +188,14 @@ export function ProjectNav({ id }: { id?: string }) {
           startEdit(project._id, project.name);
         };
 
+    const className = isReserves
+      ? "text-gray-400"
+      : hasChildren && !isSubItem
+        ? "font-semibold"
+        : undefined;
+
     const content = (
-      <span
-        className={hasChildren && !isSubItem ? "font-medium" : undefined}
-        onDoubleClick={handleDoubleClick}
-      >
+      <span className={className} onDoubleClick={handleDoubleClick}>
         {project.name}
       </span>
     );
