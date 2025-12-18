@@ -385,3 +385,39 @@ test("move project throws if department has children", async () => {
       }),
   ).rejects.toThrow("children");
 });
+
+test("move project handles deleted parent gracefully", async () => {
+  const t = convexTest(schema, modules);
+  const { organizationId, userId } = await setupTestData(t);
+
+  const parentId = await t.run((ctx) =>
+    ctx.db.insert("projects", {
+      name: "Parent",
+      organizationId,
+      isArchived: false,
+      createdBy: userId,
+    }),
+  );
+
+  const childId = await t.run((ctx) =>
+    ctx.db.insert("projects", {
+      name: "Child",
+      organizationId,
+      parentId,
+      isArchived: false,
+      createdBy: userId,
+    }),
+  );
+
+  await t.run((ctx) => ctx.db.delete(parentId));
+
+  await t
+    .withIdentity({ subject: userId })
+    .mutation(api.projects.functions.moveProject, {
+      projectId: childId,
+      newParentId: null,
+    });
+
+  const child = await t.run((ctx) => ctx.db.get(childId));
+  expect(child?.parentId).toBeUndefined();
+});
