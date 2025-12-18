@@ -79,6 +79,8 @@ function getDateRangeFromTransactions(transactions: Doc<"transactions">[]): {
   const dates = transactions.map((t) => t.date);
   const minDate = new Date(Math.min(...dates));
   const maxDate = new Date(Math.max(...dates));
+  minDate.setHours(0, 0, 0, 0);
+  maxDate.setHours(23, 59, 59, 999);
   return { from: minDate, to: maxDate };
 }
 
