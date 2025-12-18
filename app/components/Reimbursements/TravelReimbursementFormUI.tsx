@@ -48,6 +48,15 @@ const PLACEHOLDERS: Record<CostType, string> = {
   accommodation: "Hotel, Airbnb, etc.",
 };
 const COST_TYPES = Object.keys(LABELS) as CostType[];
+const DEFAULT_TAX_RATES: Record<CostType, number> = {
+  car: 0,
+  train: 7,
+  flight: 19,
+  taxi: 7,
+  bus: 7,
+  accommodation: 7,
+};
+const toNet = (gross: number, tax: number) => gross / (1 + tax / 100);
 
 interface Props {
   defaultBankDetails: BankDetails;
@@ -93,7 +102,7 @@ export function TravelReimbursementFormUI({ defaultBankDetails }: Props) {
         companyName: "",
         description: "",
         netAmount: 0,
-        taxRate: 0,
+        taxRate: DEFAULT_TAX_RATES[type],
         grossAmount: 0,
         fileStorageId: "" as Id<"_storage">,
         kilometers: type === "car" ? 0 : undefined,
@@ -289,26 +298,50 @@ export function TravelReimbursementFormUI({ defaultBankDetails }: Props) {
                     </div>
                   </>
                 ) : (
-                  <div>
-                    <Label>Betrag (€) *</Label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      min={0}
-                      value={receipt.grossAmount || ""}
-                      onChange={(e) => {
-                        const amount = Math.max(
-                          0,
-                          parseFloat(e.target.value) || 0,
-                        );
-                        updateReceipt(receipt.costType, {
-                          grossAmount: amount,
-                          netAmount: amount,
-                        });
-                      }}
-                      placeholder="0.00"
-                    />
-                  </div>
+                  <>
+                    <div>
+                      <Label>Brutto (€) *</Label>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        min={0}
+                        value={receipt.grossAmount || ""}
+                        onChange={(e) => {
+                          const gross = Math.max(
+                            0,
+                            parseFloat(e.target.value) || 0,
+                          );
+                          updateReceipt(receipt.costType, {
+                            grossAmount: gross,
+                            netAmount: toNet(gross, receipt.taxRate),
+                          });
+                        }}
+                        placeholder="0.00"
+                      />
+                    </div>
+                    <div>
+                      <Label>MwSt.</Label>
+                      <Select
+                        value={String(receipt.taxRate)}
+                        onValueChange={(value) => {
+                          const tax = parseInt(value);
+                          updateReceipt(receipt.costType, {
+                            taxRate: tax,
+                            netAmount: toNet(receipt.grossAmount, tax),
+                          });
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="19">19%</SelectItem>
+                          <SelectItem value="7">7%</SelectItem>
+                          <SelectItem value="0">0%</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </>
                 )}
               </div>
 
