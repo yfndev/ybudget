@@ -50,6 +50,11 @@ export default function ExternalEhrenamtspauschalePage() {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
+  const updateAmount = (value: string) => {
+    if (parseFloat(value.replace(",", ".")) > 840) return;
+    updateField("amount", value);
+  };
+
   if (
     linkData?.valid &&
     !form.activityDescription &&
@@ -249,7 +254,7 @@ export default function ExternalEhrenamtspauschalePage() {
               step="0.01"
               max="840"
               value={form.amount}
-              onChange={(event) => updateField("amount", event.target.value)}
+              onChange={(e) => updateAmount(e.target.value)}
               placeholder="0,00"
             />
           </div>

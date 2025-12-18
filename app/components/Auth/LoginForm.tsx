@@ -22,7 +22,7 @@ export function LoginForm() {
           Willkommen bei <span className="text-primary">YBudget</span>
         </h1>
         <p className="text-muted-foreground text-sm">
-          Melde dich mit deinem Google-Konto an, um direkt reinzustarten.
+          Melde dich mit deinem Google Konto an, um direkt loszulegen.
         </p>
       </div>
 
@@ -50,10 +50,7 @@ export function LoginForm() {
         <Link href="/datenschutz" className="underline hover:text-foreground">
           Datenschutzrichtlinien
         </Link>{" "}
-        zu.{" "}
-        <Link href="/impressum" className="underline hover:text-foreground">
-          Impressum
-        </Link>
+        zu.
       </p>
     </div>
   );

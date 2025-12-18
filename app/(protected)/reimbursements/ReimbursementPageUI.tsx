@@ -54,7 +54,7 @@ interface Props {
   onApproveAllowance: (id: Id<"volunteerAllowance">) => void;
   onOpenRejectDialog: (
     type: "reimbursement" | "allowance",
-    id: Id<"reimbursements"> | Id<"volunteerAllowance">,
+    id: Id<"reimbursements"> | Id<"volunteerAllowance">
   ) => void;
   onRejectDialogChange: (dialog: RejectDialog) => void;
   onReject: () => void;
@@ -94,9 +94,8 @@ export function ReimbursementPageUI({
           <Plus className="h-4 w-4 mr-2" />
           Neue Erstattung
         </Button>
-        <Button variant="secondary" onClick={onShareClick}>
-          <Share2 className="h-4 w-4 mr-2" />
-          Ehrenamtspauschale
+        <Button variant="outline" size="icon" onClick={onShareClick}>
+          <Share2 />
         </Button>
       </div>
 

@@ -56,6 +56,11 @@ export function VolunteerAllowanceFormUI({ defaultBankDetails }: Props) {
   const update = (field: Partial<typeof form>) =>
     setForm((prev) => ({ ...prev, ...field }));
 
+  const updateAmount = (value: string) => {
+    if (parseFloat(value.replace(",", ".")) > 840) return;
+    update({ amount: value });
+  };
+
   useEffect(() => setIsDesktop(window.innerWidth >= 768), []);
 
   const validate = () => {
@@ -187,13 +192,7 @@ export function VolunteerAllowanceFormUI({ defaultBankDetails }: Props) {
         <h2 className="text-lg font-medium">Betrag</h2>
         <div className="max-w-xs">
           <Label>Betrag in Euro (max. 840€) *</Label>
-          <AmountInput
-            value={form.amount}
-            onChange={(value) => {
-              if (parseFloat(value.replace(",", ".")) > 840) return;
-              update({ amount: value });
-            }}
-          />
+          <AmountInput value={form.amount} onChange={updateAmount} />
         </div>
       </div>
 
