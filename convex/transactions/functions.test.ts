@@ -507,3 +507,47 @@ test("split auto-creates reserves (Rücklagen) project when missing", async () =
   );
   expect(newReservesProject).not.toBeNull();
 });
+
+test("matching transaction archives expected transaction", async () => {
+  const t = convexTest(schema, modules);
+  const { organizationId, userId, projectId, categoryId } =
+    await setupTestData(t);
+
+  const expectedId = await t.run((ctx) =>
+    ctx.db.insert("transactions", {
+      organizationId,
+      projectId,
+      categoryId,
+      date: Date.now(),
+      amount: -100,
+      description: "Expected",
+      counterparty: "Test",
+      status: "expected",
+      importedBy: userId,
+    }),
+  );
+
+  const processedId = await t.run((ctx) =>
+    ctx.db.insert("transactions", {
+      organizationId,
+      projectId,
+      date: Date.now(),
+      amount: -100,
+      description: "Processed",
+      counterparty: "Test",
+      status: "processed",
+      importedBy: userId,
+    }),
+  );
+
+  await t
+    .withIdentity({ subject: userId })
+    .mutation(api.transactions.functions.updateTransaction, {
+      transactionId: processedId,
+      matchedTransactionId: expectedId,
+    });
+
+  const expected = await t.run((ctx) => ctx.db.get(expectedId));
+  expect(expected?.isArchived).toBe(true);
+  expect(expected?.matchedTransactionId).toBe(processedId);
+});
