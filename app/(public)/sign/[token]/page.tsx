@@ -58,6 +58,20 @@ export default function SignaturePage() {
     }
   };
 
+  if (submitted) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-white p-8">
+        <div className="text-center max-w-md">
+          <CheckCircle2 className="size-16 text-green-500 mx-auto mb-4" />
+          <h1 className="text-2xl font-bold mb-2">Unterschrift gespeichert</h1>
+          <p className="text-muted-foreground">
+            Du kannst dieses Fenster jetzt schließen.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   if (!tokenData) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-white">
@@ -73,20 +87,6 @@ export default function SignaturePage() {
           <AlertCircle className="size-16 text-destructive mx-auto mb-4" />
           <h1 className="text-2xl font-bold mb-2">Link ungültig</h1>
           <p className="text-muted-foreground">{tokenData.error}</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (submitted) {
-    return (
-      <div className="fixed inset-0 flex items-center justify-center bg-white p-8">
-        <div className="text-center max-w-md">
-          <CheckCircle2 className="size-16 text-green-500 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold mb-2">Unterschrift gespeichert</h1>
-          <p className="text-muted-foreground">
-            Du kannst dieses Fenster jetzt schließen.
-          </p>
         </div>
       </div>
     );
