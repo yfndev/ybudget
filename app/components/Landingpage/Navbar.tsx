@@ -14,12 +14,11 @@ export function Navbar() {
     { name: "Lösung", href: "#solution" },
     { name: "Funktionen", href: "#how-it-works" },
     { name: "Preise", href: "#pricing" },
-    { name: "FAQ", href: "#faq" },
   ];
 
   const scrollToSection = (
     e: React.MouseEvent<HTMLAnchorElement>,
-    href: string,
+    href: string
   ) => {
     e.preventDefault();
     const element = document.querySelector(href);

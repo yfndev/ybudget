@@ -93,7 +93,10 @@ const features = [
 
 export function SolutionSection() {
   return (
-    <section id="solution" className="bg-white px-4 py-16 sm:py-24 sm:px-6 lg:px-8">
+    <section
+      id="solution"
+      className="bg-white px-4 py-16 sm:py-24 sm:px-6 lg:px-8"
+    >
       <div className="mx-auto max-w-7xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -103,7 +106,7 @@ export function SolutionSection() {
           className="text-center"
         >
           <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">
-            Alles, was du brauchst. Nichts, was dich überfordert.
+            Dein Team wird es lieben:
           </h2>
         </motion.div>
 
@@ -128,9 +131,14 @@ export function SolutionSection() {
                 </p>
                 <ul className="mt-6 space-y-2 sm:mt-8 sm:space-y-3">
                   {feature.bullets.map((bullet) => (
-                    <li key={bullet} className="flex items-start gap-2 sm:gap-3">
+                    <li
+                      key={bullet}
+                      className="flex items-start gap-2 sm:gap-3"
+                    >
                       <CheckCircle className="h-5 w-5 shrink-0 text-emerald-500 sm:h-6 sm:w-6" />
-                      <span className="text-sm text-slate-700 sm:text-base">{bullet}</span>
+                      <span className="text-sm text-slate-700 sm:text-base">
+                        {bullet}
+                      </span>
                     </li>
                   ))}
                 </ul>
