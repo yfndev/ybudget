@@ -65,17 +65,20 @@ export function VolunteerAllowanceFormUI({ defaultBankDetails }: Props) {
 
   const validate = () => {
     if (!projectId) return "Bitte ein Projekt auswählen";
-    if (!form.name || !form.street || !form.plz || !form.city)
-      return "Bitte alle persönlichen Daten ausfüllen";
-    if (!form.activity || !form.startDate || !form.endDate)
-      return "Bitte Tätigkeit und Zeitraum angeben";
+    if (!form.name) return "Bitte deinen Namen eingeben";
+    if (!form.street) return "Bitte deine Straße eingeben";
+    if (!form.plz) return "Bitte deine PLZ eingeben";
+    if (!form.city) return "Bitte deinen Ort eingeben";
+    if (!form.activity) return "Bitte die Tätigkeit beschreiben";
+    if (!form.startDate || !form.endDate) return "Bitte den Zeitraum angeben";
     const amount = parseFloat(form.amount.replace(",", "."));
-    if (!amount || amount <= 0) return "Bitte einen gültigen Betrag eingeben";
-    if (amount > 840) return "Ehrenamtspauschale darf 840€ nicht überschreiten";
+    if (!amount || amount <= 0) return "Bitte einen Betrag eingeben";
+    if (amount > 840) return "Maximal 840€ erlaubt";
+    if (!bank.accountHolder) return "Bitte den Kontoinhaber eingeben";
+    if (!bank.iban) return "Bitte die IBAN eingeben";
+    if (!bank.bic) return "Bitte die BIC eingeben";
     if (!form.confirmed) return "Bitte die Bestätigung ankreuzen";
     if (!signature) return "Bitte unterschreiben";
-    if (!bank.iban || !bank.bic || !bank.accountHolder)
-      return "Bitte Bankdaten ausfüllen";
     return null;
   };
 
@@ -212,7 +215,7 @@ export function VolunteerAllowanceFormUI({ defaultBankDetails }: Props) {
           />
           <Label htmlFor="confirm" className="text-sm leading-relaxed">
             Ich erkläre, dass die Steuerbefreiung nach § 3 Nr. 26a EStG für
-            nebenberufliche ehrenamtliche Tätigkeit in voller Höhe von{" "}
+            nebenberufliche ehrenamtliche Tätigkeit in Höhe von{" "}
             {form.amount || "0,00"} Euro in Anspruch genommen werden kann.
             Sollte sich im Lauf des Jahres eine Änderung ergeben, informiere ich
             hierüber unverzüglich den Verein.

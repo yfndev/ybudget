@@ -71,24 +71,24 @@ export default function ExternalEhrenamtspauschalePage() {
   }
 
   const handleSubmit = async () => {
-    if (
-      !form.volunteerName ||
-      !form.volunteerStreet ||
-      !form.volunteerPlz ||
-      !form.volunteerCity
-    ) {
-      return toast.error("Bitte alle persönlichen Daten ausfüllen");
-    }
-    if (!form.activityDescription || !form.startDate || !form.endDate) {
-      return toast.error("Bitte Tätigkeit und Zeitraum angeben");
-    }
+    if (!form.volunteerName)
+      return toast.error("Bitte deinen Namen eingeben");
+    if (!form.volunteerStreet)
+      return toast.error("Bitte deine Straße eingeben");
+    if (!form.volunteerPlz) return toast.error("Bitte deine PLZ eingeben");
+    if (!form.volunteerCity) return toast.error("Bitte deinen Ort eingeben");
+    if (!form.activityDescription)
+      return toast.error("Bitte die Tätigkeit beschreiben");
+    if (!form.startDate || !form.endDate)
+      return toast.error("Bitte den Zeitraum angeben");
     const amount = parseFloat(form.amount);
     if (!amount || amount <= 0)
-      return toast.error("Bitte einen gültigen Betrag eingeben");
-    if (amount > 840)
-      return toast.error("Ehrenamtspauschale darf 840€ nicht überschreiten");
-    if (!form.iban || !form.bic || !form.accountHolder)
-      return toast.error("Bitte Bankdaten ausfüllen");
+      return toast.error("Bitte einen Betrag eingeben");
+    if (amount > 840) return toast.error("Maximal 840€ erlaubt");
+    if (!form.accountHolder)
+      return toast.error("Bitte den Kontoinhaber eingeben");
+    if (!form.iban) return toast.error("Bitte die IBAN eingeben");
+    if (!form.bic) return toast.error("Bitte die BIC eingeben");
     if (!form.confirmation)
       return toast.error("Bitte die Bestätigung ankreuzen");
     if (!signatureStorageId) return toast.error("Bitte unterschreiben");
@@ -310,10 +310,10 @@ export default function ExternalEhrenamtspauschalePage() {
             />
             <Label htmlFor="confirmation" className="text-sm leading-relaxed">
               Ich erkläre, dass die Steuerbefreiung nach § 3 Nr. 26a EStG für
-              nebenberufliche ehrenamtliche Tätigkeit in voller Höhe von 840,00
-              Euro in Anspruch genommen werden kann. Sollte sich im Lauf des
-              Jahres eine Änderung ergeben, informiere ich hierüber unverzüglich
-              den Verein.
+              nebenberufliche ehrenamtliche Tätigkeit in Höhe von{" "}
+              {form.amount || "0,00"} Euro in Anspruch genommen werden kann.
+              Sollte sich im Lauf des Jahres eine Änderung ergeben, informiere
+              ich hierüber unverzüglich den Verein.
             </Label>
           </div>
         </div>
