@@ -102,10 +102,13 @@ export const updateTransaction = mutation({
     await ctx.db.patch(transactionId, updates);
 
     if (updates.matchedTransactionId) {
-      await ctx.db.patch(updates.matchedTransactionId as Id<"transactions">, {
-        isArchived: true,
-        matchedTransactionId: transactionId,
-      });
+      const matched = await ctx.db.get(updates.matchedTransactionId as Id<"transactions">);
+      if (matched?.status === "expected") {
+        await ctx.db.patch(matched._id, {
+          isArchived: true,
+          matchedTransactionId: transactionId,
+        });
+      }
     }
 
     await addLog(ctx, user.organizationId, user._id, "transaction.update", transactionId, transaction.description);
