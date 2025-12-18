@@ -18,7 +18,7 @@ export const getAllTransactions = query({
     if (!user?.organizationId) return [];
 
     const organizationId = user.organizationId;
-    const txQuery = args.projectId
+    const query = args.projectId
       ? ctx.db
           .query("transactions")
           .withIndex("by_organization_project", (q) =>
@@ -28,16 +28,10 @@ export const getAllTransactions = query({
           .query("transactions")
           .withIndex("by_organization", (q) => q.eq("organizationId", organizationId));
 
-    const allTransactions = await txQuery.collect();
-    const transactions = allTransactions.filter((t) => !t.isArchived);
+    const allTransactions = await query.collect();
+    const transactions = allTransactions.filter((transaction) => !transaction.isArchived);
 
-    const filtered = await filterByProjectAccess(
-      ctx,
-      user._id,
-      organizationId,
-      transactions,
-    );
-
+    const filtered = await filterByProjectAccess(ctx, user._id, organizationId, transactions);
     return addProjectAndCategoryNames(ctx, filtered);
   },
 });
@@ -56,11 +50,11 @@ export const getUnassignedProcessedTransactions = query({
 
     return processed
       .filter(
-        (t) =>
-          !t.isArchived &&
-          !t.splitFromTransactionId &&
-          !t.transferId &&
-          (!t.projectId || !t.categoryId || (t.amount > 0 && !t.donorId)),
+        (transaction) =>
+          !transaction.isArchived &&
+          !transaction.splitFromTransactionId &&
+          !transaction.transferId &&
+          (!transaction.projectId || !transaction.categoryId || (transaction.amount > 0 && !transaction.donorId)),
       )
       .sort((a, b) => b.date - a.date);
   },
@@ -72,17 +66,13 @@ export const getOldestTransactionDate = query({
 
     const transactions = await ctx.db
       .query("transactions")
-      .withIndex("by_organization", (q) =>
-        q.eq("organizationId", user.organizationId),
-      )
+      .withIndex("by_organization", (q) => q.eq("organizationId", user.organizationId))
       .collect();
 
-    const withProject = transactions.filter(
-      (t) => t.projectId && !t.isArchived,
-    );
+    const withProject = transactions.filter((transaction) => transaction.projectId && !transaction.isArchived);
     if (withProject.length === 0) return Date.now();
 
-    return Math.min(...withProject.map((t) => t.date));
+    return Math.min(...withProject.map((transaction) => transaction.date));
   },
 });
 
@@ -95,34 +85,20 @@ export const getMatchingRecommendations = query({
       ? ctx.db
           .query("transactions")
           .withIndex("by_organization_project", (q) =>
-            q
-              .eq("organizationId", user.organizationId)
-              .eq("projectId", args.projectId),
+            q.eq("organizationId", user.organizationId).eq("projectId", args.projectId),
           )
       : ctx.db
           .query("transactions")
           .withIndex("by_organization_status", (q) =>
-            q
-              .eq("organizationId", user.organizationId)
-              .eq("status", "expected"),
+            q.eq("organizationId", user.organizationId).eq("status", "expected"),
           );
 
     const allTransactions = await query.collect();
-
     const unmatched = allTransactions.filter(
-      (t) =>
-        t.status === "expected" &&
-        t.projectId &&
-        t.amount < 0 &&
-        !t.matchedTransactionId,
+      (transaction) => transaction.status === "expected" && transaction.projectId && !transaction.matchedTransactionId,
     );
 
-    const filtered = await filterByProjectAccess(
-      ctx,
-      user._id,
-      user.organizationId,
-      unmatched,
-    );
+    const filtered = await filterByProjectAccess(ctx, user._id, user.organizationId, unmatched);
     return addProjectAndCategoryNames(ctx, filtered);
   },
 });
@@ -143,33 +119,25 @@ export const getPaginatedTransactions = query({
       query = ctx.db
         .query("transactions")
         .withIndex("by_organization_project", (q) =>
-          q
-            .eq("organizationId", user.organizationId)
-            .eq("projectId", args.projectId),
+          q.eq("organizationId", user.organizationId).eq("projectId", args.projectId),
         );
     } else if (args.donorId) {
       query = ctx.db
         .query("transactions")
         .withIndex("by_organization_donor", (q) =>
-          q
-            .eq("organizationId", user.organizationId)
-            .eq("donorId", args.donorId),
+          q.eq("organizationId", user.organizationId).eq("donorId", args.donorId),
         );
     } else {
       query = ctx.db
         .query("transactions")
-        .withIndex("by_organization", (q) =>
-          q.eq("organizationId", user.organizationId),
-        );
+        .withIndex("by_organization", (q) => q.eq("organizationId", user.organizationId));
     }
 
     const result = await query.order("desc").paginate(args.paginationOpts);
 
-    let page = result.page.filter((t) => !t.isArchived);
+    let page = result.page.filter((transaction) => !transaction.isArchived);
     if (args.startDate !== undefined && args.endDate !== undefined) {
-      page = page.filter(
-        (t) => t.date >= args.startDate! && t.date <= args.endDate!,
-      );
+      page = page.filter((transaction) => transaction.date >= args.startDate! && transaction.date <= args.endDate!);
     }
 
     const filtered = args.donorId
