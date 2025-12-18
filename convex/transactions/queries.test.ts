@@ -198,7 +198,7 @@ test("get paginated transactions with date range", async () => {
   expect(result.page.length).toBeGreaterThanOrEqual(1);
 });
 
-test("get paginated transactions with project filter", async () => {
+test("get paginated transactions with single project filter", async () => {
   const t = convexTest(schema, modules);
   const { organizationId, userId, projectId } = await setupTestData(t);
 
@@ -218,11 +218,61 @@ test("get paginated transactions with project filter", async () => {
   const result = await t
     .withIdentity({ subject: userId })
     .query(api.transactions.queries.getPaginatedTransactions, {
-      projectId,
+      projectIds: [projectId],
       paginationOpts: { numItems: 10, cursor: null },
     });
 
   expect(result.page.length).toBeGreaterThanOrEqual(1);
+});
+
+test("get paginated transactions with multiple project filter", async () => {
+  const t = convexTest(schema, modules);
+  const { organizationId, userId, projectId } = await setupTestData(t);
+
+  const secondProjectId = await t.run((ctx) =>
+    ctx.db.insert("projects", {
+      name: "Second Project",
+      organizationId,
+      isArchived: false,
+      createdBy: userId,
+    }),
+  );
+
+  await t.run((ctx) =>
+    ctx.db.insert("transactions", {
+      organizationId,
+      projectId,
+      date: Date.now(),
+      amount: 100,
+      description: "First project tx",
+      counterparty: "Test",
+      status: "processed",
+      importedBy: userId,
+    }),
+  );
+
+  await t.run((ctx) =>
+    ctx.db.insert("transactions", {
+      organizationId,
+      projectId: secondProjectId,
+      date: Date.now(),
+      amount: 200,
+      description: "Second project tx",
+      counterparty: "Test",
+      status: "processed",
+      importedBy: userId,
+    }),
+  );
+
+  const result = await t
+    .withIdentity({ subject: userId })
+    .query(api.transactions.queries.getPaginatedTransactions, {
+      projectIds: [projectId, secondProjectId],
+      paginationOpts: { numItems: 10, cursor: null },
+    });
+
+  expect(result.page.some((tx) => tx.description === "First project tx")).toBe(true);
+  expect(result.page.some((tx) => tx.description === "Second project tx")).toBe(true);
 });
 
 test("get paginated transactions with donor filter", async () => {
@@ -274,7 +324,7 @@ test("get paginated transactions with date range and project", async () => {
   const result = await t
     .withIdentity({ subject: userId })
     .query(api.transactions.queries.getPaginatedTransactions, {
-      projectId,
+      projectIds: [projectId],
       startDate: now - 1000,
       endDate: now + 1000,
       paginationOpts: { numItems: 10, cursor: null },

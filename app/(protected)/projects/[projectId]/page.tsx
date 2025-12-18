@@ -16,13 +16,22 @@ export default function ProjectDetailPage() {
   const [isTransferOpen, setIsTransferOpen] = useState(false);
 
   const project = useQuery(api.projects.queries.getProjectById, { projectId });
+  const childIds = useQuery(api.projects.queries.getChildProjectIds, {
+    projectId,
+  });
+
+  const projectIds = useMemo(
+    () => (childIds?.length ? [projectId, ...childIds] : [projectId]),
+    [projectId, childIds],
+  );
+
   const {
     results: transactions,
     status,
     loadMore,
   } = usePaginatedQuery(
     api.transactions.queries.getPaginatedTransactions,
-    { projectId },
+    { projectIds },
     { initialNumItems: 50 }
   );
 

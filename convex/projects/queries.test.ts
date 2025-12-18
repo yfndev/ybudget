@@ -12,7 +12,7 @@ test("get all projects", async () => {
     .withIdentity({ subject: userId })
     .query(api.projects.queries.getAllProjects, {});
 
-  expect(projects.find((p) => p._id === projectId)).toBeDefined();
+  expect(projects.find((project) => project._id === projectId)).toBeDefined();
 });
 
 test("get all projects returns empty for unauthenticated user", async () => {
@@ -20,6 +20,19 @@ test("get all projects returns empty for unauthenticated user", async () => {
   await setupTestData(t);
 
   const projects = await t.query(api.projects.queries.getAllProjects, {});
+  expect(projects).toHaveLength(0);
+});
+
+test("get all projects returns empty for user without organization", async () => {
+  const t = convexTest(schema, modules);
+  const userWithoutOrg = await t.run((ctx) =>
+    ctx.db.insert("users", { email: "noorg@test.com" }),
+  );
+
+  const projects = await t
+    .withIdentity({ subject: userWithoutOrg })
+    .query(api.projects.queries.getAllProjects, {});
+
   expect(projects).toHaveLength(0);
 });
 
@@ -40,7 +53,7 @@ test("get all projects excludes archived", async () => {
     .withIdentity({ subject: userId })
     .query(api.projects.queries.getAllProjects, {});
 
-  expect(projects.some((p) => p.name === "Archived Project")).toBe(false);
+  expect(projects.some((project) => project.name === "Archived Project")).toBe(false);
 });
 
 test("get project by id", async () => {
@@ -112,5 +125,117 @@ test("get departments excludes child projects", async () => {
     .withIdentity({ subject: userId })
     .query(api.projects.queries.getDepartments, {});
 
-  expect(departments.some((d) => d.name === "Child")).toBe(false);
+  expect(departments.some((dept) => dept.name === "Child")).toBe(false);
+});
+
+test("get bookable projects returns empty for unauthenticated user", async () => {
+  const t = convexTest(schema, modules);
+  await setupTestData(t);
+
+  const projects = await t.query(api.projects.queries.getBookableProjects, {});
+  expect(projects).toHaveLength(0);
+});
+
+test("get bookable projects returns empty for user without organization", async () => {
+  const t = convexTest(schema, modules);
+  const userWithoutOrg = await t.run((ctx) =>
+    ctx.db.insert("users", { email: "noorg@test.com" }),
+  );
+
+  const projects = await t
+    .withIdentity({ subject: userWithoutOrg })
+    .query(api.projects.queries.getBookableProjects, {});
+
+  expect(projects).toHaveLength(0);
+});
+
+test("get bookable projects excludes departments with children", async () => {
+  const t = convexTest(schema, modules);
+  const { organizationId, userId, projectId } = await setupTestData(t);
+
+  const childId = await t.run((ctx) =>
+    ctx.db.insert("projects", {
+      name: "Child Project",
+      organizationId,
+      parentId: projectId,
+      isArchived: false,
+      createdBy: userId,
+    }),
+  );
+
+  const bookable = await t
+    .withIdentity({ subject: userId })
+    .query(api.projects.queries.getBookableProjects, {});
+
+  expect(bookable.some((project) => project._id === projectId)).toBe(false);
+  expect(bookable.some((project) => project._id === childId)).toBe(true);
+});
+
+test("get bookable projects excludes Rücklagen for expenses", async () => {
+  const t = convexTest(schema, modules);
+  const { organizationId, userId } = await setupTestData(t);
+
+  await t.run((ctx) =>
+    ctx.db.insert("projects", {
+      name: "Rücklagen",
+      organizationId,
+      isArchived: false,
+      createdBy: userId,
+    }),
+  );
+
+  const withExpense = await t
+    .withIdentity({ subject: userId })
+    .query(api.projects.queries.getBookableProjects, { isExpense: true });
+
+  const withoutExpense = await t
+    .withIdentity({ subject: userId })
+    .query(api.projects.queries.getBookableProjects, { isExpense: false });
+
+  expect(withExpense.some((project) => project.name === "Rücklagen")).toBe(false);
+  expect(withoutExpense.some((project) => project.name === "Rücklagen")).toBe(true);
+});
+
+test("get child project ids returns all descendants", async () => {
+  const t = convexTest(schema, modules);
+  const { organizationId, userId, projectId } = await setupTestData(t);
+
+  const childId = await t.run((ctx) =>
+    ctx.db.insert("projects", {
+      name: "Child",
+      organizationId,
+      parentId: projectId,
+      isArchived: false,
+      createdBy: userId,
+    }),
+  );
+
+  const grandchildId = await t.run((ctx) =>
+    ctx.db.insert("projects", {
+      name: "Grandchild",
+      organizationId,
+      parentId: childId,
+      isArchived: false,
+      createdBy: userId,
+    }),
+  );
+
+  const childIds = await t
+    .withIdentity({ subject: userId })
+    .query(api.projects.queries.getChildProjectIds, { projectId });
+
+  expect(childIds).toContain(childId);
+  expect(childIds).toContain(grandchildId);
+  expect(childIds).not.toContain(projectId);
+});
+
+test("get child project ids returns empty for leaf project", async () => {
+  const t = convexTest(schema, modules);
+  const { userId, projectId } = await setupTestData(t);
+
+  const childIds = await t
+    .withIdentity({ subject: userId })
+    .query(api.projects.queries.getChildProjectIds, { projectId });
+
+  expect(childIds).toHaveLength(0);
 });

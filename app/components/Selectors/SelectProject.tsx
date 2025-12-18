@@ -12,9 +12,15 @@ interface Props {
   value: string;
   onValueChange: (value: string) => void;
   autoFocus?: boolean;
+  isExpense?: boolean;
 }
 
-export function SelectProject({ value, onValueChange, autoFocus }: Props) {
+export function SelectProject({
+  value,
+  onValueChange,
+  autoFocus,
+  isExpense,
+}: Props) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [highlightedIndex, setHighlightedIndex] = useState(0);
@@ -22,7 +28,9 @@ export function SelectProject({ value, onValueChange, autoFocus }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const projects = useQuery(api.projects.queries.getAllProjects);
+  const projects = useQuery(api.projects.queries.getBookableProjects, {
+    isExpense,
+  });
   const selected = projects?.find((project) => project._id === value);
   const filtered =
     projects?.filter((project) =>
@@ -44,9 +52,7 @@ export function SelectProject({ value, onValueChange, autoFocus }: Props) {
   useEffect(() => setHighlightedIndex(0), [search]);
 
   useEffect(() => {
-    if (autoFocus) {
-      inputRef.current?.focus();
-    }
+    if (autoFocus) inputRef.current?.focus();
   }, [autoFocus]);
 
   const close = () => {
@@ -61,28 +67,26 @@ export function SelectProject({ value, onValueChange, autoFocus }: Props) {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Escape") return close();
-
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      if (!open) return setOpen(true);
-      setHighlightedIndex((current) => (current + 1) % filtered.length);
-      return;
-    }
-
-    if (e.key === "ArrowUp" && open) {
-      e.preventDefault();
-      setHighlightedIndex(
-        (current) => (current - 1 + filtered.length) % filtered.length
-      );
-      return;
-    }
-
-    if (e.key === "Enter") {
-      e.preventDefault();
-      if (open && filtered[highlightedIndex])
-        return handleSelect(filtered[highlightedIndex]._id);
-      if (!open) return setOpen(true);
+    switch (e.key) {
+      case "Escape":
+        close();
+        break;
+      case "ArrowDown":
+        e.preventDefault();
+        if (!open) setOpen(true);
+        else setHighlightedIndex((idx) => (idx + 1) % filtered.length);
+        break;
+      case "ArrowUp":
+        if (open) {
+          e.preventDefault();
+          setHighlightedIndex((idx) => (idx - 1 + filtered.length) % filtered.length);
+        }
+        break;
+      case "Enter":
+        e.preventDefault();
+        if (open && filtered[highlightedIndex]) handleSelect(filtered[highlightedIndex]._id);
+        else if (!open) setOpen(true);
+        break;
     }
   };
 

@@ -110,7 +110,7 @@ export const getMatchingRecommendations = query({
 
 export const getPaginatedTransactions = query({
   args: {
-    projectId: v.optional(v.id("projects")),
+    projectIds: v.optional(v.array(v.id("projects"))),
     donorId: v.optional(v.id("donors")),
     startDate: v.optional(v.number()),
     endDate: v.optional(v.number()),
@@ -118,34 +118,41 @@ export const getPaginatedTransactions = query({
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
+    const { projectIds, donorId, startDate, endDate } = args;
 
-    let query;
-    if (args.projectId) {
-      query = ctx.db
+    let dbQuery;
+    if (projectIds?.length === 1) {
+      dbQuery = ctx.db
         .query("transactions")
         .withIndex("by_organization_project", (q) =>
-          q.eq("organizationId", user.organizationId).eq("projectId", args.projectId),
+          q.eq("organizationId", user.organizationId).eq("projectId", projectIds[0]),
         );
-    } else if (args.donorId) {
-      query = ctx.db
+    } else if (donorId) {
+      dbQuery = ctx.db
         .query("transactions")
         .withIndex("by_organization_donor", (q) =>
-          q.eq("organizationId", user.organizationId).eq("donorId", args.donorId),
+          q.eq("organizationId", user.organizationId).eq("donorId", donorId),
         );
     } else {
-      query = ctx.db
+      dbQuery = ctx.db
         .query("transactions")
         .withIndex("by_organization", (q) => q.eq("organizationId", user.organizationId));
     }
 
-    const result = await query.order("desc").paginate(args.paginationOpts);
+    const result = await dbQuery.order("desc").paginate(args.paginationOpts);
 
-    let page = result.page.filter((transaction) => !transaction.isArchived);
-    if (args.startDate !== undefined && args.endDate !== undefined) {
-      page = page.filter((transaction) => transaction.date >= args.startDate! && transaction.date <= args.endDate!);
+    let page = result.page.filter((tx) => !tx.isArchived);
+
+    if (projectIds && projectIds.length > 1) {
+      const projectIdSet = new Set(projectIds);
+      page = page.filter((tx) => tx.projectId && projectIdSet.has(tx.projectId));
     }
 
-    const filtered = args.donorId
+    if (startDate !== undefined && endDate !== undefined) {
+      page = page.filter((tx) => tx.date >= startDate && tx.date <= endDate);
+    }
+
+    const filtered = donorId
       ? page
       : await filterByProjectAccess(ctx, user._id, user.organizationId, page);
 
