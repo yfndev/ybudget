@@ -38,28 +38,28 @@ export default function ReimbursementPage() {
   const convex = useConvex();
 
   const reimbursements = useQuery(
-    api.reimbursements.queries.getAllReimbursements
+    api.reimbursements.queries.getAllReimbursements,
   );
   const allowances = useQuery(api.volunteerAllowance.queries.getAll);
 
   const markReimbursementPaid = useMutation(
-    api.reimbursements.functions.markAsPaid
+    api.reimbursements.functions.markAsPaid,
   );
   const rejectReimbursementMutation = useMutation(
-    api.reimbursements.functions.rejectReimbursement
+    api.reimbursements.functions.rejectReimbursement,
   );
   const deleteReimbursementMutation = useMutation(
-    api.reimbursements.functions.deleteReimbursement
+    api.reimbursements.functions.deleteReimbursement,
   );
 
   const approveAllowanceMutation = useMutation(
-    api.volunteerAllowance.functions.approve
+    api.volunteerAllowance.functions.approve,
   );
   const rejectAllowanceMutation = useMutation(
-    api.volunteerAllowance.functions.reject
+    api.volunteerAllowance.functions.reject,
   );
   const deleteAllowanceMutation = useMutation(
-    api.volunteerAllowance.functions.remove
+    api.volunteerAllowance.functions.remove,
   );
 
   const [rejectDialog, setRejectDialog] = useState<RejectDialog>({
@@ -134,7 +134,7 @@ export default function ReimbursementPage() {
       api.reimbursements.queries.getReimbursement,
       {
         reimbursementId: id,
-      }
+      },
     );
     if (!reimbursement) return;
 
@@ -142,7 +142,7 @@ export default function ReimbursementPage() {
       api.reimbursements.queries.getReceipts,
       {
         reimbursementId: id,
-      }
+      },
     );
 
     const receiptsWithUrls = await Promise.all(
@@ -151,12 +151,12 @@ export default function ReimbursementPage() {
         fileUrl: await convex.query(api.reimbursements.queries.getFileUrl, {
           storageId: receipt.fileStorageId,
         }),
-      }))
+      })),
     );
 
     const pdfBlob = await generateReimbursementPDF(
       reimbursement,
-      receiptsWithUrls
+      receiptsWithUrls,
     );
     downloadBlob(pdfBlob, `Erstattung_${id}.pdf`);
   };
@@ -168,19 +168,19 @@ export default function ReimbursementPage() {
       api.volunteerAllowance.queries.getSignatureUrl,
       {
         storageId: allowance.signatureStorageId,
-      }
+      },
     );
 
     const pdfBlob = await generateVolunteerAllowancePDF(
       allowance,
-      signatureUrl
+      signatureUrl,
     );
     downloadBlob(pdfBlob, `Ehrenamtspauschale_${allowance._id}.pdf`);
   };
 
   const handleOpenRejectDialog = (
     type: "reimbursement" | "allowance",
-    id: Id<"reimbursements"> | Id<"volunteerAllowance">
+    id: Id<"reimbursements"> | Id<"volunteerAllowance">,
   ) => {
     setRejectDialog({ open: true, type, id, note: "" });
   };

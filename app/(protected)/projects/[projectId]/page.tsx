@@ -32,19 +32,19 @@ export default function ProjectDetailPage() {
   } = usePaginatedQuery(
     api.transactions.queries.getPaginatedTransactions,
     { projectIds },
-    { initialNumItems: 50 }
+    { initialNumItems: 50 },
   );
 
   const budgets = useMemo(
     () => calculateBudget(transactions ?? []),
-    [transactions]
+    [transactions],
   );
 
   const updateTransaction = useMutation(
-    api.transactions.functions.updateTransaction
+    api.transactions.functions.updateTransaction,
   );
   const deleteTransaction = useMutation(
-    api.transactions.functions.deleteExpectedTransaction
+    api.transactions.functions.deleteExpectedTransaction,
   );
 
   const handleUpdate = async (id: string, field: string, value: unknown) => {

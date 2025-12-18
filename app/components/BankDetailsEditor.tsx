@@ -65,7 +65,9 @@ export function BankDetailsEditor({ value, onChange }: Props) {
             </Label>
             <Input
               value={formatIban(value.iban)}
-              onChange={(e) => update("iban", e.target.value.replace(/\s/g, ""))}
+              onChange={(e) =>
+                update("iban", e.target.value.replace(/\s/g, ""))
+              }
               disabled={!editing}
               placeholder="DE12 3456 7890 0000 0000 00"
               className="font-mono"

@@ -32,7 +32,11 @@ export function RangeCalendar({ selectedDateRange, onDateRangeChange }: Props) {
   const today = new Date();
   const [month, setMonth] = useState(today);
 
-  const presets: Array<{ key: string; label: string; range: DateRange | null }> = [
+  const presets: Array<{
+    key: string;
+    label: string;
+    range: DateRange | null;
+  }> = [
     {
       key: "month",
       label: "Monat",

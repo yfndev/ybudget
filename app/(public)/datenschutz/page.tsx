@@ -108,9 +108,9 @@ export default function DatenschutzPage() {
       <p className="mb-4">
         Das externe Hosting erfolgt zum Zwecke der Vertragserfüllung gegenüber
         unseren potenziellen und bestehenden Kunden (Art. 6 Abs. 1 lit. b DSGVO)
-        und im Interesse einer sicheren, schnellen und effizienten Bereitstellung
-        unseres Online-Angebots durch einen professionellen Anbieter (Art. 6 Abs.
-        1 lit. f DSGVO).
+        und im Interesse einer sicheren, schnellen und effizienten
+        Bereitstellung unseres Online-Angebots durch einen professionellen
+        Anbieter (Art. 6 Abs. 1 lit. f DSGVO).
       </p>
       <p className="mb-4">
         Wir setzen folgende(n) Hoster ein:
@@ -191,16 +191,16 @@ export default function DatenschutzPage() {
       </h3>
       <p className="mb-4">
         Sofern Sie in die Datenverarbeitung eingewilligt haben, verarbeiten wir
-        Ihre personenbezogenen Daten auf Grundlage von Art. 6 Abs. 1 lit. a DSGVO
-        bzw. Art. 9 Abs. 2 lit. a DSGVO, sofern besondere Datenkategorien nach
-        Art. 9 Abs. 1 DSGVO verarbeitet werden. Im Falle einer ausdrücklichen
-        Einwilligung in die Übertragung personenbezogener Daten in Drittstaaten
-        erfolgt die Datenverarbeitung außerdem auf Grundlage von Art. 49 Abs. 1
-        lit. a DSGVO. Sofern Sie in die Speicherung von Cookies oder in den
-        Zugriff auf Informationen in Ihr Endgerät (z.B. via Device-Fingerprinting)
-        eingewilligt haben, erfolgt die Datenverarbeitung zusätzlich auf
-        Grundlage von § 25 Abs. 1 TDDDG. Die Einwilligung ist jederzeit
-        widerrufbar.
+        Ihre personenbezogenen Daten auf Grundlage von Art. 6 Abs. 1 lit. a
+        DSGVO bzw. Art. 9 Abs. 2 lit. a DSGVO, sofern besondere Datenkategorien
+        nach Art. 9 Abs. 1 DSGVO verarbeitet werden. Im Falle einer
+        ausdrücklichen Einwilligung in die Übertragung personenbezogener Daten
+        in Drittstaaten erfolgt die Datenverarbeitung außerdem auf Grundlage von
+        Art. 49 Abs. 1 lit. a DSGVO. Sofern Sie in die Speicherung von Cookies
+        oder in den Zugriff auf Informationen in Ihr Endgerät (z.B. via
+        Device-Fingerprinting) eingewilligt haben, erfolgt die Datenverarbeitung
+        zusätzlich auf Grundlage von § 25 Abs. 1 TDDDG. Die Einwilligung ist
+        jederzeit widerrufbar.
       </p>
 
       <h3 className="text-xl font-semibold mt-6 mb-3">
@@ -208,14 +208,14 @@ export default function DatenschutzPage() {
       </h3>
       <p className="mb-4">
         Im Rahmen unserer Geschäftstätigkeit arbeiten wir mit verschiedenen
-        externen Stellen zusammen. Dabei ist teilweise auch eine Übermittlung von
-        personenbezogenen Daten an diese externen Stellen erforderlich. Wir geben
-        personenbezogene Daten nur dann an externe Stellen weiter, wenn dies im
-        Rahmen einer Vertragserfüllung erforderlich ist, wenn wir gesetzlich
-        hierzu verpflichtet sind (z.B. Weitergabe von Daten an Steuerbehörden),
-        wenn wir ein berechtigtes Interesse nach Art. 6 Abs. 1 lit. f DSGVO an
-        der Weitergabe haben oder wenn eine sonstige Rechtsgrundlage die
-        Datenweitergabe erlaubt.
+        externen Stellen zusammen. Dabei ist teilweise auch eine Übermittlung
+        von personenbezogenen Daten an diese externen Stellen erforderlich. Wir
+        geben personenbezogene Daten nur dann an externe Stellen weiter, wenn
+        dies im Rahmen einer Vertragserfüllung erforderlich ist, wenn wir
+        gesetzlich hierzu verpflichtet sind (z.B. Weitergabe von Daten an
+        Steuerbehörden), wenn wir ein berechtigtes Interesse nach Art. 6 Abs. 1
+        lit. f DSGVO an der Weitergabe haben oder wenn eine sonstige
+        Rechtsgrundlage die Datenweitergabe erlaubt.
       </p>
 
       <h3 className="text-xl font-semibold mt-6 mb-3">
@@ -238,22 +238,23 @@ export default function DatenschutzPage() {
         IHRER BESONDEREN SITUATION ERGEBEN, GEGEN DIE VERARBEITUNG IHRER
         PERSONENBEZOGENEN DATEN WIDERSPRUCH EINZULEGEN; DIES GILT AUCH FÜR EIN
         AUF DIESE BESTIMMUNGEN GESTÜTZTES PROFILING. DIE JEWEILIGE
-        RECHTSGRUNDLAGE, AUF DENEN EINE VERARBEITUNG BERUHT, ENTNEHMEN SIE DIESER
-        DATENSCHUTZERKLÄRUNG. WENN SIE WIDERSPRUCH EINLEGEN, WERDEN WIR IHRE
-        BETROFFENEN PERSONENBEZOGENEN DATEN NICHT MEHR VERARBEITEN, ES SEI DENN,
-        WIR KÖNNEN ZWINGENDE SCHUTZWÜRDIGE GRÜNDE FÜR DIE VERARBEITUNG
+        RECHTSGRUNDLAGE, AUF DENEN EINE VERARBEITUNG BERUHT, ENTNEHMEN SIE
+        DIESER DATENSCHUTZERKLÄRUNG. WENN SIE WIDERSPRUCH EINLEGEN, WERDEN WIR
+        IHRE BETROFFENEN PERSONENBEZOGENEN DATEN NICHT MEHR VERARBEITEN, ES SEI
+        DENN, WIR KÖNNEN ZWINGENDE SCHUTZWÜRDIGE GRÜNDE FÜR DIE VERARBEITUNG
         NACHWEISEN, DIE IHRE INTERESSEN, RECHTE UND FREIHEITEN ÜBERWIEGEN ODER
-        DIE VERARBEITUNG DIENT DER GELTENDMACHUNG, AUSÜBUNG ODER VERTEIDIGUNG VON
-        RECHTSANSPRÜCHEN (WIDERSPRUCH NACH ART. 21 ABS. 1 DSGVO).
+        DIE VERARBEITUNG DIENT DER GELTENDMACHUNG, AUSÜBUNG ODER VERTEIDIGUNG
+        VON RECHTSANSPRÜCHEN (WIDERSPRUCH NACH ART. 21 ABS. 1 DSGVO).
       </p>
       <p className="mb-4 uppercase text-sm">
         WERDEN IHRE PERSONENBEZOGENEN DATEN VERARBEITET, UM DIREKTWERBUNG ZU
         BETREIBEN, SO HABEN SIE DAS RECHT, JEDERZEIT WIDERSPRUCH GEGEN DIE
         VERARBEITUNG SIE BETREFFENDER PERSONENBEZOGENER DATEN ZUM ZWECKE
         DERARTIGER WERBUNG EINZULEGEN; DIES GILT AUCH FÜR DAS PROFILING, SOWEIT
-        ES MIT SOLCHER DIREKTWERBUNG IN VERBINDUNG STEHT. WENN SIE WIDERSPRECHEN,
-        WERDEN IHRE PERSONENBEZOGENEN DATEN ANSCHLIESSEND NICHT MEHR ZUM ZWECKE
-        DER DIREKTWERBUNG VERWENDET (WIDERSPRUCH NACH ART. 21 ABS. 2 DSGVO).
+        ES MIT SOLCHER DIREKTWERBUNG IN VERBINDUNG STEHT. WENN SIE
+        WIDERSPRECHEN, WERDEN IHRE PERSONENBEZOGENEN DATEN ANSCHLIESSEND NICHT
+        MEHR ZUM ZWECKE DER DIREKTWERBUNG VERWENDET (WIDERSPRUCH NACH ART. 21
+        ABS. 2 DSGVO).
       </p>
 
       <h3 className="text-xl font-semibold mt-6 mb-3">
@@ -272,20 +273,20 @@ export default function DatenschutzPage() {
         Recht auf Datenübertragbarkeit
       </h3>
       <p className="mb-4">
-        Sie haben das Recht, Daten, die wir auf Grundlage Ihrer Einwilligung oder
-        in Erfüllung eines Vertrags automatisiert verarbeiten, an sich oder an
-        einen Dritten in einem gängigen, maschinenlesbaren Format aushändigen zu
-        lassen. Sofern Sie die direkte Übertragung der Daten an einen anderen
-        Verantwortlichen verlangen, erfolgt dies nur, soweit es technisch machbar
-        ist.
+        Sie haben das Recht, Daten, die wir auf Grundlage Ihrer Einwilligung
+        oder in Erfüllung eines Vertrags automatisiert verarbeiten, an sich oder
+        an einen Dritten in einem gängigen, maschinenlesbaren Format aushändigen
+        zu lassen. Sofern Sie die direkte Übertragung der Daten an einen anderen
+        Verantwortlichen verlangen, erfolgt dies nur, soweit es technisch
+        machbar ist.
       </p>
 
       <h3 className="text-xl font-semibold mt-6 mb-3">
         Auskunft, Berichtigung und Löschung
       </h3>
       <p className="mb-4">
-        Sie haben im Rahmen der geltenden gesetzlichen Bestimmungen jederzeit das
-        Recht auf unentgeltliche Auskunft über Ihre gespeicherten
+        Sie haben im Rahmen der geltenden gesetzlichen Bestimmungen jederzeit
+        das Recht auf unentgeltliche Auskunft über Ihre gespeicherten
         personenbezogenen Daten, deren Herkunft und Empfänger und den Zweck der
         Datenverarbeitung und ggf. ein Recht auf Berichtigung oder Löschung
         dieser Daten. Hierzu sowie zu weiteren Fragen zum Thema personenbezogene
@@ -297,8 +298,8 @@ export default function DatenschutzPage() {
       </h3>
       <p className="mb-4">
         Sie haben das Recht, die Einschränkung der Verarbeitung Ihrer
-        personenbezogenen Daten zu verlangen. Hierzu können Sie sich jederzeit an
-        uns wenden. Das Recht auf Einschränkung der Verarbeitung besteht in
+        personenbezogenen Daten zu verlangen. Hierzu können Sie sich jederzeit
+        an uns wenden. Das Recht auf Einschränkung der Verarbeitung besteht in
         folgenden Fällen:
       </p>
       <ul className="list-disc pl-6 mb-4">
@@ -317,8 +318,8 @@ export default function DatenschutzPage() {
         <li className="mb-2">
           Wenn wir Ihre personenbezogenen Daten nicht mehr benötigen, Sie sie
           jedoch zur Ausübung, Verteidigung oder Geltendmachung von
-          Rechtsansprüchen benötigen, haben Sie das Recht, statt der Löschung die
-          Einschränkung der Verarbeitung Ihrer personenbezogenen Daten zu
+          Rechtsansprüchen benötigen, haben Sie das Recht, statt der Löschung
+          die Einschränkung der Verarbeitung Ihrer personenbezogenen Daten zu
           verlangen.
         </li>
         <li className="mb-2">
@@ -336,10 +337,10 @@ export default function DatenschutzPage() {
       <p className="mb-4">
         Diese Seite nutzt aus Sicherheitsgründen und zum Schutz der Übertragung
         vertraulicher Inhalte, wie zum Beispiel Bestellungen oder Anfragen, die
-        Sie an uns als Seitenbetreiber senden, eine SSL- bzw. TLS-Verschlüsselung.
-        Eine verschlüsselte Verbindung erkennen Sie daran, dass die Adresszeile
-        des Browsers von „http://" auf „https://" wechselt und an dem
-        Schloss-Symbol in Ihrer Browserzeile.
+        Sie an uns als Seitenbetreiber senden, eine SSL- bzw.
+        TLS-Verschlüsselung. Eine verschlüsselte Verbindung erkennen Sie daran,
+        dass die Adresszeile des Browsers von „http://" auf „https://" wechselt
+        und an dem Schloss-Symbol in Ihrer Browserzeile.
       </p>
       <p className="mb-4">
         Wenn die SSL- bzw. TLS-Verschlüsselung aktiviert ist, können die Daten,
@@ -364,8 +365,9 @@ export default function DatenschutzPage() {
       <p className="mb-4">
         Cookies können von uns (First-Party-Cookies) oder von Drittunternehmen
         stammen (sog. Third-Party-Cookies). Third-Party-Cookies ermöglichen die
-        Einbindung bestimmter Dienstleistungen von Drittunternehmen innerhalb von
-        Webseiten (z.B. Cookies zur Abwicklung von Zahlungsdienstleistungen).
+        Einbindung bestimmter Dienstleistungen von Drittunternehmen innerhalb
+        von Webseiten (z.B. Cookies zur Abwicklung von
+        Zahlungsdienstleistungen).
       </p>
       <p className="mb-4">
         Cookies haben verschiedene Funktionen. Zahlreiche Cookies sind technisch
@@ -376,13 +378,14 @@ export default function DatenschutzPage() {
       </p>
       <p className="mb-4">
         Cookies, die zur Durchführung des elektronischen Kommunikationsvorgangs,
-        zur Bereitstellung bestimmter, von Ihnen erwünschter Funktionen (z.B. für
-        die Warenkorbfunktion) oder zur Optimierung der Website (z.B. Cookies zur
-        Messung des Webpublikums) erforderlich sind (notwendige Cookies), werden
-        auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO gespeichert, sofern keine
-        andere Rechtsgrundlage angegeben wird. Der Websitebetreiber hat ein
-        berechtigtes Interesse an der Speicherung von notwendigen Cookies zur
-        technisch fehlerfreien und optimierten Bereitstellung seiner Dienste.
+        zur Bereitstellung bestimmter, von Ihnen erwünschter Funktionen (z.B.
+        für die Warenkorbfunktion) oder zur Optimierung der Website (z.B.
+        Cookies zur Messung des Webpublikums) erforderlich sind (notwendige
+        Cookies), werden auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO
+        gespeichert, sofern keine andere Rechtsgrundlage angegeben wird. Der
+        Websitebetreiber hat ein berechtigtes Interesse an der Speicherung von
+        notwendigen Cookies zur technisch fehlerfreien und optimierten
+        Bereitstellung seiner Dienste.
       </p>
 
       <h2 className="text-2xl font-semibold mt-8 mb-4">5. Plugins und Tools</h2>
@@ -397,9 +400,9 @@ export default function DatenschutzPage() {
       <p className="mb-4">
         Zu diesem Zweck muss der von Ihnen verwendete Browser Verbindung zu den
         Servern von Google aufnehmen. Hierdurch erlangt Google Kenntnis darüber,
-        dass über Ihre IP-Adresse diese Website aufgerufen wurde. Die Nutzung von
-        Google Fonts erfolgt auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO. Der
-        Websitebetreiber hat ein berechtigtes Interesse an der einheitlichen
+        dass über Ihre IP-Adresse diese Website aufgerufen wurde. Die Nutzung
+        von Google Fonts erfolgt auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO.
+        Der Websitebetreiber hat ein berechtigtes Interesse an der einheitlichen
         Darstellung des Schriftbildes auf seiner Website.
       </p>
       <p className="mb-4">
@@ -433,13 +436,13 @@ export default function DatenschutzPage() {
         Wir bieten Ihnen die Möglichkeit, sich über Ihr Google-Konto bei unserer
         Website anzumelden. Wenn Sie diese Funktion nutzen, werden Sie auf eine
         Google-Seite weitergeleitet, auf der Sie sich mit Ihren
-        Google-Anmeldedaten einloggen können. Nach erfolgreicher Authentifizierung
-        erhalten wir von Google bestimmte Profilinformationen, darunter Ihren
-        Namen und Ihre E-Mail-Adresse.
+        Google-Anmeldedaten einloggen können. Nach erfolgreicher
+        Authentifizierung erhalten wir von Google bestimmte Profilinformationen,
+        darunter Ihren Namen und Ihre E-Mail-Adresse.
       </p>
       <p className="mb-4">
-        Die Nutzung von Google OAuth erfolgt auf Grundlage von Art. 6 Abs. 1 lit.
-        a DSGVO (Einwilligung) und Art. 6 Abs. 1 lit. b DSGVO
+        Die Nutzung von Google OAuth erfolgt auf Grundlage von Art. 6 Abs. 1
+        lit. a DSGVO (Einwilligung) und Art. 6 Abs. 1 lit. b DSGVO
         (Vertragserfüllung). Sie können die Verknüpfung Ihres Google-Kontos mit
         unserem Dienst jederzeit in Ihren Google-Kontoeinstellungen widerrufen.
       </p>
@@ -463,8 +466,8 @@ export default function DatenschutzPage() {
       <h3 className="text-xl font-semibold mt-6 mb-3">PostHog</h3>
       <p className="mb-4">
         Wir nutzen PostHog für Webanalyse und Produktanalysen. PostHog ist eine
-        Open-Source-Plattform für Produktanalyse, die uns hilft zu verstehen, wie
-        Nutzer unsere Website verwenden.
+        Open-Source-Plattform für Produktanalyse, die uns hilft zu verstehen,
+        wie Nutzer unsere Website verwenden.
       </p>
       <p className="mb-4">
         PostHog erfasst Daten wie Seitenaufrufe, Klicks und andere Interaktionen
@@ -497,8 +500,8 @@ export default function DatenschutzPage() {
       <h3 className="text-xl font-semibold mt-6 mb-3">Convex</h3>
       <p className="mb-4">
         Wir nutzen Convex als Backend-Datenbank und für serverlose Funktionen.
-        Convex speichert und verarbeitet die Daten, die Sie in unserer
-        Anwendung eingeben, einschließlich Benutzerdaten, Projektdaten und
+        Convex speichert und verarbeitet die Daten, die Sie in unserer Anwendung
+        eingeben, einschließlich Benutzerdaten, Projektdaten und
         Transaktionsdaten.
       </p>
       <p className="mb-4">
@@ -506,9 +509,7 @@ export default function DatenschutzPage() {
         (Vertragserfüllung) und Art. 6 Abs. 1 lit. f DSGVO (berechtigtes
         Interesse an einer zuverlässigen und performanten Datenverarbeitung).
       </p>
-      <p className="mb-4">
-        Anbieter: Convex, Inc., San Francisco, CA, USA.
-      </p>
+      <p className="mb-4">Anbieter: Convex, Inc., San Francisco, CA, USA.</p>
       <p className="mb-4">
         Weitere Informationen finden Sie in der Datenschutzerklärung von Convex:{" "}
         <a
@@ -531,11 +532,13 @@ export default function DatenschutzPage() {
       </p>
       <p className="mb-4">
         Die Nutzung erfolgt auf Grundlage von Art. 6 Abs. 1 lit. a DSGVO
-        (Einwilligung) und Art. 6 Abs. 1 lit. b DSGVO (Vertragserfüllung). OpenAI
-        verarbeitet die übermittelten Daten gemäß ihrer Datenschutzrichtlinie.
+        (Einwilligung) und Art. 6 Abs. 1 lit. b DSGVO (Vertragserfüllung).
+        OpenAI verarbeitet die übermittelten Daten gemäß ihrer
+        Datenschutzrichtlinie.
       </p>
       <p className="mb-4">
-        Anbieter: OpenAI, L.L.C., 3180 18th Street, San Francisco, CA 94110, USA.
+        Anbieter: OpenAI, L.L.C., 3180 18th Street, San Francisco, CA 94110,
+        USA.
       </p>
       <p className="mb-4">
         Weitere Informationen finden Sie in der Datenschutzerklärung von OpenAI:{" "}

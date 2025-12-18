@@ -279,5 +279,5 @@ const baseColumns = [
 export const editableColumns = baseColumns;
 
 export const editableColumnsWithoutProject = baseColumns.filter(
-  (column) => column.accessorKey !== "projectName"
+  (column) => column.accessorKey !== "projectName",
 );

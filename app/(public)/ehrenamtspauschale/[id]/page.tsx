@@ -18,12 +18,14 @@ import toast from "react-hot-toast";
 export default function ExternalEhrenamtspauschalePage() {
   const { id } = useParams<{ id: Id<"volunteerAllowance"> }>();
 
-  const linkData = useQuery(api.volunteerAllowance.queries.validateLink, { id });
+  const linkData = useQuery(api.volunteerAllowance.queries.validateLink, {
+    id,
+  });
   const generateUploadUrl = useMutation(
-    api.volunteerAllowance.functions.generatePublicUploadUrl
+    api.volunteerAllowance.functions.generatePublicUploadUrl,
   );
   const submitExternal = useMutation(
-    api.volunteerAllowance.functions.submitExternal
+    api.volunteerAllowance.functions.submitExternal,
   );
 
   const [signatureStorageId, setSignatureStorageId] =
@@ -111,7 +113,7 @@ export default function ExternalEhrenamtspauschalePage() {
       setSubmitted(true);
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Fehler beim Einreichen"
+        error instanceof Error ? error.message : "Fehler beim Einreichen",
       );
     } finally {
       setIsSubmitting(false);

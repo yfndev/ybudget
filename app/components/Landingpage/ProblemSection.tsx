@@ -26,7 +26,10 @@ const problems = [
 
 export function ProblemSection() {
   return (
-    <section id="problem" className="bg-slate-50 px-4 py-16 sm:py-24 sm:px-6 lg:px-8">
+    <section
+      id="problem"
+      className="bg-slate-50 px-4 py-16 sm:py-24 sm:px-6 lg:px-8"
+    >
       <div className="mx-auto max-w-7xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -62,7 +65,9 @@ export function ProblemSection() {
                 <h3 className="mt-4 text-lg font-semibold text-slate-900 sm:mt-6 sm:text-xl">
                   {problem.title}
                 </h3>
-                <p className="mt-2 text-sm text-slate-600 sm:mt-3 sm:text-base">{problem.description}</p>
+                <p className="mt-2 text-sm text-slate-600 sm:mt-3 sm:text-base">
+                  {problem.description}
+                </p>
               </motion.div>
             );
           })}

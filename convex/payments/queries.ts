@@ -13,7 +13,9 @@ export const getActivePayment = query({
     const organizationId = user.organizationId;
     return await ctx.db
       .query("payments")
-      .withIndex("by_organization", (q) => q.eq("organizationId", organizationId))
+      .withIndex("by_organization", (q) =>
+        q.eq("organizationId", organizationId),
+      )
       .filter((q) => q.eq(q.field("status"), "completed"))
       .first();
   },

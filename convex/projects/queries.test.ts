@@ -53,7 +53,9 @@ test("get all projects excludes archived", async () => {
     .withIdentity({ subject: userId })
     .query(api.projects.queries.getAllProjects, {});
 
-  expect(projects.some((project) => project.name === "Archived Project")).toBe(false);
+  expect(projects.some((project) => project.name === "Archived Project")).toBe(
+    false,
+  );
 });
 
 test("get project by id", async () => {
@@ -192,8 +194,12 @@ test("get bookable projects excludes Rücklagen for expenses", async () => {
     .withIdentity({ subject: userId })
     .query(api.projects.queries.getBookableProjects, { isExpense: false });
 
-  expect(withExpense.some((project) => project.name === "Rücklagen")).toBe(false);
-  expect(withoutExpense.some((project) => project.name === "Rücklagen")).toBe(true);
+  expect(withExpense.some((project) => project.name === "Rücklagen")).toBe(
+    false,
+  );
+  expect(withoutExpense.some((project) => project.name === "Rücklagen")).toBe(
+    true,
+  );
 });
 
 test("get child project ids returns all descendants", async () => {

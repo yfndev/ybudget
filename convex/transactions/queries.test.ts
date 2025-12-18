@@ -271,8 +271,12 @@ test("get paginated transactions with multiple project filter", async () => {
       paginationOpts: { numItems: 10, cursor: null },
     });
 
-  expect(result.page.some((tx) => tx.description === "First project tx")).toBe(true);
-  expect(result.page.some((tx) => tx.description === "Second project tx")).toBe(true);
+  expect(result.page.some((tx) => tx.description === "First project tx")).toBe(
+    true,
+  );
+  expect(result.page.some((tx) => tx.description === "Second project tx")).toBe(
+    true,
+  );
 });
 
 test("get paginated transactions with donor filter", async () => {

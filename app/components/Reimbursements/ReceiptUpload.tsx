@@ -22,11 +22,11 @@ export function ReceiptUpload({ onUploadComplete, storageId }: Props) {
   const [isPdf, setIsPdf] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const generateUploadUrl = useMutation(
-    api.reimbursements.functions.generateUploadUrl
+    api.reimbursements.functions.generateUploadUrl,
   );
   const previewUrl = useQuery(
     api.reimbursements.queries.getFileUrl,
-    storageId ? { storageId } : "skip"
+    storageId ? { storageId } : "skip",
   );
 
   const handleFile = async (file: File) => {
@@ -54,7 +54,7 @@ export function ReceiptUpload({ onUploadComplete, storageId }: Props) {
       toast.error(
         error instanceof FileConversionError
           ? error.message
-          : "Upload fehlgeschlagen"
+          : "Upload fehlgeschlagen",
       );
     } finally {
       setIsUploading(false);

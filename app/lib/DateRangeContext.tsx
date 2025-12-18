@@ -23,7 +23,9 @@ const DateRangeContext = createContext<DateRangeContextType | undefined>(
 );
 
 export function DateRangeProvider({ children }: { children: ReactNode }) {
-  const [selectedDateRange, setSelectedDateRange] = useState<DateRange | null>(null);
+  const [selectedDateRange, setSelectedDateRange] = useState<DateRange | null>(
+    null,
+  );
 
   const value = useMemo(
     () => ({ selectedDateRange, setSelectedDateRange }),

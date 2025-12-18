@@ -25,14 +25,14 @@ interface Props {
 
 export function TransferDialog({ open, onOpenChange, fromProjectId }: Props) {
   const [senderId, setSenderId] = useState<Id<"projects"> | null>(
-    fromProjectId ?? null
+    fromProjectId ?? null,
   );
   const [receiverId, setReceiverId] = useState<Id<"projects"> | null>(null);
   const [amountStr, setAmountStr] = useState("");
 
   const transactions = useQuery(
     api.transactions.queries.getAllTransactions,
-    senderId ? { projectId: senderId } : "skip"
+    senderId ? { projectId: senderId } : "skip",
   );
   const balance = transactions
     ? calculateBudget(transactions).currentBalance

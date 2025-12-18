@@ -29,10 +29,13 @@ export default function ImpressumPage() {
       </p>
 
       <p className="mb-4">
-        <strong>Verbraucherstreitbeilegung / Universalschlichtungsstelle</strong>
+        <strong>
+          Verbraucherstreitbeilegung / Universalschlichtungsstelle
+        </strong>
         <br />
         Wir nehmen nicht an Streitbeilegungsverfahren vor einer
-        Verbraucherschlichtungsstelle teil und sind dazu auch nicht verpflichtet.
+        Verbraucherschlichtungsstelle teil und sind dazu auch nicht
+        verpflichtet.
       </p>
 
       <div className="mb-4">
@@ -54,22 +57,23 @@ export default function ImpressumPage() {
           Informationen nach den allgemeinen Gesetzen bleiben hiervon unberührt.
           Eine diesbezügliche Haftung ist jedoch erst ab dem Zeitpunkt der
           Kenntnis einer konkreten Rechtsverletzung möglich. Bei Bekanntwerden
-          von entsprechenden Rechtsverletzungen werden wir diese Inhalte umgehend
-          entfernen.
+          von entsprechenden Rechtsverletzungen werden wir diese Inhalte
+          umgehend entfernen.
         </p>
         <strong>Haftung für Links</strong>
         <br />
         <p className="mb-4">
           Unser Angebot enthält Links zu externen Webseiten Dritter, auf deren
-          Inhalte wir keinen Einfluss haben. Deshalb können wir für diese fremden
-          Inhalte auch keine Gewähr übernehmen. Für die Inhalte der verlinkten
-          Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten
-          verantwortlich. Die verlinkten Seiten wurden zum Zeitpunkt der
-          Verlinkung auf mögliche Rechtsverstöße überprüft. Rechtswidrige Inhalte
-          waren zum Zeitpunkt der Verlinkung nicht erkennbar. Eine permanente
-          inhaltliche Kontrolle der verlinkten Seiten ist jedoch ohne konkrete
-          Anhaltspunkte einer Rechtsverletzung nicht zumutbar. Bei Bekanntwerden
-          von Rechtsverletzungen werden wir derartige Links umgehend entfernen.
+          Inhalte wir keinen Einfluss haben. Deshalb können wir für diese
+          fremden Inhalte auch keine Gewähr übernehmen. Für die Inhalte der
+          verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der
+          Seiten verantwortlich. Die verlinkten Seiten wurden zum Zeitpunkt der
+          Verlinkung auf mögliche Rechtsverstöße überprüft. Rechtswidrige
+          Inhalte waren zum Zeitpunkt der Verlinkung nicht erkennbar. Eine
+          permanente inhaltliche Kontrolle der verlinkten Seiten ist jedoch ohne
+          konkrete Anhaltspunkte einer Rechtsverletzung nicht zumutbar. Bei
+          Bekanntwerden von Rechtsverletzungen werden wir derartige Links
+          umgehend entfernen.
         </p>
         <strong>Urheberrecht</strong>
         <br />
@@ -84,8 +88,8 @@ export default function ImpressumPage() {
           wurden, werden die Urheberrechte Dritter beachtet. Insbesondere werden
           Inhalte Dritter als solche gekennzeichnet. Sollten Sie trotzdem auf
           eine Urheberrechtsverletzung aufmerksam werden, bitten wir um einen
-          entsprechenden Hinweis. Bei Bekanntwerden von Rechtsverletzungen werden
-          wir derartige Inhalte umgehend entfernen.
+          entsprechenden Hinweis. Bei Bekanntwerden von Rechtsverletzungen
+          werden wir derartige Inhalte umgehend entfernen.
         </p>
       </div>
 

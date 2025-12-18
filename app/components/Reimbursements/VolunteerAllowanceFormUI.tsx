@@ -31,7 +31,7 @@ export function VolunteerAllowanceFormUI({ defaultBankDetails }: Props) {
   const currentUser = useQuery(api.users.queries.getCurrentUserProfile);
   const submit = useMutation(api.volunteerAllowance.functions.create);
   const createToken = useMutation(
-    api.volunteerAllowance.functions.createSignatureToken
+    api.volunteerAllowance.functions.createSignatureToken,
   );
 
   const [projectId, setProjectId] = useState<Id<"projects"> | null>(null);

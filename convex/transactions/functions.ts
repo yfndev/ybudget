@@ -29,7 +29,14 @@ export const createExpectedTransaction = mutation({
       organizationId: user.organizationId,
     });
 
-    await addLog(ctx, user.organizationId, user._id, "transaction.create", transactionId, `${args.description} (${args.amount}€)`);
+    await addLog(
+      ctx,
+      user.organizationId,
+      user._id,
+      "transaction.create",
+      transactionId,
+      `${args.description} (${args.amount}€)`,
+    );
     return transactionId;
   },
 });
@@ -38,7 +45,11 @@ export const createImportedTransaction = mutation({
   args: {
     date: v.number(),
     importedTransactionId: v.string(),
-    importSource: v.union(v.literal("sparkasse"), v.literal("volksbank"), v.literal("moss")),
+    importSource: v.union(
+      v.literal("sparkasse"),
+      v.literal("volksbank"),
+      v.literal("moss"),
+    ),
     amount: v.number(),
     description: v.string(),
     counterparty: v.string(),
@@ -51,7 +62,9 @@ export const createImportedTransaction = mutation({
     const existing = await ctx.db
       .query("transactions")
       .withIndex("by_importedTransactionId", (q) =>
-        q.eq("organizationId", user.organizationId).eq("importedTransactionId", args.importedTransactionId),
+        q
+          .eq("organizationId", user.organizationId)
+          .eq("importedTransactionId", args.importedTransactionId),
       )
       .first();
 
@@ -90,19 +103,29 @@ export const updateTransaction = mutation({
       throw new Error("Access denied");
 
     if (transaction.projectId) {
-      const hasAccess = await canAccessProject(ctx, user._id, transaction.projectId);
+      const hasAccess = await canAccessProject(
+        ctx,
+        user._id,
+        transaction.projectId,
+      );
       if (!hasAccess) throw new Error("Access denied");
     }
 
     if (updates.projectId) {
-      const hasAccess = await canAccessProject(ctx, user._id, updates.projectId);
+      const hasAccess = await canAccessProject(
+        ctx,
+        user._id,
+        updates.projectId,
+      );
       if (!hasAccess) throw new Error("Access denied");
     }
 
     await ctx.db.patch(transactionId, updates);
 
     if (updates.matchedTransactionId) {
-      const matched = await ctx.db.get(updates.matchedTransactionId as Id<"transactions">);
+      const matched = await ctx.db.get(
+        updates.matchedTransactionId as Id<"transactions">,
+      );
       if (matched?.status === "expected") {
         await ctx.db.patch(matched._id, {
           isArchived: true,
@@ -111,7 +134,14 @@ export const updateTransaction = mutation({
       }
     }
 
-    await addLog(ctx, user.organizationId, user._id, "transaction.update", transactionId, transaction.description);
+    await addLog(
+      ctx,
+      user.organizationId,
+      user._id,
+      "transaction.update",
+      transactionId,
+      transaction.description,
+    );
   },
 });
 
@@ -122,18 +152,31 @@ export const deleteExpectedTransaction = mutation({
     const user = await getCurrentUser(ctx);
 
     const transaction = await ctx.db.get(args.transactionId);
-    if (!transaction || transaction.organizationId !== user.organizationId || transaction.status !== "expected")
+    if (
+      !transaction ||
+      transaction.organizationId !== user.organizationId ||
+      transaction.status !== "expected"
+    )
       throw new Error("Access denied");
 
     await ctx.db.delete(args.transactionId);
-    await addLog(ctx, user.organizationId, user._id, "transaction.delete", args.transactionId, `${transaction.description} (${transaction.amount}€)`);
+    await addLog(
+      ctx,
+      user.organizationId,
+      user._id,
+      "transaction.delete",
+      args.transactionId,
+      `${transaction.description} (${transaction.amount}€)`,
+    );
   },
 });
 
 export const splitTransaction = mutation({
   args: {
     transactionId: v.id("transactions"),
-    splits: v.array(v.object({ projectId: v.id("projects"), amount: v.number() })),
+    splits: v.array(
+      v.object({ projectId: v.id("projects"), amount: v.number() }),
+    ),
   },
   handler: async (ctx, args) => {
     await requireRole(ctx, "lead");
@@ -150,7 +193,16 @@ export const splitTransaction = mutation({
 
     const allSplits =
       remainder > 0
-        ? [...args.splits, { projectId: await getReservesProjectId(ctx, original.organizationId), amount: remainder }]
+        ? [
+            ...args.splits,
+            {
+              projectId: await getReservesProjectId(
+                ctx,
+                original.organizationId,
+              ),
+              amount: remainder,
+            },
+          ]
         : args.splits;
 
     for (const split of allSplits) {
@@ -175,11 +227,19 @@ export const splitTransaction = mutation({
   },
 });
 
-async function getReservesProjectId(ctx: MutationCtx, organizationId: Id<"organizations">) {
+async function getReservesProjectId(
+  ctx: MutationCtx,
+  organizationId: Id<"organizations">,
+) {
   const reserves = await ctx.db
     .query("projects")
     .withIndex("by_organization", (q) => q.eq("organizationId", organizationId))
-    .filter((q) => q.and(q.eq(q.field("name"), "Rücklagen"), q.eq(q.field("parentId"), undefined)))
+    .filter((q) =>
+      q.and(
+        q.eq(q.field("name"), "Rücklagen"),
+        q.eq(q.field("parentId"), undefined),
+      ),
+    )
     .first();
 
   if (reserves) return reserves._id;
@@ -219,9 +279,24 @@ export const transferMoney = mutation({
       transferId,
     };
 
-    const sendingId = await ctx.db.insert("transactions", { ...base, amount: -args.amount, projectId: args.sendingProjectId });
-    await ctx.db.insert("transactions", { ...base, amount: args.amount, projectId: args.receivingProjectId });
+    const sendingId = await ctx.db.insert("transactions", {
+      ...base,
+      amount: -args.amount,
+      projectId: args.sendingProjectId,
+    });
+    await ctx.db.insert("transactions", {
+      ...base,
+      amount: args.amount,
+      projectId: args.receivingProjectId,
+    });
 
-    await addLog(ctx, user.organizationId, user._id, "transaction.transfer", sendingId, `${args.amount}€: ${sendingProject?.name} → ${receivingProject?.name}`);
+    await addLog(
+      ctx,
+      user.organizationId,
+      user._id,
+      "transaction.transfer",
+      sendingId,
+      `${args.amount}€: ${sendingProject?.name} → ${receivingProject?.name}`,
+    );
   },
 });

@@ -34,7 +34,7 @@ export function SelectProject({
   const selected = projects?.find((project) => project._id === value);
   const filtered =
     projects?.filter((project) =>
-      project.name.toLowerCase().includes(search.toLowerCase())
+      project.name.toLowerCase().includes(search.toLowerCase()),
     ) ?? [];
 
   useEffect(() => {
@@ -79,12 +79,15 @@ export function SelectProject({
       case "ArrowUp":
         if (open) {
           e.preventDefault();
-          setHighlightedIndex((idx) => (idx - 1 + filtered.length) % filtered.length);
+          setHighlightedIndex(
+            (idx) => (idx - 1 + filtered.length) % filtered.length,
+          );
         }
         break;
       case "Enter":
         e.preventDefault();
-        if (open && filtered[highlightedIndex]) handleSelect(filtered[highlightedIndex]._id);
+        if (open && filtered[highlightedIndex])
+          handleSelect(filtered[highlightedIndex]._id);
         else if (!open) setOpen(true);
         break;
     }
@@ -97,7 +100,7 @@ export function SelectProject({
           ref={inputRef}
           className={cn(
             "h-9 w-full rounded-md bg-muted px-3 pr-8 text-sm outline-none",
-            open || !selected ? "text-muted-foreground" : "text-foreground"
+            open || !selected ? "text-muted-foreground" : "text-foreground",
           )}
           placeholder="Projekt suchen..."
           value={open ? search : (selected?.name ?? "")}
@@ -123,7 +126,7 @@ export function SelectProject({
                 type="button"
                 className={cn(
                   "w-full text-left px-3 py-2 text-sm flex items-center justify-between",
-                  index === highlightedIndex && "bg-accent"
+                  index === highlightedIndex && "bg-accent",
                 )}
                 onClick={() => handleSelect(project._id)}
                 onMouseEnter={() => setHighlightedIndex(index)}

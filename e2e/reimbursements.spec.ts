@@ -69,7 +69,9 @@ test.describe.serial("reimbursement flow", () => {
     await page.getByPlaceholder("119,95").fill("100");
 
     await page.locator('input[type="file"]').setInputFiles(IMAGE_FILE);
-    await expect(page.getByText("Beleg hochgeladen")).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText("Beleg hochgeladen")).toBeVisible({
+      timeout: 10000,
+    });
 
     await page.getByRole("button", { name: "Beleg hinzufügen" }).click();
     await expect(page.getByText("Test Firma")).toBeVisible();
@@ -88,7 +90,12 @@ test.describe.serial("reimbursement flow", () => {
   });
 
   test("2. Mark expense reimbursement as paid", async () => {
-    await page.locator("table tbody tr").first().locator("button").first().click();
+    await page
+      .locator("table tbody tr")
+      .first()
+      .locator("button")
+      .first()
+      .click();
     await expect(page.getByText("Als bezahlt markiert")).toBeVisible();
     await expect(page.getByText("Genehmigt", { exact: true })).toBeVisible();
   });
@@ -122,7 +129,9 @@ test.describe.serial("reimbursement flow", () => {
     await page.getByRole("spinbutton").first().fill("500");
 
     await page.locator('input[type="file"]').setInputFiles(PDF_FILE);
-    await expect(page.getByText("Beleg hochgeladen")).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText("Beleg hochgeladen")).toBeVisible({
+      timeout: 10000,
+    });
 
     await page.getByPlaceholder("z.B. 2.5").fill("1.5");
     await page.getByRole("combobox").click();
@@ -140,18 +149,32 @@ test.describe.serial("reimbursement flow", () => {
   });
 
   test("4. Reject travel reimbursement", async () => {
-    await page.locator("table tbody tr").first().locator("button").nth(1).click();
+    await page
+      .locator("table tbody tr")
+      .first()
+      .locator("button")
+      .nth(1)
+      .click();
     await page
       .getByRole("textbox", { name: "Grund für die Ablehnung..." })
       .fill("Falsche Angaben");
     await page.getByRole("button", { name: "Ablehnen" }).click();
 
-    await expect(page.getByText("Ablehnung: Falsche Angaben")).toBeVisible({ timeout: 10000 });
-    await expect(page.locator("table tbody tr").first().getByText("Abgelehnt")).toBeVisible();
+    await expect(page.getByText("Ablehnung: Falsche Angaben")).toBeVisible({
+      timeout: 10000,
+    });
+    await expect(
+      page.locator("table tbody tr").first().getByText("Abgelehnt"),
+    ).toBeVisible();
   });
 
   test("5. Delete rejected reimbursement", async () => {
-    await page.locator("table tbody tr").first().locator("button").last().click();
+    await page
+      .locator("table tbody tr")
+      .first()
+      .locator("button")
+      .last()
+      .click();
     await expect(page.getByText("Gelöscht")).toBeVisible();
     await expect(
       page.getByRole("cell").getByText("Abgelehnt"),

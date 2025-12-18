@@ -37,7 +37,8 @@ export function AmountInput({
         onChange={(e) => {
           const raw = e.target.value.replace(/[^\d,]/g, "");
           const [integer, decimal] = raw.split(",");
-          const limited = decimal !== undefined ? `${integer},${decimal.slice(0, 2)}` : raw;
+          const limited =
+            decimal !== undefined ? `${integer},${decimal.slice(0, 2)}` : raw;
           onChange(limited);
         }}
         autoFocus={autoFocus}

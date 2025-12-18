@@ -22,7 +22,9 @@ export const getAllProjects = query({
 
     const projects = await ctx.db
       .query("projects")
-      .withIndex("by_organization", (q) => q.eq("organizationId", organizationId))
+      .withIndex("by_organization", (q) =>
+        q.eq("organizationId", organizationId),
+      )
       .collect();
 
     return projects.filter(
@@ -73,22 +75,31 @@ export const getBookableProjects = query({
     if (!user?.organizationId) return [];
 
     const organizationId = user.organizationId;
-    const accessibleIds = await getUserAccessibleProjectIds(ctx, user._id, organizationId);
+    const accessibleIds = await getUserAccessibleProjectIds(
+      ctx,
+      user._id,
+      organizationId,
+    );
 
     const allProjects = await ctx.db
       .query("projects")
-      .withIndex("by_organization", (q) => q.eq("organizationId", organizationId))
+      .withIndex("by_organization", (q) =>
+        q.eq("organizationId", organizationId),
+      )
       .collect();
 
     const active = allProjects.filter(
       (project) => !project.isArchived && accessibleIds.includes(project._id),
     );
 
-    const parentIds = new Set(active.map((project) => project.parentId).filter(Boolean));
+    const parentIds = new Set(
+      active.map((project) => project.parentId).filter(Boolean),
+    );
 
     return active.filter((project) => {
       if (!project.parentId && parentIds.has(project._id)) return false;
-      if (args.isExpense && project.name === "Rücklagen" && !project.parentId) return false;
+      if (args.isExpense && project.name === "Rücklagen" && !project.parentId)
+        return false;
       return true;
     });
   },
@@ -107,7 +118,7 @@ export const getChildProjectIds = query({
       .collect();
 
     const active = allProjects.filter((project) => !project.isArchived);
-    const result: typeof args.projectId[] = [];
+    const result: (typeof args.projectId)[] = [];
 
     const collectChildren = (parentId: typeof args.projectId) => {
       for (const project of active) {

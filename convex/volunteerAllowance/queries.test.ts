@@ -193,7 +193,6 @@ test("getSignatureToken returns null for using it with invalid token", async () 
   expect(result).toBeNull();
 });
 
-
 test("getAll returns allowances for non-admin user", async () => {
   const t = convexTest(schema, modules);
   const { organizationId, userId, projectId } = await setupTestData(t);
