@@ -143,6 +143,27 @@ test("rename project throws for wrong organization", async () => {
   ).rejects.toThrow("denied");
 });
 
+test("cannot nest projects more than one level deep", async () => {
+  const t = convexTest(schema, modules);
+  const { userId, projectId } = await setupTestData(t);
+
+  const childId = await t
+    .withIdentity({ subject: userId })
+    .mutation(api.projects.functions.createProject, {
+      name: "Child",
+      parentId: projectId,
+    });
+
+  await expect(
+    t
+      .withIdentity({ subject: userId })
+      .mutation(api.projects.functions.createProject, {
+        name: "Grandchild",
+        parentId: childId,
+      }),
+  ).rejects.toThrow("nested one level deep");
+});
+
 test("cannot archive reserves project", async () => {
   const t = convexTest(schema, modules);
   const { organizationId, userId } = await setupTestData(t);

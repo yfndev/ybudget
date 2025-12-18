@@ -143,6 +143,44 @@ test("get transaction recommendations for import", async () => {
   expect(recommendations.length).toBeGreaterThanOrEqual(1);
 });
 
+test("get matching recommendations excludes already matched transactions", async () => {
+  const t = convexTest(schema, modules);
+  const { organizationId, userId, projectId } = await setupTestData(t);
+
+  const matchedId = await t.run((ctx) =>
+    ctx.db.insert("transactions", {
+      organizationId,
+      projectId,
+      date: Date.now(),
+      amount: -100,
+      description: "Processed",
+      counterparty: "Test",
+      status: "processed",
+      importedBy: userId,
+    }),
+  );
+
+  await t.run((ctx) =>
+    ctx.db.insert("transactions", {
+      organizationId,
+      projectId,
+      date: Date.now(),
+      amount: -100,
+      description: "Already matched",
+      counterparty: "Test",
+      status: "expected",
+      importedBy: userId,
+      matchedTransactionId: matchedId,
+    }),
+  );
+
+  const recommendations = await t
+    .withIdentity({ subject: userId })
+    .query(api.transactions.queries.getMatchingRecommendations, {});
+
+  expect(recommendations.every((tx) => !tx.matchedTransactionId)).toBe(true);
+});
+
 test("get paginated transactions", async () => {
   const t = convexTest(schema, modules);
   const { organizationId, userId, projectId } = await setupTestData(t);

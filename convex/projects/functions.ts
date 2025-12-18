@@ -38,6 +38,13 @@ export const createProject = mutation({
       }
     }
 
+    if (args.parentId) {
+      const parent = await ctx.db.get(args.parentId);
+      if (parent?.parentId) {
+        throw new Error("Projects can only be nested one level deep");
+      }
+    }
+
     const projectId = await ctx.db.insert("projects", {
       name: args.name,
       organizationId: user.organizationId,
