@@ -31,7 +31,7 @@ export function VolunteerAllowanceFormUI({ defaultBankDetails }: Props) {
   const currentUser = useQuery(api.users.queries.getCurrentUserProfile);
   const submit = useMutation(api.volunteerAllowance.functions.create);
   const createToken = useMutation(
-    api.volunteerAllowance.functions.createSignatureToken,
+    api.volunteerAllowance.functions.createSignatureToken
   );
 
   const [projectId, setProjectId] = useState<Id<"projects"> | null>(null);
@@ -212,7 +212,7 @@ export function VolunteerAllowanceFormUI({ defaultBankDetails }: Props) {
           />
           <Label htmlFor="confirm" className="text-sm leading-relaxed">
             Ich erkläre, dass die Steuerbefreiung nach § 3 Nr. 26a EStG für
-            nebenberufliche ehrenamtliche Tätigkeit in voller Höhe von
+            nebenberufliche ehrenamtliche Tätigkeit in voller Höhe von{" "}
             {form.amount || "0,00"} Euro in Anspruch genommen werden kann.
             Sollte sich im Lauf des Jahres eine Änderung ergeben, informiere ich
             hierüber unverzüglich den Verein.

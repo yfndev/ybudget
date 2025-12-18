@@ -134,7 +134,7 @@ export async function generateVolunteerAllowancePDF(
   yPos -= 18;
   const confirmationText =
     "Ich erkläre, dass die Steuerbefreiung nach § 3 Nr. 26a EStG für nebenberufliche " +
-    "ehrenamtliche Tätigkeit in voller Höhe von 840,00 Euro in Anspruch genommen werden kann.";
+    `ehrenamtliche Tätigkeit in Höhe von ${data.amount.toFixed(2)} Euro in Anspruch genommen werden kann.`;
   for (const line of splitText(confirmationText, 85)) {
     page.drawText(line, { x: MARGIN, y: yPos, size: 9, font });
     yPos -= 13;
