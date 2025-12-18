@@ -88,6 +88,17 @@ export function EditableTextareaCell({
   );
 }
 
+export function EditableTextCell({ value, onSave }: EditableStringCellProps) {
+  return (
+    <Input
+      defaultValue={value || ""}
+      onChange={(e) => onSave(e.target.value)}
+      className="h-8 w-40"
+      autoFocus
+    />
+  );
+}
+
 interface EditableSelectCellProps extends EditableStringCellProps {
   options: Array<{ value: string; label: string }>;
 }

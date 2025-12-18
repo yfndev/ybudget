@@ -74,6 +74,7 @@ export const updateTransaction = mutation({
     date: v.optional(v.number()),
     amount: v.optional(v.number()),
     description: v.optional(v.string()),
+    counterparty: v.optional(v.string()),
     projectId: v.optional(v.id("projects")),
     categoryId: v.optional(v.id("categories")),
     donorId: v.optional(v.id("donors")),

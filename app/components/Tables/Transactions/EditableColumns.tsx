@@ -13,6 +13,7 @@ import {
   EditableDateCell,
   EditableProjectCell,
   EditableTextareaCell,
+  EditableTextCell,
 } from "./EditableCells";
 import type { TableMeta } from "./EditableDataTable";
 
@@ -144,11 +145,22 @@ const baseColumns = [
   {
     accessorKey: "counterparty",
     header: "Gegenpartei",
-    cell: ({ row }: any) => (
-      <div className="p-1 max-w-48 truncate">
-        {row.original.counterparty || ""}
-      </div>
-    ),
+    cell: ({ row, table }: any) => {
+      const { isPlanned, isEditing, onUpdate } = getEditState(row, table);
+      if (isPlanned && isEditing) {
+        return (
+          <EditableTextCell
+            value={row.original.counterparty || ""}
+            onSave={(value) => onUpdate("counterparty", value)}
+          />
+        );
+      }
+      return (
+        <div className="p-1 max-w-48 truncate">
+          {row.original.counterparty || ""}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "projectName",
