@@ -121,7 +121,7 @@ test("validateLink returns invalid for signed allowance", async () => {
     id,
   });
   expect(result.valid).toBe(false);
-  expect(result.error).toBe("Bereits ausgefüllt");
+  expect(result.error).toBe("Already submitted");
 });
 
 test("getSignatureUrl returns url", async () => {

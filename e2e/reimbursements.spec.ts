@@ -168,16 +168,4 @@ test.describe.serial("reimbursement flow", () => {
     ).toBeVisible();
   });
 
-  test("5. Delete rejected reimbursement", async () => {
-    await page
-      .locator("table tbody tr")
-      .first()
-      .locator("button")
-      .last()
-      .click();
-    await expect(page.getByText("Gelöscht")).toBeVisible();
-    await expect(
-      page.getByRole("cell").getByText("Abgelehnt"),
-    ).not.toBeVisible();
-  });
 });

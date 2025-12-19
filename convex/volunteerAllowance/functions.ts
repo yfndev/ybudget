@@ -2,6 +2,7 @@ import { v } from "convex/values";
 import { mutation } from "../_generated/server";
 import { getCurrentUser } from "../users/getCurrentUser";
 import { addLog } from "../logs/functions";
+import { resend } from "../invitations/functions";
 
 export const create = mutation({
   args: {
@@ -92,8 +93,9 @@ export const generatePublicUploadUrl = mutation({
   args: { id: v.id("volunteerAllowance") },
   handler: async (ctx, args) => {
     const doc = await ctx.db.get(args.id);
-    if (!doc) throw new Error("Ungültiger Link");
-    if (doc.signatureStorageId) throw new Error("Bereits ausgefüllt");
+    if (!doc) throw new Error("Invalid link");
+    if (doc.volunteerName && doc.signatureStorageId)
+      throw new Error("Already submitted");
     return ctx.storage.generateUploadUrl();
   },
 });
@@ -116,9 +118,10 @@ export const submitExternal = mutation({
   },
   handler: async (ctx, args) => {
     const doc = await ctx.db.get(args.id);
-    if (!doc) throw new Error("Ungültiger Link");
-    if (doc.signatureStorageId) throw new Error("Bereits ausgefüllt");
-    if (args.amount > 840) throw new Error("Maximal 840€ erlaubt");
+    if (!doc) throw new Error("Invalid link");
+    if (doc.volunteerName && doc.signatureStorageId)
+      throw new Error("Already submitted");
+    if (args.amount > 840) throw new Error("Amount cannot exceed 840€");
 
     await ctx.db.patch(args.id, {
       amount: args.amount,
@@ -262,6 +265,29 @@ export const submitSignature = mutation({
     await ctx.db.patch(doc._id, {
       signatureStorageId: args.signatureStorageId,
       usedAt: Date.now(),
+    });
+  },
+});
+
+export const sendAllowanceLink = mutation({
+  args: {
+    email: v.string(),
+    link: v.string(),
+    projectName: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const user = await getCurrentUser(ctx);
+
+    await resend.sendEmail(ctx, {
+      from: "YBudget <team@ybudget.de>",
+      to: args.email,
+      subject: "Ehrenamtspauschale ausfüllen",
+      html: `
+        <p>Hallo,</p>
+        <p>${user.firstName} hat dir einen Link zum Ausfüllen der Ehrenamtspauschale für das Projekt "${args.projectName}" gesendet.</p>
+        <p><a href="${args.link}">Hier klicken zum Ausfüllen</a></p>
+        <p>Viele Grüße,<br/>Dein YBudget Team</p>
+      `,
     });
   },
 });

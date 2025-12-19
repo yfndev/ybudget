@@ -171,7 +171,7 @@ test("generatePublicUploadUrl fails with invalid id throws error", async () => {
     t.mutation(api.volunteerAllowance.functions.generatePublicUploadUrl, {
       id,
     }),
-  ).rejects.toThrow("Ungültiger Link");
+  ).rejects.toThrow("Invalid link");
 });
 
 test("submitExternal completes allowance", async () => {
@@ -207,7 +207,7 @@ test("submitExternal fails if amount exceeds 840€", async () => {
       id,
       ...formData(storageId, 900),
     }),
-  ).rejects.toThrow("Maximal 840€ erlaubt");
+  ).rejects.toThrow("Amount cannot exceed 840€");
 });
 
 test("createSignatureToken returns token", async () => {
@@ -277,7 +277,7 @@ test("generatePublicUploadUrl fails with already signed allowance", async () => 
     t.mutation(api.volunteerAllowance.functions.generatePublicUploadUrl, {
       id,
     }),
-  ).rejects.toThrow("Bereits ausgefüllt");
+  ).rejects.toThrow("Already submitted");
 });
 
 test("submitExternal fails with already signed allowance", async () => {
@@ -299,7 +299,7 @@ test("submitExternal fails with already signed allowance", async () => {
       id,
       ...formData(storageId, 400),
     }),
-  ).rejects.toThrow("Bereits ausgefüllt");
+  ).rejects.toThrow("Already submitted");
 });
 
 test("generateSignatureUploadUrl fails with expired token", async () => {

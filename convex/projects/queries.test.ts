@@ -186,18 +186,18 @@ test("get bookable projects excludes Rücklagen for expenses", async () => {
     }),
   );
 
-  const withExpense = await t
+  const withoutRuecklagen = await t
     .withIdentity({ subject: userId })
-    .query(api.projects.queries.getBookableProjects, { isExpense: true });
+    .query(api.projects.queries.getBookableProjects, {});
 
-  const withoutExpense = await t
+  const withRuecklagen = await t
     .withIdentity({ subject: userId })
-    .query(api.projects.queries.getBookableProjects, { isExpense: false });
+    .query(api.projects.queries.getBookableProjects, { showRuecklagen: true });
 
-  expect(withExpense.some((project) => project.name === "Rücklagen")).toBe(
+  expect(withoutRuecklagen.some((project) => project.name === "Rücklagen")).toBe(
     false,
   );
-  expect(withoutExpense.some((project) => project.name === "Rücklagen")).toBe(
+  expect(withRuecklagen.some((project) => project.name === "Rücklagen")).toBe(
     true,
   );
 });

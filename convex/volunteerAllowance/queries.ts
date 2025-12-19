@@ -6,9 +6,9 @@ export const validateLink = query({
   args: { id: v.id("volunteerAllowance") },
   handler: async (ctx, args) => {
     const doc = await ctx.db.get(args.id);
-    if (!doc) return { valid: false, error: "Ungültiger Link" } as const;
-    if (doc.signatureStorageId)
-      return { valid: false, error: "Bereits ausgefüllt" } as const;
+    if (!doc) return { valid: false, error: "Invalid link" } as const;
+    if (doc.volunteerName && doc.signatureStorageId)
+      return { valid: false, error: "Already submitted" } as const;
 
     const [organization, project] = await Promise.all([
       ctx.db.get(doc.organizationId),
