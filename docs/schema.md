@@ -10,7 +10,12 @@ erDiagram
 
     users {
         string name
+        string image
         string email
+        number emailVerificationTime
+        string phone
+        number phoneVerificationTime
+        boolean isAnonymous
         string firstName
         string lastName
         id organizationId FK
@@ -40,6 +45,9 @@ erDiagram
         string counterparty
         enum status
         enum importSource
+        string importedTransactionId
+        string matchedTransactionId
+        string accountName
         id splitFromTransactionId FK
         string transferId
         boolean isArchived
@@ -134,6 +142,7 @@ erDiagram
         string iban
         string bic
         string accountHolder
+        string rejectionNote
         string volunteerName
         string volunteerStreet
         string volunteerPlz
@@ -144,6 +153,7 @@ erDiagram
         id signatureStorageId FK
         string token
         number expiresAt
+        number usedAt
     }
 
     signatureTokens {

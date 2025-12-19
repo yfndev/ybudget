@@ -2,13 +2,13 @@
 
 > Open-source budget management for German associations.
 
-YBudget helps German (non-profit) associations manage their budgets when Excel gets too complicated. Built by [Joël Heil Escobar](https://www.linkedin.com/in/joel-heil-escobar) as a [CODE University](https://code.berlin/) Capstone project. The initial idea came when [Young Founders Network e.V.](https://youngfounders.network) needed such a solution.
+YBudget helps German (non-profit) associations manage their budgets when Excel gets too complicated. It was built by [Joël Heil Escobar](https://www.linkedin.com/in/joel-heil-escobar) as a [CODE University](https://code.berlin/) Capstone project. The initial idea came when [Young Founders Network e.V.](https://youngfounders.network) needed such a solution.
 
 **The problem?**
 Most budget tools are too expensive or too complex for associations. Excel is flexible but keeping track of all expenses is plenty of work.
 
 **Our solution?**
-Simple, affordable, intuitive, and open-source.
+Simple, affordable, intuitive, and open-source budget and reimbursement tracking.
 
 ## Features
 
@@ -36,7 +36,7 @@ Simple, affordable, intuitive, and open-source.
 
 ## Architecture
 
-YBudget uses Next.js 15 App Router with protected and public routes:
+YBudget uses Next.js App Router with protected and public routes:
 
 - `app/(public)/` → Login and public pages
 - `app/(protected)/` → Authenticated dashboard with sidebar navigation
@@ -49,9 +49,9 @@ Data flows through Convex for real-time sync. Every query is scoped by `organiza
 
 Transactions are categorized by status for budget calculations:
 
-- **Processed**: Imported bank transactions. Count towards project balance (Kontostand).
-- **Expected**: Planned transactions. Do NOT count towards balance and are shown separately as expected income/expenses.
-- **Split**: Portions of income split across projects. Treated as processed and therefore count towards balance.
+- **Processed**: Imported bank transactions that count towards project balance (Kontostand).
+- **Expected**: Planned transactions that do NOT count towards balance and are shown separately as expected income/expenses.
+- **Split**: Portions of income split across projects which are treated as processed and therefore count towards balance.
 - **Transfer**: Internal budget moves between projects and also count towards balance.
 
 ## Self-Hosting
@@ -114,14 +114,13 @@ Update `SITE_URL` to your production URL after deploying.
 
 ## Keyboard Shortcuts
 
-| Shortcut | Action |
-|----------|--------|
-| `⌘ + B` | Hide sidebar |
-| `⌘ + E` | Plan expense |
-| `⌘ + I` | Plan income |
-| `⌘ + P` | Create project |
-| `⌘ + D` | Add donor |
-| `⌘ + K` | Add category |
+| Shortcut | Action         |
+| -------- | -------------- |
+| `⌘ + B`  | Hide sidebar   |
+| `⌘ + E`  | Plan expense   |
+| `⌘ + I`  | Plan income    |
+| `⌘ + P`  | Create project |
+| `⌘ + D`  | Add donor      |
 
 ## Contributing
 
