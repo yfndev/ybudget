@@ -20,7 +20,7 @@ import {
   filterTransactionsByDateRange,
   type EnrichedTransaction,
 } from "@/lib/transactionFilters";
-import { Cell, Pie, PieChart } from "recharts";
+import { Cell, Legend, Pie, PieChart } from "recharts";
 
 const CHART_COLORS = [
   "var(--chart-1)",
@@ -33,10 +33,16 @@ const CHART_COLORS = [
 function aggregateByCategory(transactions: EnrichedTransaction[]) {
   const byCategory = new Map<string, number>();
 
-  for (const tx of transactions) {
-    if (tx.amount >= 0) continue;
-    const name = tx.categoryName ?? "Nicht kategorisiert";
-    byCategory.set(name, (byCategory.get(name) ?? 0) + Math.abs(tx.amount));
+  for (const transaction of transactions) {
+    if (transaction.amount >= 0) continue;
+    if (transaction.status !== "processed") continue;
+    if (transaction.transferId) continue;
+
+    const name = transaction.categoryName ?? "Nicht kategorisiert";
+    byCategory.set(
+      name,
+      (byCategory.get(name) ?? 0) + Math.abs(transaction.amount)
+    );
   }
 
   return Array.from(byCategory.entries())
@@ -49,7 +55,7 @@ function buildChartConfig(data: Array<{ name: string }>): ChartConfig {
     data.map((item, index) => [
       item.name,
       { label: item.name, color: CHART_COLORS[index % CHART_COLORS.length] },
-    ]),
+    ])
   );
 }
 
@@ -62,7 +68,7 @@ export function ExpensesByCategoryChart({ transactions }: Props) {
 
   const filtered = filterTransactionsByDateRange(
     transactions,
-    selectedDateRange,
+    selectedDateRange
   );
   const data = filtered ? aggregateByCategory(filtered) : [];
   const chartConfig = buildChartConfig(data);
@@ -124,7 +130,7 @@ export function ExpensesByCategoryChart({ transactions }: Props) {
       <CardContent className="pb-4">
         <ChartContainer
           config={chartConfig}
-          className="h-[200px] sm:h-[250px] lg:h-[300px] w-full"
+          className="h-[280px] sm:h-[320px] lg:h-[380px] w-full"
         >
           <PieChart>
             <ChartTooltip
@@ -147,9 +153,9 @@ export function ExpensesByCategoryChart({ transactions }: Props) {
               dataKey="value"
               nameKey="name"
               cx="50%"
-              cy="50%"
-              innerRadius="40%"
-              outerRadius="70%"
+              cy="40%"
+              innerRadius="35%"
+              outerRadius="60%"
               paddingAngle={2}
             >
               {data.map((entry, index) => (
@@ -159,6 +165,15 @@ export function ExpensesByCategoryChart({ transactions }: Props) {
                 />
               ))}
             </Pie>
+            <Legend
+              layout="horizontal"
+              verticalAlign="bottom"
+              align="center"
+              wrapperStyle={{ paddingTop: 24 }}
+              formatter={(value) => (
+                <span className="text-sm text-muted-foreground">{value}</span>
+              )}
+            />
           </PieChart>
         </ChartContainer>
       </CardContent>

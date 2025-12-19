@@ -25,10 +25,13 @@ import { Bar, BarChart, XAxis, YAxis } from "recharts";
 function aggregateByDonor(transactions: EnrichedTransaction[]) {
   const byDonor = new Map<string, number>();
 
-  for (const tx of transactions) {
-    if (tx.amount <= 0) continue;
-    const name = tx.donorName ?? "Ohne Förderer";
-    byDonor.set(name, (byDonor.get(name) ?? 0) + tx.amount);
+  for (const transaction of transactions) {
+    if (transaction.amount <= 0) continue;
+    if (transaction.status !== "processed") continue;
+    if (transaction.transferId) continue;
+
+    const name = transaction.donorName ?? "Ohne Förderer";
+    byDonor.set(name, (byDonor.get(name) ?? 0) + transaction.amount);
   }
 
   return Array.from(byDonor.entries())
@@ -49,7 +52,7 @@ export function IncomeByDonorChart({ transactions }: Props) {
 
   const filtered = filterTransactionsByDateRange(
     transactions,
-    selectedDateRange,
+    selectedDateRange
   );
   const data = filtered ? aggregateByDonor(filtered) : [];
 
