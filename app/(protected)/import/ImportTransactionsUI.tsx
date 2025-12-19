@@ -21,7 +21,7 @@ interface Props {
   handleExpectedTransactionSelect: (id: string) => void;
   onSplitIncomeChange: (value: boolean) => void;
   onBudgetsChange: (
-    budgets: Array<{ projectId: string; amount: number }>,
+    budgets: Array<{ projectId: string; amount: number }>
   ) => void;
 }
 
@@ -81,7 +81,7 @@ export function ImportTransactionsUI({
           </div>
         )}
         <div
-          className={`flex flex-col xl:flex-row items-start gap-8 order-1 lg:order-2 ${hasMatches ? "flex-1" : "w-full justify-center"}`}
+          className={`flex flex-col xl:flex-row items-center xl:items-start gap-8 order-1 lg:order-2 ${hasMatches ? "flex-1" : "w-full justify-center"}`}
         >
           <div id="tour-import-card" className="w-full max-w-xl">
             {current && (
