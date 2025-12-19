@@ -599,3 +599,26 @@ test("oldest transaction date returns Date.now when there are no transactions", 
   expect(oldest).toBeGreaterThanOrEqual(before);
   expect(oldest).toBeLessThanOrEqual(after);
 });
+
+test("getAllTransactions returns empty for unauthenticated user", async () => {
+  const t = convexTest(schema, modules);
+  await setupTestData(t);
+
+  const transactions = await t.query(api.transactions.queries.getAllTransactions, {});
+  expect(transactions).toHaveLength(0);
+});
+
+test("getAllTransactions returns empty for user without organization", async () => {
+  const t = convexTest(schema, modules);
+  await setupTestData(t);
+
+  const userWithoutOrg = await t.run((ctx) =>
+    ctx.db.insert("users", { email: "noorg@test.com" }),
+  );
+
+  const transactions = await t
+    .withIdentity({ subject: userWithoutOrg })
+    .query(api.transactions.queries.getAllTransactions, {});
+
+  expect(transactions).toHaveLength(0);
+});

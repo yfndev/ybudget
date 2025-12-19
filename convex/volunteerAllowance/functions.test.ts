@@ -1,11 +1,13 @@
 import { convexTest } from "convex-test";
 import { expect, test } from "vitest";
 import { api } from "../_generated/api";
+import type { Id } from "../_generated/dataModel";
 import schema from "../schema";
 import { modules, setupTestData } from "../test.setup";
 
-const formData = (storageId: any, amount = 500) => ({
+const formData = (signatureStorageId: Id<"_storage">, amount = 500) => ({
   amount,
+  signatureStorageId,
   iban: "DE12345678900000000000",
   bic: "TESTBIC",
   accountHolder: "Test User",
@@ -16,7 +18,6 @@ const formData = (storageId: any, amount = 500) => ({
   volunteerStreet: "Teststr. 1",
   volunteerPlz: "12345",
   volunteerCity: "Berlin",
-  signatureStorageId: storageId,
 });
 
 test("create volunteer allowance", async () => {

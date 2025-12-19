@@ -47,3 +47,33 @@ test("getOrganizationByDomain returns false for unknown domain", async () => {
 
   expect(result.exists).toBe(false);
 });
+
+test("getOrganizationByDomain returns false for unauthenticated user", async () => {
+  const t = convexTest(schema, modules);
+  await setupTestData(t);
+
+  const result = await t.query(
+    api.organizations.queries.getOrganizationByDomain,
+    {},
+  );
+
+  expect(result.exists).toBe(false);
+});
+
+test("getOrganizationByDomain returns false for email without domain", async () => {
+  const t = convexTest(schema, modules);
+  const { organizationId } = await setupTestData(t);
+
+  const userIdBadEmail = await t.run((ctx) =>
+    ctx.db.insert("users", {
+      email: "nodomain",
+      organizationId,
+    }),
+  );
+
+  const result = await t
+    .withIdentity({ subject: userIdBadEmail })
+    .query(api.organizations.queries.getOrganizationByDomain, {});
+
+  expect(result.exists).toBe(false);
+});

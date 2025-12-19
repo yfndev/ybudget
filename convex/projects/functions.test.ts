@@ -421,3 +421,63 @@ test("move project handles deleted parent gracefully", async () => {
   const child = await t.run((ctx) => ctx.db.get(childId));
   expect(child?.parentId).toBeUndefined();
 });
+
+test("unarchive project", async () => {
+  const t = convexTest(schema, modules);
+  const { organizationId, userId } = await setupTestData(t);
+
+  const archivedId = await t.run((ctx) =>
+    ctx.db.insert("projects", {
+      name: "Archived",
+      organizationId,
+      isArchived: true,
+      createdBy: userId,
+    }),
+  );
+
+  await t
+    .withIdentity({ subject: userId })
+    .mutation(api.projects.functions.unarchiveProject, { projectId: archivedId });
+
+  const project = await t.run((ctx) => ctx.db.get(archivedId));
+  expect(project?.isArchived).toBe(false);
+});
+
+test("unarchive project throws if project not found", async () => {
+  const t = convexTest(schema, modules);
+  const { userId, projectId } = await setupTestData(t);
+
+  await t.run((ctx) => ctx.db.delete(projectId));
+
+  await expect(
+    t
+      .withIdentity({ subject: userId })
+      .mutation(api.projects.functions.unarchiveProject, { projectId }),
+  ).rejects.toThrow("not found");
+});
+
+test("unarchive project throws for wrong organization", async () => {
+  const t = convexTest(schema, modules);
+  const { userId } = await setupTestData(t);
+
+  const otherProjectId = await t.run(async (ctx) => {
+    const otherUserId = await ctx.db.insert("users", { email: "other@other.com" });
+    const otherOrgId = await ctx.db.insert("organizations", {
+      name: "Other",
+      domain: "other.com",
+      createdBy: otherUserId,
+    });
+    return ctx.db.insert("projects", {
+      name: "Other",
+      organizationId: otherOrgId,
+      isArchived: true,
+      createdBy: otherUserId,
+    });
+  });
+
+  await expect(
+    t
+      .withIdentity({ subject: userId })
+      .mutation(api.projects.functions.unarchiveProject, { projectId: otherProjectId }),
+  ).rejects.toThrow("denied");
+});

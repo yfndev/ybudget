@@ -91,3 +91,25 @@ test("use domain as fallback name", async () => {
   const org = await t.run((ctx) => ctx.db.get(result.organizationId));
   expect(org?.name).toBe("fallback.com Organization");
 });
+
+test("throw error for unauthenticated user", async () => {
+  const t = convexTest(schema, modules);
+  await setupTestData(t);
+
+  await expect(
+    t.mutation(api.organizations.functions.initializeOrganization, {}),
+  ).rejects.toThrow("Unauthorized");
+});
+
+test("throw error when user not found in database", async () => {
+  const t = convexTest(schema, modules);
+  const { userId } = await setupTestData(t);
+
+  await t.run((ctx) => ctx.db.delete(userId));
+
+  await expect(
+    t
+      .withIdentity({ subject: userId })
+      .mutation(api.organizations.functions.initializeOrganization, {}),
+  ).rejects.toThrow("User not found");
+});

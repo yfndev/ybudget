@@ -176,3 +176,66 @@ test("calculate available budget with expenses", async () => {
 
   expect(donor?.availableBudget).toBe(800);
 });
+
+test("get donors by project ignores transactions without donorId", async () => {
+  const t = convexTest(schema, modules);
+  const { organizationId, userId, projectId, donorId } = await setupTestData(t);
+
+  await t.run(async (ctx) => {
+    await ctx.db.insert("transactions", {
+      organizationId,
+      projectId,
+      donorId,
+      date: Date.now(),
+      amount: 100,
+      description: "With donor",
+      counterparty: "Donor",
+      status: "processed",
+      importedBy: userId,
+    });
+    await ctx.db.insert("transactions", {
+      organizationId,
+      projectId,
+      date: Date.now(),
+      amount: 50,
+      description: "Without donor",
+      counterparty: "Someone",
+      status: "processed",
+      importedBy: userId,
+    });
+  });
+
+  const donors = await t
+    .withIdentity({ subject: userId })
+    .query(api.donors.queries.getDonorsByProject, { projectId });
+
+  expect(donors).toHaveLength(1);
+  expect(donors[0]._id).toBe(donorId);
+});
+
+test("get donors by project handles deleted donor", async () => {
+  const t = convexTest(schema, modules);
+  const { organizationId, userId, projectId, donorId } = await setupTestData(t);
+
+  await t.run(async (ctx) => {
+    await ctx.db.insert("transactions", {
+      organizationId,
+      projectId,
+      donorId,
+      date: Date.now(),
+      amount: 100,
+      description: "Donation",
+      counterparty: "Donor",
+      status: "processed",
+      importedBy: userId,
+    });
+  });
+
+  await t.run((ctx) => ctx.db.delete(donorId));
+
+  const donors = await t
+    .withIdentity({ subject: userId })
+    .query(api.donors.queries.getDonorsByProject, { projectId });
+
+  expect(donors).toHaveLength(0);
+});

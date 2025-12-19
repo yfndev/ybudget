@@ -551,3 +551,71 @@ test("matching transaction archives expected transaction", async () => {
   expect(expected?.isArchived).toBe(true);
   expect(expected?.matchedTransactionId).toBe(processedId);
 });
+
+test("matching already processed transaction does not archive it", async () => {
+  const t = convexTest(schema, modules);
+  const { organizationId, userId, projectId } = await setupTestData(t);
+
+  const processedId1 = await t.run((ctx) =>
+    ctx.db.insert("transactions", {
+      organizationId,
+      projectId,
+      date: Date.now(),
+      amount: -100,
+      description: "Processed 1",
+      counterparty: "Test",
+      status: "processed",
+      importedBy: userId,
+    }),
+  );
+
+  const processedId2 = await t.run((ctx) =>
+    ctx.db.insert("transactions", {
+      organizationId,
+      projectId,
+      date: Date.now(),
+      amount: -100,
+      description: "Processed 2",
+      counterparty: "Test",
+      status: "processed",
+      importedBy: userId,
+    }),
+  );
+
+  await t
+    .withIdentity({ subject: userId })
+    .mutation(api.transactions.functions.updateTransaction, {
+      transactionId: processedId2,
+      matchedTransactionId: processedId1,
+    });
+
+  const matched = await t.run((ctx) => ctx.db.get(processedId1));
+  expect(matched?.isArchived).toBeFalsy();
+});
+
+test("update transaction without project succeeds for admin", async () => {
+  const t = convexTest(schema, modules);
+  const { organizationId, userId } = await setupTestData(t);
+
+  const transactionId = await t.run((ctx) =>
+    ctx.db.insert("transactions", {
+      organizationId,
+      date: Date.now(),
+      amount: 100,
+      description: "No project",
+      counterparty: "Test",
+      status: "processed",
+      importedBy: userId,
+    }),
+  );
+
+  await t
+    .withIdentity({ subject: userId })
+    .mutation(api.transactions.functions.updateTransaction, {
+      transactionId,
+      description: "Updated",
+    });
+
+  const transaction = await t.run((ctx) => ctx.db.get(transactionId));
+  expect(transaction?.description).toBe("Updated");
+});

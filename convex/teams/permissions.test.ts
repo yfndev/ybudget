@@ -155,3 +155,50 @@ test("non-admin cannot access project not in their team", async () => {
 
   expect(transactions).toHaveLength(0);
 });
+
+test("cannot access deleted project", async () => {
+  const t = convexTest(schema, modules);
+  const { organizationId, userId, projectId } = await setupTestData(t);
+
+  const leadUserId = await t.run((ctx) =>
+    ctx.db.insert("users", {
+      email: "lead@test.com",
+      organizationId,
+      role: "lead",
+    }),
+  );
+
+  await t.run((ctx) =>
+    ctx.db.insert("teams", {
+      name: "Team",
+      organizationId,
+      memberIds: [leadUserId],
+      projectIds: [projectId],
+      createdBy: userId,
+    }),
+  );
+
+  const transactionId = await t.run((ctx) =>
+    ctx.db.insert("transactions", {
+      organizationId,
+      projectId,
+      date: Date.now(),
+      amount: 100,
+      description: "Test",
+      counterparty: "Test",
+      status: "processed",
+      importedBy: userId,
+    }),
+  );
+
+  await t.run((ctx) => ctx.db.delete(projectId));
+
+  await expect(
+    t
+      .withIdentity({ subject: leadUserId })
+      .mutation(api.transactions.functions.updateTransaction, {
+        transactionId,
+        description: "Updated",
+      }),
+  ).rejects.toThrow("Access denied");
+});

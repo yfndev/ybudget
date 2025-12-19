@@ -245,3 +245,24 @@ test("get child project ids returns empty for leaf project", async () => {
 
   expect(childIds).toHaveLength(0);
 });
+
+test("get archived projects returns only archived projects", async () => {
+  const t = convexTest(schema, modules);
+  const { organizationId, userId, projectId } = await setupTestData(t);
+
+  const archivedId = await t.run((ctx) =>
+    ctx.db.insert("projects", {
+      name: "Archived Project",
+      organizationId,
+      isArchived: true,
+      createdBy: userId,
+    }),
+  );
+
+  const archived = await t
+    .withIdentity({ subject: userId })
+    .query(api.projects.queries.getArchivedProjects, {});
+
+  expect(archived.some((p) => p._id === archivedId)).toBe(true);
+  expect(archived.some((p) => p._id === projectId)).toBe(false);
+});

@@ -1,23 +1,25 @@
 import { convexTest } from "convex-test";
 import { expect, test } from "vitest";
 import { api } from "../_generated/api";
+import type { Id } from "../_generated/dataModel";
 import schema from "../schema";
 import { modules, setupTestData } from "../test.setup";
 
 const baseAllowance = (
-  organizationId: any,
-  projectId: any,
-  userId: any,
-  storageId: any,
+  organizationId: Id<"organizations">,
+  projectId: Id<"projects">,
+  createdBy: Id<"users">,
+  signatureStorageId: Id<"_storage">,
 ) => ({
   organizationId,
   projectId,
+  createdBy,
+  signatureStorageId,
   amount: 500,
   isApproved: false,
   iban: "DE123",
   bic: "BIC",
   accountHolder: "Test",
-  createdBy: userId,
   activityDescription: "Jugendarbeit",
   startDate: "2024-01-01",
   endDate: "2024-12-31",
@@ -25,7 +27,6 @@ const baseAllowance = (
   volunteerStreet: "Test",
   volunteerPlz: "12345",
   volunteerCity: "Berlin",
-  signatureStorageId: storageId,
 });
 
 test("return allowance by id", async () => {
@@ -266,4 +267,94 @@ test("validateSignatureToken returns used for already used token", async () => {
   );
   expect(result.valid).toBe(false);
   expect(result.error).toBe("Link already used");
+});
+
+test("validateLink returns invalid for non-existent id", async () => {
+  const t = convexTest(schema, modules);
+  const { userId, projectId } = await setupTestData(t);
+
+  const id = await t
+    .withIdentity({ subject: userId })
+    .mutation(api.volunteerAllowance.functions.createLink, { projectId });
+
+  await t.run((ctx) => ctx.db.delete(id));
+
+  const result = await t.query(api.volunteerAllowance.queries.validateLink, {
+    id,
+  });
+  expect(result.valid).toBe(false);
+  expect(result.error).toBe("Invalid link");
+});
+
+test("validateLink handles deleted organization and project", async () => {
+  const t = convexTest(schema, modules);
+  const { userId, organizationId, projectId } = await setupTestData(t);
+
+  const id = await t
+    .withIdentity({ subject: userId })
+    .mutation(api.volunteerAllowance.functions.createLink, { projectId });
+
+  await t.run(async (ctx) => {
+    await ctx.db.delete(organizationId);
+    await ctx.db.delete(projectId);
+  });
+
+  const result = await t.query(api.volunteerAllowance.queries.validateLink, {
+    id,
+  });
+  expect(result.valid).toBe(true);
+  expect(result.organizationName).toBe("");
+  expect(result.projectName).toBe("");
+});
+
+test("getAll handles deleted creator and project", async () => {
+  const t = convexTest(schema, modules);
+  const { organizationId, userId, projectId } = await setupTestData(t);
+  const storageId = await t.run((ctx) => ctx.storage.store(new Blob(["sig"])));
+
+  const creatorId = await t.run((ctx) =>
+    ctx.db.insert("users", {
+      email: "creator@test.com",
+      organizationId,
+      role: "admin",
+    }),
+  );
+
+  await t.run((ctx) =>
+    ctx.db.insert("volunteerAllowance", {
+      ...baseAllowance(organizationId, projectId, creatorId, storageId),
+    }),
+  );
+
+  await t.run(async (ctx) => {
+    await ctx.db.delete(creatorId);
+    await ctx.db.delete(projectId);
+  });
+
+  const results = await t
+    .withIdentity({ subject: userId })
+    .query(api.volunteerAllowance.queries.getAll, {});
+
+  expect(results.some((r) => r.creatorName === "Unknown")).toBe(true);
+  expect(results.some((r) => r.projectName === "Unknown")).toBe(true);
+});
+
+test("getAll handles deleted organization", async () => {
+  const t = convexTest(schema, modules);
+  const { organizationId, userId, projectId } = await setupTestData(t);
+  const storageId = await t.run((ctx) => ctx.storage.store(new Blob(["sig"])));
+
+  await t.run((ctx) =>
+    ctx.db.insert("volunteerAllowance", {
+      ...baseAllowance(organizationId, projectId, userId, storageId),
+    }),
+  );
+
+  await t.run((ctx) => ctx.db.delete(organizationId));
+
+  const results = await t
+    .withIdentity({ subject: userId })
+    .query(api.volunteerAllowance.queries.getAll, {});
+
+  expect(results.some((r) => r.organizationName === "")).toBe(true);
 });
