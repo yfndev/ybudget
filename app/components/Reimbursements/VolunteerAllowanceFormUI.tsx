@@ -31,7 +31,7 @@ export function VolunteerAllowanceFormUI({ defaultBankDetails }: Props) {
   const currentUser = useQuery(api.users.queries.getCurrentUserProfile);
   const submit = useMutation(api.volunteerAllowance.functions.create);
   const createToken = useMutation(
-    api.volunteerAllowance.functions.createSignatureToken,
+    api.volunteerAllowance.functions.createSignatureToken
   );
 
   const [projectId, setProjectId] = useState<Id<"projects"> | null>(null);
@@ -57,7 +57,7 @@ export function VolunteerAllowanceFormUI({ defaultBankDetails }: Props) {
     setForm((prev) => ({ ...prev, ...field }));
 
   const updateAmount = (value: string) => {
-    if (parseFloat(value.replace(",", ".")) > 840) return;
+    if (parseFloat(value.replace(",", ".")) > 960) return;
     update({ amount: value });
   };
 
@@ -73,7 +73,7 @@ export function VolunteerAllowanceFormUI({ defaultBankDetails }: Props) {
     if (!form.startDate || !form.endDate) return "Bitte den Zeitraum angeben";
     const amount = parseFloat(form.amount.replace(",", "."));
     if (!amount || amount <= 0) return "Bitte einen Betrag eingeben";
-    if (amount > 840) return "Maximal 840€ erlaubt";
+    if (amount > 960) return "Maximal 960€ erlaubt";
     if (!bank.accountHolder) return "Bitte den Kontoinhaber eingeben";
     if (!bank.iban) return "Bitte die IBAN eingeben";
     if (!bank.bic) return "Bitte die BIC eingeben";
@@ -194,7 +194,7 @@ export function VolunteerAllowanceFormUI({ defaultBankDetails }: Props) {
       <div className="space-y-4">
         <h2 className="text-lg font-medium">Betrag</h2>
         <div className="max-w-xs">
-          <Label>Betrag in Euro (max. 840€) *</Label>
+          <Label>Betrag in Euro (max. 960€) *</Label>
           <AmountInput value={form.amount} onChange={updateAmount} />
         </div>
       </div>
