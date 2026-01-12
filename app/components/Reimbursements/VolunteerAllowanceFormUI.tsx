@@ -15,7 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
-import { Smartphone } from "lucide-react";
+import { RotateCcw, Smartphone } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -225,6 +225,11 @@ export function VolunteerAllowanceFormUI({ defaultBankDetails }: Props) {
 
       <div className="space-y-4">
         <h2 className="text-lg font-medium">Unterschrift</h2>
+        <p className="text-sm text-muted-foreground flex items-center gap-2">
+          <RotateCcw className="size-4" />
+          Drehe dein Handy ins Querformat, um die Unterschrift eingeben zu
+          können.
+        </p>
         {isDesktop && !signature && (
           <Button variant="outline" className="w-full h-14" onClick={openModal}>
             <Smartphone className="size-5 mr-2" />
