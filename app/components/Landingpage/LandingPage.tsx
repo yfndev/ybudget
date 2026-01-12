@@ -1,5 +1,7 @@
 "use client";
 
+import { BenefitsSection } from "./BenefitsSection";
+import { FAQSection } from "./FAQSection";
 import { FinalCTASection } from "./FinalCTASection";
 import { Footer } from "./Footer";
 import { HeroSection } from "./HeroSection";
@@ -11,13 +13,15 @@ import { SolutionSection } from "./SolutionSection";
 
 export function LandingPage() {
   return (
-    <main className="min-h-screen bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]">
+    <main className="min-h-screen bg-white">
       <Navbar />
       <HeroSection />
       <ProblemSection />
       <SolutionSection />
       <HowItWorksSection />
+      <BenefitsSection />
       <PricingSection />
+      <FAQSection />
       <FinalCTASection />
       <Footer />
     </main>
