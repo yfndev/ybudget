@@ -1,8 +1,42 @@
 import { v } from "convex/values";
 import { mutation } from "../_generated/server";
+import { internal } from "../_generated/api";
 import { addLog } from "../logs/functions";
 import { getCurrentUser } from "../users/getCurrentUser";
 import { requireRole } from "../users/permissions";
+
+export { sendApprovalEmail } from "./sendApprovalEmail";
+
+const receiptValidator = v.object({
+  receiptNumber: v.string(),
+  receiptDate: v.string(),
+  companyName: v.string(),
+  description: v.string(),
+  netAmount: v.number(),
+  taxRate: v.number(),
+  grossAmount: v.number(),
+  fileStorageId: v.id("_storage"),
+});
+
+const travelReceiptValidator = v.object({
+  receiptNumber: v.string(),
+  receiptDate: v.string(),
+  companyName: v.string(),
+  description: v.string(),
+  netAmount: v.number(),
+  taxRate: v.number(),
+  grossAmount: v.number(),
+  fileStorageId: v.id("_storage"),
+  costType: v.union(
+    v.literal("car"),
+    v.literal("train"),
+    v.literal("flight"),
+    v.literal("taxi"),
+    v.literal("bus"),
+    v.literal("accommodation"),
+  ),
+  kilometers: v.optional(v.number()),
+});
 
 export const createReimbursement = mutation({
   args: {
@@ -11,18 +45,7 @@ export const createReimbursement = mutation({
     iban: v.string(),
     bic: v.string(),
     accountHolder: v.string(),
-    receipts: v.array(
-      v.object({
-        receiptNumber: v.string(),
-        receiptDate: v.string(),
-        companyName: v.string(),
-        description: v.string(),
-        netAmount: v.number(),
-        taxRate: v.number(),
-        grossAmount: v.number(),
-        fileStorageId: v.id("_storage"),
-      }),
-    ),
+    receipts: v.array(receiptValidator),
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
@@ -43,14 +66,8 @@ export const createReimbursement = mutation({
       await ctx.db.insert("receipts", { reimbursementId, ...receipt });
     }
 
-    await addLog(
-      ctx,
-      user.organizationId,
-      user._id,
-      "reimbursement.create",
-      reimbursementId,
-      `${args.amount}€`,
-    );
+    await addLog(ctx, user.organizationId, user._id, "reimbursement.create", reimbursementId, `${args.amount}€`);
+
     return reimbursementId;
   },
 });
@@ -69,27 +86,7 @@ export const createTravelReimbursement = mutation({
     isInternational: v.boolean(),
     mealAllowanceDays: v.optional(v.number()),
     mealAllowanceDailyBudget: v.optional(v.number()),
-    receipts: v.array(
-      v.object({
-        receiptNumber: v.string(),
-        receiptDate: v.string(),
-        companyName: v.string(),
-        description: v.string(),
-        netAmount: v.number(),
-        taxRate: v.number(),
-        grossAmount: v.number(),
-        fileStorageId: v.id("_storage"),
-        costType: v.union(
-          v.literal("car"),
-          v.literal("train"),
-          v.literal("flight"),
-          v.literal("taxi"),
-          v.literal("bus"),
-          v.literal("accommodation"),
-        ),
-        kilometers: v.optional(v.number()),
-      }),
-    ),
+    receipts: v.array(travelReceiptValidator),
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
@@ -121,14 +118,8 @@ export const createTravelReimbursement = mutation({
       await ctx.db.insert("receipts", { reimbursementId, ...receipt });
     }
 
-    await addLog(
-      ctx,
-      user.organizationId,
-      user._id,
-      "reimbursement.create",
-      reimbursementId,
-      `Travel ${args.amount}€`,
-    );
+    await addLog(ctx, user.organizationId, user._id, "reimbursement.create", reimbursementId, `Travel ${args.amount}€`);
+
     return reimbursementId;
   },
 });
@@ -145,19 +136,16 @@ export const deleteReimbursement = mutation({
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
     const reimbursement = await ctx.db.get(args.reimbursementId);
-    if (
-      !reimbursement ||
-      reimbursement.organizationId !== user.organizationId
-    ) {
+
+    if (!reimbursement || reimbursement.organizationId !== user.organizationId) {
       throw new Error("Reimbursement not found");
     }
 
     const receipts = await ctx.db
       .query("receipts")
-      .withIndex("by_reimbursement", (q) =>
-        q.eq("reimbursementId", args.reimbursementId),
-      )
+      .withIndex("by_reimbursement", (q) => q.eq("reimbursementId", args.reimbursementId))
       .collect();
+
     for (const receipt of receipts) {
       await ctx.storage.delete(receipt.fileStorageId);
       await ctx.db.delete(receipt._id);
@@ -166,22 +154,16 @@ export const deleteReimbursement = mutation({
     if (reimbursement.type === "travel") {
       const travelDetails = await ctx.db
         .query("travelDetails")
-        .withIndex("by_reimbursement", (q) =>
-          q.eq("reimbursementId", args.reimbursementId),
-        )
+        .withIndex("by_reimbursement", (q) => q.eq("reimbursementId", args.reimbursementId))
         .first();
-      if (travelDetails) await ctx.db.delete(travelDetails._id);
+
+      if (travelDetails) {
+        await ctx.db.delete(travelDetails._id);
+      }
     }
 
     await ctx.db.delete(args.reimbursementId);
-    await addLog(
-      ctx,
-      user.organizationId,
-      user._id,
-      "reimbursement.delete",
-      args.reimbursementId,
-      `${reimbursement.amount}€`,
-    );
+    await addLog(ctx, user.organizationId, user._id, "reimbursement.delete", args.reimbursementId, `${reimbursement.amount}€`);
   },
 });
 
@@ -191,10 +173,8 @@ export const markAsPaid = mutation({
     await requireRole(ctx, "lead");
     const user = await getCurrentUser(ctx);
     const reimbursement = await ctx.db.get(args.reimbursementId);
-    if (
-      !reimbursement ||
-      reimbursement.organizationId !== user.organizationId
-    ) {
+
+    if (!reimbursement || reimbursement.organizationId !== user.organizationId) {
       throw new Error("Reimbursement not found");
     }
 
@@ -204,30 +184,26 @@ export const markAsPaid = mutation({
       .first();
 
     const project = await ctx.db.get(reimbursement.projectId);
+    const description = project ? `${project.name} - Auslagenerstattung` : "Auslagenerstattung";
 
     await ctx.db.insert("transactions", {
       organizationId: reimbursement.organizationId,
       projectId: reimbursement.projectId,
       date: Date.now(),
       amount: -reimbursement.amount,
-      description: project
-        ? `${project.name} - Auslagenerstattung`
-        : "Auslagenerstattung",
+      description,
       counterparty: reimbursement.accountHolder,
       categoryId: category?._id,
       status: "expected",
       importedBy: user._id,
     });
 
-    await ctx.db.patch(args.reimbursementId, { isApproved: true });
-    await addLog(
-      ctx,
-      user.organizationId,
-      user._id,
-      "reimbursement.pay",
-      args.reimbursementId,
-      `${reimbursement.amount}€`,
-    );
+    await ctx.db.patch(args.reimbursementId, { isApproved: true, reviewedBy: user._id });
+    await addLog(ctx, user.organizationId, user._id, "reimbursement.pay", args.reimbursementId, `${reimbursement.amount}€`);
+
+    await ctx.scheduler.runAfter(0, internal.reimbursements.functions.sendApprovalEmail, {
+      reimbursementId: args.reimbursementId,
+    });
   },
 });
 
@@ -240,25 +216,17 @@ export const rejectReimbursement = mutation({
     await requireRole(ctx, "lead");
     const user = await getCurrentUser(ctx);
     const reimbursement = await ctx.db.get(args.reimbursementId);
-    if (
-      !reimbursement ||
-      reimbursement.organizationId !== user.organizationId
-    ) {
+
+    if (!reimbursement || reimbursement.organizationId !== user.organizationId) {
       throw new Error("Reimbursement not found");
     }
 
     await ctx.db.patch(args.reimbursementId, {
       isApproved: false,
       rejectionNote: args.rejectionNote,
+      reviewedBy: user._id,
     });
 
-    await addLog(
-      ctx,
-      user.organizationId,
-      user._id,
-      "reimbursement.reject",
-      args.reimbursementId,
-      args.rejectionNote,
-    );
+    await addLog(ctx, user.organizationId, user._id, "reimbursement.reject", args.reimbursementId, args.rejectionNote);
   },
 });
