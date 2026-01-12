@@ -159,6 +159,12 @@ export default defineSchema({
     rejectionNote: v.optional(v.string()),
     createdBy: v.id("users"),
     reviewedBy: v.optional(v.id("users")),
+    // Sharing fields
+    signatureStorageId: v.optional(v.id("_storage")),
+    isSharedLink: v.optional(v.boolean()),
+    submitterName: v.optional(v.string()),
+    submitterEmail: v.optional(v.string()),
+    description: v.optional(v.string()),
   })
     .index("by_organization", ["organizationId"])
     .index("by_organization_and_createdBy", ["organizationId", "createdBy"]),
@@ -172,6 +178,7 @@ export default defineSchema({
     isInternational: v.boolean(),
     mealAllowanceDays: v.optional(v.number()),
     mealAllowanceDailyBudget: v.optional(v.number()),
+    allowFoodAllowance: v.optional(v.boolean()),
   }).index("by_reimbursement", ["reimbursementId"]),
 
   receipts: defineTable({
