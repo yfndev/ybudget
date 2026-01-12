@@ -120,8 +120,16 @@ export function TravelReimbursementFormUI({ defaultBankDetails }: Props) {
   const hasBasicInfo =
     travel.destination && travel.purpose && travel.startDate && travel.endDate;
   const mealTotal = travel.mealDays * travel.mealRate;
-  const total =
-    receipts.reduce((sum, receipt) => sum + receipt.grossAmount, 0) + mealTotal;
+  const totalNet = receipts.reduce((sum, receipt) => sum + receipt.netAmount, 0);
+  const totalGross = receipts.reduce(
+    (sum, receipt) => sum + receipt.grossAmount,
+    0,
+  );
+  const total = totalGross + mealTotal;
+  const taxByRate = (rate: number) =>
+    receipts
+      .filter((receipt) => receipt.taxRate === rate)
+      .reduce((sum, receipt) => sum + receipt.grossAmount - receipt.netAmount, 0);
   const allComplete = receipts.every(
     (receipt) =>
       receipt.grossAmount > 0 && receipt.fileStorageId && receipt.companyName
@@ -442,10 +450,38 @@ export function TravelReimbursementFormUI({ defaultBankDetails }: Props) {
               ))}
           </div>
 
-          <div className="space-y-3 pt-6">
+          <div className="space-y-2 pt-6">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Netto gesamt</span>
+              <span>{totalNet.toFixed(2)} €</span>
+            </div>
+            {taxByRate(0) > 0 && (
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">USt 0%</span>
+                <span>{taxByRate(0).toFixed(2)} €</span>
+              </div>
+            )}
+            {taxByRate(7) > 0 && (
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">USt 7%</span>
+                <span>{taxByRate(7).toFixed(2)} €</span>
+              </div>
+            )}
+            {taxByRate(19) > 0 && (
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">USt 19%</span>
+                <span>{taxByRate(19).toFixed(2)} €</span>
+              </div>
+            )}
+            {mealTotal > 0 && (
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Verpflegung</span>
+                <span>{mealTotal.toFixed(2)} €</span>
+              </div>
+            )}
             <Separator className="my-4" />
             <div className="flex justify-between text-lg font-semibold pt-2">
-              <span>Gesamt</span>
+              <span>Brutto gesamt</span>
               <span>{total.toFixed(2)} €</span>
             </div>
           </div>
