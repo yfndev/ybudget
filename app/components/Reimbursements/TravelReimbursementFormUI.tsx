@@ -65,7 +65,7 @@ interface Props {
 export function TravelReimbursementFormUI({ defaultBankDetails }: Props) {
   const router = useRouter();
   const submit = useMutation(
-    api.reimbursements.functions.createTravelReimbursement,
+    api.reimbursements.functions.createTravelReimbursement
   );
 
   const [projectId, setProjectId] = useState<Id<"projects"> | null>(null);
@@ -90,7 +90,7 @@ export function TravelReimbursementFormUI({ defaultBankDetails }: Props) {
   const toggleType = (type: CostType) => {
     if (hasReceipt(type)) {
       return setReceipts(
-        receipts.filter((receipt) => receipt.costType !== type),
+        receipts.filter((receipt) => receipt.costType !== type)
       );
     }
     setReceipts([
@@ -113,8 +113,8 @@ export function TravelReimbursementFormUI({ defaultBankDetails }: Props) {
   const updateReceipt = (type: CostType, updates: Partial<Receipt>) =>
     setReceipts(
       receipts.map((receipt) =>
-        receipt.costType === type ? { ...receipt, ...updates } : receipt,
-      ),
+        receipt.costType === type ? { ...receipt, ...updates } : receipt
+      )
     );
 
   const hasBasicInfo =
@@ -124,7 +124,7 @@ export function TravelReimbursementFormUI({ defaultBankDetails }: Props) {
     receipts.reduce((sum, receipt) => sum + receipt.grossAmount, 0) + mealTotal;
   const allComplete = receipts.every(
     (receipt) =>
-      receipt.grossAmount > 0 && receipt.fileStorageId && receipt.companyName,
+      receipt.grossAmount > 0 && receipt.fileStorageId && receipt.companyName
   );
   const canSubmit =
     hasBasicInfo &&
@@ -276,7 +276,7 @@ export function TravelReimbursementFormUI({ defaultBankDetails }: Props) {
                         onChange={(e) => {
                           const km = Math.max(
                             0,
-                            Math.floor(parseFloat(e.target.value) || 0),
+                            Math.floor(parseFloat(e.target.value) || 0)
                           );
                           const amount = Math.round(km * 0.3 * 100) / 100;
                           updateReceipt(receipt.costType, {
@@ -309,7 +309,7 @@ export function TravelReimbursementFormUI({ defaultBankDetails }: Props) {
                         onChange={(e) => {
                           const gross = Math.max(
                             0,
-                            parseFloat(e.target.value) || 0,
+                            parseFloat(e.target.value) || 0
                           );
                           updateReceipt(receipt.costType, {
                             grossAmount: gross,
@@ -361,6 +361,10 @@ export function TravelReimbursementFormUI({ defaultBankDetails }: Props) {
 
           <div className="border rounded-lg p-4 space-y-4">
             <h3 className="font-medium">Verpflegungsmehraufwand</h3>
+            <p className="text-sm text-muted-foreground">
+              Bitte nur ausfüllen, wenn dies vorab mit deinem Lead abgesprochen
+              wurde! Ansonsten werden die Reisekosten nicht erstattet.
+            </p>
             <div className="grid grid-cols-3 gap-4">
               <div>
                 <Label>Tage</Label>
