@@ -72,6 +72,9 @@ export const getAll = query({
       creatorName: creatorMap.get(item.createdBy) || "Unknown",
       projectName: projectMap.get(item.projectId) || "Unknown",
       organizationName: organization?.name || "",
+      organizationStreet: organization?.street || "",
+      organizationPlz: organization?.plz || "",
+      organizationCity: organization?.city || "",
     }));
   },
 });
