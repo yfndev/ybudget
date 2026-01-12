@@ -1,5 +1,6 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { query } from "../_generated/server";
+import { getCurrentUser } from "../users/getCurrentUser";
 
 export const getOrganizationByDomain = query({
   args: {},
@@ -21,5 +22,21 @@ export const getOrganizationByDomain = query({
     if (!organization) return { exists: false };
 
     return { exists: true, organizationName: organization.name };
+  },
+});
+
+export const getOrganization = query({
+  args: {},
+  handler: async (ctx) => {
+    const user = await getCurrentUser(ctx);
+    const org = await ctx.db.get(user.organizationId);
+    if (!org) throw new Error("Organization not found");
+
+    return {
+      name: org.name,
+      street: org.street || "",
+      plz: org.plz || "",
+      city: org.city || "",
+    };
   },
 });

@@ -8,6 +8,10 @@ export default defineSchema({
     name: v.string(),
     domain: v.string(),
     createdBy: v.id("users"),
+    street: v.optional(v.string()),
+    plz: v.optional(v.string()),
+    city: v.optional(v.string()),
+    accountingEmail: v.optional(v.string()),
   })
     .index("by_name", ["name"])
     .index("by_domain", ["domain"]),
