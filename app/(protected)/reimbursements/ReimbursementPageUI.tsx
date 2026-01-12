@@ -32,6 +32,9 @@ type Allowance = Doc<"volunteerAllowance"> & {
   creatorName: string;
   projectName: string;
   organizationName: string;
+  organizationStreet: string;
+  organizationPlz: string;
+  organizationCity: string;
 };
 
 type RejectDialog = {

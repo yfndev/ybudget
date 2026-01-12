@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { query } from "../_generated/server";
+import { internalQuery, query } from "../_generated/server";
 import { getCurrentUser } from "../users/getCurrentUser";
 
 export const getUserBankDetails = query({
@@ -110,5 +110,46 @@ export const getAllReimbursements = query({
       projectName: projectMap.get(r.projectId) || "Unbekanntes Projekt",
       travelDetails: travelMap.get(r._id),
     }));
+  },
+});
+
+export const getReimbursementWithDetails = internalQuery({
+  args: { reimbursementId: v.id("reimbursements") },
+  handler: async (ctx, args) => {
+    const reimbursement = await ctx.db.get(args.reimbursementId);
+    if (!reimbursement) return null;
+
+    const [organization, creator, project, receipts] = await Promise.all([
+      ctx.db.get(reimbursement.organizationId),
+      ctx.db.get(reimbursement.createdBy),
+      ctx.db.get(reimbursement.projectId),
+      ctx.db
+        .query("receipts")
+        .withIndex("by_reimbursement", (q) =>
+          q.eq("reimbursementId", args.reimbursementId),
+        )
+        .collect(),
+    ]);
+
+    if (!organization || !creator || !project) return null;
+
+    let travelDetails = null;
+    if (reimbursement.type === "travel") {
+      travelDetails = await ctx.db
+        .query("travelDetails")
+        .withIndex("by_reimbursement", (q) =>
+          q.eq("reimbursementId", args.reimbursementId),
+        )
+        .first();
+    }
+
+    return {
+      ...reimbursement,
+      organization,
+      creator,
+      project,
+      receipts,
+      travelDetails,
+    };
   },
 });
