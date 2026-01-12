@@ -218,6 +218,9 @@ export function TravelReimbursementFormUI({ defaultBankDetails }: Props) {
         <div className="space-y-6">
           <div>
             <h2 className="text-lg font-medium mb-3">Kostenarten auswählen</h2>
+            <p className="text-sm text-muted-foreground mb-2">
+              Wähle alle Kostenarten aus, für die du Belege einreichen möchtest.
+            </p>
             <div className="flex flex-wrap gap-2">
               {COST_TYPES.map((type) => (
                 <Button
