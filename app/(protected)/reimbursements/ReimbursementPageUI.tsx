@@ -135,15 +135,20 @@ export function ReimbursementPageUI({
                   description={
                     item.type === "travel" ? (
                       <div>
-                        <span>Reisekostenerstattung</span>
-                        {item.travelDetails?.destination && (
-                          <span className="block text-xs">
-                            {item.travelDetails.destination}
-                          </span>
-                        )}
+                        <span>{item.projectName}</span>
+                        <span className="block text-xs text-muted-foreground">
+                          Reisekostenerstattung
+                          {item.travelDetails?.destination &&
+                            ` - ${item.travelDetails.destination}`}
+                        </span>
                       </div>
                     ) : (
-                      "Auslagenerstattung"
+                      <div>
+                        <span>{item.projectName}</span>
+                        <span className="block text-xs text-muted-foreground">
+                          Auslagenerstattung
+                        </span>
+                      </div>
                     )
                   }
                   onClick={() => onRowClick(item._id)}
@@ -161,9 +166,9 @@ export function ReimbursementPageUI({
                   isAdmin={isAdmin}
                   description={
                     <div>
-                      <span>Ehrenamtspauschale</span>
-                      <span className="block text-xs">
-                        {item.volunteerName}
+                      <span>{item.projectName}</span>
+                      <span className="block text-xs text-muted-foreground">
+                        Ehrenamtspauschale - {item.volunteerName}
                       </span>
                     </div>
                   }

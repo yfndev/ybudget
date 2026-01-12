@@ -203,12 +203,16 @@ export const markAsPaid = mutation({
       .filter((q) => q.eq(q.field("name"), "Auslagenerstattung"))
       .first();
 
+    const project = await ctx.db.get(reimbursement.projectId);
+
     await ctx.db.insert("transactions", {
       organizationId: reimbursement.organizationId,
       projectId: reimbursement.projectId,
       date: Date.now(),
       amount: -reimbursement.amount,
-      description: "Auslagenerstattung",
+      description: project
+        ? `${project.name} - Auslagenerstattung`
+        : "Auslagenerstattung",
       counterparty: reimbursement.accountHolder,
       categoryId: category?._id,
       status: "expected",
