@@ -93,7 +93,7 @@ export function ReimbursementPageUI({
       <PageHeader title="Erstattungen" />
 
       <div className="flex justify-end gap-2 mb-4">
-        <Button variant="secondary" onClick={onNewClick}>
+        <Button variant="outline" onClick={onNewClick}>
           <Plus className="h-4 w-4 mr-2" />
           Neue Erstattung
         </Button>
@@ -171,7 +171,7 @@ export function ReimbursementPageUI({
                     <div>
                       <span>{item.projectName}</span>
                       <span className="block text-xs text-muted-foreground">
-                        Ehrenamtspauschale - {item.volunteerName}
+                        Ehrenamtspauschale
                       </span>
                     </div>
                   }

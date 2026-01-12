@@ -13,17 +13,20 @@ function getStatus(isApproved: boolean, rejectionNote?: string) {
       variant: "destructive" as const,
       label: "Abgelehnt",
       dot: "bg-red-500",
+      className: "",
     };
   if (isApproved)
     return {
       variant: "default" as const,
       label: "Genehmigt",
       dot: "bg-green-500",
+      className: "bg-green-400 text-green-900 border-green-500",
     };
   return {
-    variant: "secondary" as const,
+    variant: "default" as const,
     label: "Ausstehend",
     dot: "bg-yellow-500",
+    className: "",
   };
 }
 
@@ -84,7 +87,9 @@ export function ReimbursementRow({
         {item.amount.toFixed(2)} €
       </TableCell>
       <TableCell>
-        <Badge variant={status.variant}>{status.label}</Badge>
+        <Badge variant={status.variant} className={status.className}>
+          {status.label}
+        </Badge>
       </TableCell>
       <TableCell onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-end gap-0.5">
