@@ -2,13 +2,19 @@
 
 > Open-source budget management for German associations.
 
-YBudget helps German (non-profit) associations manage their budgets when Excel gets too complicated. It was built by [Joël Heil Escobar](https://www.linkedin.com/in/joel-heil-escobar) as a [CODE University](https://code.berlin/) Capstone project. The initial idea came when [Young Founders Network e.V.](https://youngfounders.network) needed such a solution.
+YBudget helps German (non-profit) associations manage their budgets when Excel gets too complicated.
+
+## Free for Associations
+We believe every association deserves proper budget tools. That's why we cover all hosting and server costs—so you can use yBudget at no charge. No hidden fees, no premium tiers, just free budget management for the nonprofit community.
+
+ [Young Founders Network e.V.](https://youngfounders.network) provides yBudget **completely free** for other associations. We cover all server costs so you don't have to.
 
 **The problem?**
 Most budget tools are too expensive or too complex for associations. Excel is flexible but keeping track of all expenses is plenty of work.
 
 **Our solution?**
 Simple, affordable, intuitive, and open-source budget and reimbursement tracking.
+
 
 ## Features
 
@@ -148,15 +154,8 @@ pnpm exec playwright test    # E2E tests
 
 GitHub Actions runs both test suites on every push and PR.
 
-## Security
-
-OAuth 2.0, role-based access control, organizational data isolation, encrypted at rest.
-
-→ Read how we implement security here: **[Security Details](docs/Security.md)**
-→ Find our threat analysis here: **[Threat Model](docs/ThreatModel.md)**
-
-Found an issue? Email team@ybudget.de
-
 ---
+
+<sub>Originally developed by [Joël Heil Escobar](https://www.linkedin.com/in/joel-heil-escobar) as a [CODE University](https://code.berlin/) Capstone project.</sub>
 
 Built with ❤️ in Berlin
