@@ -156,7 +156,7 @@ export const approve = mutation({
     const doc = await ctx.db.get(args.id);
     if (!doc) throw new Error("Not found");
 
-    await ctx.db.patch(args.id, { isApproved: true });
+    await ctx.db.patch(args.id, { isApproved: true, reviewedBy: user._id });
 
     await addLog(
       ctx,
@@ -177,6 +177,7 @@ export const reject = mutation({
     await ctx.db.patch(args.id, {
       isApproved: false,
       rejectionNote: args.rejectionNote,
+      reviewedBy: user._id,
     });
 
     await addLog(

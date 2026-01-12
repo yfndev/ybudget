@@ -6,9 +6,9 @@ export const validateLink = query({
   args: { id: v.id("volunteerAllowance") },
   handler: async (ctx, args) => {
     const doc = await ctx.db.get(args.id);
+
     if (!doc) return { valid: false, error: "Invalid link" } as const;
-    if (doc.volunteerName && doc.signatureStorageId)
-      return { valid: false, error: "Already submitted" } as const;
+    if (doc.volunteerName && doc.signatureStorageId) return { valid: false, error: "Already submitted" } as const;
 
     const [organization, project] = await Promise.all([
       ctx.db.get(doc.organizationId),
@@ -34,17 +34,13 @@ export const getAll = query({
     const items = isAdmin
       ? await ctx.db
           .query("volunteerAllowance")
-          .withIndex("by_organization", (q) =>
-            q.eq("organizationId", user.organizationId),
-          )
+          .withIndex("by_organization", (q) => q.eq("organizationId", user.organizationId))
           .order("desc")
           .collect()
       : await ctx.db
           .query("volunteerAllowance")
           .withIndex("by_organization_and_createdBy", (q) =>
-            q
-              .eq("organizationId", user.organizationId)
-              .eq("createdBy", user._id),
+            q.eq("organizationId", user.organizationId).eq("createdBy", user._id),
           )
           .order("desc")
           .collect();
@@ -53,19 +49,18 @@ export const getAll = query({
 
     const creatorIds = [...new Set(completed.map((item) => item.createdBy))];
     const projectIds = [...new Set(completed.map((item) => item.projectId))];
+    const reviewerIds = [...new Set(completed.map((item) => item.reviewedBy).filter(Boolean))];
 
-    const [organization, creators, projects] = await Promise.all([
+    const [organization, creators, projects, reviewers] = await Promise.all([
       ctx.db.get(user.organizationId),
       Promise.all(creatorIds.map((id) => ctx.db.get(id))),
       Promise.all(projectIds.map((id) => ctx.db.get(id))),
+      Promise.all(reviewerIds.map((id) => ctx.db.get(id!))),
     ]);
 
-    const creatorMap = new Map(
-      creators.filter(Boolean).map((creator) => [creator!._id, creator!.name]),
-    );
-    const projectMap = new Map(
-      projects.filter(Boolean).map((project) => [project!._id, project!.name]),
-    );
+    const creatorMap = new Map(creators.filter(Boolean).map((creator) => [creator!._id, creator!.name]));
+    const projectMap = new Map(projects.filter(Boolean).map((project) => [project!._id, project!.name]));
+    const reviewerMap = new Map(reviewers.filter(Boolean).map((reviewer) => [reviewer!._id, reviewer!.name]));
 
     return completed.map((item) => ({
       ...item,
@@ -75,6 +70,7 @@ export const getAll = query({
       organizationStreet: organization?.street || "",
       organizationPlz: organization?.plz || "",
       organizationCity: organization?.city || "",
+      reviewedByName: item.reviewedBy ? reviewerMap.get(item.reviewedBy) : undefined,
     }));
   },
 });
@@ -102,10 +98,8 @@ export const validateSignatureToken = query({
       .first();
 
     if (!doc) return { valid: false, error: "Invalid link" } as const;
-    if (doc.expiresAt < Date.now())
-      return { valid: false, error: "Link expired" } as const;
-    if (doc.usedAt)
-      return { valid: false, error: "Link already used" } as const;
+    if (doc.expiresAt < Date.now()) return { valid: false, error: "Link expired" } as const;
+    if (doc.usedAt) return { valid: false, error: "Link already used" } as const;
 
     return { valid: true } as const;
   },
@@ -120,6 +114,7 @@ export const getSignatureToken = query({
       .first();
 
     if (!doc) return null;
+
     return {
       signatureStorageId: doc.signatureStorageId,
       usedAt: doc.usedAt,

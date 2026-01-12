@@ -26,6 +26,7 @@ type Reimbursement = Doc<"reimbursements"> & {
   creatorName: string;
   projectName: string;
   travelDetails?: Doc<"travelDetails">;
+  reviewedByName: string | undefined;
 };
 
 type Allowance = Doc<"volunteerAllowance"> & {
@@ -35,6 +36,7 @@ type Allowance = Doc<"volunteerAllowance"> & {
   organizationStreet: string;
   organizationPlz: string;
   organizationCity: string;
+  reviewedByName: string | undefined;
 };
 
 type RejectDialog = {

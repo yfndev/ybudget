@@ -158,6 +158,7 @@ export default defineSchema({
     accountHolder: v.string(),
     rejectionNote: v.optional(v.string()),
     createdBy: v.id("users"),
+    reviewedBy: v.optional(v.id("users")),
   })
     .index("by_organization", ["organizationId"])
     .index("by_organization_and_createdBy", ["organizationId", "createdBy"]),
@@ -214,6 +215,7 @@ export default defineSchema({
     accountHolder: v.string(),
     rejectionNote: v.optional(v.string()),
     createdBy: v.id("users"),
+    reviewedBy: v.optional(v.id("users")),
     activityDescription: v.string(),
     startDate: v.string(),
     endDate: v.string(),
