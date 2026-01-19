@@ -1,5 +1,6 @@
 "use client";
 
+import { ShareSignatureModal } from "@/app/components/Reimbursements/ShareSignatureModal";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
@@ -64,6 +65,9 @@ export default function ExternalReimbursementPage() {
   const submitExternal = useMutation(
     api.reimbursements.sharing.submitExternalReimbursement
   );
+  const createSignatureToken = useMutation(
+    api.volunteerAllowance.functions.createSignatureToken
+  );
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -74,6 +78,8 @@ export default function ExternalReimbursementPage() {
   const [signature, setSignature] = useState<Id<"_storage"> | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [signatureToken, setSignatureToken] = useState<string | null>(null);
+  const [showSignatureModal, setShowSignatureModal] = useState(false);
 
   const [destination, setDestination] = useState("");
   const [purpose, setPurpose] = useState("");
@@ -174,6 +180,12 @@ export default function ExternalReimbursementPage() {
         receipt.costType === costType ? { ...receipt, ...updates } : receipt
       )
     );
+  };
+
+  const handleMobileSign = async () => {
+    const token = await createSignatureToken({});
+    setSignatureToken(token);
+    setShowSignatureModal(true);
   };
 
   const handleSubmit = async () => {
@@ -290,68 +302,80 @@ export default function ExternalReimbursementPage() {
   }
 
   return (
-    <ExternalReimbursementPageUI
-      isTravel={isTravel ?? false}
-      organizationName={link.organizationName}
-      projectName={link.projectName}
-      allowFoodAllowance={link.travelDetails?.allowFoodAllowance ?? false}
-      name={name}
-      email={email}
-      onNameChange={setName}
-      onEmailChange={setEmail}
-      destination={destination}
-      purpose={purpose}
-      startDate={startDate}
-      endDate={endDate}
-      isInternational={isInternational}
-      mealDays={mealDays}
-      mealRate={mealRate}
-      mealTotal={mealTotal}
-      onDestinationChange={setDestination}
-      onPurposeChange={setPurpose}
-      onStartDateChange={setStartDate}
-      onEndDateChange={setEndDate}
-      onIsInternationalChange={setIsInternational}
-      onMealDaysChange={setMealDays}
-      onMealRateChange={setMealRate}
-      company={company}
-      number={number}
-      description={description}
-      date={date}
-      gross={gross}
-      taxRate={taxRate}
-      file={file}
-      onCompanyChange={setCompany}
-      onNumberChange={setNumber}
-      onDescriptionChange={setDescription}
-      onDateChange={setDate}
-      onGrossChange={setGross}
-      onTaxRateChange={setTaxRate}
-      onFileChange={setFile}
-      receipts={receipts}
-      travelReceipts={travelReceipts}
-      onAddReceipt={addReceipt}
-      onRemoveReceipt={removeReceipt}
-      onToggleCostType={toggleCostType}
-      onUpdateTravelReceipt={updateTravelReceipt}
-      totalGross={totalGross}
-      accountHolder={accountHolder}
-      iban={iban}
-      bic={bic}
-      onAccountHolderChange={setAccountHolder}
-      onIbanChange={setIban}
-      onBicChange={setBic}
-      confirmation={confirmation}
-      signature={signature}
-      onConfirmationChange={setConfirmation}
-      onSignatureChange={setSignature}
-      isSubmitting={isSubmitting}
-      onSubmit={handleSubmit}
-      reimbursementId={reimbursementId}
-      generateUploadUrl={() => generateUploadUrl({ reimbursementId })}
-      toNet={toNet}
-      formatIban={formatIban}
-      costLabels={COST_LABELS}
-    />
+    <>
+      <ExternalReimbursementPageUI
+        isTravel={isTravel ?? false}
+        organizationName={link.organizationName}
+        projectName={link.projectName}
+        allowFoodAllowance={link.travelDetails?.allowFoodAllowance ?? false}
+        name={name}
+        email={email}
+        onNameChange={setName}
+        onEmailChange={setEmail}
+        destination={destination}
+        purpose={purpose}
+        startDate={startDate}
+        endDate={endDate}
+        isInternational={isInternational}
+        mealDays={mealDays}
+        mealRate={mealRate}
+        mealTotal={mealTotal}
+        onDestinationChange={setDestination}
+        onPurposeChange={setPurpose}
+        onStartDateChange={setStartDate}
+        onEndDateChange={setEndDate}
+        onIsInternationalChange={setIsInternational}
+        onMealDaysChange={setMealDays}
+        onMealRateChange={setMealRate}
+        company={company}
+        number={number}
+        description={description}
+        date={date}
+        gross={gross}
+        taxRate={taxRate}
+        file={file}
+        onCompanyChange={setCompany}
+        onNumberChange={setNumber}
+        onDescriptionChange={setDescription}
+        onDateChange={setDate}
+        onGrossChange={setGross}
+        onTaxRateChange={setTaxRate}
+        onFileChange={setFile}
+        receipts={receipts}
+        travelReceipts={travelReceipts}
+        onAddReceipt={addReceipt}
+        onRemoveReceipt={removeReceipt}
+        onToggleCostType={toggleCostType}
+        onUpdateTravelReceipt={updateTravelReceipt}
+        totalGross={totalGross}
+        accountHolder={accountHolder}
+        iban={iban}
+        bic={bic}
+        onAccountHolderChange={setAccountHolder}
+        onIbanChange={setIban}
+        onBicChange={setBic}
+        confirmation={confirmation}
+        signature={signature}
+        onConfirmationChange={setConfirmation}
+        onSignatureChange={setSignature}
+        isSubmitting={isSubmitting}
+        onSubmit={handleSubmit}
+        reimbursementId={reimbursementId}
+        generateUploadUrl={() => generateUploadUrl({ reimbursementId })}
+        toNet={toNet}
+        formatIban={formatIban}
+        costLabels={COST_LABELS}
+        onMobileSign={handleMobileSign}
+      />
+
+      {signatureToken && (
+        <ShareSignatureModal
+          token={signatureToken}
+          open={showSignatureModal}
+          onClose={() => setShowSignatureModal(false)}
+          onSignatureReceived={setSignature}
+        />
+      )}
+    </>
   );
 }

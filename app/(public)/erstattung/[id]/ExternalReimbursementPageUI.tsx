@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import type { Id } from "@/convex/_generated/dataModel";
-import { Loader2, Plus, Trash2 } from "lucide-react";
+import { Loader2, Plus, Smartphone, Trash2 } from "lucide-react";
 
 type CostType = "car" | "train" | "flight" | "taxi" | "bus" | "accommodation";
 
@@ -92,6 +92,7 @@ type Props = {
 
   isSubmitting: boolean;
   onSubmit: () => void;
+  onMobileSign: () => void;
 
   reimbursementId: Id<"reimbursements">;
   generateUploadUrl: () => Promise<string>;
@@ -543,11 +544,33 @@ export default function ExternalReimbursementPageUI(props: Props) {
 
         <div className="space-y-4">
           <h2 className="text-lg font-medium">Unterschrift</h2>
-          <SignatureCanvas
-            onUploadComplete={props.onSignatureChange}
-            storageId={props.signature || undefined}
-            generateUploadUrl={props.generateUploadUrl}
-          />
+          {!props.signature ? (
+            <div className="space-y-4">
+              <SignatureCanvas
+                onUploadComplete={props.onSignatureChange}
+                storageId={props.signature || undefined}
+                generateUploadUrl={props.generateUploadUrl}
+              />
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-white px-2 text-muted-foreground">Oder</span>
+                </div>
+              </div>
+              <Button type="button" variant="outline" className="w-full" onClick={props.onMobileSign}>
+                <Smartphone className="size-4 mr-2" />
+                Auf Handy unterschreiben
+              </Button>
+            </div>
+          ) : (
+            <SignatureCanvas
+              onUploadComplete={props.onSignatureChange}
+              storageId={props.signature || undefined}
+              generateUploadUrl={props.generateUploadUrl}
+            />
+          )}
         </div>
 
         <Button onClick={props.onSubmit} className="w-full h-14 font-semibold" size="lg" disabled={props.isSubmitting}>
