@@ -1,6 +1,6 @@
 "use client";
 
-import { ShareSignatureModal } from "@/app/components/Reimbursements/ShareSignatureModal";
+import { ShareSignatureModal } from "@/components/Reimbursements/ShareSignatureModal";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
