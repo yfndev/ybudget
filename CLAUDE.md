@@ -75,3 +75,32 @@ pnpm exec playwright test e2e/createTransactionAndProject.spec.ts
 - `docs/Security.md` - Security implementation
 - `docs/ThreatModel.md` - Threat analysis
 - `docs/exampleTransactions.csv` - Test data for CSV import
+
+## Code Style
+
+**Before making any changes:** Do not make changes until you have 95% confidence that you know what to build. Ask follow-up questions until you have that confidence.
+
+**Priority order when working on code:**
+1. Fix all errors first
+2. Simplify components as much as possible
+3. Remove unnecessary code
+
+**Principles:**
+- DRY (Don't Repeat Yourself)
+- KISS (Keep It Simple, Stupid)
+- Remove code, don't add code
+- No nested code blocks
+- No complex syntax
+- Flat is better than nested
+
+**Naming:**
+- No single-letter variable names except:
+  - `e` for events
+  - `q` for queries
+  - `t` for test contexts
+
+**Readability:**
+- Write code that reads like plain English
+- Early returns over nested conditionals
+- Extract complex conditions into named variables
+- Prefer simple loops over chained array methods when clearer
