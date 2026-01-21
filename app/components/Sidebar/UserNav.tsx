@@ -22,6 +22,7 @@ import { api } from "@/convex/_generated/api";
 import type { Doc } from "@/convex/_generated/dataModel";
 import { useAction, useQuery } from "convex/react";
 import {
+  Building2,
   ChevronsUpDown,
   CreditCard,
   Handshake,
@@ -124,6 +125,12 @@ export function NavUser({ user }: { user: Doc<"users"> | null | undefined }) {
               {isAdmin && (
                 <>
                   <DropdownMenuGroup>
+                    <DropdownMenuItem asChild>
+                      <Link href="/settings/organization">
+                        <Building2 />
+                        Organisation
+                      </Link>
+                    </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <Link href="/settings/users">
                         <Users />

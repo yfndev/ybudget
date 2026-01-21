@@ -14,6 +14,9 @@ type VolunteerAllowanceData = {
   volunteerCity: string;
   projectName: string;
   organizationName: string;
+  organizationStreet?: string;
+  organizationPlz?: string;
+  organizationCity?: string;
 };
 
 export async function generateVolunteerAllowancePDF(
@@ -62,6 +65,19 @@ export async function generateVolunteerAllowancePDF(
   yPos -= 18;
   page.drawText(data.organizationName, { x: MARGIN, y: yPos, size: 12, font });
   yPos -= 15;
+  if (data.organizationStreet) {
+    page.drawText(data.organizationStreet, { x: MARGIN, y: yPos, size: 10, font });
+    yPos -= 15;
+  }
+  if (data.organizationPlz || data.organizationCity) {
+    page.drawText(`${data.organizationPlz || ""} ${data.organizationCity || ""}`.trim(), {
+      x: MARGIN,
+      y: yPos,
+      size: 10,
+      font,
+    });
+    yPos -= 15;
+  }
   page.drawText(`Projekt: ${data.projectName}`, {
     x: MARGIN,
     y: yPos,

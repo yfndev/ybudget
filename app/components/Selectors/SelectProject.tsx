@@ -99,7 +99,7 @@ export function SelectProject({
         <input
           ref={inputRef}
           className={cn(
-            "h-9 w-full rounded-md bg-muted px-3 pr-8 text-sm outline-none",
+            "h-9 w-full bg-muted px-3 pr-8 text-sm outline-none border border-transparent focus:border-ring",
             open || !selected ? "text-muted-foreground" : "text-foreground"
           )}
           placeholder="Projekt suchen..."
@@ -137,7 +137,7 @@ export function SelectProject({
             ))}
             <button
               type="button"
-              className="w-full text-left px-3 py-2 text-sm text-primary flex items-center gap-2 border-t"
+              className="w-full text-left px-3 py-2 text-sm text-foreground flex items-center gap-2 border-t hover:bg-accent"
               onClick={() => {
                 setDialogOpen(true);
                 close();

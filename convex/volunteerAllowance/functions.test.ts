@@ -41,7 +41,7 @@ test("create volunteer allowance", async () => {
   expect(all[0].amount).toBe(500);
 });
 
-test("creating fails if amount exceeds 840€", async () => {
+test("creating fails if amount exceeds 960€", async () => {
   const t = convexTest(schema, modules);
   const { userId, projectId } = await setupTestData(t);
   const storageId = await t.run((ctx) => ctx.storage.store(new Blob(["sig"])));
@@ -53,7 +53,7 @@ test("creating fails if amount exceeds 840€", async () => {
         projectId,
         ...formData(storageId, 900),
       }),
-  ).rejects.toThrow("Volunteer allowance cannot exceed 840€");
+  ).rejects.toThrow("Volunteer allowance cannot exceed 960€");
 });
 
 test("approve volunteer allowance", async () => {
@@ -228,7 +228,7 @@ test("submitExternal completes allowance", async () => {
   expect(doc?.signatureStorageId).toBe(storageId);
 });
 
-test("submitExternal fails if amount exceeds 840€", async () => {
+test("submitExternal fails if amount exceeds 960€", async () => {
   const t = convexTest(schema, modules);
   const { userId, projectId } = await setupTestData(t);
 
@@ -242,7 +242,7 @@ test("submitExternal fails if amount exceeds 840€", async () => {
       id,
       ...formData(storageId, 900),
     }),
-  ).rejects.toThrow("Amount cannot exceed 840€");
+  ).rejects.toThrow("Amount cannot exceed 960€");
 });
 
 test("submitExternal fails with invalid link", async () => {

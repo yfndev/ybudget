@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { FolderPlus, DollarSign, Download, BarChart3 } from "lucide-react";
+import { YellowHighlight } from "./YellowHighlight";
 
 const steps = [
   {
@@ -44,71 +45,36 @@ export function HowItWorksSection() {
           transition={{ duration: 0.5 }}
           className="text-center"
         >
-          <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">
-            So einfach geht's
+          <h2 className="text-2xl font-bold tracking-tight text-black sm:text-4xl lg:text-5xl">
+            <YellowHighlight>So funktioniert's</YellowHighlight>
           </h2>
         </motion.div>
 
-        <div className="mt-10 sm:mt-16">
-          <div className="relative">
-            <div className="absolute left-1/2 top-0 hidden h-full w-0.5 -translate-x-1/2 bg-linear-to-b from-primary to-primary/60 lg:block" />
-
-            <div className="space-y-6 sm:space-y-12">
-              {steps.map((step, index) => {
-                const Icon = step.icon;
-                return (
-                  <motion.div
-                    key={step.number}
-                    initial={{ opacity: 0, x: index % 2 === 0 ? -40 : 40 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6, delay: index * 0.1 }}
-                    className="relative"
-                  >
-                    <div className="grid items-center gap-8 lg:grid-cols-2">
-                      <div
-                        className={`${
-                          index % 2 === 0
-                            ? "lg:text-right"
-                            : "lg:col-start-2 lg:text-left"
-                        }`}
-                      >
-                        <div
-                          className={`inline-flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:gap-4 sm:rounded-2xl sm:p-6 ${
-                            index % 2 === 0 ? "" : "lg:flex-row-reverse"
-                          }`}
-                        >
-                          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary text-white shadow-md sm:h-16 sm:w-16 sm:rounded-xl sm:shadow-lg">
-                            <Icon className="h-6 w-6 sm:h-8 sm:w-8" />
-                          </div>
-                          <div
-                            className={index % 2 === 0 ? "lg:text-right" : ""}
-                          >
-                            <div className="text-xs font-semibold text-primary sm:text-sm">
-                              Schritt {step.number}
-                            </div>
-                            <h3 className="mt-1 text-lg font-bold text-slate-900 sm:text-xl">
-                              {step.title}
-                            </h3>
-                            <p className="mt-1 text-sm text-slate-600 sm:mt-2 sm:text-base">
-                              {step.description}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                      <div
-                        className={`hidden lg:block ${
-                          index % 2 === 0 ? "lg:col-start-2" : "lg:col-start-1"
-                        }`}
-                      />
-                    </div>
-
-                    <div className="absolute left-1/2 top-1/2 hidden h-6 w-6 -translate-x-1/2 -translate-y-1/2 rounded-full border-4 border-white bg-primary shadow-lg lg:block" />
-                  </motion.div>
-                );
-              })}
-            </div>
-          </div>
+        <div className="mt-12 grid gap-8 sm:mt-16 sm:grid-cols-2 lg:grid-cols-4">
+          {steps.map((step, index) => {
+            const Icon = step.icon;
+            return (
+              <motion.div
+                key={step.number}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="text-center"
+              >
+                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary">
+                  <Icon className="h-8 w-8 text-black" />
+                </div>
+                <div className="mt-4 text-sm font-semibold text-gray-500">
+                  Schritt {step.number}
+                </div>
+                <h3 className="mt-2 text-lg font-bold text-black">
+                  {step.title}
+                </h3>
+                <p className="mt-2 text-gray-600">{step.description}</p>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </section>

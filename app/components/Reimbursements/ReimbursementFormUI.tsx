@@ -125,6 +125,10 @@ export function ReimbursementFormUI({ defaultBankDetails }: Props) {
 
       <div className="space-y-4">
         <h2 className="text-lg font-medium">Beleg hinzufügen</h2>
+        <p className="text-sm text-muted-foreground">
+          Du kannst mehrere Belege hinzufügen, um sie in einer Erstattung
+          einzureichen.
+        </p>
         <div className="grid grid-cols-2 gap-4">
           <div>
             <Label>Name/Firma *</Label>

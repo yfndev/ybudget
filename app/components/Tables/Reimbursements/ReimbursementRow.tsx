@@ -13,17 +13,20 @@ function getStatus(isApproved: boolean, rejectionNote?: string) {
       variant: "destructive" as const,
       label: "Abgelehnt",
       dot: "bg-red-500",
+      className: "bg",
     };
   if (isApproved)
     return {
       variant: "default" as const,
       label: "Genehmigt",
       dot: "bg-green-500",
+      className: "bg-green-600 text-white border-green-600",
     };
   return {
-    variant: "secondary" as const,
+    variant: "default" as const,
     label: "Ausstehend",
     dot: "bg-yellow-500",
+    className: "",
   };
 }
 
@@ -36,6 +39,7 @@ interface ReimbursementRowProps {
     projectName: string;
     creatorName: string;
     amount: number;
+    reviewedByName?: string;
   };
   isAdmin: boolean;
   description: ReactNode;
@@ -84,7 +88,16 @@ export function ReimbursementRow({
         {item.amount.toFixed(2)} €
       </TableCell>
       <TableCell>
-        <Badge variant={status.variant}>{status.label}</Badge>
+        <div className="flex flex-col gap-0.5">
+          <Badge variant={status.variant} className={status.className}>
+            {status.label}
+          </Badge>
+          {item.reviewedByName && (item.isApproved || item.rejectionNote) && (
+            <span className="text-xs text-muted-foreground">
+              ({item.reviewedByName})
+            </span>
+          )}
+        </div>
       </TableCell>
       <TableCell onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-end gap-0.5">
