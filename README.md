@@ -1,6 +1,6 @@
 # YBudget
 
-> Open-source budget management for German associations.
+> Free, open-source budget management for German non-profit associations.
 
 YBudget helps German (non-profit) associations manage their budgets when Excel gets too complicated. It was built by [Joël Heil Escobar](https://www.linkedin.com/in/joel-heil-escobar) as a [CODE University](https://code.berlin/) Capstone project. The initial idea came when [Young Founders Network e.V.](https://youngfounders.network) needed such a solution.
 
@@ -8,7 +8,7 @@ YBudget helps German (non-profit) associations manage their budgets when Excel g
 Most budget tools are too expensive or too complex for associations. Excel is flexible but keeping track of all expenses is plenty of work.
 
 **Our solution?**
-Simple, affordable, intuitive, and open-source budget and reimbursement tracking.
+Simple, free, intuitive budget and reimbursement tracking for non-profits.
 
 ## Features
 
@@ -32,7 +32,6 @@ Simple, affordable, intuitive, and open-source budget and reimbursement tracking
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
 ![shadcn/ui](https://img.shields.io/badge/shadcn%2Fui-000000?style=for-the-badge&logo=shadcnui&logoColor=white)
-![Stripe](https://img.shields.io/badge/Stripe-008CDD?style=for-the-badge&logo=stripe&logoColor=white)
 
 ## Architecture
 
@@ -89,10 +88,8 @@ npx convex env set AUTH_GOOGLE_ID "your-google-client-id"
 npx convex env set AUTH_GOOGLE_SECRET "your-google-client-secret"
 
 # Optional
-npx convex env set OPENAI_API_KEY "sk_proj_"
+npx convex env set OPENAI_API_KEY "sk_proj_..."
 npx convex env set RESEND_API_KEY "re_..."
-npx convex env set STRIPE_KEY "sk_test_..."
-npx convex env set STRIPE_WEBHOOKS_SECRET "whsec_..."
 ```
 
 ### 5. Run
@@ -156,6 +153,17 @@ OAuth 2.0, role-based access control, organizational data isolation, encrypted a
 → Find our threat analysis here: **[Threat Model](docs/ThreatModel.md)**
 
 Found an issue? Email team@ybudget.de
+
+## License
+
+YBudget is licensed under the MIT License with Commons Clause. This means:
+
+- ✅ Free to use for non-profit organizations
+- ✅ Free to modify and self-host
+- ✅ Free to contribute and share
+- ❌ Cannot be sold or used for commercial purposes
+
+See [LICENSE](LICENSE) for details.
 
 ---
 
