@@ -109,4 +109,5 @@ pnpm exec playwright test e2e/createTransactionAndProject.spec.ts
 
 - NEVER add Co-Authored-By lines
 - NEVER add Claude as co-author
-- Keep commit messages short and descriptive
+- Keep commit messages short and natural language
+- Examples: "added new index for transaction query", "fixed user permissions bug", "removed unused imports"
