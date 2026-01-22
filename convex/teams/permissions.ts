@@ -14,8 +14,8 @@ export async function getUserAccessibleProjectIds(
   if (await isOrgAdmin(ctx, userId)) {
     const projects = await ctx.db
       .query("projects")
-      .withIndex("by_organization", (q) =>
-        q.eq("organizationId", organizationId),
+      .withIndex("by_organization_archived", (q) =>
+        q.eq("organizationId", organizationId).eq("isArchived", false),
       )
       .collect();
     return projects.map((p) => p._id);
