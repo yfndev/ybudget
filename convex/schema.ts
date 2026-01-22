@@ -43,7 +43,8 @@ export default defineSchema({
     createdBy: v.id("users"),
   })
     .index("by_organization", ["organizationId"])
-    .index("by_organization_parentId", ["organizationId", "parentId"]),
+    .index("by_organization_parentId", ["organizationId", "parentId"])
+    .index("by_organization_archived", ["organizationId", "isArchived"]),
 
   transactions: defineTable({
     projectId: v.optional(v.id("projects")),
@@ -86,7 +87,8 @@ export default defineSchema({
     .index("by_splitFrom", ["splitFromTransactionId"])
     .index("by_archived", ["isArchived"])
     .index("by_transferId", ["transferId"])
-    .index("by_organization_status", ["organizationId", "status"]),
+    .index("by_organization_status", ["organizationId", "status"])
+    .index("by_organization_date", ["organizationId", "date"]),
 
   categories: defineTable({
     name: v.string(),
@@ -99,7 +101,9 @@ export default defineSchema({
     approved: v.boolean(),
     createdBy: v.optional(v.id("users")),
     parentId: v.optional(v.id("categories")),
-  }).index("by_parent", ["parentId"]),
+  })
+    .index("by_parent", ["parentId"])
+    .index("by_name", ["name"]),
 
   donors: defineTable({
     name: v.string(),
