@@ -4,8 +4,6 @@ import { addLog } from "../logs/functions";
 import { getCurrentUser } from "../users/getCurrentUser";
 import { requireRole } from "../users/permissions";
 
-const FREE_TIER_LIMIT = 10;
-
 async function getProjectName(ctx: any, projectId: any) {
   if (!projectId) return "Root";
   const project = await ctx.db.get(projectId);
@@ -20,23 +18,6 @@ export const createProject = mutation({
   handler: async (ctx, args) => {
     await requireRole(ctx, "lead");
     const user = await getCurrentUser(ctx);
-
-    const activePayment = await ctx.db
-      .query("payments")
-      .withIndex("by_organization", (q) => q.eq("organizationId", user.organizationId))
-      .filter((q) => q.eq(q.field("status"), "completed"))
-      .first();
-
-    if (!activePayment) {
-      const projects = await ctx.db
-        .query("projects")
-        .withIndex("by_organization", (q) => q.eq("organizationId", user.organizationId))
-        .collect();
-
-      if (projects.length >= FREE_TIER_LIMIT) {
-        throw new Error(`Du hast das Limit von ${FREE_TIER_LIMIT} Projekten erreicht. Bitte upgrade auf Premium.`);
-      }
-    }
 
     if (args.parentId) {
       const parent = await ctx.db.get(args.parentId);

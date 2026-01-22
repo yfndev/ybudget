@@ -43,59 +43,6 @@ test("archive project", async () => {
   expect(project?.isArchived).toBe(true);
 });
 
-test("create project throws error if free tier limit is reached", async () => {
-  const t = convexTest(schema, modules);
-  const { organizationId, userId } = await setupTestData(t);
-
-  for (let i = 0; i < 9; i++) {
-    await t.run((ctx) =>
-      ctx.db.insert("projects", {
-        name: `Project ${i}`,
-        organizationId,
-        isArchived: false,
-        createdBy: userId,
-      }),
-    );
-  }
-
-  await expect(
-    t
-      .withIdentity({ subject: userId })
-      .mutation(api.projects.functions.createProject, { name: "Eleventh" }),
-  ).rejects.toThrow("Limit");
-});
-
-test("create project goes over limit if user has premium", async () => {
-  const t = convexTest(schema, modules);
-  const { organizationId, userId } = await setupTestData(t);
-
-  for (let i = 0; i < 9; i++) {
-    await t.run((ctx) =>
-      ctx.db.insert("projects", {
-        name: `Project ${i}`,
-        organizationId,
-        isArchived: false,
-        createdBy: userId,
-      }),
-    );
-  }
-
-  await t.run((ctx) =>
-    ctx.db.insert("payments", {
-      organizationId,
-      status: "completed",
-      tier: "yearly",
-      stripeSubscriptionId: "sub_123",
-    }),
-  );
-
-  const projectId = await t
-    .withIdentity({ subject: userId })
-    .mutation(api.projects.functions.createProject, { name: "Eleventh" });
-
-  expect(projectId).toBeDefined();
-});
-
 test("rename project throws error if project is not found", async () => {
   const t = convexTest(schema, modules);
   const { userId, projectId } = await setupTestData(t);
