@@ -22,14 +22,12 @@ export const getAllProjects = query({
 
     const projects = await ctx.db
       .query("projects")
-      .withIndex("by_organization", (q) =>
-        q.eq("organizationId", organizationId),
+      .withIndex("by_organization_archived", (q) =>
+        q.eq("organizationId", organizationId).eq("isArchived", false),
       )
       .collect();
 
-    return projects.filter(
-      (project) => !project.isArchived && accessibleIds.includes(project._id),
-    );
+    return projects.filter((project) => accessibleIds.includes(project._id));
   },
 });
 
@@ -57,24 +55,23 @@ export const getDepartments = query({
     const user = await getCurrentUser(ctx);
     const projects = await ctx.db
       .query("projects")
-      .withIndex("by_organization_parentId", (q) =>
-        q.eq("organizationId", user.organizationId),
+      .withIndex("by_organization_archived", (q) =>
+        q.eq("organizationId", user.organizationId).eq("isArchived", false),
       )
       .collect();
-    return projects.filter((project) => !project.parentId && !project.isArchived);
+    return projects.filter((project) => !project.parentId);
   },
 });
 
 export const getArchivedProjects = query({
   handler: async (ctx) => {
     const user = await getCurrentUser(ctx);
-    const projects = await ctx.db
+    return ctx.db
       .query("projects")
-      .withIndex("by_organization", (q) =>
-        q.eq("organizationId", user.organizationId),
+      .withIndex("by_organization_archived", (q) =>
+        q.eq("organizationId", user.organizationId).eq("isArchived", true),
       )
       .collect();
-    return projects.filter((project) => project.isArchived);
   },
 });
 
@@ -96,13 +93,13 @@ export const getBookableProjects = query({
 
     const allProjects = await ctx.db
       .query("projects")
-      .withIndex("by_organization", (q) =>
-        q.eq("organizationId", organizationId),
+      .withIndex("by_organization_archived", (q) =>
+        q.eq("organizationId", organizationId).eq("isArchived", false),
       )
       .collect();
 
-    const active = allProjects.filter(
-      (project) => !project.isArchived && accessibleIds.includes(project._id),
+    const active = allProjects.filter((project) =>
+      accessibleIds.includes(project._id),
     );
 
     const parentIds = new Set(
@@ -123,14 +120,12 @@ export const getChildProjectIds = query({
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
 
-    const allProjects = await ctx.db
+    const active = await ctx.db
       .query("projects")
-      .withIndex("by_organization", (q) =>
-        q.eq("organizationId", user.organizationId),
+      .withIndex("by_organization_archived", (q) =>
+        q.eq("organizationId", user.organizationId).eq("isArchived", false),
       )
       .collect();
-
-    const active = allProjects.filter((project) => !project.isArchived);
     const result: (typeof args.projectId)[] = [];
 
     const collectChildren = (parentId: typeof args.projectId) => {
