@@ -104,3 +104,9 @@ pnpm exec playwright test e2e/createTransactionAndProject.spec.ts
 - Early returns over nested conditionals
 - Extract complex conditions into named variables
 - Prefer simple loops over chained array methods when clearer
+
+## Git Commits
+
+- NEVER add Co-Authored-By lines
+- NEVER add Claude as co-author
+- Keep commit messages short and descriptive
