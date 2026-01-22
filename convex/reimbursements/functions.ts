@@ -199,7 +199,7 @@ export const markAsPaid = mutation({
 
     const category = await ctx.db
       .query("categories")
-      .filter((q) => q.eq(q.field("name"), "Auslagenerstattung"))
+      .withIndex("by_name", (q) => q.eq("name", "Auslagenerstattung"))
       .first();
 
     await ctx.db.insert("transactions", {
