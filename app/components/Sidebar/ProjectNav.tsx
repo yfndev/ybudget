@@ -2,7 +2,6 @@
 
 import { ArchivedProjectsDialog } from "@/components/Dialogs/ArchivedProjectsDialog";
 import { CreateProjectDialog } from "@/components/Dialogs/CreateProjectDialog";
-import { Paywall } from "@/components/Payment/Paywall";
 import {
   Collapsible,
   CollapsibleContent,
@@ -45,14 +44,12 @@ type Project = NonNullable<
 
 export function ProjectNav({ id }: { id?: string }) {
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [paywallOpen, setPaywallOpen] = useState(false);
   const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<Id<"projects"> | null>(null);
   const [editValue, setEditValue] = useState("");
 
   const pathname = usePathname();
   const projects = useQuery(api.projects.queries.getAllProjects);
-  const projectLimits = useQuery(api.subscriptions.queries.getProjectLimits);
   const canEdit = useCanEdit();
 
   const renameProject = useMutation(api.projects.functions.renameProject);
@@ -88,11 +85,6 @@ export function ProjectNav({ id }: { id?: string }) {
     projects
       .filter((project) => project.parentId === parentId)
       .sort(sortByName);
-
-  const countText =
-    projectLimits && !projectLimits.isPremium
-      ? `(${projectLimits.currentProjects}/${projectLimits.maxProjects})`
-      : "";
 
   const handleSave = async () => {
     if (!editingId || !editValue.trim()) return;
@@ -133,11 +125,7 @@ export function ProjectNav({ id }: { id?: string }) {
   };
 
   const handleAddClick = () => {
-    if (projectLimits?.canCreateMore) {
-      setDialogOpen(true);
-    } else {
-      setPaywallOpen(true);
-    }
+    setDialogOpen(true);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -321,11 +309,6 @@ export function ProjectNav({ id }: { id?: string }) {
           </div>
         )}
       </div>
-      {canEdit && countText && (
-        <span className="text-xs text-muted-foreground px-2 -mt-1">
-          {countText}
-        </span>
-      )}
 
       <SidebarMenu className="gap-0">
         {parentProjects.map((project) => (
@@ -341,7 +324,6 @@ export function ProjectNav({ id }: { id?: string }) {
       {canEdit && (
         <>
           <CreateProjectDialog open={dialogOpen} onOpenChange={setDialogOpen} />
-          <Paywall open={paywallOpen} onOpenChange={setPaywallOpen} />
           <ArchivedProjectsDialog
             open={archiveDialogOpen}
             onOpenChange={setArchiveDialogOpen}

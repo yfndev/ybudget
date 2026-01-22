@@ -1,6 +1,5 @@
 "use client";
 
-import { Paywall } from "@/components/Payment/Paywall";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -18,18 +17,9 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
-import { api } from "@/convex/_generated/api";
 import type { Doc } from "@/convex/_generated/dataModel";
-import { useAction, useQuery } from "convex/react";
-import {
-  ChevronsUpDown,
-  CreditCard,
-  Handshake,
-  ScrollText,
-  Users,
-} from "lucide-react";
+import { ChevronsUpDown, Handshake, ScrollText, Users } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
 import { LogoutButton } from "../Auth/LogoutButton";
 
 function UserAvatar({ user }: { user: Doc<"users"> }) {
@@ -57,24 +47,8 @@ function UserInfo({ user }: { user: Doc<"users"> }) {
 }
 
 export function NavUser({ user }: { user: Doc<"users"> | null | undefined }) {
-  const [paywallOpen, setPaywallOpen] = useState(false);
-  const [isLoadingPortal, setIsLoadingPortal] = useState(false);
   const { isMobile } = useSidebar();
-
   const isAdmin = user?.role === "admin";
-  const isCustomer = Boolean(useQuery(api.payments.queries.getActivePayment));
-  const createPortalSession = useAction(api.stripe.createCustomerPortalSession);
-
-  const handleBillingClick = async () => {
-    if (isLoadingPortal) return;
-    setIsLoadingPortal(true);
-    try {
-      const portalUrl = await createPortalSession();
-      window.location.href = portalUrl;
-    } catch {
-      setIsLoadingPortal(false);
-    }
-  };
 
   if (!user) {
     return (
@@ -93,80 +67,63 @@ export function NavUser({ user }: { user: Doc<"users"> | null | undefined }) {
   }
 
   return (
-    <>
-      <Paywall open={paywallOpen} onOpenChange={setPaywallOpen} />
-      <SidebarMenu>
-        <SidebarMenuItem>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <SidebarMenuButton
-                size="lg"
-                className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-              >
+    <SidebarMenu>
+      <SidebarMenuItem>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <SidebarMenuButton
+              size="lg"
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+            >
+              <UserAvatar user={user} />
+              <UserInfo user={user} />
+              <ChevronsUpDown className="ml-auto size-4" />
+            </SidebarMenuButton>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+            side={isMobile ? "bottom" : "right"}
+            align="end"
+            sideOffset={4}
+          >
+            <DropdownMenuLabel className="p-0 font-normal">
+              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <UserAvatar user={user} />
                 <UserInfo user={user} />
-                <ChevronsUpDown className="ml-auto size-4" />
-              </SidebarMenuButton>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-              side={isMobile ? "bottom" : "right"}
-              align="end"
-              sideOffset={4}
-            >
-              <DropdownMenuLabel className="p-0 font-normal">
-                <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                  <UserAvatar user={user} />
-                  <UserInfo user={user} />
-                </div>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {isAdmin && (
-                <>
-                  <DropdownMenuGroup>
-                    <DropdownMenuItem asChild>
-                      <Link href="/settings/users">
-                        <Users />
-                        Benutzer
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/settings/teams">
-                        <Handshake />
-                        Teams
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/settings/logs">
-                        <ScrollText />
-                        Logs
-                      </Link>
-                    </DropdownMenuItem>
-                    {isCustomer ? (
-                      <DropdownMenuItem
-                        onClick={handleBillingClick}
-                        disabled={isLoadingPortal}
-                      >
-                        <CreditCard />
-                        {isLoadingPortal ? "Laden..." : "Abrechnung"}
-                      </DropdownMenuItem>
-                    ) : (
-                      <DropdownMenuItem onClick={() => setPaywallOpen(true)}>
-                        <CreditCard />
-                        YBudget Premium
-                      </DropdownMenuItem>
-                    )}
-                  </DropdownMenuGroup>
-                  <DropdownMenuSeparator />
-                </>
-              )}
-              <DropdownMenuItem>
-                <LogoutButton>Abmelden</LogoutButton>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </SidebarMenuItem>
-      </SidebarMenu>
-    </>
+              </div>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {isAdmin && (
+              <>
+                <DropdownMenuGroup>
+                  <DropdownMenuItem asChild>
+                    <Link href="/settings/users">
+                      <Users />
+                      Benutzer
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/settings/teams">
+                      <Handshake />
+                      Teams
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/settings/logs">
+                      <ScrollText />
+                      Logs
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+              </>
+            )}
+            <DropdownMenuItem>
+              <LogoutButton>Abmelden</LogoutButton>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </SidebarMenuItem>
+    </SidebarMenu>
   );
 }
