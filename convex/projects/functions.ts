@@ -1,7 +1,6 @@
 import { v } from "convex/values";
 import { mutation } from "../_generated/server";
 import { addLog } from "../logs/functions";
-import { getCurrentUser } from "../users/getCurrentUser";
 import { requireRole } from "../users/permissions";
 
 async function getProjectName(ctx: any, projectId: any) {
@@ -16,8 +15,7 @@ export const createProject = mutation({
     parentId: v.optional(v.id("projects")),
   },
   handler: async (ctx, args) => {
-    await requireRole(ctx, "lead");
-    const user = await getCurrentUser(ctx);
+    const user = await requireRole(ctx, "lead");
 
     if (args.parentId) {
       const parent = await ctx.db.get(args.parentId);
@@ -42,8 +40,7 @@ export const createProject = mutation({
 export const renameProject = mutation({
   args: { projectId: v.id("projects"), name: v.string() },
   handler: async (ctx, args) => {
-    await requireRole(ctx, "lead");
-    const user = await getCurrentUser(ctx);
+    const user = await requireRole(ctx, "lead");
     const project = await ctx.db.get(args.projectId);
 
     if (!project) throw new Error("Project not found");
@@ -57,8 +54,7 @@ export const renameProject = mutation({
 export const archiveProject = mutation({
   args: { projectId: v.id("projects") },
   handler: async (ctx, args) => {
-    await requireRole(ctx, "admin");
-    const user = await getCurrentUser(ctx);
+    const user = await requireRole(ctx, "admin");
     const project = await ctx.db.get(args.projectId);
 
     const isReserves = project?.name === "Rücklagen" && !project.parentId;
@@ -72,8 +68,7 @@ export const archiveProject = mutation({
 export const unarchiveProject = mutation({
   args: { projectId: v.id("projects") },
   handler: async (ctx, args) => {
-    await requireRole(ctx, "admin");
-    const user = await getCurrentUser(ctx);
+    const user = await requireRole(ctx, "admin");
     const project = await ctx.db.get(args.projectId);
 
     if (!project) throw new Error("Project not found");
@@ -90,8 +85,7 @@ export const moveProject = mutation({
     newParentId: v.union(v.id("projects"), v.null()),
   },
   handler: async (ctx, args) => {
-    await requireRole(ctx, "lead");
-    const user = await getCurrentUser(ctx);
+    const user = await requireRole(ctx, "lead");
     const project = await ctx.db.get(args.projectId);
 
     if (!project) throw new Error("Project not found");

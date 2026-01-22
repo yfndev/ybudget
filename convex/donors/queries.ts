@@ -33,13 +33,10 @@ export const getDonorsByProject = query({
       ...new Set(transactions.map((t) => t.donorId).filter(Boolean)),
     ];
 
-    const donors = [];
-    for (const id of uniqueDonorIds) {
-      if (!id) continue;
-      const donor = await ctx.db.get(id);
-      if (donor) donors.push(donor);
-    }
-    return donors;
+    const donors = await Promise.all(
+      uniqueDonorIds.map((id) => ctx.db.get(id!)),
+    );
+    return donors.filter(Boolean);
   },
 });
 

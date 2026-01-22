@@ -14,4 +14,5 @@ export async function requireRole(
   if (roleHierarchy[userRole] < roleHierarchy[minRole]) {
     throw new Error(`Insufficient permissions. Required role: ${minRole}`);
   }
+  return user;
 }

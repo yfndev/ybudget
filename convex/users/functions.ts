@@ -26,8 +26,7 @@ export const updateUserRole = mutation({
     role: v.union(v.literal("admin"), v.literal("lead"), v.literal("member")),
   },
   handler: async (ctx, args) => {
-    await requireRole(ctx, "admin");
-    const currentUser = await getCurrentUser(ctx);
+    const currentUser = await requireRole(ctx, "admin");
     const targetUser = await ctx.db.get(args.userId);
 
     if (!targetUser) throw new Error("User not found");

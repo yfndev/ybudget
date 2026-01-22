@@ -188,8 +188,7 @@ export const deleteReimbursement = mutation({
 export const markAsPaid = mutation({
   args: { reimbursementId: v.id("reimbursements") },
   handler: async (ctx, args) => {
-    await requireRole(ctx, "lead");
-    const user = await getCurrentUser(ctx);
+    const user = await requireRole(ctx, "lead");
     const reimbursement = await ctx.db.get(args.reimbursementId);
     if (
       !reimbursement ||
@@ -233,8 +232,7 @@ export const rejectReimbursement = mutation({
     rejectionNote: v.string(),
   },
   handler: async (ctx, args) => {
-    await requireRole(ctx, "lead");
-    const user = await getCurrentUser(ctx);
+    const user = await requireRole(ctx, "lead");
     const reimbursement = await ctx.db.get(args.reimbursementId);
     if (
       !reimbursement ||
