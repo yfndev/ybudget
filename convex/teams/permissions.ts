@@ -18,7 +18,7 @@ export async function getUserAccessibleProjectIds(
         q.eq("organizationId", organizationId).eq("isArchived", false),
       )
       .collect();
-    return projects.map((p) => p._id);
+    return projects.map((project) => project._id);
   }
 
   const teams = await ctx.db

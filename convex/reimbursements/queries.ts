@@ -75,40 +75,48 @@ export const getAllReimbursements = query({
           .order("desc")
           .collect();
 
-    const creatorIds = [...new Set(reimbursements.map((r) => r.createdBy))];
-    const projectIds = [...new Set(reimbursements.map((r) => r.projectId))];
+    const creatorIds = [
+      ...new Set(reimbursements.map((reimbursement) => reimbursement.createdBy)),
+    ];
+    const projectIds = [
+      ...new Set(reimbursements.map((reimbursement) => reimbursement.projectId)),
+    ];
     const travelReimbursementIds = reimbursements
-      .filter((r) => r.type === "travel")
-      .map((r) => r._id);
+      .filter((reimbursement) => reimbursement.type === "travel")
+      .map((reimbursement) => reimbursement._id);
 
     const [creators, projects, travelDetailsList] = await Promise.all([
-      Promise.all(creatorIds.map((id) => ctx.db.get(id))),
-      Promise.all(projectIds.map((id) => ctx.db.get(id))),
+      Promise.all(creatorIds.map((creatorId) => ctx.db.get(creatorId))),
+      Promise.all(projectIds.map((projectId) => ctx.db.get(projectId))),
       Promise.all(
-        travelReimbursementIds.map((id) =>
+        travelReimbursementIds.map((reimbursementId) =>
           ctx.db
             .query("travelDetails")
-            .withIndex("by_reimbursement", (q) => q.eq("reimbursementId", id))
+            .withIndex("by_reimbursement", (q) =>
+              q.eq("reimbursementId", reimbursementId),
+            )
             .first(),
         ),
       ),
     ]);
 
     const creatorMap = new Map(
-      creators.filter(Boolean).map((c) => [c!._id, c!.name]),
+      creators.filter(Boolean).map((creator) => [creator!._id, creator!.name]),
     );
     const projectMap = new Map(
-      projects.filter(Boolean).map((p) => [p!._id, p!.name]),
+      projects.filter(Boolean).map((project) => [project!._id, project!.name]),
     );
     const travelMap = new Map(
-      travelDetailsList.filter(Boolean).map((t) => [t!.reimbursementId, t!]),
+      travelDetailsList
+        .filter(Boolean)
+        .map((detail) => [detail!.reimbursementId, detail!]),
     );
 
-    return reimbursements.map((r) => ({
-      ...r,
-      creatorName: creatorMap.get(r.createdBy) || "Unknown",
-      projectName: projectMap.get(r.projectId) || "Unbekanntes Projekt",
-      travelDetails: travelMap.get(r._id),
+    return reimbursements.map((reimbursement) => ({
+      ...reimbursement,
+      creatorName: creatorMap.get(reimbursement.createdBy) || "Unknown",
+      projectName: projectMap.get(reimbursement.projectId) || "Unbekanntes Projekt",
+      travelDetails: travelMap.get(reimbursement._id),
     }));
   },
 });

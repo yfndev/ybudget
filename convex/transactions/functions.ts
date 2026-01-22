@@ -182,7 +182,7 @@ export const splitTransaction = mutation({
 
     await ctx.db.patch(args.transactionId, { isArchived: true });
 
-    const total = args.splits.reduce((sum, s) => sum + s.amount, 0);
+    const total = args.splits.reduce((sum, split) => sum + split.amount, 0);
     const remainder = original.amount - total;
 
     const allSplits =

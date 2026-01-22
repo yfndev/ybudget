@@ -178,17 +178,21 @@ export const getPaginatedTransactions = query({
 
     const result = await dbQuery.order("desc").paginate(args.paginationOpts);
 
-    let page = result.page.filter((tx) => !tx.isArchived);
+    let page = result.page.filter((transaction) => !transaction.isArchived);
 
     if (projectIds && projectIds.length > 1) {
       const projectIdSet = new Set(projectIds);
       page = page.filter(
-        (tx) => tx.projectId && projectIdSet.has(tx.projectId),
+        (transaction) =>
+          transaction.projectId && projectIdSet.has(transaction.projectId),
       );
     }
 
     if (startDate !== undefined && endDate !== undefined) {
-      page = page.filter((tx) => tx.date >= startDate && tx.date <= endDate);
+      page = page.filter(
+        (transaction) =>
+          transaction.date >= startDate && transaction.date <= endDate,
+      );
     }
 
     const filtered = donorId

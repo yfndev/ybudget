@@ -72,7 +72,7 @@ export const removeTeamMember = mutation({
     if (!team) throw new Error("Team not found");
 
     await ctx.db.patch(args.teamId, {
-      memberIds: team.memberIds.filter((id) => id !== args.userId),
+      memberIds: team.memberIds.filter((memberId) => memberId !== args.userId),
     });
   },
 });
@@ -99,7 +99,9 @@ export const removeProjectFromTeam = mutation({
     if (!team) throw new Error("Team not found");
 
     await ctx.db.patch(args.teamId, {
-      projectIds: team.projectIds.filter((id) => id !== args.projectId),
+      projectIds: team.projectIds.filter(
+        (projectId) => projectId !== args.projectId,
+      ),
     });
   },
 });
