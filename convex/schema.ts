@@ -116,25 +116,6 @@ export default defineSchema({
     createdBy: v.id("users"),
   }).index("by_organization", ["organizationId"]),
 
-  payments: defineTable({
-    tier: v.union(v.literal("monthly"), v.literal("yearly")),
-    status: v.union(
-      v.literal("pending"),
-      v.literal("completed"),
-      v.literal("failed"),
-      v.literal("canceled"),
-    ),
-    organizationId: v.id("organizations"),
-    stripeSessionId: v.optional(v.string()),
-    stripeCustomerId: v.optional(v.string()),
-    stripeSubscriptionId: v.optional(v.string()),
-    paidAt: v.optional(v.number()),
-  })
-    .index("by_stripeSessionId", ["stripeSessionId"])
-    .index("by_organization", ["organizationId"])
-    .index("by_stripeCustomerId", ["stripeCustomerId"])
-    .index("by_stripeSubscriptionId", ["stripeSubscriptionId"]),
-
   teams: defineTable({
     name: v.string(),
     organizationId: v.id("organizations"),
