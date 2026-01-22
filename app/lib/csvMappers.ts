@@ -24,7 +24,7 @@ function parseGermanDate(dateString: string, addCentury: boolean): number {
 }
 
 function parseMossDate(dateString: string): number {
-  const parts = dateString.split(/[/\-]/);
+  const parts = dateString.split(/[/-]/);
   if (parts.length !== 3) return Date.now();
 
   const first = parseInt(parts[0]);

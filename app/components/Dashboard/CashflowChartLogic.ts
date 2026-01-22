@@ -169,7 +169,7 @@ function getTickStep(maxValue: number): number {
   if (maxValue <= 0) return 100;
 
   const power = Math.floor(Math.log10(maxValue));
-  const base = Math.pow(10, power);
+  const base = 10 ** power;
   const firstDigit = maxValue / base;
 
   if (firstDigit <= 2) return base / 2;
