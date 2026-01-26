@@ -1,7 +1,7 @@
 import { openai } from "@ai-sdk/openai";
 import { Agent } from "@convex-dev/agent";
 import { components } from "../_generated/api";
-import { Id } from "../_generated/dataModel";
+import type { Id } from "../_generated/dataModel";
 import {
   getOpenItems,
   getOpenReimbursements,

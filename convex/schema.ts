@@ -47,7 +47,8 @@ export default defineSchema({
     createdBy: v.id("users"),
   })
     .index("by_organization", ["organizationId"])
-    .index("by_organization_parentId", ["organizationId", "parentId"]),
+    .index("by_organization_parentId", ["organizationId", "parentId"])
+    .index("by_organization_archived", ["organizationId", "isArchived"]),
 
   transactions: defineTable({
     projectId: v.optional(v.id("projects")),
@@ -90,7 +91,8 @@ export default defineSchema({
     .index("by_splitFrom", ["splitFromTransactionId"])
     .index("by_archived", ["isArchived"])
     .index("by_transferId", ["transferId"])
-    .index("by_organization_status", ["organizationId", "status"]),
+    .index("by_organization_status", ["organizationId", "status"])
+    .index("by_organization_date", ["organizationId", "date"]),
 
   categories: defineTable({
     name: v.string(),
@@ -103,7 +105,9 @@ export default defineSchema({
     approved: v.boolean(),
     createdBy: v.optional(v.id("users")),
     parentId: v.optional(v.id("categories")),
-  }).index("by_parent", ["parentId"]),
+  })
+    .index("by_parent", ["parentId"])
+    .index("by_name", ["name"]),
 
   donors: defineTable({
     name: v.string(),
@@ -119,25 +123,6 @@ export default defineSchema({
     organizationId: v.id("organizations"),
     createdBy: v.id("users"),
   }).index("by_organization", ["organizationId"]),
-
-  payments: defineTable({
-    tier: v.union(v.literal("monthly"), v.literal("yearly")),
-    status: v.union(
-      v.literal("pending"),
-      v.literal("completed"),
-      v.literal("failed"),
-      v.literal("canceled"),
-    ),
-    organizationId: v.id("organizations"),
-    stripeSessionId: v.optional(v.string()),
-    stripeCustomerId: v.optional(v.string()),
-    stripeSubscriptionId: v.optional(v.string()),
-    paidAt: v.optional(v.number()),
-  })
-    .index("by_stripeSessionId", ["stripeSessionId"])
-    .index("by_organization", ["organizationId"])
-    .index("by_stripeCustomerId", ["stripeCustomerId"])
-    .index("by_stripeSubscriptionId", ["stripeSubscriptionId"]),
 
   teams: defineTable({
     name: v.string(),

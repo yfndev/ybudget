@@ -1,7 +1,7 @@
 import {
   PDFDocument,
-  PDFEmbeddedPage,
-  PDFImage,
+  type PDFEmbeddedPage,
+  type PDFImage,
   rgb,
   StandardFonts,
 } from "pdf-lib";

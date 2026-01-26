@@ -170,8 +170,7 @@ export const deleteReimbursement = mutation({
 export const markAsPaid = mutation({
   args: { reimbursementId: v.id("reimbursements") },
   handler: async (ctx, args) => {
-    await requireRole(ctx, "lead");
-    const user = await getCurrentUser(ctx);
+    const user = await requireRole(ctx, "lead");
     const reimbursement = await ctx.db.get(args.reimbursementId);
 
     if (!reimbursement || reimbursement.organizationId !== user.organizationId) {
@@ -180,7 +179,7 @@ export const markAsPaid = mutation({
 
     const category = await ctx.db
       .query("categories")
-      .filter((q) => q.eq(q.field("name"), "Auslagenerstattung"))
+      .withIndex("by_name", (q) => q.eq("name", "Auslagenerstattung"))
       .first();
 
     const project = await ctx.db.get(reimbursement.projectId);
@@ -213,8 +212,7 @@ export const rejectReimbursement = mutation({
     rejectionNote: v.string(),
   },
   handler: async (ctx, args) => {
-    await requireRole(ctx, "lead");
-    const user = await getCurrentUser(ctx);
+    const user = await requireRole(ctx, "lead");
     const reimbursement = await ctx.db.get(args.reimbursementId);
 
     if (!reimbursement || reimbursement.organizationId !== user.organizationId) {

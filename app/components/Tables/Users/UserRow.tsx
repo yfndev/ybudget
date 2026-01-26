@@ -9,8 +9,8 @@ import {
 } from "@/components/ui/select";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { api } from "@/convex/_generated/api";
-import { Id } from "@/convex/_generated/dataModel";
-import { UserRole } from "@/convex/users/permissions";
+import type { Id } from "@/convex/_generated/dataModel";
+import type { UserRole } from "@/convex/users/permissions";
 import { getInitials } from "@/lib/formatters/getInitials";
 import { useMutation, useQuery } from "convex/react";
 import { Shield } from "lucide-react";

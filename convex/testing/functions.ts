@@ -2,11 +2,7 @@ import { ConvexCredentials } from "@convex-dev/auth/providers/ConvexCredentials"
 import { createAccount } from "@convex-dev/auth/server";
 import { ConvexError, v } from "convex/values";
 import type { Id } from "../_generated/dataModel";
-import {
-  internalQuery,
-  mutation,
-  type MutationCtx,
-} from "../_generated/server";
+import { mutation, type MutationCtx } from "../_generated/server";
 
 export const TestingCredentials = ConvexCredentials({
   id: "testing",
@@ -83,7 +79,6 @@ async function deleteOrganization(
     "projects",
     "donors",
     "logs",
-    "payments",
     "teams",
   ] as const) {
     const docs = await ctx.db
@@ -129,50 +124,6 @@ export const clearTestData = mutation({
       await deleteUserAuth(ctx, user._id);
       await ctx.db.delete(user._id);
     }
-  },
-});
-
-export const getSubscriptionIdByEmail = internalQuery({
-  args: { email: v.string() },
-  handler: async (ctx, { email }) => {
-    const user = await ctx.db
-      .query("users")
-      .withIndex("email", (q) => q.eq("email", email))
-      .unique();
-    const organizationId = user?.organizationId;
-    if (!organizationId) return null;
-
-    const payment = await ctx.db
-      .query("payments")
-      .withIndex("by_organization", (q) =>
-        q.eq("organizationId", organizationId),
-      )
-      .first();
-    return payment?.stripeSubscriptionId ?? null;
-  },
-});
-
-export const createMockPayment = mutation({
-  args: { email: v.string() },
-  handler: async (ctx, { email }) => {
-    if (!process.env.IS_TEST)
-      throw new ConvexError("Only available in test environment");
-
-    const user = await ctx.db
-      .query("users")
-      .withIndex("email", (q) => q.eq("email", email))
-      .unique();
-    if (!user?.organizationId) throw new ConvexError("User not found");
-
-    await ctx.db.insert("payments", {
-      tier: "yearly",
-      status: "completed",
-      organizationId: user.organizationId,
-      stripeSessionId: `test_session_${Date.now()}`,
-      stripeCustomerId: `test_customer_${Date.now()}`,
-      stripeSubscriptionId: `test_subscription_${Date.now()}`,
-      paidAt: Date.now(),
-    });
   },
 });
 

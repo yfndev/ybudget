@@ -29,17 +29,13 @@ export const getDonorsByProject = query({
       )
       .collect();
 
-    const uniqueDonorIds = [
-      ...new Set(transactions.map((t) => t.donorId).filter(Boolean)),
-    ];
+    const donorIds = transactions.map((transaction) => transaction.donorId);
+    const uniqueDonorIds = [...new Set(donorIds.filter(Boolean))];
 
-    const donors = [];
-    for (const id of uniqueDonorIds) {
-      if (!id) continue;
-      const donor = await ctx.db.get(id);
-      if (donor) donors.push(donor);
-    }
-    return donors;
+    const donors = await Promise.all(
+      uniqueDonorIds.map((donorId) => ctx.db.get(donorId!)),
+    );
+    return donors.filter(Boolean);
   },
 });
 

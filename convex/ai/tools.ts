@@ -1,7 +1,7 @@
-import { createTool, ToolCtx } from "@convex-dev/agent";
+import { createTool, type ToolCtx } from "@convex-dev/agent";
 import { z } from "zod";
 import { internal } from "../_generated/api";
-import { Id } from "../_generated/dataModel";
+import type { Id } from "../_generated/dataModel";
 
 type Ctx = ToolCtx & {
   userId: Id<"users">;

@@ -3,7 +3,6 @@ import type { Id } from "../_generated/dataModel";
 import { type MutationCtx, mutation } from "../_generated/server";
 import { addLog } from "../logs/functions";
 import { canAccessProject } from "../teams/permissions";
-import { getCurrentUser } from "../users/getCurrentUser";
 import { requireRole } from "../users/permissions";
 
 export const createExpectedTransaction = mutation({
@@ -18,8 +17,7 @@ export const createExpectedTransaction = mutation({
     donorId: v.optional(v.id("donors")),
   },
   handler: async (ctx, args) => {
-    await requireRole(ctx, "lead");
-    const user = await getCurrentUser(ctx);
+    const user = await requireRole(ctx, "lead");
     const hasAccess = await canAccessProject(ctx, user._id, args.projectId);
     if (!hasAccess) throw new Error("Access denied");
 
@@ -56,8 +54,7 @@ export const createImportedTransaction = mutation({
     accountName: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    await requireRole(ctx, "lead");
-    const user = await getCurrentUser(ctx);
+    const user = await requireRole(ctx, "lead");
 
     const existing = await ctx.db
       .query("transactions")
@@ -95,8 +92,7 @@ export const updateTransaction = mutation({
     status: v.optional(v.union(v.literal("expected"), v.literal("processed"))),
   },
   handler: async (ctx, { transactionId, ...updates }) => {
-    await requireRole(ctx, "lead");
-    const user = await getCurrentUser(ctx);
+    const user = await requireRole(ctx, "lead");
 
     const transaction = await ctx.db.get(transactionId);
     if (!transaction || transaction.organizationId !== user.organizationId)
@@ -148,8 +144,7 @@ export const updateTransaction = mutation({
 export const deleteExpectedTransaction = mutation({
   args: { transactionId: v.id("transactions") },
   handler: async (ctx, args) => {
-    await requireRole(ctx, "lead");
-    const user = await getCurrentUser(ctx);
+    const user = await requireRole(ctx, "lead");
 
     const transaction = await ctx.db.get(args.transactionId);
     if (
@@ -179,8 +174,7 @@ export const splitTransaction = mutation({
     ),
   },
   handler: async (ctx, args) => {
-    await requireRole(ctx, "lead");
-    const user = await getCurrentUser(ctx);
+    const user = await requireRole(ctx, "lead");
     const original = await ctx.db.get(args.transactionId);
 
     if (!original || original.organizationId !== user.organizationId)
@@ -188,7 +182,7 @@ export const splitTransaction = mutation({
 
     await ctx.db.patch(args.transactionId, { isArchived: true });
 
-    const total = args.splits.reduce((sum, s) => sum + s.amount, 0);
+    const total = args.splits.reduce((sum, split) => sum + split.amount, 0);
     const remainder = original.amount - total;
 
     const allSplits =
@@ -262,8 +256,7 @@ export const transferMoney = mutation({
     receivingProjectId: v.id("projects"),
   },
   handler: async (ctx, args) => {
-    await requireRole(ctx, "lead");
-    const user = await getCurrentUser(ctx);
+    const user = await requireRole(ctx, "lead");
 
     const sendingProject = await ctx.db.get(args.sendingProjectId);
     const receivingProject = await ctx.db.get(args.receivingProjectId);

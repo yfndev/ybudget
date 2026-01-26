@@ -77,19 +77,21 @@ export const getOldestTransactionDate = query({
   handler: async (ctx) => {
     const user = await getCurrentUser(ctx);
 
-    const transactions = await ctx.db
+    const oldest = await ctx.db
       .query("transactions")
-      .withIndex("by_organization", (q) =>
+      .withIndex("by_organization_date", (q) =>
         q.eq("organizationId", user.organizationId),
       )
-      .collect();
+      .filter((q) =>
+        q.and(
+          q.neq(q.field("projectId"), undefined),
+          q.neq(q.field("isArchived"), true),
+        ),
+      )
+      .order("asc")
+      .first();
 
-    const withProject = transactions.filter(
-      (transaction) => transaction.projectId && !transaction.isArchived,
-    );
-    if (withProject.length === 0) return Date.now();
-
-    return Math.min(...withProject.map((transaction) => transaction.date));
+    return oldest?.date ?? Date.now();
   },
 });
 
@@ -176,17 +178,21 @@ export const getPaginatedTransactions = query({
 
     const result = await dbQuery.order("desc").paginate(args.paginationOpts);
 
-    let page = result.page.filter((tx) => !tx.isArchived);
+    let page = result.page.filter((transaction) => !transaction.isArchived);
 
     if (projectIds && projectIds.length > 1) {
       const projectIdSet = new Set(projectIds);
       page = page.filter(
-        (tx) => tx.projectId && projectIdSet.has(tx.projectId),
+        (transaction) =>
+          transaction.projectId && projectIdSet.has(transaction.projectId),
       );
     }
 
     if (startDate !== undefined && endDate !== undefined) {
-      page = page.filter((tx) => tx.date >= startDate && tx.date <= endDate);
+      page = page.filter(
+        (transaction) =>
+          transaction.date >= startDate && transaction.date <= endDate,
+      );
     }
 
     const filtered = donorId

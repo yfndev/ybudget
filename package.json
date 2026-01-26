@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev:stripe": "next dev --turbopack & npx convex dev & stripe listen --forward-to https://standing-firefly-934.convex.site/stripe",
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
