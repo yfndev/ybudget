@@ -130,7 +130,7 @@ export function SelectCategory({ value, onValueChange }: Props) {
       <input
         ref={inputRef}
         className={cn(
-          "h-9 w-full rounded-md bg-muted px-3 pr-8 text-sm outline-none",
+          "h-9 w-full bg-muted px-3 pr-8 text-sm outline-none border border-transparent focus:border-ring",
           open || !selected ? "text-muted-foreground" : "text-foreground",
         )}
         placeholder="Kategorie suchen..."

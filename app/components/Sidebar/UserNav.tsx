@@ -18,7 +18,15 @@ import {
 } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Doc } from "@/convex/_generated/dataModel";
-import { ChevronsUpDown, Handshake, ScrollText, Users } from "lucide-react";
+import { useAction, useQuery } from "convex/react";
+import {
+  Building2,
+  ChevronsUpDown,
+  CreditCard,
+  Handshake,
+  ScrollText,
+  Users,
+} from "lucide-react";
 import Link from "next/link";
 import { LogoutButton } from "../Auth/LogoutButton";
 
@@ -90,40 +98,74 @@ export function NavUser({ user }: { user: Doc<"users"> | null | undefined }) {
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <UserAvatar user={user} />
                 <UserInfo user={user} />
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            {isAdmin && (
-              <>
-                <DropdownMenuGroup>
-                  <DropdownMenuItem asChild>
-                    <Link href="/settings/users">
-                      <Users />
-                      Benutzer
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/settings/teams">
-                      <Handshake />
-                      Teams
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/settings/logs">
-                      <ScrollText />
-                      Logs
-                    </Link>
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-              </>
-            )}
-            <DropdownMenuItem>
-              <LogoutButton>Abmelden</LogoutButton>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </SidebarMenuItem>
-    </SidebarMenu>
+                <ChevronsUpDown className="ml-auto size-4" />
+              </SidebarMenuButton>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+              side={isMobile ? "bottom" : "right"}
+              align="end"
+              sideOffset={4}
+            >
+              <DropdownMenuLabel className="p-0 font-normal">
+                <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                  <UserAvatar user={user} />
+                  <UserInfo user={user} />
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {isAdmin && (
+                <>
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem asChild>
+                      <Link href="/settings/organization">
+                        <Building2 />
+                        Organisation
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/settings/users">
+                        <Users />
+                        Benutzer
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/settings/teams">
+                        <Handshake />
+                        Teams
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/settings/logs">
+                        <ScrollText />
+                        Logs
+                      </Link>
+                    </DropdownMenuItem>
+                    {isCustomer ? (
+                      <DropdownMenuItem
+                        onClick={handleBillingClick}
+                        disabled={isLoadingPortal}
+                      >
+                        <CreditCard />
+                        {isLoadingPortal ? "Laden..." : "Abrechnung"}
+                      </DropdownMenuItem>
+                    ) : (
+                      <DropdownMenuItem onClick={() => setPaywallOpen(true)}>
+                        <CreditCard />
+                        YBudget Premium
+                      </DropdownMenuItem>
+                    )}
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator />
+                </>
+              )}
+              <DropdownMenuItem>
+                <LogoutButton>Abmelden</LogoutButton>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    </>
   );
 }

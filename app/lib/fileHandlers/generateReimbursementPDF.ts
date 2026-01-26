@@ -87,6 +87,18 @@ export async function generateReimbursementPDF(
     totalGross += r.grossAmount || 0;
   }
 
+  const taxByRate = (rate: number) =>
+    receipts
+      .filter((r: any) => r.taxRate === rate)
+      .reduce(
+        (sum: number, r: any) => sum + (r.grossAmount || 0) - (r.netAmount || 0),
+        0,
+      );
+
+  const tax0 = taxByRate(0);
+  const tax7 = taxByRate(7);
+  const tax19 = taxByRate(19);
+
   coverPage.drawText(`Belege: ${receipts.length}`, { x: M, y, size: 10, font });
   y -= 15;
   coverPage.drawText(`Netto: ${totalNet.toFixed(2)} €`, {
@@ -95,6 +107,33 @@ export async function generateReimbursementPDF(
     size: 10,
     font,
   });
+  if (tax0 > 0) {
+    y -= 15;
+    coverPage.drawText(`USt 0%: ${tax0.toFixed(2)} €`, {
+      x: M,
+      y,
+      size: 10,
+      font,
+    });
+  }
+  if (tax7 > 0) {
+    y -= 15;
+    coverPage.drawText(`USt 7%: ${tax7.toFixed(2)} €`, {
+      x: M,
+      y,
+      size: 10,
+      font,
+    });
+  }
+  if (tax19 > 0) {
+    y -= 15;
+    coverPage.drawText(`USt 19%: ${tax19.toFixed(2)} €`, {
+      x: M,
+      y,
+      size: 10,
+      font,
+    });
+  }
   y -= 15;
   coverPage.drawText(`Brutto: ${totalGross.toFixed(2)} €`, {
     x: M,

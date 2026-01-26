@@ -1,9 +1,10 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Check, Sparkles } from "lucide-react";
+import { Check } from "lucide-react";
 import Link from "next/link";
 import { Button } from "../ui/button";
+import { YellowHighlight } from "./YellowHighlight";
 
 interface Tier {
   name: string;
@@ -62,7 +63,7 @@ const tiers: Tier[] = [
       "Erweiterte Kategorisierung",
       "Multi-User",
     ],
-    cta: "Beste Wahl - Jetzt upgraden",
+    cta: "Beste Wahl",
     href: "/login",
     popular: true,
   },
@@ -72,7 +73,7 @@ export function PricingSection() {
   return (
     <section
       id="pricing"
-      className="bg-slate-50 px-4 py-16 sm:py-24 sm:px-6 lg:px-8"
+      className="bg-white px-4 py-16 sm:py-24 sm:px-6 lg:px-8"
     >
       <div className="mx-auto max-w-7xl">
         <motion.div
@@ -82,16 +83,15 @@ export function PricingSection() {
           transition={{ duration: 0.5 }}
           className="text-center"
         >
-          <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">
-            Transparent. Fair. Ohne versteckte Kosten.
+          <h2 className="text-2xl font-bold tracking-tight text-black sm:text-4xl lg:text-5xl">
+            <YellowHighlight>Preise</YellowHighlight>
           </h2>
-          <p className="mx-auto mt-4 max-w-3xl text-base text-slate-600 sm:mt-6 sm:text-lg">
-            Starte kostenlos mit bis zu 10 Projekten. <br /> Braucht dein Verein
-            mehr? Upgrade jederzeit auf Premium :)
+          <p className="mx-auto mt-6 max-w-3xl text-base text-gray-600 sm:text-lg">
+            Transparent. Fair. Ohne versteckte Kosten.
           </p>
         </motion.div>
 
-        <div className="mx-auto mt-10 grid max-w-6xl gap-6 sm:mt-16 sm:gap-8 lg:grid-cols-3">
+        <div className="mx-auto mt-12 grid max-w-6xl gap-8 sm:mt-16 lg:grid-cols-3">
           {tiers.map((tier, index) => (
             <motion.div
               key={tier.name}
@@ -99,61 +99,56 @@ export function PricingSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className={`relative flex flex-col rounded-xl border bg-white p-6 shadow-sm sm:rounded-2xl sm:p-8 ${
+              className={`relative flex flex-col rounded-lg border bg-white p-6 sm:p-8 ${
                 tier.popular
                   ? "border-primary ring-2 ring-primary"
-                  : "border-slate-200"
+                  : "border-gray-200"
               }`}
             >
               {tier.popular && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 sm:-top-4">
-                  <div className="flex items-center gap-1 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-white shadow-lg sm:px-4 sm:text-sm">
-                    <Sparkles className="h-3 w-3 sm:h-4 sm:w-4" />
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                  <span className="bg-primary px-3 py-1 text-sm font-semibold text-black">
                     Beliebteste Wahl
-                  </div>
+                  </span>
                 </div>
               )}
 
               <div className="text-center">
-                <h3 className="text-xl font-bold text-slate-900 sm:text-2xl">
-                  {tier.name}
-                </h3>
-                <div className="mt-3 flex items-baseline justify-center gap-1 sm:mt-4">
-                  <span className="text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
+                <h3 className="text-xl font-bold text-black">{tier.name}</h3>
+                <div className="mt-4 flex items-baseline justify-center gap-1">
+                  <span className="text-4xl font-bold tracking-tight text-black sm:text-5xl">
                     {tier.price}
                   </span>
                   {tier.period && (
-                    <span className="text-base text-slate-600 sm:text-lg">
-                      {tier.period}
-                    </span>
+                    <span className="text-base text-gray-600">{tier.period}</span>
                   )}
                 </div>
                 {tier.priceCalculation && (
-                  <p className="mt-2 text-xs text-slate-500 line-through sm:text-sm">
+                  <p className="mt-2 text-sm text-gray-500 line-through">
                     {tier.priceCalculation}
                   </p>
                 )}
-                <p className="mt-3 text-xs text-slate-600 sm:mt-4 sm:text-sm">
-                  {tier.description}
-                </p>
+                <p className="mt-4 text-sm text-gray-600">{tier.description}</p>
               </div>
 
-              <ul className="my-6 flex-1 space-y-2 sm:my-8 sm:space-y-3">
+              <ul className="my-8 flex-1 space-y-3">
                 {tier.features.map((feature) => (
-                  <li key={feature} className="flex items-start gap-2 sm:gap-3">
-                    <Check className="h-4 w-4 shrink-0 text-emerald-500 sm:h-5 sm:w-5" />
-                    <span className="text-sm text-slate-700 sm:text-base">
-                      {feature}
-                    </span>
+                  <li key={feature} className="flex items-start gap-3">
+                    <Check className="h-5 w-5 shrink-0 text-black" />
+                    <span className="text-gray-700">{feature}</span>
                   </li>
                 ))}
               </ul>
 
               <Button
                 asChild
+                className={`w-full ${
+                  tier.popular
+                    ? "bg-black text-white hover:bg-gray-800"
+                    : "border-black bg-white text-black hover:bg-gray-100"
+                }`}
                 variant={tier.popular ? "default" : "outline"}
                 size="lg"
-                className="w-full text-sm sm:text-base"
               >
                 <Link href={tier.href}>{tier.cta}</Link>
               </Button>
@@ -165,7 +160,7 @@ export function PricingSection() {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          className="mt-8 text-center text-sm text-slate-500"
+          className="mt-8 text-center text-sm text-gray-500"
         >
           Alle Preise zzgl. MwSt. Jederzeit kündbar.
         </motion.p>

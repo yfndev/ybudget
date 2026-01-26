@@ -123,7 +123,7 @@ export function TransactionSheet({ type, open, onOpenChange }: Props) {
 
           <div className="flex flex-col gap-3">
             <Label className="text-base">Wann?</Label>
-            <DateInput value={date} onChange={setDate} />
+            <DateInput value={date} onChange={setDate} className="bg-muted" />
           </div>
 
           <div className="flex flex-col gap-2">
@@ -137,6 +137,7 @@ export function TransactionSheet({ type, open, onOpenChange }: Props) {
               }
               value={counterparty}
               onChange={(e) => setCounterparty(e.target.value)}
+              className="bg-muted"
             />
           </div>
 
@@ -171,6 +172,7 @@ export function TransactionSheet({ type, open, onOpenChange }: Props) {
 
         <div className="px-6 pb-6 pt-4 space-y-2">
           <Button
+            variant="primary"
             onClick={handleSubmit}
             disabled={!isFormValid}
             className="w-full h-12 text-base"

@@ -1,80 +1,47 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { ChevronDown } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Plus, Minus } from "lucide-react";
 import { useState } from "react";
+import { YellowHighlight } from "./YellowHighlight";
 
 const faqs = [
   {
-    question: "Ist YBudget wirklich kostenlos für kleine Vereine?",
+    question: "Ist YBudget wirklich kostenlos?",
     answer:
-      "Yess :) wir möchten es so vielen Vereinen wie möglich zur Verfügung stellen und daher ist es für kleinere Vereine mit bis zu 3 Projekten komplett kostenlos. Ohne Zeitlimit und ohne versteckte Kosten.",
+      "Ja! YBudget Free ist dauerhaft kostenlos und enthält bis zu 3 Projekte, unbegrenzte Transaktionen und CSV-Import. Für größere Vereine gibt es Premium-Pläne mit erweiterten Features.",
   },
   {
-    question: "Welche Banken werden unterstützt?",
+    question: "Welche Banken werden beim CSV-Import unterstützt?",
     answer:
-      "Aktuell kann man Sparkasse, Volksbank und Moss importieren. Schreib mir einfach, falls wir eine andere Bank unterstützen sollten.",
+      "Wir unterstützen derzeit Sparkasse, Volksbank und Moss. Weitere Banken werden regelmäßig hinzugefügt. Falls deine Bank fehlt, kontaktiere uns gerne.",
   },
-  // {
-  //   question: "Kann ich meine Daten exportieren?",
-  //   answer:
-  //     "Ja! Du kannst Berichte als PDF oder CSV exportieren und an jeden teilen – dein Steuerberater, dein Vorstand oder deine Förderer.",
-  // },
   {
-    question: "Wie sicher sind meine Daten?",
+    question: "Ist YBudget DSGVO-konform?",
     answer:
-      "Deine Daten werden verschlüsselt übertragen und sicher gehostet. Wir verkaufen deine Daten nicht und haben keinen Zugriff auf deine Bankkonten.",
+      "Ja, YBudget ist vollständig DSGVO-konform. Alle Daten werden verschlüsselt übertragen und sicher gehostet. Wir verkaufen deine Daten nicht und haben keinen Zugriff auf deine Bankkonten.",
+  },
+  {
+    question: "Kann ich YBudget mit meinem Team nutzen?",
+    answer:
+      "Mit YBudget Premium kannst du unbegrenzt Teammitglieder einladen und Zugriffsrechte verwalten. Jedes Teammitglied kann nur die Projekte sehen, für die es berechtigt ist.",
   },
   {
     question: "Kann ich YBudget testen, bevor ich zahle?",
     answer:
-      "Ja! Der Professional Plan hat eine 14-tägige kostenlose Testphase – ohne Kreditkarte.",
+      "Ja! Der Premium Plan hat eine 14-tägige kostenlose Testphase – ohne Kreditkarte.",
   },
 ];
 
-function FAQItem({
-  question,
-  answer,
-  index,
-}: {
-  question: string;
-  answer: string;
-  index: number;
-}) {
-  const [isOpen, setIsOpen] = useState(false);
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: index * 0.05 }}
-      className="rounded-xl border border-slate-200 bg-white"
-    >
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex w-full items-start justify-between gap-4 p-6 text-left transition-colors hover:bg-slate-50"
-      >
-        <span className="font-semibold text-slate-900">{question}</span>
-        <ChevronDown
-          className={`h-5 w-5 shrink-0 text-slate-500 transition-transform ${
-            isOpen ? "rotate-180" : ""
-          }`}
-        />
-      </button>
-      {isOpen && (
-        <div className="border-t border-slate-100 px-6 pb-6 pt-4">
-          <p className="text-slate-600">{answer}</p>
-        </div>
-      )}
-    </motion.div>
-  );
-}
-
 export function FAQSection() {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
   return (
-    <section id="faq" className="bg-white px-4 py-24 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-4xl">
+    <section
+      id="faq"
+      className="bg-gray-50 px-4 py-16 sm:py-24 sm:px-6 lg:px-8"
+    >
+      <div className="mx-auto max-w-3xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -82,19 +49,48 @@ export function FAQSection() {
           transition={{ duration: 0.5 }}
           className="text-center"
         >
-          <h2 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
-            Häufig gestellte Fragen
+          <h2 className="text-2xl font-bold tracking-tight text-black sm:text-4xl lg:text-5xl">
+            <YellowHighlight>FAQ</YellowHighlight>
           </h2>
         </motion.div>
 
-        <div className="mt-16 space-y-4">
+        <div className="mt-12 space-y-4">
           {faqs.map((faq, index) => (
-            <FAQItem
-              key={faq.question}
-              question={faq.question}
-              answer={faq.answer}
-              index={index}
-            />
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.05 }}
+              className="rounded-lg border border-gray-200 bg-white"
+            >
+              <button
+                onClick={() => setOpenIndex(openIndex === index ? null : index)}
+                className="flex w-full items-center justify-between p-6 text-left"
+              >
+                <span className="font-semibold text-black">{faq.question}</span>
+                {openIndex === index ? (
+                  <Minus className="h-5 w-5 shrink-0 text-black" />
+                ) : (
+                  <Plus className="h-5 w-5 shrink-0 text-black" />
+                )}
+              </button>
+              <AnimatePresence>
+                {openIndex === index && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="border-t border-gray-100 px-6 pb-6 pt-4">
+                      <p className="text-gray-600">{faq.answer}</p>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
           ))}
         </div>
       </div>

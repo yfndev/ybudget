@@ -26,12 +26,17 @@ type Reimbursement = Doc<"reimbursements"> & {
   creatorName: string;
   projectName: string;
   travelDetails?: Doc<"travelDetails">;
+  reviewedByName: string | undefined;
 };
 
 type Allowance = Doc<"volunteerAllowance"> & {
   creatorName: string;
   projectName: string;
   organizationName: string;
+  organizationStreet: string;
+  organizationPlz: string;
+  organizationCity: string;
+  reviewedByName: string | undefined;
 };
 
 type RejectDialog = {
@@ -90,12 +95,13 @@ export function ReimbursementPageUI({
       <PageHeader title="Erstattungen" />
 
       <div className="flex justify-end gap-2 mb-4">
-        <Button variant="secondary" onClick={onNewClick}>
+        <Button variant="outline" onClick={onNewClick}>
           <Plus className="h-4 w-4 mr-2" />
           Neue Erstattung
         </Button>
-        <Button variant="outline" size="icon" onClick={onShareClick}>
-          <Share2 />
+        <Button variant="outline" onClick={onShareClick}>
+          <Share2 className="h-4 w-4 mr-2" />
+          Teilen
         </Button>
       </div>
 
@@ -135,15 +141,20 @@ export function ReimbursementPageUI({
                   description={
                     item.type === "travel" ? (
                       <div>
-                        <span>Reisekostenerstattung</span>
-                        {item.travelDetails?.destination && (
-                          <span className="block text-xs">
-                            {item.travelDetails.destination}
-                          </span>
-                        )}
+                        <span>{item.projectName}</span>
+                        <span className="block text-xs text-muted-foreground">
+                          Reisekostenerstattung
+                          {item.travelDetails?.destination &&
+                            ` - ${item.travelDetails.destination}`}
+                        </span>
                       </div>
                     ) : (
-                      "Auslagenerstattung"
+                      <div>
+                        <span>{item.projectName}</span>
+                        <span className="block text-xs text-muted-foreground">
+                          Auslagenerstattung
+                        </span>
+                      </div>
                     )
                   }
                   onClick={() => onRowClick(item._id)}
@@ -161,9 +172,9 @@ export function ReimbursementPageUI({
                   isAdmin={isAdmin}
                   description={
                     <div>
-                      <span>Ehrenamtspauschale</span>
-                      <span className="block text-xs">
-                        {item.volunteerName}
+                      <span>{item.projectName}</span>
+                      <span className="block text-xs text-muted-foreground">
+                        Ehrenamtspauschale
                       </span>
                     </div>
                   }

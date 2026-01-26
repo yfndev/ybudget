@@ -1,8 +1,8 @@
 import { v } from "convex/values";
 import { mutation } from "../_generated/server";
-import { getCurrentUser } from "../users/getCurrentUser";
-import { addLog } from "../logs/functions";
 import { resend } from "../invitations/functions";
+import { addLog } from "../logs/functions";
+import { getCurrentUser } from "../users/getCurrentUser";
 
 export const create = mutation({
   args: {
@@ -23,8 +23,8 @@ export const create = mutation({
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
 
-    if (args.amount > 840) {
-      throw new Error("Volunteer allowance cannot exceed 840€");
+    if (args.amount > 960) {
+      throw new Error("Volunteer allowance cannot exceed 960€");
     }
 
     const id = await ctx.db.insert("volunteerAllowance", {
@@ -121,7 +121,7 @@ export const submitExternal = mutation({
     if (!doc) throw new Error("Invalid link");
     if (doc.volunteerName && doc.signatureStorageId)
       throw new Error("Already submitted");
-    if (args.amount > 840) throw new Error("Amount cannot exceed 840€");
+    if (args.amount > 960) throw new Error("Amount cannot exceed 960€");
 
     await ctx.db.patch(args.id, {
       amount: args.amount,
@@ -156,7 +156,7 @@ export const approve = mutation({
     const doc = await ctx.db.get(args.id);
     if (!doc) throw new Error("Not found");
 
-    await ctx.db.patch(args.id, { isApproved: true });
+    await ctx.db.patch(args.id, { isApproved: true, reviewedBy: user._id });
 
     await addLog(
       ctx,
@@ -177,6 +177,7 @@ export const reject = mutation({
     await ctx.db.patch(args.id, {
       isApproved: false,
       rejectionNote: args.rejectionNote,
+      reviewedBy: user._id,
     });
 
     await addLog(

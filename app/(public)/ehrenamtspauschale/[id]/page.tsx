@@ -62,7 +62,7 @@ export default function ExternalEhrenamtspauschalePage() {
   };
 
   const updateAmount = (value: string) => {
-    if (parseFloat(value.replace(",", ".")) > 840) return;
+    if (parseFloat(value.replace(",", ".")) > 960) return;
     updateField("amount", value);
   };
 
@@ -92,7 +92,7 @@ export default function ExternalEhrenamtspauschalePage() {
     const amount = parseFloat(form.amount);
     if (!amount || amount <= 0)
       return toast.error("Bitte einen Betrag eingeben");
-    if (amount > 840) return toast.error("Maximal 840€ erlaubt");
+    if (amount > 960) return toast.error("Maximal 960€ erlaubt");
     if (!form.accountHolder)
       return toast.error("Bitte den Kontoinhaber eingeben");
     const iban = form.iban.replace(/\s/g, "").toUpperCase();
@@ -260,11 +260,11 @@ export default function ExternalEhrenamtspauschalePage() {
         <div className="space-y-4">
           <h2 className="text-lg font-medium">Betrag</h2>
           <div className="max-w-xs">
-            <Label>Betrag in Euro (max. 840€) *</Label>
+            <Label>Betrag in Euro (max. 960€) *</Label>
             <Input
               type="number"
               step="0.01"
-              max="840"
+              max="960"
               value={form.amount}
               onChange={(e) => updateAmount(e.target.value)}
               placeholder="0,00"

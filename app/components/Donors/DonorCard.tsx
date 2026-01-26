@@ -31,10 +31,9 @@ export function DonorCard({ donorId }: { donorId: Id<"donors"> }) {
     );
   }
 
+  const usedBudget = donor.paidIncome - donor.availableBudget;
   const progress =
-    donor.paidIncome > 0
-      ? (donor.availableBudget / donor.paidIncome) * 100
-      : 0;
+    donor.paidIncome > 0 ? (usedBudget / donor.paidIncome) * 100 : 0;
 
   return (
     <Link href={`/donors/${donorId}`}>
@@ -51,7 +50,11 @@ export function DonorCard({ donorId }: { donorId: Id<"donors"> }) {
           </span>
         </div>
 
-        <Progress value={progress} className="h-2" />
+        <Progress
+          value={progress}
+          className="h-2"
+          indicatorClassName="bg-secondary"
+        />
 
         <div className="grid grid-cols-3 gap-2">
           <Stat label="Zugesagt" value={donor.committedIncome} />

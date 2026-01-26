@@ -1,6 +1,6 @@
 "use client";
 
-import { ShareAllowanceModal } from "@/components/Reimbursements/ShareAllowanceModal";
+import { ShareModal } from "@/components/Reimbursements/ShareModal";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { generateReimbursementPDF } from "@/lib/fileHandlers/generateReimbursementPDF";
@@ -206,10 +206,7 @@ export default function ReimbursementPage() {
         onDeleteReimbursement={handleDeleteReimbursement}
         onDeleteAllowance={handleDeleteAllowance}
       />
-      <ShareAllowanceModal
-        open={shareModalOpen}
-        onClose={() => setShareModalOpen(false)}
-      />
+      <ShareModal open={shareModalOpen} onClose={() => setShareModalOpen(false)} />
     </>
   );
 }
