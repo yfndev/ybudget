@@ -32,10 +32,12 @@ export function SelectDonor({ value, onValueChange, projectId }: Props) {
   );
   const donors = projectId ? projectDonors : allDonors;
 
-  const selected = donors?.find((donor) => donor._id === value);
+  const selected = donors?.find((donor) => donor?._id === value);
   const filtered =
-    donors?.filter((donor) =>
-      donor.name.toLowerCase().includes(search.toLowerCase()),
+    donors?.filter(
+      (donor): donor is NonNullable<typeof donor> =>
+        donor !== null &&
+        donor.name.toLowerCase().includes(search.toLowerCase()),
     ) ?? [];
 
   useEffect(() => {

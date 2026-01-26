@@ -79,9 +79,7 @@ export const getAllReimbursements = query({
         travelIds.map((id) =>
           ctx.db
             .query("travelDetails")
-            .withIndex("by_reimbursement", (q) =>
-              q.eq("reimbursementId", reimbursementId),
-            )
+            .withIndex("by_reimbursement", (q) => q.eq("reimbursementId", id))
             .first(),
         ),
       ),
