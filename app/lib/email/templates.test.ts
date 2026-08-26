@@ -3,8 +3,8 @@ import { BREVO_TEMPLATE_IDS, USER_STATE_EMAIL_TEMPLATES } from "./templates";
 
 describe("user-state Brevo templates", () => {
   it("uses the central static Brevo template catalog", () => {
-    expect(BREVO_TEMPLATE_IDS.TEAM_WELCOME).toBe(175);
-    expect(BREVO_TEMPLATE_IDS.MEMBERSHIP_INVITATION).toBe(176);
+    expect(BREVO_TEMPLATE_IDS.TEAM_WELCOME).toBe(187);
+    expect(BREVO_TEMPLATE_IDS.MEMBERSHIP_INVITATION).toBe(188);
     expect(USER_STATE_EMAIL_TEMPLATES.membership_invitation.templateId).toBe(
       BREVO_TEMPLATE_IDS.MEMBERSHIP_INVITATION,
     );

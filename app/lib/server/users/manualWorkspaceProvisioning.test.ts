@@ -19,7 +19,7 @@ beforeEach(() => {
     primaryEmail: "alex@youngfounders.network",
     temporaryPassword: "temporary-password",
   });
-  vi.mocked(requireTeamWelcomeTemplateId).mockReturnValue(175);
+  vi.mocked(requireTeamWelcomeTemplateId).mockReturnValue(187);
   vi.mocked(sendTeamWelcomeEmail).mockResolvedValue();
 });
 
