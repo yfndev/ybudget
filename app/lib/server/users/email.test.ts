@@ -27,7 +27,7 @@ describe("user-state emails", () => {
 
     expect(sendMail).toHaveBeenCalledWith(
       expect.objectContaining({
-        templateId: 175,
+        templateId: 187,
         params: expect.objectContaining({
           memberName: "Alex Beispiel",
           workspaceEmail: "alex@youngfounders.network",
@@ -42,7 +42,7 @@ describe("user-state emails", () => {
 
     expect(sendMail).toHaveBeenCalledWith(
       expect.objectContaining({
-        templateId: 176,
+        templateId: 188,
         params: expect.objectContaining({ memberName: "Alex Beispiel" }),
       }),
     );

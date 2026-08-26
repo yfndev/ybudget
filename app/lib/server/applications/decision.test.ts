@@ -59,7 +59,7 @@ beforeEach(async () => {
     temporaryPassword: "temporary-password",
   });
   vi.mocked(sendTeamWelcomeEmail).mockResolvedValue();
-  vi.mocked(requireTeamWelcomeTemplateId).mockReturnValue(175);
+  vi.mocked(requireTeamWelcomeTemplateId).mockReturnValue(187);
   await (
     await organizations()
   ).insertOne({
