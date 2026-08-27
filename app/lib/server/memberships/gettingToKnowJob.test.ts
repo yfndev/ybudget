@@ -11,6 +11,7 @@ import { processGettingToKnowPhases } from "./gettingToKnowJob";
 setupTestDatabase();
 
 const DAY = 24 * 60 * 60 * 1_000;
+const NOW = Date.parse("2030-08-26T10:00:00Z");
 
 let organizationId: string;
 let teamId: string;
@@ -22,13 +23,13 @@ async function insertMember(endsIn: number): Promise<string> {
     await users()
   ).insertOne({
     _id,
-    _creationTime: Date.now(),
+    _creationTime: NOW,
     organizationId,
     teamId,
     name: "Alex Example",
     role: "member",
     memberStatus: "getting_to_know",
-    gettingToKnow: { startedAt: Date.now(), endsAt: Date.now() + endsIn },
+    gettingToKnow: { startedAt: NOW - 21 * DAY, endsAt: NOW + endsIn },
     teamOnboardingStatus: "completed",
   });
   return _id;
@@ -55,13 +56,13 @@ beforeEach(async () => {
   });
 });
 
-test("reminds the team lead once when the decision comes up", async () => {
-  await insertMember(3 * DAY);
+test("reminds the team lead once exactly one week before the decision", async () => {
+  await insertMember(7 * DAY);
 
-  await expect(processGettingToKnowPhases()).resolves.toMatchObject({
+  await expect(processGettingToKnowPhases(NOW)).resolves.toMatchObject({
     remindersSent: 1,
   });
-  await expect(processGettingToKnowPhases()).resolves.toMatchObject({
+  await expect(processGettingToKnowPhases(NOW)).resolves.toMatchObject({
     remindersSent: 0,
   });
   expect(vi.mocked(sendGettingToKnowDueEmail)).toHaveBeenCalledTimes(1);
@@ -94,7 +95,7 @@ test("notifies the people and culture lead of the same organization", async () =
   });
   await insertMember(3 * DAY);
 
-  await processGettingToKnowPhases();
+  await processGettingToKnowPhases(NOW);
 
   const recipientNames = vi
     .mocked(sendGettingToKnowDueEmail)
@@ -104,21 +105,61 @@ test("notifies the people and culture lead of the same organization", async () =
   expect(recipientNames).toContain("People Culture Lead");
 });
 
-test("keeps quiet while the phase is still running", async () => {
-  await insertMember(20 * DAY);
+test("keeps quiet until the phase ends within one week", async () => {
+  await insertMember(7 * DAY + 1);
 
-  await expect(processGettingToKnowPhases()).resolves.toMatchObject({
+  await expect(processGettingToKnowPhases(NOW)).resolves.toMatchObject({
     remindersSent: 0,
   });
   expect(vi.mocked(sendGettingToKnowDueEmail)).not.toHaveBeenCalled();
 });
 
+test("replaces a legacy reminder that never had a configured template", async () => {
+  const dueId = await insertMember(3 * DAY);
+  await (
+    await users()
+  ).updateOne(
+    { _id: dueId },
+    { $set: { "gettingToKnow.reminderSentAt": NOW - DAY } },
+  );
+
+  await expect(processGettingToKnowPhases(NOW)).resolves.toMatchObject({
+    remindersSent: 1,
+  });
+  expect(await (await users()).findOne({ _id: dueId })).toMatchObject({
+    gettingToKnow: {
+      reminderSentAt: NOW,
+      reminderTemplateId: 189,
+    },
+  });
+});
+
 test("never ends the phase on its own", async () => {
   const overdueId = await insertMember(-5 * DAY);
 
-  await processGettingToKnowPhases();
+  await processGettingToKnowPhases(NOW);
 
   expect(await (await users()).findOne({ _id: overdueId })).toMatchObject({
     memberStatus: "getting_to_know",
+  });
+});
+
+test("retries the reminder after a delivery failure", async () => {
+  const dueId = await insertMember(3 * DAY);
+  vi.mocked(sendGettingToKnowDueEmail).mockRejectedValueOnce(
+    new Error("Brevo unavailable"),
+  );
+
+  await expect(processGettingToKnowPhases(NOW)).resolves.toEqual({
+    remindersSent: 0,
+    failures: 1,
+  });
+  const failedMember = await (await users()).findOne({ _id: dueId });
+  expect(failedMember?.gettingToKnow?.reminderSentAt).toBeUndefined();
+  expect(failedMember?.gettingToKnow?.reminderTemplateId).toBeUndefined();
+
+  await expect(processGettingToKnowPhases(NOW)).resolves.toEqual({
+    remindersSent: 1,
+    failures: 0,
   });
 });

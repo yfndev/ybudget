@@ -39,11 +39,23 @@ export async function sendGettingToKnowDueEmail(input: {
   const recipient = userRecipient(input.recipient);
   if (!recipient) return;
 
-  await sendConfiguredUserEmail("getting_to_know_due", recipient, {
-    memberName: input.member.name ?? "",
-    memberEmail: input.member.email ?? "",
-    endsOn: BERLIN_DATE_FORMAT.format(input.endsAt),
+  const template = USER_STATE_EMAIL_TEMPLATES.getting_to_know_due;
+  const delivery = await sendMail({
+    to: [recipient],
+    templateId: template.templateId,
+    params: {
+      memberName: input.member.name ?? "",
+      memberEmail: input.member.email ?? "",
+      endsOn: BERLIN_DATE_FORMAT.format(input.endsAt),
+      ybaseUrl: safeAppUrl("/members"),
+    },
+    tags: ["ybase", "user-state", template.tag],
   });
+  if (delivery.status !== "sent") {
+    throw new Error(
+      "Kennenlernphasen-Erinnerung konnte nicht versendet werden",
+    );
+  }
 }
 
 export async function sendTeamWelcomeEmail(input: {

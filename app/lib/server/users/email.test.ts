@@ -1,9 +1,16 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("../../email/brevo", () => ({ sendMail: vi.fn() }));
+vi.mock("../../email/urls", () => ({
+  appUrl: vi.fn((path: string) => `https://ybase.example${path}`),
+}));
 
 import { sendMail } from "../../email/brevo";
-import { sendTeamWelcomeEmail, sendUserStateEmail } from "./email";
+import {
+  sendGettingToKnowDueEmail,
+  sendTeamWelcomeEmail,
+  sendUserStateEmail,
+} from "./email";
 
 const user = {
   name: "Alex Beispiel",
@@ -46,5 +53,45 @@ describe("user-state emails", () => {
         params: expect.objectContaining({ memberName: "Alex Beispiel" }),
       }),
     );
+  });
+
+  it("sends the getting-to-know reminder through its Brevo template", async () => {
+    await sendGettingToKnowDueEmail({
+      recipient: {
+        name: "Pat People",
+        email: "pat@youngfounders.network",
+      },
+      member: user,
+      endsAt: Date.parse("2030-09-02T10:00:00Z"),
+    });
+
+    expect(sendMail).toHaveBeenCalledWith(
+      expect.objectContaining({
+        to: [{ email: "pat@youngfounders.network", name: "Pat People" }],
+        templateId: 189,
+        params: {
+          memberName: "Alex Beispiel",
+          memberEmail: "alex@youngfounders.network",
+          endsOn: "02.09.2030",
+          ybaseUrl: "https://ybase.example/members",
+        },
+        tags: ["ybase", "user-state", "getting-to-know-due"],
+      }),
+    );
+  });
+
+  it("reports a skipped getting-to-know reminder", async () => {
+    vi.mocked(sendMail).mockResolvedValue({
+      status: "skipped",
+      reason: "disabled",
+    });
+
+    await expect(
+      sendGettingToKnowDueEmail({
+        recipient: { email: "pat@youngfounders.network" },
+        member: user,
+        endsAt: Date.parse("2030-09-02T10:00:00Z"),
+      }),
+    ).rejects.toThrow("konnte nicht versendet werden");
   });
 });

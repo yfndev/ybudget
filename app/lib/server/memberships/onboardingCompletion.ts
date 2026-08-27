@@ -2,7 +2,6 @@ import { applications, memberships, users } from "../../db/collections";
 import type { User } from "../../db/types";
 import { oneMonthAfter } from "../../members/legalDates";
 import { addLog } from "../logs";
-import { sendUserStateEmail } from "../users/email";
 import {
   membershipDocumentsComplete,
   onboardingDocumentsComplete,
@@ -37,7 +36,6 @@ export async function startGettingToKnowIfComplete(
       user._id,
     );
   }
-  await sendUserStateEmail({ user, event: "getting_to_know_started" });
   return true;
 }
 
