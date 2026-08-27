@@ -31,6 +31,7 @@ export interface GettingToKnowPhase {
   startedAt: number;
   endsAt: number;
   reminderSentAt?: number;
+  reminderTemplateId?: number;
   decidedAt?: number;
   decidedBy?: string;
   outcome?: GettingToKnowOutcome;

@@ -65,7 +65,7 @@ erDiagram
         string applicationId "only for application-based admissions"
         string membershipId
         string memberStatus
-        object gettingToKnow "startedAt, endsAt, reminderSentAt, decidedAt, decidedBy, outcome"
+        object gettingToKnow "startedAt, endsAt, reminderSentAt, reminderTemplateId, decidedAt, decidedBy, outcome"
         string teamOnboardingStatus
         number offboardingPlannedAt
         number offboardingStartedAt

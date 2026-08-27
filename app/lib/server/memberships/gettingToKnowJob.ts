@@ -1,9 +1,11 @@
 import { users } from "../../db/collections";
 import type { User } from "../../db/types";
+import { BREVO_TEMPLATE_IDS } from "../../email/templates";
 import { UNAVAILABLE_MEMBER_STATUSES } from "../../members/status";
 import { sendGettingToKnowDueEmail } from "../users/email";
 
 const REMINDER_LEAD_TIME = 7 * 24 * 60 * 60 * 1_000;
+const REMINDER_TEMPLATE_ID = BREVO_TEMPLATE_IDS.GETTING_TO_KNOW_DUE;
 
 export interface GettingToKnowJobResult {
   remindersSent: number;
@@ -19,7 +21,7 @@ export async function processGettingToKnowPhases(
     .find({
       memberStatus: "getting_to_know",
       "gettingToKnow.endsAt": { $lte: now + REMINDER_LEAD_TIME },
-      "gettingToKnow.reminderSentAt": { $exists: false },
+      "gettingToKnow.reminderTemplateId": { $ne: REMINDER_TEMPLATE_ID },
     })
     .toArray();
 
@@ -29,14 +31,31 @@ export async function processGettingToKnowPhases(
         {
           _id: member._id,
           memberStatus: "getting_to_know",
-          "gettingToKnow.reminderSentAt": { $exists: false },
+          "gettingToKnow.reminderTemplateId": { $ne: REMINDER_TEMPLATE_ID },
         },
-        { $set: { "gettingToKnow.reminderSentAt": now } },
+        {
+          $set: {
+            "gettingToKnow.reminderSentAt": now,
+            "gettingToKnow.reminderTemplateId": REMINDER_TEMPLATE_ID,
+          },
+        },
       );
       if (reserved.modifiedCount !== 1) continue;
       await notifyDecisionMakers(member);
       result.remindersSent += 1;
     } catch {
+      await collection.updateOne(
+        {
+          _id: member._id,
+          "gettingToKnow.reminderTemplateId": REMINDER_TEMPLATE_ID,
+        },
+        {
+          $unset: {
+            "gettingToKnow.reminderSentAt": "",
+            "gettingToKnow.reminderTemplateId": "",
+          },
+        },
+      );
       result.failures += 1;
     }
   }

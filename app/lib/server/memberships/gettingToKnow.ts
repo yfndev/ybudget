@@ -82,7 +82,6 @@ export async function endGettingToKnow(input: {
     target._id,
     `${target.name ?? target.email}: Kennenlernphase beendet`,
   );
-  await sendUserStateEmail({ user: target, event: "getting_to_know_ended" });
   await suspendGettingToKnowAccess(target);
 }
 
