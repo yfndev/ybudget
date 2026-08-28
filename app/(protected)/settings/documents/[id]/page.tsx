@@ -12,7 +12,7 @@ export default async function MembershipDocumentPage({
   params: Promise<{ id: string }>;
 }) {
   const session = await auth();
-  if (!hasPermission(session?.user?.role, USER_PERMISSIONS.members)) {
+  if (!hasPermission(session?.user, USER_PERMISSIONS.members)) {
     return <AccessDenied title="Unterlagen" />;
   }
 

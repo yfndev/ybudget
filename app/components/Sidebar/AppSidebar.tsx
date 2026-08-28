@@ -12,12 +12,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  hasPermission,
-  USER_PERMISSIONS,
-  type UserPermission,
-} from "@/lib/auth/roles";
-import { useCurrentUserRole } from "@/lib/hooks/useCurrentUserRole";
+import { useSession } from "next-auth/react";
 import {
   Sidebar,
   SidebarContent,
@@ -27,6 +22,11 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import {
+  hasPermission,
+  USER_PERMISSIONS,
+  type UserPermission,
+} from "@/lib/auth/roles";
 import { MainNav, type NavItem } from "./MainNav";
 import { NavUser } from "./UserNav";
 
@@ -72,14 +72,15 @@ export function AppSidebar({
   locked?: boolean;
   navSlot?: React.ReactNode;
 }) {
-  const role = useCurrentUserRole();
+  const { data } = useSession();
+  const user = data?.user;
   const homeUrl = "/dashboard";
   const mainItems: NavItem[] = [
     ...MEMBER_NAV_ITEMS,
-    ...(hasPermission(role, USER_PERMISSIONS.recruiting)
+    ...(hasPermission(user, USER_PERMISSIONS.recruiting)
       ? [{ name: "Ausschreibungen", url: "/recruiting", icon: Megaphone }]
       : []),
-    ...(hasPermission(role, USER_PERMISSIONS.members)
+    ...(hasPermission(user, USER_PERMISSIONS.members)
       ? [
           {
             name: "Mitglieder",
@@ -91,7 +92,7 @@ export function AppSidebar({
       : []),
   ];
   const administrationItems = ADMINISTRATION_NAV_ITEMS.filter(
-    ({ permission }) => hasPermission(role, permission),
+    ({ permission }) => hasPermission(user, permission),
   );
 
   return (

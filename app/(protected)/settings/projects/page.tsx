@@ -5,7 +5,7 @@ import { ProjectsClient } from "./ProjectsClient";
 
 export default async function ProjectsPage() {
   const session = await auth();
-  if (!hasPermission(session?.user?.role, USER_PERMISSIONS.projects)) {
+  if (!hasPermission(session?.user, USER_PERMISSIONS.projects)) {
     return <AccessDenied title="Projekte" />;
   }
 

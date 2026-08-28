@@ -3,11 +3,15 @@ import { beforeEach, expect, test, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   auth: vi.fn(),
   findOne: vi.fn(),
+  resolveOrganizationalAccess: vi.fn(),
 }));
 
 vi.mock("./index", () => ({ auth: mocks.auth }));
 vi.mock("../db/collections", () => ({
   users: vi.fn(async () => ({ findOne: mocks.findOne })),
+}));
+vi.mock("./organizationalAccess", () => ({
+  resolveOrganizationalAccess: mocks.resolveOrganizationalAccess,
 }));
 
 import {
@@ -20,19 +24,27 @@ import {
 beforeEach(() => {
   mocks.auth.mockResolvedValue({ user: { id: "user-id" } });
   mocks.findOne.mockReset();
+  mocks.resolveOrganizationalAccess.mockReset();
+  mocks.resolveOrganizationalAccess.mockResolvedValue({
+    functionalAreas: [],
+    ledTeamIds: [],
+  });
 });
 
-test("People & Culture only passes its own elevated role guard", async () => {
+test("People & Culture access comes from the organigram", async () => {
   mocks.findOne.mockResolvedValue({
     _id: "user-id",
     organizationId: "organization-id",
-    role: "people_culture",
+    role: "member",
+  });
+  mocks.resolveOrganizationalAccess.mockResolvedValue({
+    functionalAreas: ["people_culture"],
+    ledTeamIds: ["people-team"],
   });
 
-  await expect(requireRole("people_culture")).resolves.toMatchObject({
-    role: "people_culture",
-  });
-  await expect(requireRole("finance")).rejects.toThrow(
+  await expect(requirePermission("manage_members")).resolves.toBeDefined();
+  await expect(requirePermission("manage_recruiting")).resolves.toBeDefined();
+  await expect(requirePermission("manage_finance")).rejects.toThrow(
     "Insufficient permissions",
   );
   await expect(requireRole("admin")).rejects.toThrow(

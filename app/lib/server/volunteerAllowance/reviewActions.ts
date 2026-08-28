@@ -1,7 +1,8 @@
 "use server";
 
 import { z } from "zod";
-import { requireRole } from "../../auth/session";
+import { USER_PERMISSIONS } from "../../auth/roles";
+import { requirePermission } from "../../auth/session";
 import { volunteerAllowance } from "../../db/collections";
 import { MAX_VOLUNTEER_ALLOWANCE_EUR } from "../../volunteerAllowance/constants";
 import { addLog } from "../logs";
@@ -21,7 +22,7 @@ async function loadPending(id: string, organizationId: string) {
 }
 
 export async function approve(input: { id: string }): Promise<void> {
-  const user = await requireRole("finance");
+  const user = await requirePermission(USER_PERMISSIONS.finance);
   const { id } = z.object({ id: z.string() }).parse(input);
   const doc = await loadPending(id, user.organizationId);
 
@@ -55,7 +56,7 @@ export async function approve(input: { id: string }): Promise<void> {
 }
 
 export async function markAsPaid(input: { id: string }): Promise<void> {
-  const user = await requireRole("finance");
+  const user = await requirePermission(USER_PERMISSIONS.finance);
   const { id } = z.object({ id: z.string() }).parse(input);
   const allowance = await (
     await volunteerAllowance()
@@ -99,7 +100,7 @@ export async function decline(input: {
   id: string;
   rejectionNote: string;
 }): Promise<void> {
-  const user = await requireRole("finance");
+  const user = await requirePermission(USER_PERMISSIONS.finance);
   const { id, rejectionNote } = z
     .object({ id: z.string(), rejectionNote: z.string().trim().min(1) })
     .parse(input);
@@ -133,7 +134,7 @@ export async function requestChanges(input: {
   id: string;
   reviewNote: string;
 }): Promise<void> {
-  const user = await requireRole("finance");
+  const user = await requirePermission(USER_PERMISSIONS.finance);
   const { id, reviewNote } = z
     .object({ id: z.string(), reviewNote: z.string().trim().min(1) })
     .parse(input);

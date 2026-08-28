@@ -2,7 +2,7 @@ import { beforeEach, expect, test, vi } from "vitest";
 
 vi.mock("../../auth/session", () => ({
   requireUser: vi.fn(),
-  requireRole: vi.fn(),
+  requirePermission: vi.fn(),
 }));
 
 vi.mock("../../s3/storage", () => ({
@@ -18,7 +18,8 @@ vi.mock("./email", () => ({
   sendSubmissionRequestedEmail: vi.fn(async () => {}),
 }));
 
-import { requireRole, requireUser } from "../../auth/session";
+import { USER_PERMISSIONS } from "../../auth/roles";
+import { requirePermission, requireUser } from "../../auth/session";
 import {
   signatureTokens,
   uploadOwnerships,
@@ -100,7 +101,11 @@ beforeEach(async () => {
   const actor = createTestActor({
     _id: userA,
     organizationId: orgA,
-    role: "finance",
+    role: "member",
+    access: {
+      functionalAreas: ["finance_legal"],
+      ledTeamIds: ["finance-team"],
+    },
     email: "actor@a.org",
   });
   await (
@@ -110,7 +115,7 @@ beforeEach(async () => {
     name: "Actor",
   });
   vi.mocked(requireUser).mockResolvedValue(actor);
-  vi.mocked(requireRole).mockResolvedValue(actor);
+  vi.mocked(requirePermission).mockResolvedValue(actor);
   await registerPendingUpload("sig-key", {
     organizationId: orgA,
     userId: userA,
@@ -243,7 +248,9 @@ test("create transfers a completed mobile signature to the allowance", async () 
   expect(
     await (
       await uploadOwnerships()
-    ).findOne({ _id: "mobile-allowance-signature" }),
+    ).findOne({
+      _id: "mobile-allowance-signature",
+    }),
   ).toMatchObject({
     claimedByType: "allowance",
     claimedById: id,
@@ -356,7 +363,7 @@ test("approve sets status approved", async () => {
 
   const id = await create(newAllowanceInput(projectA));
   await approve({ id });
-  expect(requireRole).toHaveBeenCalledWith("finance");
+  expect(requirePermission).toHaveBeenCalledWith(USER_PERMISSIONS.finance);
 
   const doc = await (await volunteerAllowance()).findOne({ _id: id });
   expect(doc?.status).toBe("approved");
@@ -451,7 +458,7 @@ test("remove deletes the signature from S3 and the document", async () => {
   expect(await (await volunteerAllowance()).findOne({ _id: id })).toBeNull();
 });
 
-test("finance can delete another member's allowance", async () => {
+test("a Finance & Legal lead can delete another member's allowance", async () => {
   const allowanceId = newId();
   await (
     await volunteerAllowance()

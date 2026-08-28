@@ -20,13 +20,13 @@ export function useIsAdmin(): boolean {
 }
 
 export function useCanManageReimbursements(): boolean {
-  const role = useCurrentUserRole();
-  return hasPermission(role, USER_PERMISSIONS.finance);
+  const { data } = useSession();
+  return hasPermission(data?.user, USER_PERMISSIONS.finance);
 }
 
 export function useCanPublishJobPostings(): boolean {
-  const role = useCurrentUserRole();
-  return hasPermission(role, USER_PERMISSIONS.publishJobPostings);
+  const { data } = useSession();
+  return hasPermission(data?.user, USER_PERMISSIONS.publishJobPostings);
 }
 
 export function useRecruitingTeamIds(): string[] | null {

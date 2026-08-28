@@ -95,7 +95,7 @@ test("tells recruiting who to contact without setting an email reply-to", async 
     organizationId,
     name: "Recruiting",
     email: "recruiting@example.com",
-    role: "people_culture",
+    role: "member",
     memberStatus: "active",
     teamOnboardingStatus: "completed",
   });

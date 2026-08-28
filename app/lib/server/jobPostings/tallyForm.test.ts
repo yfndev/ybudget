@@ -145,7 +145,11 @@ beforeEach(async () => {
     createTestActor({
       _id: userA,
       organizationId: orgA,
-      role: "people_culture",
+      role: "member",
+      access: {
+        functionalAreas: ["people_culture"],
+        ledTeamIds: ["people-team"],
+      },
     }),
   );
   vi.mocked(loadTallyFormConfig).mockReturnValue({

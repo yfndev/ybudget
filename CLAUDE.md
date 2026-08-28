@@ -65,10 +65,13 @@ pnpm exec playwright test e2e/reimbursements.spec.ts
 - `purpose-operations` (Zweckbetrieb)
 - `commercial-operations` (Wirtschaftlicher Geschäftsbetrieb)
 
-**User Roles:** `admin`, `finance`, `people_culture`, `team_lead`, `member`
+**Authorization:** `admin` is the only manually assigned elevated role and has
+full access. All other permissions come from organigram lead assignments.
 
-`team_lead` manages job postings and applications of their own teams (`teamId`,
-`secondaryTeamId`) but cannot publish or reopen them.
+Team leads manage job postings and applications of the teams they actually lead
+(`isTeamLead` / `isSecondaryTeamLead`). Leads in People & Culture additionally
+manage publishing, members, and organization structure. Leads in Finance &
+Legal manage finance workflows.
 
 ## Testing
 

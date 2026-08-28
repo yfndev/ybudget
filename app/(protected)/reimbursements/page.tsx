@@ -13,7 +13,7 @@ export default async function ReimbursementPage() {
   const projectsPromise = getAllProjects();
   const organizationPromise = getOrganization();
   const user = await requireUser();
-  const pendingLinksPromise = hasPermission(user.role, USER_PERMISSIONS.finance)
+  const pendingLinksPromise = hasPermission(user, USER_PERMISSIONS.finance)
     ? loadPendingSharedLinks(user.organizationId)
     : Promise.resolve({ reimbursementLinks: [], allowanceLinks: [] });
 

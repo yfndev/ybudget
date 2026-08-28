@@ -1,9 +1,9 @@
-export type UserRole =
-  | "admin"
+export type UserRole = "admin" | "member";
+export type StoredUserRole =
+  | UserRole
   | "finance"
   | "people_culture"
-  | "team_lead"
-  | "member";
+  | "team_lead";
 export type MemberStatus =
   | "onboarding"
   | "getting_to_know"
@@ -62,7 +62,7 @@ export interface User {
   googleWorkspaceUserId?: string;
   workspaceAccountDeletedAt?: number;
   organizationId?: string;
-  role?: UserRole;
+  role?: StoredUserRole;
   iban?: string;
   bic?: string;
   accountHolder?: string;

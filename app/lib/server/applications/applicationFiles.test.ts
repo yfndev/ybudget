@@ -25,7 +25,11 @@ function actor(actorOrganizationId = organizationId) {
     _id: newId(),
     _creationTime: Date.now(),
     organizationId: actorOrganizationId,
-    role: "people_culture" as const,
+    role: "member" as const,
+    access: {
+      functionalAreas: ["people_culture" as const],
+      ledTeamIds: ["people-team"],
+    },
     memberStatus: "active" as const,
     teamOnboardingStatus: "completed" as const,
   };

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useMemberMutations } from "@/lib/client/members/hooks/useMemberMutations";
-import type { BoardMembership, MemberStatus, UserRole } from "@/lib/db/types";
+import type { BoardMembership, MemberStatus } from "@/lib/db/types";
 import { normalizeMemberStatus } from "@/lib/members/status";
 import type { MemberDrawerProps } from "./MemberDrawer.types";
 import { memberOrganizationState } from "./memberOrganizationState";
@@ -33,7 +33,7 @@ export function useMemberDrawerForm(
   const [status, setStatus] = useState<MemberStatus>(
     normalizeMemberStatus(member.memberStatus),
   );
-  const [role, setRole] = useState<UserRole>(member.role ?? "member");
+  const [isAdmin, setIsAdmin] = useState(member.role === "admin");
   const [isTeamLead, setIsTeamLead] = useState(member.isTeamLead ?? false);
   const [isSecondaryTeamLead, setIsSecondaryTeamLead] = useState(
     member.isSecondaryTeamLead ?? false,
@@ -115,14 +115,17 @@ export function useMemberDrawerForm(
       if (status !== member.memberStatus)
         await setStatusMutation.mutateAsync({ userId: member._id, status });
 
-      if (canEditRoles && role !== (member.role ?? "member")) {
-        const demotesLastAdmin =
-          member.role === "admin" && role !== "admin" && adminCount <= 1;
+      const memberIsAdmin = member.role === "admin";
+      if (canEditRoles && isAdmin !== memberIsAdmin) {
+        const demotesLastAdmin = memberIsAdmin && !isAdmin && adminCount <= 1;
         if (demotesLastAdmin) {
           toast.error(LAST_ADMIN_MESSAGE);
           return;
         }
-        await updateRole.mutateAsync({ userId: member._id, role });
+        await updateRole.mutateAsync({
+          userId: member._id,
+          role: isAdmin ? "admin" : "member",
+        });
       }
 
       toast.success("Teammitglied aktualisiert");
@@ -143,8 +146,8 @@ export function useMemberDrawerForm(
     setSecondaryTeamId,
     status,
     setStatus,
-    role,
-    setRole,
+    isAdmin,
+    setIsAdmin,
     isTeamLead,
     setIsTeamLead,
     isSecondaryTeamLead,

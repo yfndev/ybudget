@@ -2,6 +2,7 @@ import { beforeEach, expect, test, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   requireAuthenticatedUser: vi.fn(),
+  resolveOrganizationalAccess: vi.fn(),
   hasPermission: vi.fn(),
   isUnavailableMemberStatus: vi.fn(),
   findExecution: vi.fn(),
@@ -11,6 +12,9 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock("@/lib/auth/session", () => ({
   requireAuthenticatedUser: mocks.requireAuthenticatedUser,
+}));
+vi.mock("@/lib/auth/organizationalAccess", () => ({
+  resolveOrganizationalAccess: mocks.resolveOrganizationalAccess,
 }));
 vi.mock("@/lib/auth/roles", () => ({ hasPermission: mocks.hasPermission }));
 vi.mock("@/lib/db/collections", () => ({
@@ -31,6 +35,10 @@ const executionId = "execution-1";
 beforeEach(() => {
   vi.clearAllMocks();
   mocks.hasPermission.mockReturnValue(false);
+  mocks.resolveOrganizationalAccess.mockResolvedValue({
+    functionalAreas: [],
+    ledTeamIds: [],
+  });
   mocks.isUnavailableMemberStatus.mockReturnValue(false);
   mocks.findExecution.mockResolvedValue({
     _id: executionId,

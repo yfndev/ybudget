@@ -85,9 +85,13 @@ function becomeTeamLead(teamId: string, secondaryTeamId?: string) {
   const actor = createTestActor({
     _id: userA,
     organizationId: orgA,
-    role: "team_lead",
-    teamId,
-    secondaryTeamId,
+    role: "member",
+    access: {
+      functionalAreas: [],
+      ledTeamIds: [teamId, secondaryTeamId].filter((id): id is string =>
+        Boolean(id),
+      ),
+    },
   });
   vi.mocked(requireUser).mockResolvedValue(actor);
   vi.mocked(requirePermission).mockResolvedValue(actor);
@@ -103,7 +107,11 @@ beforeEach(async () => {
   const actor = createTestActor({
     _id: userA,
     organizationId: orgA,
-    role: "people_culture",
+    role: "member",
+    access: {
+      functionalAreas: ["people_culture"],
+      ledTeamIds: ["people-team"],
+    },
   });
   vi.mocked(requireUser).mockResolvedValue(actor);
   vi.mocked(requirePermission).mockResolvedValue(actor);

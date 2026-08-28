@@ -716,7 +716,12 @@ test("listMembers hides bank and private contact data from team leads", async ()
   );
 
   vi.mocked(requireUser).mockResolvedValue(
-    createTestActor({ _id: adminA, organizationId: orgA, role: "team_lead" }),
+    createTestActor({
+      _id: adminA,
+      organizationId: orgA,
+      role: "member",
+      access: { functionalAreas: [], ledTeamIds: ["team-a"] },
+    }),
   );
   const forTeamLead = await listMembers();
   const seenByTeamLead = forTeamLead.find(({ _id }) => _id === memberA);

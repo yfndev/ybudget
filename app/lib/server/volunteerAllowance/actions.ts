@@ -94,10 +94,7 @@ export async function remove(input: { id: string }): Promise<void> {
   if (!doc || doc.organizationId !== user.organizationId) {
     throw new Error("Not found");
   }
-  const canManageReimbursements = hasPermission(
-    user.role,
-    USER_PERMISSIONS.finance,
-  );
+  const canManageReimbursements = hasPermission(user, USER_PERMISSIONS.finance);
   if (doc.createdBy !== user._id && !canManageReimbursements) {
     throw new Error("Only the creator or finance can delete");
   }

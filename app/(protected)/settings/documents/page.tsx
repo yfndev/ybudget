@@ -7,7 +7,7 @@ import { DocumentsTable } from "./DocumentsTable";
 
 export default async function MembershipDocumentsPage() {
   const session = await auth();
-  if (!hasPermission(session?.user?.role, USER_PERMISSIONS.members)) {
+  if (!hasPermission(session?.user, USER_PERMISSIONS.members)) {
     return <AccessDenied title="Unterlagen" />;
   }
 

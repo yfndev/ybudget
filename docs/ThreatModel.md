@@ -18,7 +18,7 @@ YBase Next.js container
 ```
 
 Browser input and all external service responses are untrusted. Authentication,
-role checks, organization scoping and input validation are enforced inside the
+authorization checks, organization scoping and input validation are enforced inside the
 Next.js server before data reaches MongoDB or object storage.
 
 ## Principal risks and controls
@@ -26,7 +26,7 @@ Next.js server before data reaches MongoDB or object storage.
 | Risk                                   | Primary controls                                                  |
 | -------------------------------------- | ----------------------------------------------------------------- |
 | Account impersonation                  | Google OAuth, signed sessions, HTTP-only cookies                  |
-| Cross-organization access              | Server-side `organizationId` scoping and role checks              |
+| Cross-organization access              | Server-side `organizationId` scoping and authorization checks     |
 | Manipulated form or API input          | Zod validation and server-side authorization                      |
 | Unauthorized file access               | Generated object keys and short-lived signed URLs                 |
 | Accidental email delivery from staging | `SERVICE_STAGE` plus recipient allowlist                          |

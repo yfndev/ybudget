@@ -11,11 +11,11 @@ export default async function MembersPage({
 }) {
   const session = await auth();
   const canManageRecruiting = hasPermission(
-    session?.user?.role,
+    session?.user,
     USER_PERMISSIONS.recruiting,
   );
   const canManageMembers = hasPermission(
-    session?.user?.role,
+    session?.user,
     USER_PERMISSIONS.members,
   );
 

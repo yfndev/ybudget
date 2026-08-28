@@ -1,7 +1,8 @@
 "use server";
 
 import { z } from "zod";
-import { requireRole } from "../../auth/session";
+import { USER_PERMISSIONS } from "../../auth/roles";
+import { requirePermission } from "../../auth/session";
 import {
   reimbursements,
   travelDetails,
@@ -21,7 +22,7 @@ import {
 export async function createReimbursementLink(
   input: z.input<typeof createLinkSchema>,
 ): Promise<string> {
-  const user = await requireRole("finance");
+  const user = await requirePermission(USER_PERMISSIONS.finance);
   const args = createLinkSchema.parse(input);
   await requireActiveOrganizationProject(args.projectId, user.organizationId);
 
@@ -37,7 +38,7 @@ export async function createReimbursementLink(
 export async function deleteSharedReimbursementLink(input: {
   id: string;
 }): Promise<void> {
-  const user = await requireRole("finance");
+  const user = await requirePermission(USER_PERMISSIONS.finance);
   const { id } = z.object({ id: z.string() }).parse(input);
 
   const doc = await (await reimbursements()).findOne({ _id: id });
@@ -59,7 +60,7 @@ export async function deleteSharedReimbursementLink(input: {
 export async function deleteSharedAllowanceLink(input: {
   id: string;
 }): Promise<void> {
-  const user = await requireRole("finance");
+  const user = await requirePermission(USER_PERMISSIONS.finance);
   const { id } = z.object({ id: z.string() }).parse(input);
 
   const doc = await (await volunteerAllowance()).findOne({ _id: id });
@@ -77,6 +78,6 @@ export async function getPendingSharedLinks(): Promise<{
   reimbursementLinks: PendingReimbursementLink[];
   allowanceLinks: PendingAllowanceLink[];
 }> {
-  const user = await requireRole("finance");
+  const user = await requirePermission(USER_PERMISSIONS.finance);
   return loadPendingSharedLinks(user.organizationId);
 }

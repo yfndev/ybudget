@@ -5,7 +5,7 @@ import { RecruitingClient } from "./RecruitingClient";
 
 export default async function RecruitingPage() {
   const session = await auth();
-  if (!hasPermission(session?.user?.role, USER_PERMISSIONS.recruiting)) {
+  if (!hasPermission(session?.user, USER_PERMISSIONS.recruiting)) {
     return <AccessDenied title="Ausschreibungen" />;
   }
 

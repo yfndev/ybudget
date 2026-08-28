@@ -2,7 +2,7 @@ import { beforeEach, expect, test, vi } from "vitest";
 
 vi.mock("../../auth/session", () => ({
   requireUser: vi.fn(),
-  requireRole: vi.fn(),
+  requirePermission: vi.fn(),
 }));
 
 vi.mock("../../s3/storage", () => ({
@@ -24,7 +24,8 @@ vi.mock("./email", () => ({
   sendSubmissionRequestedEmail: vi.fn(async () => {}),
 }));
 
-import { requireRole, requireUser } from "../../auth/session";
+import { USER_PERMISSIONS } from "../../auth/roles";
+import { requirePermission, requireUser } from "../../auth/session";
 import {
   receipts,
   reimbursements,
@@ -110,17 +111,21 @@ beforeEach(async () => {
     name: "Max",
     email: "max@a.org",
     organizationId: orgA,
-    role: "finance",
+    role: "member",
     memberStatus: "active",
     teamOnboardingStatus: "completed",
   });
   const actor = createTestActor({
     _id: userA,
     organizationId: orgA,
-    role: "finance",
+    role: "member",
+    access: {
+      functionalAreas: ["finance_legal"],
+      ledTeamIds: ["finance-team"],
+    },
   });
   vi.mocked(requireUser).mockResolvedValue(actor);
-  vi.mocked(requireRole).mockResolvedValue(actor);
+  vi.mocked(requirePermission).mockResolvedValue(actor);
   await registerPendingUpload("sig-key", {
     organizationId: orgA,
     userId: userA,
@@ -707,7 +712,7 @@ test("members cannot open another member's reimbursement", async () => {
 test("approve sets the status", async () => {
   const id = await createReimbursement(reimbursementInput());
   await approve({ reimbursementId: id });
-  expect(requireRole).toHaveBeenCalledWith("finance");
+  expect(requirePermission).toHaveBeenCalledWith(USER_PERMISSIONS.finance);
 
   const stored = await (await reimbursements()).findOne({ _id: id });
   expect(stored?.status).toBe("approved");
@@ -831,7 +836,7 @@ test("deleteReimbursement removes a mileage reimbursement without a receipt file
   expect(deleteObject).toHaveBeenCalledWith("sig-key");
 });
 
-test("finance can delete another member's reimbursement", async () => {
+test("a Finance & Legal lead can delete another member's reimbursement", async () => {
   const reimbursementId = newId();
   await (
     await reimbursements()

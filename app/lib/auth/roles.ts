@@ -11,28 +11,17 @@ export type UserPermission =
   | "manage_projects"
   | "view_audit_logs";
 
-const rolePermissions: Record<
-  Exclude<UserRole, "admin">,
-  readonly UserPermission[]
-> = {
-  member: [],
-  finance: ["manage_finance"],
-  team_lead: ["manage_recruiting"],
-  people_culture: [
-    "manage_recruiting",
-    "publish_job_postings",
-    "manage_members",
-    "manage_organization_structure",
-  ],
-};
+export type FunctionalArea = "finance_legal" | "people_culture";
 
-const validRoles = new Set<UserRole>([
-  "admin",
-  "finance",
-  "people_culture",
-  "team_lead",
-  "member",
-]);
+export interface OrganizationalAccess {
+  functionalAreas: FunctionalArea[];
+  ledTeamIds: string[];
+}
+
+export interface PermissionActor {
+  role?: unknown;
+  access?: OrganizationalAccess;
+}
 
 export const USER_PERMISSIONS = {
   finance: "manage_finance",
@@ -47,7 +36,7 @@ export const USER_PERMISSIONS = {
 } as const satisfies Record<string, UserPermission>;
 
 export function normalizeUserRole(role: unknown): UserRole {
-  return validRoles.has(role as UserRole) ? (role as UserRole) : "member";
+  return role === "admin" ? "admin" : "member";
 }
 
 export function normalizeOptionalUserRole(role: unknown): UserRole | undefined {
@@ -57,34 +46,35 @@ export function normalizeOptionalUserRole(role: unknown): UserRole | undefined {
 
 export function hasRoleAccess(role: unknown, requiredRole: UserRole): boolean {
   if (requiredRole === "member") return true;
-  if (requiredRole === "admin") return normalizeUserRole(role) === "admin";
-  if (requiredRole === "finance") {
-    return hasPermission(role, USER_PERMISSIONS.finance);
-  }
-  if (requiredRole === "team_lead") {
-    return hasPermission(role, USER_PERMISSIONS.recruiting);
-  }
-  return hasPermission(role, USER_PERMISSIONS.members);
+  return normalizeUserRole(role) === "admin";
 }
 
 export function hasPermission(
-  role: unknown,
+  actor: PermissionActor | null | undefined,
   permission: UserPermission,
 ): boolean {
-  const normalizedRole = normalizeUserRole(role);
-  if (normalizedRole === "admin") return true;
-  return rolePermissions[normalizedRole].includes(permission);
+  if (normalizeUserRole(actor?.role) === "admin") return true;
+
+  const access = actor?.access;
+  if (!access) return false;
+  if (permission === USER_PERMISSIONS.recruiting) {
+    return access.ledTeamIds.length > 0;
+  }
+  if (permission === USER_PERMISSIONS.finance) {
+    return access.functionalAreas.includes("finance_legal");
+  }
+  if (
+    permission === USER_PERMISSIONS.publishJobPostings ||
+    permission === USER_PERMISSIONS.members ||
+    permission === USER_PERMISSIONS.organizationStructure
+  ) {
+    return access.functionalAreas.includes("people_culture");
+  }
+  return false;
 }
 
-interface TeamAssignment {
-  role?: unknown;
-  teamId?: string;
-  secondaryTeamId?: string;
-}
-
-export function recruitingTeamIds(user: TeamAssignment): string[] | null {
-  if (normalizeUserRole(user.role) !== "team_lead") return null;
-  return [user.teamId, user.secondaryTeamId].filter(
-    (teamId): teamId is string => Boolean(teamId),
-  );
+export function recruitingTeamIds(user: PermissionActor): string[] | null {
+  if (normalizeUserRole(user.role) === "admin") return null;
+  if (user.access?.functionalAreas.includes("people_culture")) return null;
+  return user.access?.ledTeamIds ?? [];
 }

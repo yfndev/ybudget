@@ -15,7 +15,7 @@ export default async function ApplicationPage({
   searchParams: Promise<{ returnTo?: string }>;
 }) {
   const session = await auth();
-  if (!hasPermission(session?.user?.role, USER_PERMISSIONS.recruiting)) {
+  if (!hasPermission(session?.user, USER_PERMISSIONS.recruiting)) {
     return <AccessDenied title="Bewerbungen" />;
   }
 

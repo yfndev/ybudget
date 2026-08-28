@@ -1,3 +1,4 @@
+import { ScrollText } from "lucide-react";
 import { PageHeader } from "@/components/Layout/PageHeader";
 import { AccessDenied } from "@/components/Settings/AccessDenied";
 import {
@@ -12,7 +13,6 @@ import { auth } from "@/lib/auth";
 import { hasPermission, USER_PERMISSIONS } from "@/lib/auth/roles";
 import { formatDateTime } from "@/lib/formatters/formatDateTime";
 import { getLogs } from "@/lib/server/logs/data";
-import { ScrollText } from "lucide-react";
 
 const ACTION_LABELS: Record<string, string> = {
   "organization.update": "Organisation aktualisiert",
@@ -58,7 +58,7 @@ const ACTION_LABELS: Record<string, string> = {
 
 export default async function LogsPage() {
   const session = await auth();
-  if (!hasPermission(session?.user?.role, USER_PERMISSIONS.auditLogs)) {
+  if (!hasPermission(session?.user, USER_PERMISSIONS.auditLogs)) {
     return <AccessDenied title="Logs" />;
   }
 

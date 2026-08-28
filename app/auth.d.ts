@@ -1,4 +1,5 @@
 import type { UserRole } from "@/lib/db/types";
+import type { OrganizationalAccess } from "@/lib/auth/roles";
 import type { DefaultSession } from "next-auth";
 
 declare module "next-auth" {
@@ -7,6 +8,7 @@ declare module "next-auth" {
       id: string;
       organizationId?: string;
       role?: UserRole;
+      access?: OrganizationalAccess;
       teamId?: string;
       secondaryTeamId?: string;
       profileImageStorageKey?: string;
@@ -25,6 +27,7 @@ declare module "next-auth/jwt" {
     userId?: string;
     organizationId?: string;
     role?: UserRole;
+    access?: OrganizationalAccess;
     teamId?: string;
     secondaryTeamId?: string;
     profileImageStorageKey?: string;

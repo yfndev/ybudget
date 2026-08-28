@@ -1,5 +1,6 @@
 import { hasPermission } from "@/lib/auth/roles";
 import { requireAuthenticatedUser } from "@/lib/auth/session";
+import { resolveOrganizationalAccess } from "@/lib/auth/organizationalAccess";
 import { documentExecutions, documentVersions } from "@/lib/db/collections";
 import { isUnavailableMemberStatus } from "@/lib/members/status";
 import { presignNamedDownload } from "@/lib/s3/storage";
@@ -23,7 +24,8 @@ export async function GET(
   if (!execution) {
     return Response.json({ error: "Nicht gefunden" }, { status: 404 });
   }
-  const manager = hasPermission(actor.role, "manage_members");
+  const access = await resolveOrganizationalAccess(actor);
+  const manager = hasPermission({ role: actor.role, access }, "manage_members");
   if (
     !manager &&
     (execution.userId !== actor._id ||

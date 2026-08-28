@@ -5,8 +5,8 @@ vi.mock("../../auth/session", () => ({
   requirePermission: vi.fn(),
 }));
 
-import { requirePermission, requireUser } from "../../auth/session";
 import { USER_PERMISSIONS } from "../../auth/roles";
+import { requirePermission, requireUser } from "../../auth/session";
 import { departments, organizations } from "../../db/collections";
 import { newId } from "../../db/ids";
 import { createTestActor } from "../../test/fixtures";
@@ -51,7 +51,11 @@ beforeEach(async () => {
   const actor = createTestActor({
     _id: userA,
     organizationId: orgA,
-    role: "people_culture",
+    role: "member",
+    access: {
+      functionalAreas: ["people_culture"],
+      ledTeamIds: ["people-team"],
+    },
   });
   vi.mocked(requireUser).mockResolvedValue(actor);
   vi.mocked(requirePermission).mockResolvedValue(actor);
