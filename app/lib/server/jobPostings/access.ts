@@ -1,12 +1,11 @@
-import { recruitingTeamIds } from "../../auth/roles";
+import { type OrganizationalAccess, recruitingTeamIds } from "../../auth/roles";
 import { jobPostings } from "../../db/collections";
 import type { JobPosting, UserRole } from "../../db/types";
 
 export interface RecruitingActor {
   organizationId: string;
   role: UserRole;
-  teamId?: string;
-  secondaryTeamId?: string;
+  access?: OrganizationalAccess;
 }
 
 export function jobPostingScopeFilter(user: RecruitingActor) {

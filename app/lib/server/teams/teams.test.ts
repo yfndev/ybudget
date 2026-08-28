@@ -64,7 +64,11 @@ beforeEach(async () => {
   const actor = createTestActor({
     _id: userA,
     organizationId: orgA,
-    role: "people_culture",
+    role: "member",
+    access: {
+      functionalAreas: ["people_culture"],
+      ledTeamIds: ["people-team"],
+    },
   });
   vi.mocked(requireUser).mockResolvedValue(actor);
   vi.mocked(requirePermission).mockResolvedValue(actor);
@@ -165,7 +169,9 @@ test("marking a team as chapter removes its lead assignments", async () => {
   const primaryMember = await (await users()).findOne({ _id: primaryMemberId });
   const secondaryMember = await (
     await users()
-  ).findOne({ _id: secondaryMemberId });
+  ).findOne({
+    _id: secondaryMemberId,
+  });
   expect(primaryMember?.isTeamLead).toBe(false);
   expect(secondaryMember?.isSecondaryTeamLead).toBe(false);
 });

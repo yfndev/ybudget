@@ -1,4 +1,4 @@
-import type { MemberStatus, UserRole } from "@/lib/db/types";
+import type { MemberStatus } from "@/lib/db/types";
 
 interface Option<T extends string> {
   value: T;
@@ -25,11 +25,3 @@ export function memberStatusOptions(
     ? [ONBOARDING_STATUS_OPTION, ...MEMBER_STATUS_OPTIONS]
     : MEMBER_STATUS_OPTIONS;
 }
-
-export const ROLE_OPTIONS: Option<UserRole>[] = [
-  { value: "admin", label: "Admin" },
-  { value: "finance", label: "Finance" },
-  { value: "people_culture", label: "People & Culture" },
-  { value: "team_lead", label: "Team Lead" },
-  { value: "member", label: "Teammitglied" },
-];

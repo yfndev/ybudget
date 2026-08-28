@@ -23,11 +23,8 @@ export async function getCurrentUserProfile(): Promise<User> {
 
 export async function listMembers(): Promise<User[]> {
   const user = await requireUser();
-  const canManageMembers = hasPermission(user.role, USER_PERMISSIONS.members);
-  const canManageRecruiting = hasPermission(
-    user.role,
-    USER_PERMISSIONS.recruiting,
-  );
+  const canManageMembers = hasPermission(user, USER_PERMISSIONS.members);
+  const canManageRecruiting = hasPermission(user, USER_PERMISSIONS.recruiting);
   if (!canManageMembers && !canManageRecruiting) {
     throw new Error(
       "Insufficient permissions. Required permission: manage_members or manage_recruiting",

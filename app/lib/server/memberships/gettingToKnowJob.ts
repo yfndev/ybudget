@@ -1,3 +1,4 @@
+import { getFunctionalAreaTeamIds } from "../../auth/organizationalAccess";
 import { users } from "../../db/collections";
 import type { User } from "../../db/types";
 import { BREVO_TEMPLATE_IDS } from "../../email/templates";
@@ -63,6 +64,11 @@ export async function processGettingToKnowPhases(
 }
 
 async function notifyDecisionMakers(member: User): Promise<void> {
+  if (!member.organizationId) return;
+  const peopleTeamIds = await getFunctionalAreaTeamIds(
+    member.organizationId,
+    "people_culture",
+  );
   const recipients = await (
     await users()
   )
@@ -71,7 +77,11 @@ async function notifyDecisionMakers(member: User): Promise<void> {
       memberStatus: { $nin: [...UNAVAILABLE_MEMBER_STATUSES] },
       $or: [
         { teamId: member.teamId, isTeamLead: true },
-        { role: "people_culture" },
+        { teamId: { $in: peopleTeamIds }, isTeamLead: true },
+        {
+          secondaryTeamId: { $in: peopleTeamIds },
+          isSecondaryTeamLead: true,
+        },
       ],
     })
     .toArray();

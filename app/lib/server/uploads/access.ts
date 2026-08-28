@@ -1,4 +1,8 @@
-import { hasPermission, USER_PERMISSIONS } from "../../auth/roles";
+import {
+  hasPermission,
+  type OrganizationalAccess,
+  USER_PERMISSIONS,
+} from "../../auth/roles";
 import {
   receipts,
   reimbursements,
@@ -12,6 +16,7 @@ type FileActor = {
   _id: string;
   organizationId: string;
   role: UserRole;
+  access?: OrganizationalAccess;
 };
 
 function canAccessOwnedDocument(
@@ -21,7 +26,7 @@ function canAccessOwnedDocument(
   return (
     document.organizationId === actor.organizationId &&
     (document.createdBy === actor._id ||
-      hasPermission(actor.role, USER_PERMISSIONS.finance))
+      hasPermission(actor, USER_PERMISSIONS.finance))
   );
 }
 

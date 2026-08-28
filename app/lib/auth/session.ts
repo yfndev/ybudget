@@ -1,13 +1,21 @@
 import { users } from "../db/collections";
-import type { UserRole } from "../db/types";
+import type { User, UserRole } from "../db/types";
 import { isUnavailableMemberStatus } from "../members/status";
 import { auth } from "./index";
+import { resolveOrganizationalAccess } from "./organizationalAccess";
 import {
-  hasRoleAccess,
   hasPermission,
+  hasRoleAccess,
   normalizeUserRole,
+  type OrganizationalAccess,
   type UserPermission,
 } from "./roles";
+
+export type AuthorizedUser = User & {
+  organizationId: string;
+  role: UserRole;
+  access?: OrganizationalAccess;
+};
 
 export async function requireAuthenticatedUser({
   allowDeletedWorkspaceAccount = false,
@@ -27,7 +35,7 @@ export async function requireAuthenticatedUser({
   return user;
 }
 
-export async function requireUser() {
+export async function requireUser(): Promise<AuthorizedUser> {
   const user = await requireAuthenticatedUser();
   if (!user.organizationId) throw new Error("User has no organization");
   if (isUnavailableMemberStatus(user.memberStatus)) {
@@ -38,7 +46,8 @@ export async function requireUser() {
   }
 
   const role = normalizeUserRole(user.role);
-  return { ...user, organizationId: user.organizationId, role };
+  const access = await resolveOrganizationalAccess(user);
+  return { ...user, organizationId: user.organizationId, role, access };
 }
 
 export async function requireRole(requiredRole: UserRole) {
@@ -51,7 +60,7 @@ export async function requireRole(requiredRole: UserRole) {
 
 export async function requirePermission(permission: UserPermission) {
   const user = await requireUser();
-  if (!hasPermission(user.role, permission)) {
+  if (!hasPermission(user, permission)) {
     throw new Error(
       `Insufficient permissions. Required permission: ${permission}`,
     );

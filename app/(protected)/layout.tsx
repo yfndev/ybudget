@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 import { PostHogIdentity } from "@/components/PostHogIdentity";
 import { auth } from "@/lib/auth";
+import { normalizeOptionalUserRole } from "@/lib/auth/roles";
 import { requireAuthenticatedUser } from "@/lib/auth/session";
 import { isGettingToKnowConfirmed } from "@/lib/members/gettingToKnow";
 import { isUnavailableMemberStatus } from "@/lib/members/status";
@@ -9,12 +10,12 @@ import { getMemberPlatformLinkingData } from "@/lib/server/memberPlatform/linkin
 import { AppShell } from "./AppShell";
 import { MemberPlatformLinking } from "./MemberPlatformLinking";
 import { MembershipPendingNotice } from "./MembershipPendingNotice";
-import { OnboardingNotice } from "./OnboardingNotice";
-import { OffboardedNotice } from "./OffboardedNotice";
-import { PublicProfileSetup } from "./PublicProfileSetup";
 import { MembershipOnboarding } from "./membership-onboarding/MembershipOnboarding";
 import { OnboardingProvider } from "./membership-onboarding/OnboardingContext";
 import { OnboardingSidebarProgress } from "./membership-onboarding/OnboardingSidebarProgress";
+import { OffboardedNotice } from "./OffboardedNotice";
+import { OnboardingNotice } from "./OnboardingNotice";
+import { PublicProfileSetup } from "./PublicProfileSetup";
 
 export default async function ProtectedLayout({
   children,
@@ -77,7 +78,7 @@ export default async function ProtectedLayout({
       <PostHogIdentity
         userId={member._id}
         organizationId={member.organizationId}
-        role={member.role}
+        role={normalizeOptionalUserRole(member.role)}
       />
       {content}
     </>

@@ -1,3 +1,4 @@
+import type { OrganizationalAccess } from "../auth/roles";
 import { organizations, projects } from "../db/collections";
 import { newId } from "../db/ids";
 import type { Organization, Project, User, UserRole } from "../db/types";
@@ -5,6 +6,7 @@ import type { Organization, Project, User, UserRole } from "../db/types";
 export type TestActor = User & {
   organizationId: string;
   role: UserRole;
+  access?: OrganizationalAccess;
 };
 
 export function createTestActor(

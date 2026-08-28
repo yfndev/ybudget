@@ -2,7 +2,7 @@ import { beforeEach, expect, test, vi } from "vitest";
 
 vi.mock("../users/email", () => ({ sendGettingToKnowDueEmail: vi.fn() }));
 
-import { users } from "../../db/collections";
+import { departments, teams, users } from "../../db/collections";
 import { newId } from "../../db/ids";
 import { setupTestDatabase } from "../../test/setupTestDatabase";
 import { sendGettingToKnowDueEmail } from "../users/email";
@@ -69,27 +69,40 @@ test("reminds the team lead once exactly one week before the decision", async ()
 });
 
 test("notifies the people and culture lead of the same organization", async () => {
+  const peopleDepartmentId = newId();
+  const peopleTeamId = newId();
   await (
-    await users()
+    await departments()
   ).insertOne({
-    _id: newId(),
+    _id: peopleDepartmentId,
     _creationTime: Date.now(),
     organizationId,
-    name: "People Culture Lead",
-    privateEmail: "people@example.org",
-    role: "people_culture",
-    memberStatus: "active",
-    teamOnboardingStatus: "completed",
+    name: "People & Culture",
+    isArchived: false,
+    createdBy: memberId,
+  });
+  await (
+    await teams()
+  ).insertOne({
+    _id: peopleTeamId,
+    _creationTime: Date.now(),
+    organizationId,
+    departmentId: peopleDepartmentId,
+    name: "People",
+    isArchived: false,
+    createdBy: memberId,
   });
   await (
     await users()
   ).insertOne({
     _id: newId(),
     _creationTime: Date.now(),
-    organizationId: newId(),
-    name: "Other Org Lead",
-    privateEmail: "other@example.org",
-    role: "people_culture",
+    organizationId,
+    teamId: peopleTeamId,
+    isTeamLead: true,
+    name: "People Culture Lead",
+    privateEmail: "people@example.org",
+    role: "member",
     memberStatus: "active",
     teamOnboardingStatus: "completed",
   });

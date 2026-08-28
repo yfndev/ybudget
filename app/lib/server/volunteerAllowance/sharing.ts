@@ -1,7 +1,8 @@
 "use server";
 
 import { z } from "zod";
-import { requireRole } from "../../auth/session";
+import { USER_PERMISSIONS } from "../../auth/roles";
+import { requirePermission } from "../../auth/session";
 import { volunteerAllowance } from "../../db/collections";
 import { newId } from "../../db/ids";
 import { requireActiveOrganizationProject } from "../projects/access";
@@ -19,7 +20,7 @@ const createLinkSchema = z.object({
 export async function createLink(
   input: z.input<typeof createLinkSchema>,
 ): Promise<string> {
-  const user = await requireRole("finance");
+  const user = await requirePermission(USER_PERMISSIONS.finance);
   const args = createLinkSchema.parse(input);
   await requireActiveOrganizationProject(args.projectId, user.organizationId);
 

@@ -9,10 +9,10 @@ vi.mock("../tally/client", () => ({ createConfiguredTallyClient: vi.fn() }));
 import { requirePermission } from "../../auth/session";
 import { jobPostings, logs } from "../../db/collections";
 import { newId } from "../../db/ids";
-import { createTestActor } from "../../test/fixtures";
-import { setupTestDatabase } from "../../test/setupTestDatabase";
 import type { JobPosting } from "../../db/types";
 import { berlinToday } from "../../jobPostings/deadline";
+import { createTestActor } from "../../test/fixtures";
+import { setupTestDatabase } from "../../test/setupTestDatabase";
 import { createConfiguredTallyClient } from "../tally/client";
 import {
   archiveJobPosting,
@@ -78,7 +78,11 @@ beforeEach(async () => {
   const actor = createTestActor({
     _id: userA,
     organizationId: orgA,
-    role: "people_culture",
+    role: "member",
+    access: {
+      functionalAreas: ["people_culture"],
+      ledTeamIds: ["people-team"],
+    },
   });
   vi.mocked(requirePermission).mockResolvedValue(actor);
   fakeClient();

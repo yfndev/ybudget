@@ -53,7 +53,14 @@ beforeEach(async () => {
   };
   await (await applications()).insertOne(application);
   vi.mocked(requirePermission).mockResolvedValue(
-    createTestActor({ organizationId, role: "people_culture" }),
+    createTestActor({
+      organizationId,
+      role: "member",
+      access: {
+        functionalAreas: ["people_culture"],
+        ledTeamIds: ["people-team"],
+      },
+    }),
   );
 });
 

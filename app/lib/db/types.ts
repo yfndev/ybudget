@@ -42,6 +42,7 @@ export type {
   MemberStatus,
   ProfileImageSource,
   StoredMemberStatus,
+  StoredUserRole,
   TeamOnboardingStatus,
   User,
   UserRole,

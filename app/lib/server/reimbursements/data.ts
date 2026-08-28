@@ -94,10 +94,7 @@ export async function getAllReimbursements(): Promise<
   >
 > {
   const user = await requireUser();
-  const canManageReimbursements = hasPermission(
-    user.role,
-    USER_PERMISSIONS.finance,
-  );
+  const canManageReimbursements = hasPermission(user, USER_PERMISSIONS.finance);
 
   const scope = {
     organizationId: user.organizationId,

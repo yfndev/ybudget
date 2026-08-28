@@ -29,8 +29,8 @@ Teams mit `isChapter: true` werden als Chapter veröffentlicht. Chapter führen
 weder Lead- noch allgemeine Positionen und stehen innerhalb ihres Departments
 nach den übrigen Teams.
 
-Interne Berechtigungsrollen wie `admin`, `finance` oder `people_culture` werden
-nicht veröffentlicht.
+Die Admin-Berechtigung wird nicht veröffentlicht. Alle weiteren internen
+Berechtigungen werden aus den hier veröffentlichten Lead-Zuordnungen abgeleitet.
 
 ## Darstellung im Organigramm
 

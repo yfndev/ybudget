@@ -64,7 +64,11 @@ beforeEach(async () => {
     createTestActor({
       _id: actorId,
       organizationId,
-      role: "people_culture",
+      role: "member",
+      access: {
+        functionalAreas: ["people_culture"],
+        ledTeamIds: ["people-team"],
+      },
     }),
   );
   await (
@@ -85,7 +89,7 @@ beforeEach(async () => {
     _creationTime: Date.now(),
     organizationId,
     name: "Pat Owner",
-    role: "people_culture",
+    role: "member",
     memberStatus: "active",
     teamOnboardingStatus: "completed",
   });
@@ -335,8 +339,8 @@ test("a team lead only reaches applications of their own teams", async () => {
     createTestActor({
       _id: actorId,
       organizationId,
-      role: "team_lead",
-      teamId: ownTeamId,
+      role: "member",
+      access: { functionalAreas: [], ledTeamIds: [ownTeamId] },
     }),
   );
 

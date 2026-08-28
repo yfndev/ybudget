@@ -1,7 +1,8 @@
 "use server";
 
 import { z } from "zod";
-import { requireRole } from "../../auth/session";
+import { USER_PERMISSIONS } from "../../auth/roles";
+import { requirePermission } from "../../auth/session";
 import { reimbursements } from "../../db/collections";
 import { addLog } from "../logs";
 import { requirePendingReimbursement } from "./access";
@@ -73,7 +74,7 @@ async function setChangesRequest(
 export async function approve(input: {
   reimbursementId: string;
 }): Promise<void> {
-  const user = await requireRole("finance");
+  const user = await requirePermission(USER_PERMISSIONS.finance);
   const { reimbursementId } = z
     .object({ reimbursementId: z.string() })
     .parse(input);
@@ -96,7 +97,7 @@ export async function approve(input: {
 export async function markAsPaid(input: {
   reimbursementId: string;
 }): Promise<void> {
-  const user = await requireRole("finance");
+  const user = await requirePermission(USER_PERMISSIONS.finance);
   const { reimbursementId } = z
     .object({ reimbursementId: z.string() })
     .parse(input);
@@ -142,7 +143,7 @@ export async function decline(input: {
   reimbursementId: string;
   rejectionNote: string;
 }): Promise<void> {
-  const user = await requireRole("finance");
+  const user = await requirePermission(USER_PERMISSIONS.finance);
   const { reimbursementId, rejectionNote } = z
     .object({
       reimbursementId: z.string(),
@@ -165,7 +166,7 @@ export async function requestChanges(input: {
   reimbursementId: string;
   reviewNote: string;
 }): Promise<void> {
-  const user = await requireRole("finance");
+  const user = await requirePermission(USER_PERMISSIONS.finance);
   const { reimbursementId, reviewNote } = z
     .object({
       reimbursementId: z.string(),

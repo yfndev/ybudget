@@ -92,7 +92,11 @@ beforeEach(() => {
     createTestActor({
       _id: actorId,
       organizationId,
-      role: "people_culture",
+      role: "member",
+      access: {
+        functionalAreas: ["people_culture"],
+        ledTeamIds: ["people-team"],
+      },
     }),
   );
   mocks.createConfiguredTallyClient.mockReturnValue({

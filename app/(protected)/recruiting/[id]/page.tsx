@@ -9,7 +9,7 @@ export default async function JobPostingPage({
   params: Promise<{ id: string }>;
 }) {
   const session = await auth();
-  if (!hasPermission(session?.user?.role, USER_PERMISSIONS.recruiting)) {
+  if (!hasPermission(session?.user, USER_PERMISSIONS.recruiting)) {
     return <AccessDenied title="Ausschreibungen" />;
   }
 

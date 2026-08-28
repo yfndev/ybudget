@@ -17,10 +17,11 @@ keeps authentication, authorization and organization isolation on the server.
 
 - Every protected operation requires an authenticated user.
 - Database access is scoped by `organizationId`.
-- Explicit role permissions distinguish members, finance, team leads, People &
-  Culture and administrators. Unknown roles safely receive member access.
-- Team leads reach only the job postings and applications of their own teams and
-  cannot publish or reopen a posting.
+- Admin is the only manually assigned elevated role and retains full access.
+- Other permissions are derived from active organigram lead assignments. Team
+  leads reach only their led teams' job postings and applications. Leads in
+  People & Culture and Finance & Legal receive the corresponding functional
+  permissions. Unknown or legacy roles safely receive member access.
 - Server-side Zod validation protects action and API inputs.
 - Uploaded objects use generated keys and time-limited download URLs.
 - Audit logs record important organization and reimbursement actions.

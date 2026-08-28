@@ -5,9 +5,7 @@ import { TeamsClient } from "./TeamsClient";
 
 export default async function TeamsPage() {
   const session = await auth();
-  if (
-    !hasPermission(session?.user?.role, USER_PERMISSIONS.organizationStructure)
-  ) {
+  if (!hasPermission(session?.user, USER_PERMISSIONS.organizationStructure)) {
     return <AccessDenied title="Struktur" />;
   }
 

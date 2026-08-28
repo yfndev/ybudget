@@ -18,10 +18,7 @@ export type VolunteerAllowanceWithNames = VolunteerAllowance & {
 
 export async function getAll(): Promise<VolunteerAllowanceWithNames[]> {
   const user = await requireUser();
-  const canManageReimbursements = hasPermission(
-    user.role,
-    USER_PERMISSIONS.finance,
-  );
+  const canManageReimbursements = hasPermission(user, USER_PERMISSIONS.finance);
 
   const filter = canManageReimbursements
     ? { organizationId: user.organizationId }

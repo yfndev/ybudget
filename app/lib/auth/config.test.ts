@@ -3,11 +3,15 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   ensureAppUser: vi.fn(),
   isLinkedWorkspaceUser: vi.fn(),
+  resolveOrganizationalAccess: vi.fn(),
 }));
 
 vi.mock("./provisioning", () => ({
   ensureAppUser: mocks.ensureAppUser,
   isLinkedWorkspaceUser: mocks.isLinkedWorkspaceUser,
+}));
+vi.mock("./organizationalAccess", () => ({
+  resolveOrganizationalAccess: mocks.resolveOrganizationalAccess,
 }));
 
 import { authConfig } from "./config";
@@ -16,6 +20,11 @@ describe("auth config", () => {
   beforeEach(() => {
     mocks.ensureAppUser.mockReset();
     mocks.isLinkedWorkspaceUser.mockReset();
+    mocks.resolveOrganizationalAccess.mockReset();
+    mocks.resolveOrganizationalAccess.mockResolvedValue({
+      functionalAreas: [],
+      ledTeamIds: [],
+    });
   });
 
   it("refreshes a persisted session against the current database", async () => {
@@ -24,7 +33,7 @@ describe("auth config", () => {
       _creationTime: 1,
       email: "local@example.com",
       organizationId: "new-organization-id",
-      role: "finance",
+      role: "member",
       profileImageStorageKey: "profile-image",
       publicProfileCompletedAt: 123,
     });
@@ -51,7 +60,8 @@ describe("auth config", () => {
     expect(result).toMatchObject({
       userId: "new-user-id",
       organizationId: "new-organization-id",
-      role: "finance",
+      role: "member",
+      access: { functionalAreas: [], ledTeamIds: [] },
       profileImageStorageKey: "profile-image",
       publicProfileCompletedAt: 123,
     });
@@ -86,7 +96,7 @@ describe("auth config", () => {
     expect(result).toBe(false);
   });
 
-  it("keeps the People & Culture role in the session", () => {
+  it("keeps organigram access in the session", () => {
     const session = { user: { id: "", role: undefined }, expires: "later" };
 
     const result = authConfig.callbacks.session({
@@ -95,13 +105,21 @@ describe("auth config", () => {
         userId: "user-id",
         organizationId: "organization-id",
         role: "people_culture",
+        access: {
+          functionalAreas: ["people_culture"],
+          ledTeamIds: ["people-team"],
+        },
       },
     } as unknown as Parameters<typeof authConfig.callbacks.session>[0]);
 
     expect(result.user).toMatchObject({
       id: "user-id",
       organizationId: "organization-id",
-      role: "people_culture",
+      role: "member",
+      access: {
+        functionalAreas: ["people_culture"],
+        ledTeamIds: ["people-team"],
+      },
     });
   });
 

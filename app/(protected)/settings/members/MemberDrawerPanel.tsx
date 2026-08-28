@@ -2,17 +2,17 @@ import { ExternalLink, Loader2 } from "lucide-react";
 import { MemberStageBadge } from "@/components/Members/MemberStageBadge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import { SheetFooter } from "@/components/ui/sheet";
-import type { User, UserRole } from "@/lib/db/types";
+import type { User } from "@/lib/db/types";
 import { getInitials } from "@/lib/formatters/getInitials";
 import { isInGettingToKnow } from "@/lib/members/gettingToKnow";
 import { memberStageForStatus } from "@/lib/members/stages";
 import { profileAvatarUrl } from "@/lib/profile/avatar";
-import { LabeledSelect } from "./LabeledSelect";
 import { MemberGettingToKnowSection } from "./MemberGettingToKnowSection";
 import { MemberMembershipActions } from "./MemberMembershipActions";
 import { MemberStatusField } from "./MemberStatusField";
-import { ROLE_OPTIONS } from "./memberLabels";
 import { PublicOrganizationFields } from "./PublicOrganizationFields";
 import type { MemberDrawerFormState } from "./useMemberDrawerForm";
 
@@ -86,19 +86,22 @@ export function MemberDrawerPanel({
             onChange={form.setStatus}
           />
         ) : null}
-        <LabeledSelect
-          id="member-role"
-          label="Berechtigungen"
-          value={form.role}
-          onValueChange={(value) => form.setRole(value as UserRole)}
-          options={ROLE_OPTIONS}
-          disabled={!form.canEditRoles}
-          hint={
-            form.canEditRoles
-              ? undefined
-              : "Rollen können nur von Admins geändert werden."
-          }
-        />
+        <fieldset className="grid gap-3 border-t pt-5">
+          <legend className="pr-3 text-sm font-semibold">Berechtigungen</legend>
+          <div className="flex items-center gap-3">
+            <Checkbox
+              id="member-admin"
+              checked={form.isAdmin}
+              onCheckedChange={(checked) => form.setIsAdmin(checked === true)}
+              disabled={!form.canEditRoles}
+            />
+            <Label htmlFor="member-admin">Admin</Label>
+          </div>
+          <p className="text-muted-foreground text-sm">
+            Weitere Berechtigungen ergeben sich automatisch aus den
+            Lead-Positionen im Organigramm.
+          </p>
+        </fieldset>
         {isGettingToKnow ? (
           <MemberGettingToKnowSection member={member} />
         ) : null}

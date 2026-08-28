@@ -2,8 +2,9 @@ import type { NextAuthConfig } from "next-auth";
 import Google from "next-auth/providers/google";
 import { YFN_ORGANIZATION } from "../organization";
 import { getGooglePhotoIsDefault } from "./googlePeople";
+import { resolveOrganizationalAccess } from "./organizationalAccess";
 import { ensureAppUser, isLinkedWorkspaceUser } from "./provisioning";
-import { normalizeOptionalUserRole } from "./roles";
+import { normalizeOptionalUserRole, type OrganizationalAccess } from "./roles";
 
 function isYfnEmail(email: string | null | undefined): boolean {
   return Boolean(email?.toLowerCase().endsWith(`@${YFN_ORGANIZATION.domain}`));
@@ -60,7 +61,8 @@ export const authConfig = {
         });
         token.userId = appUser._id;
         token.organizationId = appUser.organizationId;
-        token.role = appUser.role;
+        token.role = normalizeOptionalUserRole(appUser.role);
+        token.access = await resolveOrganizationalAccess(appUser);
         token.teamId = appUser.teamId;
         token.secondaryTeamId = appUser.secondaryTeamId;
         token.email = appUser.email;
@@ -76,6 +78,7 @@ export const authConfig = {
           | string
           | undefined;
         session.user.role = normalizeOptionalUserRole(token.role);
+        session.user.access = token.access as OrganizationalAccess | undefined;
         session.user.teamId = token.teamId as string | undefined;
         session.user.secondaryTeamId = token.secondaryTeamId as
           | string
